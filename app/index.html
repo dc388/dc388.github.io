@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#0c0f11" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LUFT" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Cormorant:ital,wght@0,500;0,600;1,600&display=swap" />
+  <link rel="stylesheet" href="styles.css?b=14" />
+  <title>LUFT · Asistencia</title>
+</head>
+<body>
+  <!-- Aviso obligatorio de control de asistencia -->
+  <div id="banner" class="banner" hidden>
+    <strong>IMPORTANTE — CONTROL DE ASISTENCIA</strong>
+    <p>Registra tu entrada, comida y salida con esta app. El sistema puede pedir
+       ubicación, cámara y autenticación para validar el registro. La falta de un
+       registro válido puede generar una incidencia que se revisa conforme a las
+       políticas internas.</p>
+    <button id="banner-ok" class="btn btn-ghost">Entendido</button>
+  </div>
+
+  <!-- Cargando -->
+  <section id="loading" class="screen center">
+    <div class="logo-lg" aria-hidden="true"></div>
+    <p class="muted">Cargando…</p>
+  </section>
+
+  <!-- Registro por código -->
+  <section id="enroll" class="screen" hidden>
+    <div class="logo" aria-hidden="true"></div>
+    <h1>LUFT · Asistencia</h1>
+    <p class="muted">Escribe el código de 6 dígitos que te dio Recursos Humanos.</p>
+    <input id="code" class="input code" inputmode="numeric" autocomplete="one-time-code"
+           maxlength="6" placeholder="000000" />
+    <button id="enroll-btn" class="btn btn-primary" disabled>Entrar</button>
+    <p id="enroll-msg" class="msg" role="alert"></p>
+    <button id="perm-link-enroll" class="link">Ver permisos del dispositivo</button>
+  </section>
+
+  <!-- Pantalla principal -->
+  <section id="home" class="screen" hidden>
+    <header class="home-head">
+      <div>
+        <h2 id="hi">Hola</h2>
+        <p id="site" class="muted"></p>
+      </div>
+      <div class="clock" id="clock">--:--</div>
+    </header>
+
+    <div id="next" class="next"></div>
+
+    <div class="chips">
+      <span id="chip-loc" class="chip">Ubicación…</span>
+      <span id="chip-dev" class="chip">Dispositivo…</span>
+      <span id="chip-net" class="chip">Red…</span>
+    </div>
+
+    <div class="grid">
+      <button class="btn btn-in"    data-punch="in">REGISTRAR ENTRADA</button>
+      <button class="btn btn-out"   data-punch="out">REGISTRAR SALIDA</button>
+      <button class="btn btn-break" data-punch="break_start">INICIAR COMIDA</button>
+      <button class="btn btn-break" data-punch="break_end">REGRESAR DE COMIDA</button>
+    </div>
+
+    <div id="queue" class="queue" hidden></div>
+
+    <div class="foot">
+      <button id="priv-link" class="link">Privacidad y acuerdos</button>
+      <button id="perm-link" class="link">Permisos del dispositivo</button>
+      <button id="signout" class="link danger">Salir de mi cuenta</button>
+    </div>
+  </section>
+
+  <!-- Acuerdo laboral + aviso de privacidad -->
+  <section id="acuerdo" class="screen" hidden>
+    <h2 id="ac-title">Acuerdo</h2>
+    <p id="ac-legal" class="legal-flag" hidden>Texto en revisión legal (borrador).</p>
+    <div id="ac-doc" class="doc"></div>
+    <div class="checks" id="ac-checks">
+      <label><input type="checkbox" data-k="leido"> He leído el acuerdo completo.</label>
+      <label><input type="checkbox" data-k="reglas"> Comprendo las reglas de registro de asistencia y horarios.</label>
+      <label><input type="checkbox" data-k="privacidad"> He leído el aviso de privacidad.</label>
+      <label><input type="checkbox" data-k="ubicacion"> Comprendo el tratamiento de ubicación.</label>
+      <label><input type="checkbox" data-k="consentimiento"> Otorgo, cuando jurídicamente corresponda, mi consentimiento para el tratamiento de los datos necesarios para los fines informados.</label>
+    </div>
+    <button id="ac-btn" class="btn btn-primary" disabled>ACEPTAR Y CONTINUAR</button>
+    <p id="ac-msg" class="msg" role="alert"></p>
+  </section>
+
+  <!-- Consentimiento biométrico (Pantalla 3): EXPRESO y SEPARADO -->
+  <section id="biometrico" class="screen" hidden>
+    <h2 id="bio-title">Reconocimiento facial</h2>
+    <p id="bio-legal" class="legal-flag" hidden>Texto en revisión legal (borrador).</p>
+    <div id="bio-doc" class="doc"></div>
+    <div class="checks" id="bio-checks">
+      <label><input type="checkbox" data-k="leido"> Declaro que he leído la información anterior.</label>
+      <label><input type="checkbox" data-k="aviso"> Declaro que he tenido acceso al Aviso de Privacidad correspondiente.</label>
+      <label><input type="checkbox" data-k="autorizo"><strong> AUTORIZO EXPRESAMENTE</strong> el tratamiento de mis datos biométricos para verificar mi identidad durante los registros de asistencia realizados mediante la aplicación LUFT.</label>
+    </div>
+    <button id="bio-btn" class="btn btn-primary" disabled>AUTORIZO EXPRESAMENTE</button>
+    <button id="bio-alt" class="btn btn-ghost">Usar método alternativo</button>
+    <p class="muted small">Puedes negarte sin que eso genere falta, retardo ni sanción.
+       Seguirás registrando tu asistencia por el método alterno.</p>
+    <p id="bio-msg" class="msg" role="alert"></p>
+  </section>
+
+  <!-- Selfie de auditoría (evidencia para RH; se toma en vivo al checar) -->
+  <section id="selfie" class="screen center" hidden>
+    <h2 id="selfie-title">Foto de tu checada</h2>
+    <p class="muted small">Es evidencia para Recursos Humanos. Mira a la cámara.
+       La foto se toma en el momento; no se puede elegir de la galería.</p>
+    <div class="selfie-frame">
+      <video id="selfie-video" playsinline autoplay muted></video>
+    </div>
+    <canvas id="selfie-canvas" hidden></canvas>
+    <button id="selfie-take" class="btn btn-primary">Tomar foto y checar</button>
+    <button id="selfie-skip" class="btn btn-ghost" hidden>Continuar sin foto</button>
+    <p id="selfie-msg" class="msg" role="alert"></p>
+  </section>
+
+  <!-- Enrolamiento facial (una vez, tras autorizar el biométrico) -->
+  <section id="enrolar-rostro" class="screen center" hidden>
+    <h2>Registra tu rostro</h2>
+    <p class="muted small">Una sola vez. Mira a la cámara de frente, con buena luz.
+       Tu rostro se convierte en un código; la foto no se guarda.</p>
+    <div class="selfie-frame">
+      <video id="er-video" playsinline autoplay muted></video>
+    </div>
+    <p id="er-progreso" class="muted small">Preparando…</p>
+    <button id="er-btn" class="btn btn-primary" disabled>Registrar mi rostro</button>
+    <p id="er-msg" class="msg" role="alert"></p>
+  </section>
+
+  <!-- Resultado de checada -->
+  <section id="result" class="screen center" hidden>
+    <div id="result-badge" class="result-badge"></div>
+    <h2 id="result-title"></h2>
+    <p id="result-detail" class="muted"></p>
+    <button id="result-ok" class="btn btn-primary">Continuar</button>
+  </section>
+
+  <!-- Privacidad y acuerdos (perfil del trabajador) -->
+  <section id="privacidad" class="screen" hidden>
+    <h2>Privacidad y acuerdos</h2>
+    <p class="muted small">Aquí ves qué versión de cada documento aceptaste y cuándo.
+       Es tu evidencia; no se puede alterar.</p>
+    <div id="priv-list"></div>
+    <div class="aviso-caja" style="margin-top:14px;font-size:13px">
+      <strong>Tus derechos (ARCO).</strong> Puedes solicitar acceso, rectificación,
+      cancelación u oposición sobre tus datos, y —cuando corresponda— revocar tu
+      consentimiento. Los medios están en el Aviso de Privacidad; también puedes
+      pedirlo a Recursos Humanos.
+    </div>
+    <button id="priv-back" class="btn btn-ghost" style="margin-top:12px">Regresar</button>
+  </section>
+
+  <!-- Permisos / capacidades -->
+  <section id="permisos" class="screen" hidden>
+    <h2>Permisos del dispositivo</h2>
+    <ul id="cap-list" class="caps"></ul>
+    <p class="muted small">Si falta un permiso, actívalo desde Configuración de tu
+       teléfono. La app no puede cambiar permisos protegidos por iOS/Android.</p>
+    <button id="perm-back" class="btn btn-ghost">Regresar</button>
+  </section>
+
+  <!-- Overlay de trabajo -->
+  <div id="busy" class="busy" hidden><div class="spinner"></div><span id="busy-txt">…</span></div>
+
+  <!-- Diagnostico de arranque (temporal): si algo revienta app.js en el motor
+       del telefono, se muestra el error EN PANTALLA para poder verlo. -->
+  <script src="face.js?b=14"></script>
+  <script src="app.js?b=14"></script>
+</body>
+</html>

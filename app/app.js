@@ -1,0 +1,1003 @@
+/* LUFT · Asistencia — PWA para trabajadores (iPhone/Android web).
+ *
+ * Reutiliza EXACTAMENTE el mismo backend que la app Android:
+ *   - enroll_device  : registra este navegador como "dispositivo" con una
+ *                      llave ECDSA P-256 generada por WebCrypto (no sale del
+ *                      dispositivo). El servidor ya acepta firma "raw" de 64
+ *                      bytes, que es justo lo que produce WebCrypto.
+ *   - punch_register : la checada se firma igual que en Android (payload
+ *                      `checada.v2` con la ubicacion adentro), asi el servidor
+ *                      aplica la MISMA geocerca y la misma verificacion.
+ *
+ * Sin rastreo oculto: la ubicacion se pide solo al momento de checar.
+ */
+'use strict';
+
+const SUPABASE_URL = 'https://lsduggmuwbvrudpfcgtm.supabase.co';
+const ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzZHVnZ211d2J2cnVkcGZjZ3RtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3NTc2NTIsImV4cCI6MjEwMzMzMzY1Mn0.lyRwNkwnzvwN6EN1j35VFlzgBeii8AWicNZaB1MfxGw';
+const APP_VERSION = 'pwa-0.1.0';
+
+// ---------- utilidades ----------
+const $ = (id) => document.getElementById(id);
+const enc = new TextEncoder();
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID()
+  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0; return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16); }));
+const bufToB64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const f6 = (n) => (n == null ? '' : Number(n).toFixed(6));
+const f1 = (n) => (n == null ? '' : Number(n).toFixed(1));
+
+function show(screen) {
+  ['loading', 'enroll', 'acuerdo', 'biometrico', 'selfie', 'enrolar-rostro', 'home', 'result', 'permisos', 'privacidad'].forEach((s) => { $(s).hidden = s !== screen; });
+}
+function busy(on, txt) { $('busy').hidden = !on; if (txt) $('busy-txt').textContent = txt; }
+
+// ---------- almacenamiento ----------
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('luft.' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('luft.' + k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem('luft.' + k); } catch {} },
+};
+
+// IndexedDB minimo, para guardar el par de llaves (CryptoKey) y la cola offline.
+function idb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('luft', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+async function idbGet(k) { const db = await idb(); return new Promise((res, rej) => {
+  const t = db.transaction('kv').objectStore('kv').get(k); t.onsuccess = () => res(t.result); t.onerror = () => rej(t.error); }); }
+async function idbSet(k, v) { const db = await idb(); return new Promise((res, rej) => {
+  const t = db.transaction('kv', 'readwrite').objectStore('kv').put(v, k); t.onsuccess = () => res(); t.onerror = () => rej(t.error); }); }
+
+// ---------- capacidades del dispositivo (sin fingir) ----------
+function deviceCapabilities() {
+  const ua = navigator.userAgent;
+  const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const android = /Android/.test(ua);
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  return {
+    os: iOS ? 'iOS' : android ? 'Android' : 'Otro',
+    browser: /CriOS/.test(ua) ? 'Chrome iOS' : /FxiOS/.test(ua) ? 'Firefox iOS'
+      : /Safari/.test(ua) && iOS ? 'Safari' : /Chrome/.test(ua) ? 'Chrome' : 'Navegador',
+    pwaInstalled: standalone,
+    camera: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+    gps: 'geolocation' in navigator,
+    webauthn: !!window.PublicKeyCredential,
+    passkeys: !!(window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable),
+    notifications: 'Notification' in window,
+    serviceWorker: 'serviceWorker' in navigator,
+    offline: 'indexedDB' in window && 'caches' in window,
+    backgroundLocation: !iOS && android && standalone ? 'limitado' : 'no-pwa', // honesto: iOS PWA no puede
+    backgroundSync: 'serviceWorker' in navigator && 'SyncManager' in window,
+    secureContext: window.isSecureContext,
+  };
+}
+
+// ---------- dispositivo: id + llave ECDSA ----------
+async function ensureDevice() {
+  let id = store.get('deviceId');
+  if (!id) { id = uuid(); store.set('deviceId', id); }
+  let pair = await idbGet('keypair');
+  if (!pair) {
+    // No exportable: la privada no sale del dispositivo.
+    pair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign', 'verify']);
+    await idbSet('keypair', pair);
+  }
+  let spki;
+  try { spki = bufToB64(await crypto.subtle.exportKey('spki', pair.publicKey)); }
+  catch (e) {
+    // Algunos navegadores exigen extractable para exportar la publica: se
+    // regenera un par extractable (la privada sigue guardada solo aqui).
+    pair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+    await idbSet('keypair', pair);
+    spki = bufToB64(await crypto.subtle.exportKey('spki', pair.publicKey));
+  }
+  return { id, pair, spki };
+}
+async function signPayload(pair, payload) {
+  const raw = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, pair.privateKey, enc.encode(payload));
+  return bufToB64(raw); // 64 bytes r||s — el servidor lo acepta tal cual
+}
+
+// ---------- red / sesion ----------
+// Toda llamada lleva un tope de tiempo (AbortController). Sin esto, una señal
+// debil de obra deja el fetch colgado para siempre y la checada nunca cae a la
+// cola offline: el trabajador se queda mirando "Registrando…". Al expirar, lanza
+// (AbortError) para que el llamador decida; punch() lo aprovecha para encolar.
+async function api(path, { method = 'POST', body, auth, timeoutMs = 12000 } = {}) {
+  const headers = { 'Content-Type': 'application/json', apikey: ANON_KEY };
+  if (auth) headers.Authorization = 'Bearer ' + auth;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), timeoutMs);
+  try {
+    const res = await fetch(SUPABASE_URL + path, {
+      method, headers, body: body ? JSON.stringify(body) : undefined, signal: ctl.signal,
+    });
+    const text = await res.text();
+    let data; try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+    return { ok: res.ok, status: res.status, data };
+  } finally { clearTimeout(timer); }
+}
+async function accessToken() {
+  const s = store.get('session');
+  if (!s) return null;
+  // Solo intentamos refrescar si el token esta por vencer Y hay red. Offline o con
+  // señal mala usamos el token actual sin tocar la red (arranque y checada rapidos).
+  if (s.expires_at && Date.now() / 1000 > s.expires_at - 60 && navigator.onLine) {
+    try {
+      const r = await api('/auth/v1/token?grant_type=refresh_token', { body: { refresh_token: s.refresh_token } });
+      if (r.ok && r.data && r.data.access_token) {
+        const ns = { ...s, access_token: r.data.access_token, refresh_token: r.data.refresh_token,
+          expires_at: r.data.expires_at || Math.floor(Date.now() / 1000) + (r.data.expires_in || 3600) };
+        store.set('session', ns); return ns.access_token;
+      }
+    } catch { /* red mala / timeout: no lanzamos, usamos el token actual */ }
+    return s.access_token; // ultimo recurso
+  }
+  return s.access_token;
+}
+
+// ---------- registro por codigo ----------
+async function enroll(code) {
+  busy(true, 'Registrando…');
+  try {
+    const dev = await ensureDevice();
+    const cap = deviceCapabilities();
+    const r = await api('/functions/v1/enroll_device', { body: {
+      code, device_id: dev.id, public_key: dev.spki,
+      device_model: cap.browser + ' / ' + cap.os, os_version: cap.os, app_version: APP_VERSION,
+    }});
+    if (!r.ok || !r.data || !r.data.access_token) {
+      return { ok: false, msg: (r.data && r.data.error) || 'Código inválido o vencido. Pide otro a RH.' };
+    }
+    const d = r.data;
+    store.set('session', {
+      access_token: d.access_token, refresh_token: d.refresh_token,
+      expires_at: Math.floor(Date.now() / 1000) + (d.expires_in || 3600),
+      employee: d.employee,
+    });
+    return { ok: true };
+  } catch (e) { return { ok: false, msg: 'No se pudo registrar: ' + (e.message || e) }; }
+  finally { busy(false); }
+}
+
+// ---------- acuerdo laboral + aviso de privacidad ----------
+let AC = null; // documentos vigentes en memoria
+
+async function gateAgreements() {
+  // Decide si mostrar el acuerdo o pasar a la pantalla principal.
+  // Offline: no hay forma de consultar el estado ni tendria caso bloquear la
+  // entrada por eso (una falla de red no es falta). Vamos directo a Home; al
+  // reconectar, el proximo arranque lo revisa.
+  if (!navigator.onLine) { renderHome(); return; }
+  try {
+    const token = await accessToken();
+    const r = await api('/rest/v1/rpc/agreements_status', { body: {}, auth: token });
+    if (!r.ok || !r.data || r.data.error) { renderHome(); return; } // no bloquear por fallo de red
+    AC = r.data;
+    if (AC.needs_acceptance && AC.labor && AC.privacy) renderAcuerdo();
+    else gateBiometric();
+  } catch { renderHome(); } // timeout/red mala: tampoco bloquea
+}
+
+// El consentimiento biometrico es SEPARADO y OPCIONAL: se ofrece una sola vez por
+// version, no bloquea la entrada, y declinar no es sancion. Solo aparece si hay
+// un documento biometrico vigente sobre el que este trabajador aun no decide.
+function gateBiometric() {
+  if (AC && AC.biometric && !AC.biometric.decision) { renderBiometrico(); return; }
+  renderHome();
+}
+
+function renderBiometrico() {
+  $('bio-title').textContent = AC.biometric.title || 'Reconocimiento facial';
+  $('bio-legal').hidden = !AC.biometric.legal_review_required;
+  $('bio-doc').innerHTML = escapeHtml(AC.biometric.body);
+  document.querySelectorAll('#bio-checks input').forEach((c) => { c.checked = false; });
+  $('bio-btn').disabled = true;
+  $('bio-msg').textContent = '';
+  show('biometrico');
+}
+
+function bioChecks() {
+  const flags = {};
+  document.querySelectorAll('#bio-checks input').forEach((c) => { flags[c.dataset.k] = c.checked; });
+  return flags;
+}
+
+// decision: 'granted' (autoriza, exige las 3 casillas) o 'declined' (metodo alterno).
+async function decideBiometric(decision) {
+  const flags = bioChecks();
+  if (decision === 'granted' && !Object.values(flags).every(Boolean)) return;
+  busy(true, decision === 'granted' ? 'Guardando autorización…' : 'Guardando…');
+  try {
+    const dev = await ensureDevice();
+    const cap = deviceCapabilities();
+    const token = await accessToken();
+    const r = await api('/rest/v1/rpc/accept_biometric', { auth: token, body: {
+      p_biometric_agreement_id: AC.biometric.id, p_decision: decision,
+      p_device_id: dev.id, p_platform: cap.os + '-' + (cap.pwaInstalled ? 'PWA' : 'web'),
+      p_app_version: APP_VERSION, p_auth_method: 'code',
+      p_consent_flags: decision === 'granted' ? flags : { decision: 'declined' },
+    }});
+    if (!r.ok) {
+      $('bio-msg').className = 'msg err';
+      $('bio-msg').textContent = (r.data && r.data.message) || 'No se pudo guardar. Intenta de nuevo.';
+      return;
+    }
+    store.set('bioGranted', decision === 'granted');
+    // Si autoriza y el telefono tiene biometria del sistema, ofrecemos enrolar
+    // Face ID/Touch ID como verificacion de persona presente al checar. Es
+    // opcional: si la rechaza o falla, la asistencia sigue por el metodo alterno.
+    if (decision === 'granted' && await passkeyAvailable()) {
+      busy(true, 'Configurando Face ID…');
+      const pk = await enrollPasskey();
+      store.set('passkey', pk.ok);
+    }
+    // Tras autorizar, si aún no tiene su rostro enrolado, va directo a registrarlo
+    // (una sola vez). De ahí en adelante checa con la cara.
+    if (decision === 'granted') {
+      busy(true, 'Verificando registro de rostro…');
+      await loadFaceStatus();
+      busy(false);
+      if (FACE && FACE.granted && !FACE.enrolled) { renderEnrolar(); return; }
+    }
+    renderHome();
+  } finally { busy(false); }
+}
+
+function renderAcuerdo() {
+  $('ac-title').textContent = AC.labor.title || 'Acuerdo de control de asistencia';
+  $('ac-legal').hidden = !(AC.labor.legal_review_required || AC.privacy.legal_review_required);
+  $('ac-doc').innerHTML =
+    `<h4>${escapeHtml(AC.labor.title)}</h4>${escapeHtml(AC.labor.body)}` +
+    `<h4>${escapeHtml(AC.privacy.title)}</h4>${escapeHtml(AC.privacy.body)}`;
+  // Reset casillas (nunca premarcadas).
+  document.querySelectorAll('#ac-checks input').forEach((c) => { c.checked = false; });
+  $('ac-btn').disabled = true;
+  $('ac-msg').textContent = '';
+  show('acuerdo');
+}
+
+function acChecks() {
+  const flags = {};
+  document.querySelectorAll('#ac-checks input').forEach((c) => { flags[c.dataset.k] = c.checked; });
+  return flags;
+}
+
+async function acceptAgreement() {
+  const flags = acChecks();
+  if (!Object.values(flags).every(Boolean)) return;
+  busy(true, 'Guardando aceptación…');
+  try {
+    const dev = await ensureDevice();
+    const cap = deviceCapabilities();
+    const token = await accessToken();
+    const r = await api('/rest/v1/rpc/accept_agreement', { auth: token, body: {
+      p_labor_agreement_id: AC.labor.id, p_privacy_notice_id: AC.privacy.id,
+      p_device_id: dev.id, p_platform: cap.os + '-' + (cap.pwaInstalled ? 'PWA' : 'web'),
+      p_app_version: APP_VERSION, p_auth_method: 'code', p_consent_flags: flags,
+    }});
+    if (!r.ok) { $('ac-msg').className = 'msg err'; $('ac-msg').textContent = (r.data && r.data.message) || 'No se pudo guardar. Intenta de nuevo.'; return; }
+    // Tras labor+privacy, re-consultamos el estado para saber si falta ofrecer el
+    // consentimiento biometrico (documento aparte).
+    const token2 = await accessToken();
+    const rs = await api('/rest/v1/rpc/agreements_status', { body: {}, auth: token2 });
+    if (rs.ok && rs.data && !rs.data.error) AC = rs.data;
+    gateBiometric();
+  } finally { busy(false); }
+}
+
+function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+
+// ---------- Face ID / Touch ID del dispositivo (WebAuthn) ----------
+// Distincion legal (Pantalla 3): esto es biometria del SISTEMA OPERATIVO usada
+// para verificar que hay una persona presente al checar. LUFT NO recibe el rostro
+// ni la huella: el SO hace la biometria y solo entrega una firma (asercion). Es
+// distinto del reconocimiento facial propio de LUFT. Aqui funciona como reto de
+// "persona presente" antes de una checada; si falla o no existe, NO bloquea la
+// asistencia (una falla tecnica no es falta) — se marca para revision.
+const b64urlToBuf = (s) => {
+  s = s.replace(/-/g, '+').replace(/_/g, '/');
+  const pad = s.length % 4 ? 4 - (s.length % 4) : 0; s += '='.repeat(pad);
+  const bin = atob(s); const u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  return u.buffer;
+};
+const bufToB64url = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)))
+  .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+async function passkeyAvailable() {
+  try {
+    return !!(window.PublicKeyCredential &&
+      await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable());
+  } catch { return false; }
+}
+
+async function enrollPasskey() {
+  if (!(await passkeyAvailable())) return { ok: false, reason: 'no-soportado' };
+  const s = store.get('session'); const emp = (s && s.employee) || {};
+  const dev = await ensureDevice();
+  const challenge = crypto.getRandomValues(new Uint8Array(32));
+  const userId = enc.encode(String(emp.id || dev.id)).slice(0, 64);
+  try {
+    const cred = await navigator.credentials.create({ publicKey: {
+      challenge,
+      rp: { name: 'LUFT Asistencia', id: location.hostname },
+      user: {
+        id: userId,
+        name: emp.employee_number || emp.first_name || 'trabajador',
+        displayName: ((emp.first_name || '') + ' ' + (emp.last_name || '')).trim() || 'Trabajador',
+      },
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+      authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' },
+      timeout: 60000, attestation: 'none',
+    }});
+    if (!cred) return { ok: false, reason: 'cancelado' };
+
+    // La llave PUBLICA en SPKI, para que el servidor pueda verificar las
+    // aserciones. getPublicKey() evita tener que parsear el attestationObject
+    // (CBOR) en el servidor. Requiere iOS 16+/Chrome 85+.
+    const resp = cred.response;
+    if (!resp.getPublicKey) return { ok: false, reason: 'sin-getPublicKey' };
+    const spki = resp.getPublicKey();
+    const alg = resp.getPublicKeyAlgorithm ? resp.getPublicKeyAlgorithm() : -7;
+    if (!spki) return { ok: false, reason: 'sin-llave-publica' };
+
+    const credId = bufToB64url(cred.rawId);
+    const token = await accessToken();
+    const r = await api('/functions/v1/webauthn_register', { auth: token, body: {
+      credential_id: credId, public_key_spki: bufToB64url(spki), alg, device_id: dev.id,
+    }});
+    if (!r.ok) return { ok: false, reason: (r.data && r.data.error) || 'registro-servidor' };
+
+    await idbSet('passkeyId', credId);
+    return { ok: true };
+  } catch (e) { return { ok: false, reason: e.name || 'error' }; }
+}
+
+// Pide un reto al servidor para ESTA operacion, lo firma con el passkey y
+// devuelve la asercion lista para mandar en la checada. null si no aplica o
+// falla (nunca bloquea la asistencia).
+async function assertPasskey(opId) {
+  const idb64 = await idbGet('passkeyId');
+  if (!idb64) return null;
+  try {
+    const token = await accessToken();
+    const opt = await api('/functions/v1/webauthn_auth_options', { auth: token, body: { client_operation_id: opId } });
+    if (!opt.ok || !opt.data || !opt.data.challenge) return null;
+    const d = opt.data;
+    const assertion = await navigator.credentials.get({ publicKey: {
+      challenge: b64urlToBuf(d.challenge),
+      rpId: d.rpId || location.hostname,
+      timeout: d.timeout || 60000,
+      userVerification: d.userVerification || 'required',
+      allowCredentials: (d.allowCredentials || [{ id: idb64, type: 'public-key' }])
+        .map((c) => ({ type: 'public-key', id: b64urlToBuf(c.id) })),
+    }});
+    if (!assertion) return null;
+    const a = assertion.response;
+    return {
+      credential_id: bufToB64url(assertion.rawId),
+      authenticator_data: bufToB64url(a.authenticatorData),
+      client_data_json: bufToB64url(a.clientDataJSON),
+      signature: bufToB64url(a.signature),
+    };
+  } catch (e) { return null; }
+}
+
+// ---------- ubicacion ----------
+// El GPS NO necesita internet: funciona en obra sin señal. Pero el fix de alta
+// precision puede tardar o expirar ahi; entonces reintentamos con baja precision
+// (torres/wifi cacheado) antes de rendirnos, para no bloquear la checada por un
+// fix lento. La precision reportada sigue siendo la real: el servidor decide la
+// geocerca con ese margen. Un permiso DENEGADO no se reintenta (fallaria igual).
+function getLocation() {
+  const fix = (hi) => new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (p) => resolve({ status: 'AUTORIZADA', lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy }),
+      (err) => resolve({ status: err.code === 1 ? 'DENEGADA' : 'NO_DISPONIBLE', error: err.message, code: err.code }),
+      { enableHighAccuracy: hi, timeout: hi ? 12000 : 8000, maximumAge: hi ? 0 : 30000 },
+    );
+  });
+  return (async () => {
+    if (!navigator.geolocation) return { status: 'NO_DISPONIBLE' };
+    const r = await fix(true);
+    if (r.status === 'NO_DISPONIBLE') {
+      const r2 = await fix(false);
+      if (r2.status === 'AUTORIZADA') return r2;
+    }
+    return r;
+  })();
+}
+
+// ---------- politica de checada de la empresa ----------
+let POL = null; // { audit_photo_enabled, offsite_requires_photo, allow_offsite_punch }
+async function loadPolicy() {
+  try {
+    const token = await accessToken();
+    const r = await api('/rest/v1/rpc/attendance_policy', { body: {}, auth: token });
+    if (r.ok && r.data && !r.data.error) POL = r.data;
+  } catch { /* si falla, se checa sin foto: no bloquear por esto */ }
+}
+
+// ---------- reconocimiento facial: estado + enrolamiento ----------
+// FACE = { granted, enrolled, consent_id, embedding_version }
+let FACE = null;
+async function loadFaceStatus() {
+  try {
+    const token = await accessToken();
+    const r = await api('/rest/v1/rpc/face_status', { body: {}, auth: token });
+    if (r.ok && r.data && !r.data.error) FACE = r.data;
+  } catch { /* sin red: se resuelve en el próximo arranque con señal */ }
+  return FACE;
+}
+
+let erStream = null;
+function stopEr() { if (erStream) { try { erStream.getTracks().forEach((t) => t.stop()); } catch {} erStream = null; } }
+
+// Enrolamiento: lee el rostro varias veces (una sola vez en la vida del empleado)
+// y manda los vectores a enroll_face. La foto no se guarda; solo el vector.
+async function renderEnrolar() {
+  show('enrolar-rostro');
+  const video = $('er-video'), prog = $('er-progreso'), btn = $('er-btn'), msg = $('er-msg');
+  msg.textContent = ''; msg.className = 'msg'; btn.disabled = true;
+  if (!(window.LuftFace && LuftFace.supported())) {
+    msg.className = 'msg err'; msg.textContent = 'Este navegador no soporta el reconocimiento facial. Usa Safari o Chrome actualizado.'; return;
+  }
+  prog.textContent = 'Encendiendo cámara…';
+  try {
+    erStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 480 }, height: { ideal: 480 } }, audio: false });
+    video.srcObject = erStream;
+  } catch (e) { msg.className = 'msg err'; msg.textContent = 'No se pudo abrir la cámara. Actívala en Ajustes.'; return; }
+  prog.textContent = 'Preparando el modelo (la 1ª vez baja 23 MB con señal)…';
+  try { await LuftFace.ready(); } catch (e) { msg.className = 'msg err'; msg.textContent = 'No se pudo cargar el modelo. Revisa tu conexión (solo la 1ª vez).'; return; }
+  prog.textContent = 'Listo. Toca “Registrar mi rostro”.';
+  btn.disabled = false;
+  btn.onclick = capturarEnrolamiento;
+}
+
+async function capturarEnrolamiento() {
+  const video = $('er-video'), prog = $('er-progreso'), btn = $('er-btn'), msg = $('er-msg');
+  btn.disabled = true; msg.textContent = ''; msg.className = 'msg';
+  const N = 4, captures = [];
+  try {
+    for (let i = 0; i < N; i++) {
+      let ok = false, intentos = 0;
+      while (!ok && intentos < 6) {
+        intentos++;
+        prog.textContent = 'Capturando ' + (i + 1) + ' de ' + N + '… mira de frente';
+        try {
+          const r = await LuftFace.embed(video);
+          captures.push({ embedding: Array.from(r.vec), quality_score: r.quality });
+          ok = true;
+        } catch (e) { prog.textContent = (e.message || 'no se ve la cara') + ' (reintentando…)'; await new Promise((res) => setTimeout(res, 700)); }
+      }
+      if (!ok) throw new Error('no se pudo captar el rostro; mejora la luz y acércate');
+      await new Promise((res) => setTimeout(res, 400));
+    }
+    prog.textContent = 'Guardando tu rostro en la plataforma…';
+    if (!FACE || !FACE.consent_id) await loadFaceStatus();
+    const token = await accessToken();
+    const r = await api('/functions/v1/enroll_face', { auth: token, body: {
+      captures,
+      embedding_version: (FACE && FACE.embedding_version) || LuftFace.VERSION,
+      consent_id: FACE && FACE.consent_id,
+    }});
+    if (!r.ok) { msg.className = 'msg err'; msg.textContent = (r.data && (r.data.error || r.data.message)) || 'No se pudo guardar. Intenta de nuevo.'; btn.disabled = false; return; }
+    if (FACE) FACE.enrolled = true;
+    stopEr();
+    showResult('ok', 'Rostro registrado', 'Listo. A partir de ahora checas con tu cara.');
+  } catch (e) { msg.className = 'msg err'; msg.textContent = e.message || 'Error al registrar el rostro.'; btn.disabled = false; }
+}
+
+// Pide un reto de vida al servidor y devuelve su id (o null).
+async function pedirRetoVida() {
+  try {
+    const token = await accessToken();
+    const r = await api('/functions/v1/liveness_challenge', { auth: token, body: {} });
+    if (r.ok && r.data && r.data.challenge_id) return r.data.challenge_id;
+  } catch { /* sin reto: la checada quedará a revisión, no bloquea la vida real */ }
+  return null;
+}
+
+// Reto de vida "acércate": mide que el rostro CREZCA (movimiento real de la
+// persona). Una foto estática no cambia de tamaño. true si lo detecta a tiempo.
+async function retoAcercarse(video, msg) {
+  msg.className = 'msg'; msg.textContent = 'Acerca tu cara despacio a la cámara…';
+  let base = null; const t0 = Date.now();
+  while (Date.now() - t0 < 9000) {
+    let box = null;
+    try { box = await LuftFace.detectBox(video); } catch {}
+    if (box) {
+      const area = box.w * box.h;
+      if (base === null) base = area;
+      if (area >= base * 1.35) { msg.textContent = '¡Listo!'; return true; }
+      if (area < base) base = area; // si se aleja, baja la referencia
+    }
+    await new Promise((res) => setTimeout(res, 120));
+  }
+  return false;
+}
+
+// Captura el rostro para la checada: reto de vida + UN vector (el match 1:1 lo
+// hace el servidor). Devuelve { vec, challengeId, livenessPassed, padScore } o null.
+async function capturarRostroChecada() {
+  const video = $('selfie-video'), msg = $('selfie-msg'), title = $('selfie-title');
+  $('selfie-take').hidden = true; $('selfie-skip').hidden = true;
+  title.textContent = 'Reconociendo tu rostro…';
+  msg.className = 'msg'; msg.textContent = 'Un momento…';
+  show('selfie');
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 480 }, height: { ideal: 480 } }, audio: false });
+    video.srcObject = stream;
+  } catch (e) { $('selfie-take').hidden = false; return null; }
+  const stop = () => { try { stream.getTracks().forEach((t) => t.stop()); } catch {} };
+  try { await LuftFace.ready(); }
+  catch (e) { stop(); $('selfie-take').hidden = false; msg.className = 'msg err'; msg.textContent = 'No se pudo cargar el modelo.'; return null; }
+
+  // Reto de vida (prueba anti-foto): id del servidor + gesto verificado aquí.
+  const challengeId = await pedirRetoVida();
+  const vivo = await retoAcercarse(video, msg);
+  if (!vivo) { stop(); $('selfie-take').hidden = false; msg.className = 'msg err'; msg.textContent = 'No detecté el movimiento. Acércate a la cámara e intenta de nuevo.'; return null; }
+
+  msg.className = 'msg'; msg.textContent = 'Leyendo tu rostro…';
+  let vec = null;
+  for (let i = 0; i < 8 && !vec; i++) {
+    try { const r = await LuftFace.embed(video); vec = r.vec; }
+    catch (e) { msg.textContent = (e.message || 'no se ve tu cara') + '…'; await new Promise((res) => setTimeout(res, 500)); }
+  }
+  stop();
+  $('selfie-take').hidden = false; // restaurar para la selfie de auditoría
+  if (!vec) return null;
+  return { vec, challengeId, livenessPassed: true, padScore: 1 };
+}
+
+// ---------- selfie de auditoria (evidencia, en vivo) ----------
+// La foto es evidencia para RH, gobernada por company_settings.audit_photo_enabled
+// y cubierta por el aviso de privacidad que el trabajador ya acepto. Se toma del
+// stream de camara (no de la galeria) para que sea del momento. Si la camara se
+// niega o falla, NO se bloquea la checada: una falla de permiso no es falta.
+let selfieStream = null;
+function stopSelfieStream() {
+  if (selfieStream) { try { selfieStream.getTracks().forEach((t) => t.stop()); } catch {} selfieStream = null; }
+}
+
+// Resuelve con un Blob JPEG, o null si el trabajador continua sin foto o la
+// camara no esta disponible. `required` solo cambia el texto (nunca bloquea).
+function captureSelfie(label, required) {
+  return new Promise(async (resolve) => {
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return resolve(null);
+    const video = $('selfie-video');
+    const msg = $('selfie-msg'); msg.textContent = '';
+    $('selfie-title').textContent = 'Foto de tu ' + (label || 'checada').toLowerCase();
+    try {
+      selfieStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } }, audio: false });
+      video.srcObject = selfieStream;
+    } catch (e) {
+      // Sin camara o permiso denegado: seguimos sin foto.
+      stopSelfieStream();
+      return resolve(null);
+    }
+    show('selfie');
+
+    const cleanup = () => { $('selfie-take').onclick = null; stopSelfieStream(); };
+    $('selfie-take').onclick = () => {
+      try {
+        const c = $('selfie-canvas');
+        const w = video.videoWidth || 480, h = video.videoHeight || 480;
+        const side = Math.min(w, h);
+        c.width = 480; c.height = 480;
+        const ctx = c.getContext('2d');
+        // Recorte cuadrado centrado, sin espejo en el archivo (el espejo es solo
+        // para que el trabajador se vea natural en pantalla).
+        ctx.drawImage(video, (w - side) / 2, (h - side) / 2, side, side, 0, 0, 480, 480);
+        c.toBlob((blob) => { cleanup(); resolve(blob); }, 'image/jpeg', 0.7);
+      } catch (e) { cleanup(); resolve(null); }
+    };
+  });
+}
+
+async function uploadSelfie(blob, opId) {
+  const s = store.get('session'); const empId = s && s.employee && s.employee.id;
+  if (!blob || !empId) return null;
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const path = empId + '/' + yyyy + '/' + mm + '/' + opId + '.jpg';
+  try {
+    const token = await accessToken();
+    const res = await fetch(SUPABASE_URL + '/storage/v1/object/checadas-contexto/' + path, {
+      method: 'POST',
+      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + token, 'Content-Type': 'image/jpeg', 'x-upsert': 'false' },
+      body: blob,
+    });
+    if (!res.ok) return null;
+    return path;
+  } catch { return null; }
+}
+
+// ---------- checada ----------
+const PUNCH_LABEL = { in: 'Entrada', out: 'Salida', break_start: 'Inicio de comida', break_end: 'Regreso de comida' };
+
+async function punch(type) {
+  if (POL === null && navigator.onLine) await loadPolicy();
+  busy(true, 'Obteniendo ubicación…');
+  const dev = await ensureDevice();
+  const loc = await getLocation();
+  if (loc.status !== 'AUTORIZADA') {
+    busy(false);
+    return showResult('warn', 'Falta ubicación', 'Para checar necesitas autorizar la ubicación (estado: ' +
+      loc.status + '). Actívala en Configuración e intenta de nuevo, o avisa a tu supervisor.');
+  }
+  const opId = uuid();
+
+  // Reto de "persona presente" con Face ID/Touch ID, verificado EN EL SERVIDOR:
+  // el telefono firma un reto que emitio el servidor para esta operacion. Es una
+  // capa sobre el control del servidor (firma del dispositivo + geocerca), no lo
+  // sustituye: verification_method sigue siendo 'device_biometric'. Si falla o se
+  // cancela, la checada NO se bloquea (una falla tecnica no es falta); el
+  // servidor solo la registra como no verificada por passkey.
+  let webauthn = null;
+  if (store.get('bioGranted') && store.get('passkey')) {
+    busy(true, 'Verificando con Face ID…');
+    webauthn = await assertPasskey(opId);
+  }
+
+  // ---------- Reconocimiento facial (obligatorio para quien enroló) ----------
+  // Si el trabajador autorizó y enroló su rostro, la IDENTIDAD la pone la cara:
+  // se captura, se saca el vector aquí y el servidor lo compara 1:1 contra su
+  // template. Con señal es obligatorio (no hay "saltar"). Sin señal aún no se
+  // puede correr el modelo (las librerías van por CDN), así que se encola por el
+  // método alterno y se sincroniza al reconectar; RH lo ve como offline_sync.
+  if (FACE === null) await loadFaceStatus();
+  let faceEmbedding = null, faceChallengeId = null, faceLiveness = null, facePad = null;
+  let method = 'device_biometric';
+  if (FACE && FACE.granted && FACE.enrolled) {
+    busy(false);
+    const cap = await capturarRostroChecada();
+    if (cap) {
+      faceEmbedding = Array.from(cap.vec);
+      faceChallengeId = cap.challengeId; // null sin señal: el servidor no lo exige en offline_sync
+      faceLiveness = cap.livenessPassed;
+      facePad = cap.padScore;
+      method = 'face';
+    } else if (navigator.onLine) {
+      // Con señal, el rostro es obligatorio: si no se reconoció, reintentar.
+      return showResult('warn', 'Falta reconocer tu rostro',
+        'Para checar, la app necesita ver tu cara y un pequeño movimiento. Acércate, con buena luz e intenta de nuevo.');
+    }
+    // Sin señal y sin poder leer el rostro (modelo aún no cacheado): se encola por
+    // el método alterno y se sincroniza al reconectar.
+  }
+
+  // Selfie de auditoría: solo para quien NO checa por rostro (la cara ya es la
+  // evidencia). Se sube antes, con el mismo opId como folio.
+  let auditPhotoPath = null;
+  if (!faceEmbedding && POL && POL.audit_photo_enabled && navigator.onLine) {
+    busy(false);
+    const blob = await captureSelfie(PUNCH_LABEL[type], POL.offsite_requires_photo);
+    if (blob) { busy(true, 'Subiendo foto…'); auditPhotoPath = await uploadSelfie(blob, opId); }
+  }
+
+  busy(true, 'Registrando checada…');
+
+  const deviceMs = Date.now();
+  const payload = ['checada.v2', opId, dev.id, type, String(deviceMs),
+    f6(loc.lat), f6(loc.lng), f1(loc.acc), '0'].join('|');
+  const signature = await signPayload(dev.pair, payload);
+
+  const body = {
+    client_operation_id: opId, punch_type: type,
+    device_time: new Date(deviceMs).toISOString(), device_id: dev.id,
+    // La firma del dispositivo SIEMPRE viaja (respalda la geocerca). El método
+    // dice quién puso la identidad: 'face' si reconoció el rostro, si no el alterno.
+    verification_method: method, signature, signed_payload: payload,
+    embedding: faceEmbedding || undefined,
+    embedding_version: faceEmbedding ? ((FACE && FACE.embedding_version) || LuftFace.VERSION) : undefined,
+    challenge_id: faceChallengeId || undefined,
+    liveness_passed: faceLiveness == null ? undefined : faceLiveness,
+    pad_score: facePad == null ? undefined : facePad,
+    latitude: Number(f6(loc.lat)), longitude: Number(f6(loc.lng)),
+    gps_accuracy_meters: Number(f1(loc.acc)), mock_location: false,
+    integrity_level: 'amber', origin: 'online',
+    audit_photo_path: auditPhotoPath || undefined,
+    webauthn: webauthn || undefined,
+  };
+
+  const token = await accessToken();
+  try {
+    if (!navigator.onLine) throw new Error('offline');
+    const r = await api('/functions/v1/punch_register', { body, auth: token });
+    if (r.status === 401) { // sesion vencida: reintento con refresh
+      const t2 = await accessToken();
+      const r2 = await api('/functions/v1/punch_register', { body, auth: t2 });
+      return handlePunchResponse(type, r2);
+    }
+    return handlePunchResponse(type, r);
+  } catch (e) {
+    await enqueue({ body, type, savedAt: deviceMs });
+    busy(false);
+    renderQueue();
+    return showResult('warn', 'Guardada sin conexión',
+      PUNCH_LABEL[type] + ' registrada a las ' + hhmm(deviceMs) +
+      '. Se enviará automáticamente cuando haya internet. La hora se conserva.');
+  } finally { busy(false); }
+}
+
+function handlePunchResponse(type, r) {
+  busy(false);
+  if (!r.ok || !r.data) {
+    return showResult('err', 'No se registró', (r.data && r.data.error) || 'Error de servidor. Intenta de nuevo.');
+  }
+  const d = r.data;
+  const st = d.status;
+  // El servidor decide si el passkey fue valido (no el cliente).
+  const fid = d.passkey_verified === true ? ' Verificado con Face ID.' : '';
+  if (st === 'valid') return showResult('ok', PUNCH_LABEL[type] + ' registrada',
+    (d.worksite ? 'En ' + d.worksite + '. ' : '') + 'Folio ' + (d.folio ?? '—') + '.' + fid);
+  if (st === 'rejected') return showResult('err', PUNCH_LABEL[type] + ' rechazada',
+    d.review_reason || 'No cumplió una validación (ubicación o firma).');
+  return showResult('warn', PUNCH_LABEL[type] + ' a revisión',
+    (d.review_reason || 'Queda pendiente de revisión de RH.') + ' Folio ' + (d.folio ?? '—') + '.');
+}
+
+// ---------- cola offline ----------
+async function enqueue(item) { const q = (await idbGet('queue')) || []; q.push(item); await idbSet('queue', q); }
+async function queue() { return (await idbGet('queue')) || []; }
+let flushing = false;
+async function flushQueue() {
+  if (flushing || !navigator.onLine) return; // sin red no tiene caso; sin reentradas
+  const q = await queue();
+  if (!q.length) return;
+  flushing = true;
+  try {
+    let token = await accessToken();
+    const rest = [];
+    for (const item of q) {
+      // Al sincronizar diferido, la checada se marca como offline_sync para que RH
+      // sepa que se capturo sin señal (la hora ya viaja en device_time firmado).
+      const body = { ...item.body, origin: 'offline_sync' };
+      try {
+        let r = await api('/functions/v1/punch_register', { body, auth: token });
+        if (r.status === 401) { // sesion vencida a media cola: refresca y reintenta una vez
+          token = await accessToken();
+          r = await api('/functions/v1/punch_register', { body, auth: token });
+        }
+        // ok, o duplicado ya registrado (el servidor es idempotente por
+        // client_operation_id: 200 con duplicate:true, o 409) -> se saca de la cola.
+        if (!r.ok && r.status !== 409) rest.push(item);
+      } catch { rest.push(item); } // red se cayo de nuevo: se queda para el proximo intento
+    }
+    await idbSet('queue', rest);
+    renderQueue();
+  } finally { flushing = false; }
+}
+async function renderQueue() {
+  const q = await queue();
+  const el = $('queue');
+  if (!q.length) { el.hidden = true; return; }
+  el.hidden = false;
+  el.textContent = q.length + ' checada(s) guardada(s) sin conexión. Se envían solas al reconectar.';
+}
+
+// ---------- UI ----------
+function hhmm(ms) { const d = new Date(ms); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function showResult(kind, title, detail) {
+  $('result-badge').className = 'result-badge ' + kind;
+  $('result-badge').textContent = kind === 'ok' ? '✓' : kind === 'warn' ? '!' : '✕';
+  $('result-title').textContent = title;
+  $('result-detail').textContent = detail;
+  show('result');
+}
+function renderHome() {
+  const s = store.get('session');
+  const e = s && s.employee;
+  $('hi').textContent = 'Hola' + (e && e.first_name ? ', ' + e.first_name : '');
+  tickClock();
+  updateChips();
+  renderQueue();
+  loadPolicy();
+  show('home');
+  // Si ya autorizó el biométrico pero aún no enrola su rostro, lo mandamos a
+  // registrarlo (es requisito para checar con la cara). No bloquea si no aplica.
+  loadFaceStatus().then(() => {
+    if (FACE && FACE.granted && !FACE.enrolled && !$('home').hidden) renderEnrolar();
+  });
+}
+function tickClock() { const d = new Date(); $('clock').textContent = hhmm(d.getTime()); }
+async function updateChips() {
+  const cap = deviceCapabilities();
+  const net = navigator.onLine;
+  setChip('chip-net', net ? 'ok' : 'warn', net ? 'En línea' : 'Sin conexión');
+  setChip('chip-dev', 'ok', 'Registrado');
+  // Ubicacion: estado del permiso si el navegador lo expone.
+  if (navigator.permissions && navigator.permissions.query) {
+    try {
+      const p = await navigator.permissions.query({ name: 'geolocation' });
+      const map = { granted: ['ok', 'Ubicación lista'], prompt: ['warn', 'Ubicación: pedirá permiso'], denied: ['err', 'Ubicación denegada'] };
+      const [c, t] = map[p.state] || ['warn', 'Ubicación…']; setChip('chip-loc', c, t);
+    } catch { setChip('chip-loc', 'warn', 'Ubicación…'); }
+  } else setChip('chip-loc', cap.gps ? 'warn' : 'err', cap.gps ? 'Ubicación al checar' : 'Sin GPS');
+}
+function setChip(id, cls, txt) { const el = $(id); el.className = 'chip ' + cls; el.textContent = txt; }
+
+function renderCaps() {
+  const c = deviceCapabilities();
+  const rows = [
+    ['Sistema', c.os, 'y'], ['Navegador', c.browser, 'y'],
+    ['Instalada (pantalla de inicio)', c.pwaInstalled ? 'Sí' : 'No', c.pwaInstalled ? 'y' : 'p'],
+    ['Cámara', c.camera ? 'Disponible' : 'No', c.camera ? 'y' : 'n'],
+    ['Ubicación', c.gps ? 'Disponible' : 'No', c.gps ? 'y' : 'n'],
+    ['Face ID / passkey', c.passkeys ? 'Disponible' : 'No', c.passkeys ? 'y' : 'n'],
+    ['Notificaciones', c.notifications ? 'Disponible' : 'No', c.notifications ? 'y' : 'p'],
+    ['Funciona offline', c.offline ? 'Sí' : 'No', c.offline ? 'y' : 'n'],
+    ['Ubicación en segundo plano', c.os === 'iOS' ? 'No en web (requiere app nativa)' : 'Limitado', 'n'],
+    ['Conexión segura (HTTPS)', c.secureContext ? 'Sí' : 'No', c.secureContext ? 'y' : 'n'],
+  ];
+  $('cap-list').innerHTML = rows.map(([k, v, s]) =>
+    `<li><span>${k}</span><b class="cap-${s}">${v}</b></li>`).join('');
+}
+
+// ---------- privacidad y acuerdos (perfil del trabajador) ----------
+function fechaLarga(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso); const p = (n) => String(n).padStart(2, '0');
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+
+function cardDoc(nombre, kind, doc, accV, accAt) {
+  const alDia = accV != null && accV >= doc.version;
+  const estado = alDia
+    ? '<span class="etiqueta ok">Al día</span>'
+    : '<span class="etiqueta aviso">Debes re-aceptar</span>';
+  const legal = doc.legal_review_required ? ' · <em>borrador (revisión legal)</em>' : '';
+  const linea = accV != null
+    ? 'Aceptaste la v' + accV + ' el ' + fechaLarga(accAt) + '.'
+    : 'Aún no lo aceptas.';
+  return '<div class="priv-card">'
+    + '<div class="priv-head"><strong>' + nombre + '</strong> ' + estado + '</div>'
+    + '<div class="motivo small">Versión vigente: v' + doc.version + legal + '</div>'
+    + '<div class="small">' + linea + '</div>'
+    + '<button class="link" data-vertexto="' + kind + '">Ver texto</button>'
+    + '<div class="doc" data-doc="' + kind + '" hidden>' + escapeHtml(doc.body) + '</div>'
+    + '</div>';
+}
+
+function cardBio(doc, acc) {
+  const decision = (acc && acc.biometric_decision) || (doc.decision || null);
+  const estado = decision === 'granted' ? '<span class="etiqueta ok">Autorizado</span>'
+    : decision === 'declined' ? '<span class="etiqueta">Método alternativo</span>'
+    : '<span class="etiqueta aviso">Sin decisión</span>';
+  const legal = doc.legal_review_required ? ' · <em>borrador (revisión legal)</em>' : '';
+  const linea = decision === 'granted'
+      ? 'Autorizaste el reconocimiento facial (v' + (acc ? acc.biometric_version : doc.version) + ') el ' + fechaLarga(acc && acc.accepted_at) + '.'
+    : decision === 'declined'
+      ? 'Elegiste método alternativo el ' + fechaLarga(acc && acc.accepted_at) + '.'
+      : 'No has decidido. Es opcional y declinar no es sanción.';
+  const boton = decision === 'granted'
+    ? '<button class="link danger" data-bioaction="declined">Cambiar a método alternativo</button>'
+    : '<button class="link" data-bioaction="granted">Autorizar reconocimiento facial</button>';
+  return '<div class="priv-card">'
+    + '<div class="priv-head"><strong>Reconocimiento facial (biométrico)</strong> ' + estado + '</div>'
+    + '<div class="motivo small">Versión vigente: v' + doc.version + legal + '</div>'
+    + '<div class="small">' + linea + '</div>'
+    + '<button class="link" data-vertexto="biometric">Ver texto</button> · ' + boton
+    + '<div class="doc" data-doc="biometric" hidden>' + escapeHtml(doc.body) + '</div>'
+    + '</div>';
+}
+
+async function renderPrivacidad() {
+  busy(true, 'Cargando…');
+  try {
+    const token = await accessToken();
+    if (!AC) {
+      const rs = await api('/rest/v1/rpc/agreements_status', { body: {}, auth: token });
+      if (rs.ok && rs.data && !rs.data.error) AC = rs.data;
+    }
+    // Historial propio (RLS ya lo limita a las aceptaciones del trabajador).
+    const r = await api(
+      '/rest/v1/agreement_acceptances?select=accepted_at,labor_version,privacy_version,biometric_version,biometric_decision&order=accepted_at.desc&limit=50',
+      { method: 'GET', auth: token });
+    const filas = Array.isArray(r.data) ? r.data : [];
+    const ult = (pred) => filas.find(pred) || null;
+    const aLabor = ult((f) => f.labor_version != null);
+    const aPriv = ult((f) => f.privacy_version != null);
+    const aBio = ult((f) => f.biometric_version != null);
+
+    const cards = [];
+    if (AC && AC.labor) cards.push(cardDoc('Acuerdo de asistencia', 'labor', AC.labor, aLabor && aLabor.labor_version, aLabor && aLabor.accepted_at));
+    if (AC && AC.privacy) cards.push(cardDoc('Aviso de privacidad', 'privacy', AC.privacy, aPriv && aPriv.privacy_version, aPriv && aPriv.accepted_at));
+    if (AC && AC.biometric) cards.push(cardBio(AC.biometric, aBio));
+    $('priv-list').innerHTML = cards.length ? cards.join('') : '<p class="muted small">No hay documentos configurados.</p>';
+    show('privacidad');
+  } finally { busy(false); }
+}
+
+// ---------- arranque ----------
+function bindUI() {
+  $('code').addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    $('enroll-btn').disabled = e.target.value.length !== 6;
+  });
+  $('enroll-btn').addEventListener('click', async () => {
+    const r = await enroll($('code').value);
+    const msg = $('enroll-msg');
+    if (r.ok) { msg.textContent = ''; gateAgreements(); }
+    else { msg.className = 'msg err'; msg.textContent = r.msg; }
+  });
+  document.querySelectorAll('#ac-checks input').forEach((c) => c.addEventListener('change', () => {
+    $('ac-btn').disabled = !Object.values(acChecks()).every(Boolean);
+  }));
+  $('ac-btn').addEventListener('click', acceptAgreement);
+  document.querySelectorAll('#bio-checks input').forEach((c) => c.addEventListener('change', () => {
+    $('bio-btn').disabled = !Object.values(bioChecks()).every(Boolean);
+  }));
+  $('bio-btn').addEventListener('click', () => decideBiometric('granted'));
+  $('bio-alt').addEventListener('click', () => decideBiometric('declined'));
+  document.querySelectorAll('[data-punch]').forEach((b) =>
+    b.addEventListener('click', () => punch(b.dataset.punch)));
+  $('result-ok').addEventListener('click', renderHome);
+  $('signout').addEventListener('click', () => { store.del('session'); location.reload(); });
+  $('priv-link').addEventListener('click', renderPrivacidad);
+  $('priv-back').addEventListener('click', renderHome);
+  $('priv-list').addEventListener('click', (e) => {
+    const t = e.target;
+    const ver = t.getAttribute && t.getAttribute('data-vertexto');
+    if (ver) {
+      const doc = document.querySelector('[data-doc="' + ver + '"]');
+      if (doc) { doc.hidden = !doc.hidden; t.textContent = doc.hidden ? 'Ver texto' : 'Ocultar texto'; }
+      return;
+    }
+    const bio = t.getAttribute && t.getAttribute('data-bioaction');
+    if (bio === 'granted') { renderBiometrico(); }
+    else if (bio === 'declined') {
+      if (confirm('¿Cambiar a método alternativo? Se registrará tu decisión. No es sanción.')) decideBiometric('declined');
+    }
+  });
+  $('perm-link').addEventListener('click', () => { renderCaps(); show('permisos'); });
+  $('perm-link-enroll').addEventListener('click', () => { renderCaps(); show('permisos'); });
+  $('perm-back').addEventListener('click', () => (store.get('session') ? renderHome() : show('enroll')));
+  $('banner-ok').addEventListener('click', () => { store.set('bannerAck', APP_VERSION); $('banner').hidden = true; });
+  window.addEventListener('online', () => { updateChips(); flushQueue(); });
+  window.addEventListener('offline', updateChips);
+  // El evento 'online' no siempre dispara en iOS. Reforzamos la sincronia al
+  // volver la app a primer plano y con un latido periodico: flushQueue() sale
+  // solo si hay red y algo en cola, asi que es barato.
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { updateChips(); flushQueue(); } });
+  setInterval(() => flushQueue(), 60000);
+  setInterval(tickClock, 15000);
+}
+
+function boot() {
+  bindUI();
+  if (store.get('bannerAck') !== APP_VERSION) $('banner').hidden = false;
+
+  // La RED NUNCA decide la primera pantalla. Antes, con sesion, el arranque
+  // esperaba a gateAgreements() y si la red colgaba la app se quedaba atorada en
+  // "Cargando" para siempre (bug de campo real). Ahora pintamos YA una pantalla
+  // usable —Home si hay sesion, Registro si no— y las revisiones de red corren
+  // en segundo plano: si resulta que falta aceptar un acuerdo, gateAgreements()
+  // cambia a esa pantalla despues, sin bloquear.
+  if (store.get('session')) { renderHome(); gateAgreements(); flushQueue(); }
+  else show('enroll');
+
+  // Registro/actualizacion del service worker: en segundo plano, jamas bloquea.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then((reg) => { try { reg.update(); } catch {} })
+      .catch(() => {});
+  }
+
+  // Red de seguridad: si por cualquier razon seguimos en "Cargando" a los 3 s,
+  // forzamos una pantalla usable. Nunca se puede quedar colgada la entrada.
+  setTimeout(() => {
+    const l = $('loading');
+    if (l && !l.hidden) { store.get('session') ? renderHome() : show('enroll'); }
+  }, 3000);
+}
+boot();
