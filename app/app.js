@@ -523,13 +523,17 @@ async function pedirRetoVida() {
 async function retoAcercarse(video, msg) {
   msg.className = 'msg'; msg.textContent = 'Acerca tu cara despacio a la cámara…';
   let base = null; const t0 = Date.now();
-  while (Date.now() - t0 < 9000) {
+  // 6 s y crecimiento de 1.25x: suficiente para distinguir a una persona de una
+  // foto estatica, sin pelear con quien sostiene el telefono a distancia fija.
+  // NO bloquea: si no se detecta, la checada igual se envia y el servidor la
+  // manda a revision (ver capturarRostroChecada / migracion 0064).
+  while (Date.now() - t0 < 6000) {
     let box = null;
     try { box = await LuftFace.detectBox(video); } catch {}
     if (box) {
       const area = box.w * box.h;
       if (base === null) base = area;
-      if (area >= base * 1.35) { msg.textContent = '¡Listo!'; return true; }
+      if (area >= base * 1.25) { msg.textContent = '¡Listo!'; return true; }
       if (area < base) base = area; // si se aleja, baja la referencia
     }
     await new Promise((res) => setTimeout(res, 120));
@@ -556,8 +560,11 @@ async function capturarRostroChecada() {
 
   // Reto de vida (prueba anti-foto): id del servidor + gesto verificado aquí.
   const challengeId = await pedirRetoVida();
+  // El gesto de vida NO bloquea la checada. Si no se detecta el movimiento,
+  // igual se lee el rostro y se envia: el match 1:1 del servidor pone la
+  // identidad y la checada queda a revision de RH (no rechazada). Bloquearla
+  // aqui dejaba a la gente sin poder checar (p.ej. la comida) por un gesto.
   const vivo = await retoAcercarse(video, msg);
-  if (!vivo) { stop(); $('selfie-take').hidden = false; msg.className = 'msg err'; msg.textContent = 'No detecté el movimiento. Acércate a la cámara e intenta de nuevo.'; return null; }
 
   msg.className = 'msg'; msg.textContent = 'Leyendo tu rostro…';
   let vec = null;
@@ -568,7 +575,9 @@ async function capturarRostroChecada() {
   stop();
   $('selfie-take').hidden = false; // restaurar para la selfie de auditoría
   if (!vec) return null;
-  return { vec, challengeId, livenessPassed: true, padScore: 1 };
+  // livenessPassed refleja el gesto REAL: si no se detectó, se manda false y el
+  // servidor pasa la checada a revisión (0064) en vez de tumbarla.
+  return { vec, challengeId, livenessPassed: vivo, padScore: 1 };
 }
 
 // ---------- selfie de auditoria (evidencia, en vivo) ----------
