@@ -1,9 +1,22 @@
 /* Service worker LUFT: cachea el "app shell" para que la app abra AL INSTANTE,
    con o sin internet. Las llamadas al backend NUNCA se cachean (van a la red). */
-const CACHE = 'luft-shell-v15';
+const CACHE = 'luft-shell-v16';
 const SHELL = [
-  './', './index.html', './styles.css', './app.js', './manifest.webmanifest',
-  './icon-192.png', './icon-512.png',
+  './', './index.html', './styles.css', './app.js', './face.js', './manifest.webmanifest',
+  './icon-192.png', './icon-512.png', './icon-maskable-512.png',
+  // Reconocimiento facial. Sin estos archivos la checada NO funciona sin señal:
+  // el instructivo promete que funciona en obra, y esto es lo que lo cumple.
+  // (El modelo facenet.tflite viene de Supabase y se guarda solo en IndexedDB;
+  //  ver face.js. Por eso la PRIMERA carga sí necesita señal.)
+  './vendor/tf.min.js',
+  './vendor/blazeface.min.js',
+  './vendor/tf-tflite.min.js',
+  './vendor/blazeface/model.json',
+  './vendor/blazeface/group1-shard1of1.bin',
+  './vendor/wasm/tflite_web_api_cc.js',
+  './vendor/wasm/tflite_web_api_cc.wasm',
+  './vendor/wasm/tflite_web_api_cc_simd.js',
+  './vendor/wasm/tflite_web_api_cc_simd.wasm',
 ];
 
 self.addEventListener('install', (e) => {
@@ -18,22 +31,32 @@ self.addEventListener('fetch', (e) => {
   // Backend: siempre red (no cachear datos de asistencia ni de sesion).
   if (url.origin.includes('supabase.co') || e.request.method !== 'GET') return;
   if (url.origin !== self.location.origin) return;
-  // El APK de Android (~78 MB) NO se cachea: se descarga una vez para instalar.
+  // El APK de Android (~90 MB) NO se cachea: se descarga una vez para instalar.
   if (url.pathname.endsWith('.apk')) return;
   // App shell: STALE-WHILE-REVALIDATE. Se responde YA con lo cacheado (arranque
   // inmediato aunque la señal sea debil o nula, que es el caso de obra) y, si hay
   // red, se refresca la copia en segundo plano para que la proxima apertura traiga
   // lo nuevo (politica o pantalla). Nunca se espera a la red para pintar la app.
   e.respondWith(
-    caches.open(CACHE).then((cache) =>
-      cache.match(e.request).then((hit) => {
-        const fresh = fetch(e.request).then((res) => {
-          if (res && res.ok) cache.put(e.request, res.clone());
-          return res;
-        }).catch(() => null);
-        // Con cache: responde ya y refresca atras. Sin cache: espera la red y, si
-        // no hay, cae al index para que la PWA abra igual.
-        return hit || fresh.then((res) => res || cache.match('./index.html'));
-      })),
+    caches.open(CACHE).then(async (cache) => {
+      // index.html pide los archivos con ?b=NN (app.js?b=14) y el shell se guarda
+      // SIN query, asi que el match exacto falla. Si no hay exacto, se busca
+      // ignorando la query: si no, sin señal no se encontraria nada del shell.
+      const hit = (await cache.match(e.request)) ||
+                  (await cache.match(e.request, { ignoreSearch: true }));
+      const fresh = fetch(e.request).then((res) => {
+        if (res && res.ok) cache.put(e.request, res.clone());
+        return res;
+      }).catch(() => null);
+      if (hit) return hit;
+      const res = await fresh;
+      if (res) return res;
+      // Sin cache y sin red: SOLO una navegacion cae al index, para que la PWA
+      // abra igual. Lo demas debe FALLAR: devolverle el index a app.js o a
+      // tf.min.js entrega HTML donde se espera JavaScript, el script no parsea
+      // y la app queda EN BLANCO. Mejor que falle esa peticion sola.
+      if (e.request.mode === 'navigate') return cache.match('./index.html');
+      return Response.error();
+    }),
   );
 });
