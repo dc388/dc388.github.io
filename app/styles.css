@@ -10,15 +10,21 @@
 /* El atributo HTML `hidden` DEBE ganar siempre. Sin esto, `.center{display:flex}`
    pisa al `hidden` de las pantallas .center y la de "Cargando" jamas se oculta. */
 [hidden]{display:none!important}
-html,body{margin:0;height:100%}
+html,body{margin:0;min-height:100%}
 body{
   font-family:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
   background:var(--bg); color:var(--ink);
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   -webkit-font-smoothing:antialiased;
 }
-.screen{max-width:520px;margin:0 auto;padding:22px 18px 32px;min-height:100vh}
-.center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px}
+/* min-height con doble unidad: en iOS Safari `100vh` cuenta el area detras de la
+   barra de direcciones, asi que el boton de abajo (ACEPTAR / AUTORIZO / checar)
+   quedaba OCULTO tras la barra. `100dvh` (viewport dinamico) mide lo que de
+   verdad se ve; el `100vh` queda de respaldo para navegadores viejos. */
+.screen{max-width:520px;margin:0 auto;padding:22px 18px calc(32px + env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh}
+/* Las pantallas centradas (camara, resultado) crecen y hacen scroll si el
+   contenido no cabe, en vez de recortar el boton arriba/abajo. */
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;overflow-y:auto}
 h1{font-family:"Cormorant",Georgia,serif;font-weight:600;font-size:30px;margin:8px 0 2px;text-align:center}
 h2{font-family:"Cormorant",Georgia,serif;font-weight:600;font-size:24px;margin:0}
 .muted{color:var(--muted)}
@@ -78,7 +84,7 @@ h2{font-family:"Cormorant",Georgia,serif;font-weight:600;font-size:24px;margin:0
 #selfie-canvas{display:none}
 #er-video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 
-.doc{max-height:46vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;
+.doc{max-height:40vh;max-height:40dvh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;
   padding:14px 16px;font-size:14px;line-height:1.55;white-space:pre-wrap;margin:6px 0 14px}
 .doc h4{margin:14px 0 4px;font-size:15px;font-family:"Cormorant",serif;font-weight:600}
 .legal-flag{font-size:13px;font-weight:700;color:var(--amber);background:rgba(240,180,41,.12);border-radius:8px;padding:6px 10px;margin:4px 0}
@@ -91,7 +97,9 @@ h2{font-family:"Cormorant",Georgia,serif;font-weight:600;font-size:24px;margin:0
 .cap-y{color:var(--accent)} .cap-n{color:var(--red)} .cap-p{color:var(--amber)}
 
 .banner{position:fixed;inset:0;z-index:50;background:rgba(6,8,10,.94);color:var(--ink);
-  display:flex;flex-direction:column;justify-content:center;gap:12px;padding:28px;max-width:520px;margin:0 auto}
+  display:flex;flex-direction:column;justify-content:center;gap:12px;max-width:520px;margin:0 auto;
+  overflow-y:auto;
+  padding:calc(28px + env(safe-area-inset-top)) 28px calc(28px + env(safe-area-inset-bottom))}
 .banner strong{font-family:"Cormorant",serif;font-weight:600;font-size:24px}
 .banner p{font-size:15px;line-height:1.5;color:#cdd5da}
 
