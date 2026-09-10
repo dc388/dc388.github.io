@@ -454,8 +454,22 @@ async function renderEnrolar() {
     video.srcObject = erStream;
   } catch (e) { msg.className = 'msg err'; msg.textContent = 'No se pudo abrir la cámara. Actívala en Ajustes.'; return; }
   prog.textContent = 'Preparando el modelo (la 1ª vez baja 23 MB con señal)…';
-  try { await LuftFace.ready(); } catch (e) { msg.className = 'msg err'; msg.textContent = 'No se pudo cargar el modelo. Revisa tu conexión (solo la 1ª vez).'; return; }
+  try {
+    await LuftFace.ready((recibido, total) => {
+      const pct = Math.min(100, Math.round((recibido / total) * 100));
+      prog.textContent = 'Descargando el modelo… ' + pct + '%  (solo la 1ª vez)';
+    });
+  } catch (e) {
+    msg.className = 'msg err';
+    msg.textContent = 'No se pudo bajar el modelo (revisa tu señal). Toca “Reintentar”.';
+    prog.textContent = '';
+    btn.disabled = false;
+    btn.textContent = 'Reintentar';
+    btn.onclick = () => { btn.textContent = 'Registrar mi rostro'; renderEnrolar(); };
+    return;
+  }
   prog.textContent = 'Listo. Toca “Registrar mi rostro”.';
+  btn.textContent = 'Registrar mi rostro';
   btn.disabled = false;
   btn.onclick = capturarEnrolamiento;
 }

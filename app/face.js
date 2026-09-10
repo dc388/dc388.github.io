@@ -16,7 +16,6 @@
 (function (global) {
   'use strict';
 
-  const MODEL_URL = 'https://lsduggmuwbvrudpfcgtm.supabase.co/storage/v1/object/public/app/facenet.tflite';
   const MODEL_BYTES = 23705216;
   const VERSION = 'facenet-128d-v1';
   const IMG = 160, MARGIN = 0.20;
@@ -25,6 +24,10 @@
   // WASM y modelo Blazeface van por URL ABSOLUTA (tf-tflite/tf.io no resuelven
   // bien las relativas); las librerías por <script> sí resuelven contra la página.
   const _base = (document && document.baseURI) || location.href;
+  // El modelo se sirve desde el MISMO origen (junto a la app): en Supabase, sobre
+  // LTE flojo, el fetch de 23 MB se estancaba sin fin y dejaba "Preparando el
+  // modelo" para siempre. Mismo origen = más confiable y lo cachea el SW (offline).
+  const MODEL_URL = new URL('facenet.tflite', _base).href;
   const WASM_PATH = new URL('vendor/wasm/', _base).href;
   const BLAZEFACE_MODEL = new URL('vendor/blazeface/model.json', _base).href;
   const LIBS = [
@@ -33,7 +36,7 @@
     'vendor/tf-tflite.min.js',
   ];
 
-  let _detector = null, _model = null, _loading = null;
+  let _detector = null, _model = null, _loading = null, _onProgress = null;
 
   function loadScript(src) {
     return new Promise((res, rej) => {
@@ -54,20 +57,55 @@
   async function mGet(k) { const db = await mdb(); return new Promise((res, rej) => { const t = db.transaction('kv').objectStore('kv').get(k); t.onsuccess = () => res(t.result); t.onerror = () => rej(t.error); }); }
   async function mSet(k, v) { const db = await mdb(); return new Promise((res, rej) => { const t = db.transaction('kv', 'readwrite').objectStore('kv').put(v, k); t.onsuccess = () => res(); t.onerror = () => rej(t.error); }); }
 
+  // Descarga con PROGRESO y timeout por ESTANCAMIENTO (no total): aborta solo si
+  // pasan 30 s sin recibir un byte. Así una descarga lenta pero viva no se corta,
+  // y una estancada no cuelga la pantalla para siempre.
+  async function fetchConProgreso(url) {
+    const ctrl = new AbortController();
+    let stall;
+    const rearmar = () => { clearTimeout(stall); stall = setTimeout(() => ctrl.abort(), 30000); };
+    rearmar();
+    try {
+      const res = await fetch(url, { signal: ctrl.signal });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.body || !res.body.getReader) return await res.arrayBuffer();
+      const reader = res.body.getReader();
+      const chunks = []; let recibido = 0;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        rearmar();
+        chunks.push(value); recibido += value.length;
+        if (_onProgress) { try { _onProgress(recibido, MODEL_BYTES); } catch (e) {} }
+      }
+      const out = new Uint8Array(recibido); let off = 0;
+      for (const c of chunks) { out.set(c, off); off += c.length; }
+      return out.buffer;
+    } finally { clearTimeout(stall); }
+  }
+
   async function modelBytes() {
-    // 1) caché local (offline). 2) red, y se cachea.
+    // 1) caché local (offline). 2) red, con progreso, timeout y un reintento.
     try {
       const cached = await mGet('facenet-' + VERSION);
       if (cached && cached.byteLength === MODEL_BYTES) return cached;
     } catch (e) {}
-    const buf = await (await fetch(MODEL_URL)).arrayBuffer();
-    if (buf.byteLength !== MODEL_BYTES) throw new Error('descarga del modelo incompleta');
-    try { await mSet('facenet-' + VERSION, buf); } catch (e) {}
-    return buf;
+    let ultimo;
+    for (let intento = 0; intento < 2; intento++) {
+      try {
+        const buf = await fetchConProgreso(MODEL_URL);
+        if (buf.byteLength !== MODEL_BYTES) throw new Error('descarga incompleta (' + buf.byteLength + ' de ' + MODEL_BYTES + ')');
+        try { await mSet('facenet-' + VERSION, buf); } catch (e) {}
+        return buf;
+      } catch (e) { ultimo = e; }
+    }
+    throw ultimo || new Error('no se pudo descargar el modelo');
   }
 
   // Prepara librerías + detector + modelo. Idempotente. Devuelve true si listo.
-  async function ready() {
+  // `onProgress(recibido, total)` se llama durante la descarga del modelo.
+  async function ready(onProgress) {
+    _onProgress = onProgress || _onProgress;
     if (_model && _detector) return true;
     if (_loading) return _loading;
     _loading = (async () => {
