@@ -560,11 +560,20 @@ async function capturarRostroChecada() {
 
   // Reto de vida (prueba anti-foto): id del servidor + gesto verificado aquí.
   const challengeId = await pedirRetoVida();
-  // El gesto de vida NO bloquea la checada. Si no se detecta el movimiento,
-  // igual se lee el rostro y se envia: el match 1:1 del servidor pone la
-  // identidad y la checada queda a revision de RH (no rechazada). Bloquearla
-  // aqui dejaba a la gente sin poder checar (p.ej. la comida) por un gesto.
-  const vivo = await retoAcercarse(video, msg);
+  // Gesto de vida (anti-foto): OBLIGATORIO —una foto estatica no crece de
+  // tamano y no pasa—. Para que la gente legitima lo logre sin relajar el
+  // candado, se dan DOS intentos con guia clara antes de pedir reintentar.
+  let vivo = await retoAcercarse(video, msg);
+  if (!vivo) {
+    msg.className = 'msg'; msg.textContent = 'Acércate un poco más, de frente…';
+    vivo = await retoAcercarse(video, msg);
+  }
+  if (!vivo) {
+    stop(); $('selfie-take').hidden = false;
+    msg.className = 'msg err';
+    msg.textContent = 'No detecté que te acercaras. Toca de nuevo el botón y acerca el teléfono a tu cara.';
+    return null;
+  }
 
   msg.className = 'msg'; msg.textContent = 'Leyendo tu rostro…';
   let vec = null;
@@ -575,9 +584,8 @@ async function capturarRostroChecada() {
   stop();
   $('selfie-take').hidden = false; // restaurar para la selfie de auditoría
   if (!vec) return null;
-  // livenessPassed refleja el gesto REAL: si no se detectó, se manda false y el
-  // servidor pasa la checada a revisión (0064) en vez de tumbarla.
-  return { vec, challengeId, livenessPassed: vivo, padScore: 1 };
+  // Solo se llega aquí con el gesto logrado (vivo=true): el candado se mantiene.
+  return { vec, challengeId, livenessPassed: true, padScore: 1 };
 }
 
 // ---------- selfie de auditoria (evidencia, en vivo) ----------
