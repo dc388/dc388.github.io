@@ -1,9 +1,10 @@
-/* Identidad LUFT: negro elegante (#0c0f11), verde-lima #7bf021, Archivo + Cormorant.
-   Tema oscuro comprometido (como luft.mx), con botones grandes y de alto contraste
-   para leerse en obra bajo el sol. */
+/* Identidad LUFT: negro elegante (#0c0f11) + acento NEUTRAL (steel #9db2bd),
+   Archivo + Cormorant. Neutral a proposito: el lima es de Forge, y aqui
+   convergen las tres naves (Wood/PVC/Forge). Mismo acento que el instructivo.
+   Tema oscuro, botones grandes y de alto contraste para leerse en obra. */
 :root{
   --bg:#0c0f11; --card:#14191d; --card2:#1a2127; --ink:#f2f5f6; --muted:#9aa5ac; --line:#28323a;
-  --accent:#7bf021; --accent-ink:#0b0e10; --accent-soft:rgba(123,240,33,.35); --accent-bg:rgba(123,240,33,.10);
+  --accent:#9db2bd; --accent-ink:#0b0e10; --accent-soft:rgba(157,178,189,.35); --accent-bg:rgba(157,178,189,.12);
   --green:#5ad07f; --amber:#f0b429; --red:#ef6a5a; --white:#f2f5f6;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -55,7 +56,7 @@ h2{font-family:"Cormorant",Georgia,serif;font-weight:600;font-size:24px;margin:0
   font-family:"Archivo",sans-serif;letter-spacing:.2px}
 .btn:active{transform:translateY(1px)}
 .btn:disabled{opacity:.45}
-.btn-primary{background:var(--accent);color:var(--accent-ink)} .btn-primary:disabled{background:#4a6b2a;color:#0b0e10}
+.btn-primary{background:var(--accent);color:var(--accent-ink)} .btn-primary:disabled{background:#43525b;color:#0b0e10}
 .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
 /* Acciones de checada: ENTRADA lima (principal), SALIDA blanca (contraste), COMIDA superficie */
 .btn-in{background:var(--accent);color:var(--accent-ink);min-height:78px;font-size:21px}
