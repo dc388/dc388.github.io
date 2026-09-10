@@ -662,8 +662,26 @@ async function punch(type) {
   const loc = await getLocation();
   if (loc.status !== 'AUTORIZADA') {
     busy(false);
-    return showResult('warn', 'Falta ubicación', 'Para checar necesitas autorizar la ubicación (estado: ' +
-      loc.status + '). Actívala en Configuración e intenta de nuevo, o avisa a tu supervisor.');
+    const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    let detalle;
+    if (loc.status === 'DENEGADA') {
+      // Guia CONCRETA por equipo: "actívala en configuración" no le dice a nadie
+      // dónde. En iPhone el permiso vive en Localización, no en los ajustes de la
+      // app, y por eso la gente no lo encontraba.
+      detalle = esIOS
+        ? 'La ubicación está bloqueada en este iPhone. Actívala así: Ajustes → ' +
+          'Privacidad y seguridad → Localización (enciéndela) → «Sitios web de ' +
+          'Safari» → «Al usar la app». Luego regresa aquí, recarga y toca checar. ' +
+          'Conviene agregar la app a la pantalla de inicio (botón Compartir → ' +
+          '«Agregar a inicio»): así es más estable y te pregunta el permiso al abrir.'
+        : 'La ubicación está bloqueada para este sitio. Tócalo en el candado ' +
+          'junto a la dirección → Ubicación → Permitir, recarga e intenta de nuevo.';
+    } else {
+      detalle = 'No se pudo obtener tu ubicación (señal débil o GPS ocupado). ' +
+        'Ponte donde haya buena señal o cielo abierto e intenta de nuevo.';
+    }
+    return showResult('warn', 'Falta ubicación', detalle);
   }
   const opId = uuid();
 
