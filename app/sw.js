@@ -1,9 +1,20 @@
 /* Service worker LUFT: cachea el "app shell" para que la app abra AL INSTANTE,
    con o sin internet. Las llamadas al backend NUNCA se cachean (van a la red). */
-const CACHE = 'luft-shell-v16';
+const CACHE = 'luft-shell-v17';
 const SHELL = [
   './', './index.html', './styles.css', './app.js', './face.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png',
+  // Tipografias servidas por este mismo dominio (antes venian de Google). Van en
+  // el shell para que sin señal la app se vea igual. Solo el subconjunto latino:
+  // cubre á é í ó ú ñ, que es todo lo que hace falta en español.
+  '../fonts/fonts.css',
+  '../fonts/archivo-400-latin.woff2',
+  '../fonts/archivo-500-latin.woff2',
+  '../fonts/archivo-600-latin.woff2',
+  '../fonts/archivo-700-latin.woff2',
+  '../fonts/cormorant-500-latin.woff2',
+  '../fonts/cormorant-600-latin.woff2',
+  '../fonts/cormorant-600-italic-latin.woff2',
   // Reconocimiento facial. Sin estos archivos la checada NO funciona sin señal:
   // el instructivo promete que funciona en obra, y esto es lo que lo cumple.
   // (El modelo facenet.tflite viene de Supabase y se guarda solo en IndexedDB;
