@@ -97,6 +97,18 @@ tools/build_db.py                  generador de la base de datos
 docs/                              guía de publicación y ficha de la tienda
 ```
 
+## Hacia una Biblia exegética
+
+[docs/PLAN_EXEGETICO.md](docs/PLAN_EXEGETICO.md) evalúa la ampliación del
+proyecto a interlineal con números Strong, morfología, léxicos y Antiguo
+Testamento hebreo: fuentes verificadas, licencias, y qué partes son baratas y
+cuáles caras.
+
+Resultado más relevante de esa comprobación: el etiquetado Strong y morfológico
+del Nuevo Testamento **alinea 1:1 con el texto que ya distribuimos en los 7 953
+versículos**, así que el interlineal del NT es un `JOIN`, no un proyecto de
+alineación.
+
 ## Licencias
 
 El código es MIT. Los textos griegos conservan las suyas: ver
