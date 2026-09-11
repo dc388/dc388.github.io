@@ -645,10 +645,27 @@ async function retoAcercarse(video, msg) {
 }
 
 // Captura el rostro para la checada: reto de vida + UN vector (el match 1:1 lo
-// hace el servidor). Devuelve { vec, challengeId, livenessPassed, padScore } o null.
+// hace el servidor).
+//
+// Devuelve:
+//   { vec, challengeId, ... }  se leyo el rostro
+//   SIN_MOTOR                  este telefono NO PUEDE con el reconocimiento
+//   null                       el motor si puede, pero no se logro la lectura
+//
+// La diferencia entre los dos ultimos es todo el candado. Un telefono viejo que
+// no carga el modelo se queda SIN PODER CHECAR NUNCA si se le trata igual que a
+// quien tapa la camara: con el rostro ya enrolado, la app se lo exige en cada
+// checada y el no puede darlo. Por eso el primer caso cae al metodo alterno
+// (firma del dispositivo + selfie de evidencia) y el segundo sigue bloqueando:
+// si cualquier fallo de lectura abriera la salida, taparse la camara seria la
+// forma de saltarse el reconocimiento.
+const SIN_MOTOR = 'sin-motor';
 async function capturarRostroChecada() {
   const video = $('selfie-video'), msg = $('selfie-msg'), title = $('selfie-title');
   $('selfie-take').hidden = true; $('selfie-skip').hidden = true;
+  // Equipo sin WebAssembly / sin IndexedDB / sin camara: no hay motor que
+  // cargar. Se sabe ANTES de encender la camara, sin hacerlo esperar.
+  if (!(window.LuftFace && LuftFace.supported())) return SIN_MOTOR;
   title.textContent = 'Reconociendo tu rostro…';
   msg.className = 'msg'; msg.textContent = 'Un momento…';
   show('selfie');
@@ -658,8 +675,10 @@ async function capturarRostroChecada() {
     video.srcObject = stream;
   } catch (e) { $('selfie-take').hidden = false; return null; }
   const stop = () => { try { stream.getTracks().forEach((t) => t.stop()); } catch {} };
+  // El modelo no carga en este equipo (memoria, WASM sin SIMD, navegador viejo).
+  // No es que no se le vea la cara: es que aqui no se puede. Metodo alterno.
   try { await LuftFace.ready(); }
-  catch (e) { stop(); $('selfie-take').hidden = false; msg.className = 'msg err'; msg.textContent = 'No se pudo cargar el modelo.'; return null; }
+  catch (e) { stop(); $('selfie-take').hidden = false; return SIN_MOTOR; }
 
   // Gesto de vida (anti-foto): OBLIGATORIO —una foto estatica no crece de
   // tamano y no pasa—. Para que la gente legitima lo logre sin relajar el
@@ -902,12 +921,23 @@ async function punch(type) {
   if (FACE && FACE.granted && FACE.enrolled) {
     busy(false);
     const cap = await capturarRostroChecada();
-    if (cap) {
+    if (cap && cap !== SIN_MOTOR) {
       faceEmbedding = Array.from(cap.vec);
       faceChallengeId = cap.challengeId; // null sin señal: el servidor no lo exige en offline_sync
       faceLiveness = cap.livenessPassed;
       facePad = cap.padScore;
       method = 'face';
+    } else if (cap === SIN_MOTOR) {
+      // Este telefono no puede correr el reconocimiento (equipo viejo, poca
+      // memoria, navegador sin WebAssembly). Antes se quedaba atorado para
+      // siempre: con el rostro enrolado la app se lo exigia en cada checada y
+      // el equipo no podia darlo.
+      //
+      // Se sigue por el metodo alterno, que NO es un permiso gratis: la checada
+      // viaja firmada con la llave de SU telefono aprobado, la geocerca se
+      // aplica igual, y abajo se le pide la selfie de evidencia porque
+      // faceEmbedding quedo vacio. RH la ve con foto y ubicacion.
+      method = 'device_biometric';
     } else if (navigator.onLine) {
       // Con señal, el rostro es obligatorio: si no se reconoció, reintentar.
       return showResult('warn', 'Falta reconocer tu rostro',
