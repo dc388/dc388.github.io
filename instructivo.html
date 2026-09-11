@@ -60,6 +60,14 @@
     border-radius:14px; padding:16px 18px; margin:20px auto 0; max-width:62ch; text-align:left; }
   .policy p { margin:0; font-size:14.5px; color:#e4e9ec; }
   .policy strong { color:var(--ink); }
+  /* Salida para quien no puede instalar el APK: sin espacio, o sin huella ni
+     reconocimiento facial (el APK exige biometria; el PWA no). Va DENTRO de la
+     tarjeta de Android y en tono secundario, para que no compita con la ruta
+     normal: la mayoria si debe instalar la app. */
+  .alt { margin-top:16px; padding-top:14px; border-top:1px dashed var(--line); }
+  .alt p { margin:0 0 10px; font-size:14.5px; color:#dfe5e8; }
+  .alt b { color:var(--ink); }
+  .alt-btn { background:transparent; color:var(--ink); border:1px solid var(--accent-soft); font-size:15px; }
   .upd { display:flex; gap:12px; align-items:flex-start; background:var(--accent-bg); border:1px solid var(--accent-soft);
     border-radius:14px; padding:15px 18px; margin-top:14px; font-size:14.5px; color:#e4e9ec; }
   .upd b { color:var(--ink); }
@@ -125,6 +133,18 @@
           <li>Toca <strong>Instalar</strong> y luego <strong>Abrir</strong>. Si ya la tenías, se instala <strong>encima sin perder datos</strong>.</li>
           <li><strong>Se actualiza sola:</strong> cuando haya una versión nueva, la app te muestra un botón <strong>“Actualizar”</strong> al abrirla.</li>
         </ol>
+        <div class="alt">
+          <p><b>¿No te deja instalar?</b> Si tu teléfono <b>no tiene espacio</b>, o <b>no tiene huella ni reconocimiento facial</b>,
+             no necesitas instalar nada: puedes checar desde <b>Chrome</b>.</p>
+          <a class="inst alt-btn" href="https://dc388.github.io/app/">Checar en Chrome, sin instalar</a>
+          <ol>
+            <li>Ábrelo en <strong>Chrome</strong> y toca el menú <strong>⋯</strong> → <strong>“Agregar a pantalla de inicio”</strong>.</li>
+            <li><strong>Regístrate desde el ícono</strong> que queda en tu pantalla, no desde la pestaña.</li>
+            <li>Cuando te pregunte por el <strong>reconocimiento facial</strong>, si tu teléfono va lento o sin espacio,
+                toca <strong>“Usar método alternativo”</strong>: así no descarga nada pesado.</li>
+            <li>Al checar te pedirá una <strong>foto</strong>. Esa es tu comprobante.</li>
+          </ol>
+        </div>
       </div>
     </div>
     <div class="upd">
