@@ -36,8 +36,15 @@
     'vendor/tf-tflite.min.js',
   ];
 
-  let _detector = null, _model = null, _loading = null, _onProgress = null;
+  let _detector = null, _model = null, _loading = null, _onProgress = null, _onStage = null;
 
+  // Limites por etapa (ms). Generosos: en obra la señal es mala y un telefono
+  // de gama baja tarda. Pero FINITOS: un cuelgue tiene que terminar en error.
+  const T_LIB = 40000, T_TF = 25000, T_DETECTOR = 40000, T_MODELO = 60000;
+
+  // El tope de tiempo lo pone `conLimite` (definida junto a ready()), una sola
+  // para todas las etapas: un <script> que se estanca en 4G floja no dispara
+  // onload NI onerror, y sin tope "Preparando el modelo" se queda para siempre.
   function loadScript(src) {
     return new Promise((res, rej) => {
       const s = document.createElement('script');
@@ -104,19 +111,65 @@
 
   // Prepara librerías + detector + modelo. Idempotente. Devuelve true si listo.
   // `onProgress(recibido, total)` se llama durante la descarga del modelo.
-  async function ready(onProgress) {
+  // `onStage(texto)` dice en que etapa va: sin esto, cualquier atoron se ve
+  // igual ("Preparando el modelo...") y no hay como saber donde se quedo.
+  //
+  // TODAS las etapas llevan limite de tiempo. Antes solo lo tenia la descarga
+  // del modelo: si una libreria, el WASM o el detector se colgaban -–lo que
+  // pasa en Safari de iPhone-– esta promesa no se resolvia NUNCA, el `catch`
+  // de la pantalla no llegaba a correr y el boton se quedaba deshabilitado
+  // para siempre. Un limite convierte el cuelgue en un error con reintento.
+  async function ready(onProgress, onStage) {
     _onProgress = onProgress || _onProgress;
+    _onStage = onStage || _onStage;
     if (_model && _detector) return true;
     if (_loading) return _loading;
     _loading = (async () => {
-      for (const lib of LIBS) { if (!hasLib(lib)) await loadScript(lib); }
-      await global.tf.ready();
+      for (let i = 0; i < LIBS.length; i++) {
+        const lib = LIBS[i];
+        if (hasLib(lib)) continue;
+        etapa('Cargando el motor (' + (i + 1) + ' de ' + LIBS.length + ')…');
+        await conLimite(loadScript(lib), T_LIB, 'la carga de ' + lib);
+        // Un <script> que responde HTML (404 de GitHub Pages, o el index que
+        // devuelve el service worker sin red) dispara `onload`, no `onerror`:
+        // sin esta comprobacion el fallo aparecia mas tarde y disfrazado de
+        // "undefined is not an object".
+        if (!hasLib(lib)) throw new Error('no se pudo cargar ' + lib + ' (respuesta invalida)');
+      }
+      etapa('Encendiendo el motor…');
+      await conLimite(global.tf.ready(), T_TF, 'el arranque de TensorFlow');
       global.tflite.setWasmPath(WASM_PATH);
-      if (!_detector) _detector = await global.blazeface.load({ modelUrl: BLAZEFACE_MODEL });
-      if (!_model) _model = await global.tflite.loadTFLiteModel(await modelBytes());
+      if (!_detector) {
+        etapa('Preparando el detector de rostro…');
+        _detector = await conLimite(
+          global.blazeface.load({ modelUrl: BLAZEFACE_MODEL }), T_DETECTOR,
+          'la carga del detector de rostro');
+      }
+      if (!_model) {
+        etapa('Preparando el modelo (la 1ª vez baja 23 MB con señal)…');
+        const bytes = await modelBytes();
+        etapa('Abriendo el modelo…');
+        _model = await conLimite(global.tflite.loadTFLiteModel(bytes), T_MODELO,
+          'la apertura del modelo');
+      }
       return true;
     })();
     try { return await _loading; } catch (e) { _loading = null; throw e; }
+  }
+
+  function etapa(txt) { if (_onStage) { try { _onStage(txt); } catch (e) {} } }
+
+  // Corre `p` con un limite de tiempo. No cancela el trabajo de fondo (no hay
+  // como), pero deja de esperarlo: la pantalla puede ofrecer reintentar.
+  function conLimite(p, ms, que) {
+    return new Promise((res, rej) => {
+      const t = setTimeout(
+        () => rej(new Error('se atoró en ' + que + ' (' + Math.round(ms / 1000) + ' s sin responder)')),
+        ms);
+      Promise.resolve(p).then(
+        (v) => { clearTimeout(t); res(v); },
+        (e) => { clearTimeout(t); rej(e); });
+    });
   }
 
   function hasLib(src) {
@@ -184,6 +237,18 @@
     return !!(global.WebAssembly && global.indexedDB && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   }
 
+  // Si NO esta soportado, ¿por que? "Este navegador no soporta el
+  // reconocimiento facial" no le dice a nadie que hacer; "estás en Navegación
+  // privada" sí.
+  function faltante() {
+    if (!global.WebAssembly) return 'este navegador es muy viejo (le falta WebAssembly); actualiza el sistema';
+    if (!global.indexedDB) return 'el navegador no deja guardar datos; sal de Navegación privada y vuelve a abrir';
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      return 'no hay acceso a la cámara; abre la app desde el ícono de la pantalla de inicio';
+    }
+    return null;
+  }
+
   // Devuelve el recuadro de la cara más grande {x,y,w,h} o null. Para el reto de
   // vida (medir movimiento): una foto estática no cambia de tamaño/posición.
   async function detectBox(video) {
@@ -197,7 +262,7 @@
     return { x: f.topLeft[0], y: f.topLeft[1], w: f.bottomRight[0] - f.topLeft[0], h: f.bottomRight[1] - f.topLeft[1] };
   }
 
-  global.LuftFace = { ready, embed, detectBox, supported, VERSION, FaceNotFound, cosine };
+  global.LuftFace = { ready, embed, detectBox, supported, faltante, VERSION, FaceNotFound, cosine };
 
   function cosine(a, b) { let d = 0; for (let i = 0; i < a.length; i++) d += a[i] * b[i]; return d; }
 })(window);

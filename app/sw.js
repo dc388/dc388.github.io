@@ -1,6 +1,6 @@
 /* Service worker LUFT: cachea el "app shell" para que la app abra AL INSTANTE,
    con o sin internet. Las llamadas al backend NUNCA se cachean (van a la red). */
-const CACHE = 'luft-shell-v21';
+const CACHE = 'luft-shell-v22';
 const SHELL = [
   './', './index.html', './styles.css', './app.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png',
@@ -20,6 +20,11 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== self.location.origin) return;
   // El APK de Android (~78 MB) NO se cachea: se descarga una vez para instalar.
   if (url.pathname.endsWith('.apk')) return;
+  // El modelo de rostro (23 MB) tampoco: face.js ya lo guarda en IndexedDB, que
+  // es SU camino para funcionar offline. Cachearlo aqui ademas lo duplicaba a 46
+  // MB y, en iPhone, el cache.put de esa respuesta se topa con la cuota de
+  // Safari. Lo unico que aportaba era una forma mas de atorar la descarga.
+  if (url.pathname.endsWith('.tflite')) return;
   // App shell: STALE-WHILE-REVALIDATE. Se responde YA con lo cacheado (arranque
   // inmediato aunque la señal sea debil o nula, que es el caso de obra) y, si hay
   // red, se refresca la copia en segundo plano para que la proxima apertura traiga

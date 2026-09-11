@@ -409,9 +409,53 @@ function getLocation() {
     if (r.status === 'NO_DISPONIBLE') {
       const r2 = await fix(false);
       if (r2.status === 'AUTORIZADA') return r2;
+      return r;
+    }
+    // Un primer fix por torre/wifi llega con cientos o miles de metros de error
+    // y es INUTIL para una geocerca de 250 m. El 11 de septiembre N1-001 mando
+    // cuatro checadas con acc = 2000 m: el servidor midio 587 m al Modulo y las
+    // rechazo por "fuera de la geocerca", cuando con ese error la persona bien
+    // podia estar adentro. El GPS converge en segundos si se le da tiempo, asi
+    // que en vez de mandar el primer fix se espera un rato a uno mejor.
+    if (r.status === 'AUTORIZADA' && r.acc != null && r.acc > ACC_BUENA_M) {
+      busy(true, 'Afinando tu ubicación…');
+      return await afinarUbicacion(r, 15000);
     }
     return r;
   })();
+}
+
+// Error de GPS con el que ya se puede decidir una geocerca de 250 m sin apostar.
+const ACC_BUENA_M = 100;
+
+// Sigue escuchando al GPS hasta `ms` y devuelve la MEJOR lectura (la de menor
+// error). Corta antes si llega una suficientemente buena.
+function afinarUbicacion(inicial, ms) {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation.watchPosition) return resolve(inicial);
+    let mejor = inicial, id = null, temporizador = null, cerrado = false;
+    const cerrar = () => {
+      if (cerrado) return;
+      cerrado = true;
+      try { if (id != null) navigator.geolocation.clearWatch(id); } catch (e) {}
+      clearTimeout(temporizador);
+      resolve(mejor);
+    };
+    try {
+      id = navigator.geolocation.watchPosition(
+        (p) => {
+          const acc = p.coords.accuracy;
+          if (acc != null && (mejor.acc == null || acc < mejor.acc)) {
+            mejor = { status: 'AUTORIZADA', lat: p.coords.latitude, lng: p.coords.longitude, acc };
+          }
+          if (acc != null && acc <= ACC_BUENA_M) cerrar();
+        },
+        () => { /* un error aqui no quita la lectura que ya se tiene */ },
+        { enableHighAccuracy: true, maximumAge: 0, timeout: ms },
+      );
+    } catch (e) { return resolve(inicial); }
+    temporizador = setTimeout(cerrar, ms);
+  });
 }
 
 // ---------- politica de checada de la empresa ----------
@@ -446,7 +490,12 @@ async function renderEnrolar() {
   const video = $('er-video'), prog = $('er-progreso'), btn = $('er-btn'), msg = $('er-msg');
   msg.textContent = ''; msg.className = 'msg'; btn.disabled = true;
   if (!(window.LuftFace && LuftFace.supported())) {
-    msg.className = 'msg err'; msg.textContent = 'Este navegador no soporta el reconocimiento facial. Usa Safari o Chrome actualizado.'; return;
+    const por = (window.LuftFace && LuftFace.faltante && LuftFace.faltante()) || null;
+    msg.className = 'msg err';
+    msg.textContent = por
+      ? 'No se puede registrar el rostro aquí: ' + por + '.'
+      : 'Este navegador no soporta el reconocimiento facial. Usa Safari o Chrome actualizado.';
+    return;
   }
   prog.textContent = 'Encendiendo cámara…';
   try {
@@ -455,14 +504,23 @@ async function renderEnrolar() {
   } catch (e) { msg.className = 'msg err'; msg.textContent = 'No se pudo abrir la cámara. Actívala en Ajustes.'; return; }
   prog.textContent = 'Preparando el modelo (la 1ª vez baja 23 MB con señal)…';
   try {
-    await LuftFace.ready((recibido, total) => {
-      const pct = Math.min(100, Math.round((recibido / total) * 100));
-      prog.textContent = 'Descargando el modelo… ' + pct + '%  (solo la 1ª vez)';
-    });
+    await LuftFace.ready(
+      (recibido, total) => {
+        const pct = Math.min(100, Math.round((recibido / total) * 100));
+        prog.textContent = 'Descargando el modelo… ' + pct + '%  (solo la 1ª vez)';
+      },
+      // Cada etapa se dice en voz alta. Antes, el 100% de los atorones se veian
+      // como "Preparando el modelo..." sin mas, aunque el modelo ni se hubiera
+      // empezado a bajar.
+      (txt) => { prog.textContent = txt; },
+    );
   } catch (e) {
     msg.className = 'msg err';
-    msg.textContent = 'No se pudo bajar el modelo (revisa tu señal). Toca “Reintentar”.';
-    prog.textContent = '';
+    // El motivo REAL, no uno inventado: si se atoró abriendo el motor, decir
+    // "revisa tu señal" manda a la persona a perseguir el problema equivocado.
+    msg.textContent = 'No se pudo preparar el reconocimiento facial: ' +
+      (e && e.message ? e.message : 'error desconocido') + '.';
+    prog.textContent = 'Con señal (datos o wifi) vuelve a tocar “Reintentar”.';
     btn.disabled = false;
     btn.textContent = 'Reintentar';
     btn.onclick = () => { btn.textContent = 'Registrar mi rostro'; renderEnrolar(); };
@@ -558,8 +616,6 @@ async function capturarRostroChecada() {
   try { await LuftFace.ready(); }
   catch (e) { stop(); $('selfie-take').hidden = false; msg.className = 'msg err'; msg.textContent = 'No se pudo cargar el modelo.'; return null; }
 
-  // Reto de vida (prueba anti-foto): id del servidor + gesto verificado aquí.
-  const challengeId = await pedirRetoVida();
   // Gesto de vida (anti-foto): OBLIGATORIO —una foto estatica no crece de
   // tamano y no pasa—. Para que la gente legitima lo logre sin relajar el
   // candado, se dan DOS intentos con guia clara antes de pedir reintentar.
@@ -575,17 +631,88 @@ async function capturarRostroChecada() {
     return null;
   }
 
+  // El reto de vida se pide AQUI, ya pasado el gesto y justo antes de leer el
+  // rostro. Vive 20 s (company_settings.liveness_challenge_ttl_seconds) y el
+  // gesto puede tardar 12 s entre sus dos intentos: pedirlo antes lo dejaba
+  // vencido al llegar al envio, y el servidor rechazaba la checada con "reto de
+  // vida vencido" (9 de 63 checadas los dias 10 y 11 de septiembre). Pedirlo
+  // aqui no afloja nada —el token sirve contra el replay AL ENVIAR— y llega
+  // fresco.
+  const challengeId = await pedirRetoVida();
+
   msg.className = 'msg'; msg.textContent = 'Leyendo tu rostro…';
-  let vec = null;
-  for (let i = 0; i < 8 && !vec; i++) {
-    try { const r = await LuftFace.embed(video); vec = r.vec; }
-    catch (e) { msg.textContent = (e.message || 'no se ve tu cara') + '…'; await new Promise((res) => setTimeout(res, 500)); }
-  }
+  const vec = await leerRostroConfiable(video, msg);
   stop();
   $('selfie-take').hidden = false; // restaurar para la selfie de auditoría
   if (!vec) return null;
   // Solo se llega aquí con el gesto logrado (vivo=true): el candado se mantiene.
   return { vec, challengeId, livenessPassed: true, padScore: 1 };
+}
+
+// Cara demasiado chica en el cuadro: el recorte sale de pocos pixeles y el
+// vector es ruido. 0.02 = la cara ocupa el 2% del cuadro; los enrolamientos
+// reales de la plantilla andan en 0.35-0.74, asi que es un piso muy holgado
+// que solo ataja basura.
+const MIN_CALIDAD_ROSTRO = 0.02;
+// Que tan de acuerdo tienen que estar entre si las lecturas para creerles.
+const MIN_ACUERDO_LECTURAS = 0.55;
+
+// Lee el rostro VARIAS veces y devuelve la lectura mas consistente, o null si
+// ninguna lo es.
+//
+// Por que: `embed()` devuelve un vector aunque el cuadro este quemado por el
+// sol, movido o con la cara a contraluz —y ese vector es ruido—. Se enviaba el
+// PRIMERO que saliera, sin mirar su calidad, y el servidor lo rechazaba por
+// "rostro no coincide": el 11 de septiembre N1-002 acumulo 0.036, 0.073, 0.25 y
+// 0.29 en cuatro intentos seguidos, y 0.85 y 0.70 en los dos que si salieron.
+// El rostro siempre fue el suyo; la LECTURA era basura.
+//
+// Varias lecturas de la misma cara se parecen mucho entre si; las basura no se
+// parecen ni entre ellas. Asi que se toma la lectura que mas de acuerdo esta
+// con las demas (la mediana en espiritu) y, si ni eso llega al minimo, NO se
+// manda nada: se devuelve null y la pantalla pide reintentar. Eso es mejor que
+// mandarla, porque una checada rechazada le queda al trabajador en su historial
+// como si hubiera intentado suplantar a alguien.
+//
+// Nada de esto toca el umbral del servidor (0.60 rechaza / 0.70 acepta): se
+// manda una lectura MEJOR, no un umbral mas flojo.
+async function leerRostroConfiable(video, msg) {
+  const lecturas = [];
+  for (let i = 0; i < 10 && lecturas.length < 4; i++) {
+    try {
+      const r = await LuftFace.embed(video);
+      if (r.quality >= MIN_CALIDAD_ROSTRO) lecturas.push(r.vec);
+      else { msg.textContent = 'Acércate un poco: se te ve muy lejos…'; await new Promise((res) => setTimeout(res, 350)); }
+    } catch (e) {
+      msg.textContent = (e.message || 'no se ve tu cara') + '…';
+      await new Promise((res) => setTimeout(res, 400));
+    }
+  }
+  if (!lecturas.length) return null;
+  if (lecturas.length === 1) {
+    // Una sola lectura no se puede contrastar con nada. No se manda: es
+    // justo el caso que producia los rechazos.
+    msg.className = 'msg err';
+    msg.textContent = 'No pude leer bien tu rostro. Ponte de frente, sin el sol atrás, y vuelve a intentar.';
+    return null;
+  }
+  // Lectura mas "de acuerdo" con las demas.
+  let mejor = null, mejorAcuerdo = -1;
+  for (let i = 0; i < lecturas.length; i++) {
+    let suma = 0;
+    for (let j = 0; j < lecturas.length; j++) {
+      if (i !== j) suma += LuftFace.cosine(lecturas[i], lecturas[j]);
+    }
+    const acuerdo = suma / (lecturas.length - 1);
+    if (acuerdo > mejorAcuerdo) { mejorAcuerdo = acuerdo; mejor = lecturas[i]; }
+  }
+  if (mejorAcuerdo < MIN_ACUERDO_LECTURAS) {
+    msg.className = 'msg err';
+    msg.textContent = 'La cámara no te está viendo bien (contraluz o movimiento). ' +
+      'Date la vuelta para que la luz te dé en la cara y vuelve a intentar.';
+    return null;
+  }
+  return mejor;
 }
 
 // ---------- selfie de auditoria (evidencia, en vivo) ----------
