@@ -1,9 +1,20 @@
 /* Service worker LUFT: cachea el "app shell" para que la app abra AL INSTANTE,
    con o sin internet. Las llamadas al backend NUNCA se cachean (van a la red). */
-const CACHE = 'luft-shell-v22';
+const CACHE = 'luft-shell-v23';
 const SHELL = [
   './', './index.html', './styles.css', './app.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png',
+  // Tipografias: antes venian de Google en cada carga. Ahora las sirve este
+  // mismo dominio, asi que la app ya no le pide NADA a terceros. Solo el
+  // subconjunto latino, que cubre á é í ó ú ñ.
+  '../fonts/fonts.css',
+  '../fonts/archivo-400-latin.woff2',
+  '../fonts/archivo-500-latin.woff2',
+  '../fonts/archivo-600-latin.woff2',
+  '../fonts/archivo-700-latin.woff2',
+  '../fonts/cormorant-500-latin.woff2',
+  '../fonts/cormorant-600-latin.woff2',
+  '../fonts/cormorant-600-italic-latin.woff2',
 ];
 
 self.addEventListener('install', (e) => {
