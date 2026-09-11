@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.dc388.bibliagriega.data.VerseHit
 import com.dc388.bibliagriega.data.VerseRef
 import com.dc388.bibliagriega.ui.BibliaViewModel
-import com.dc388.bibliagriega.ui.theme.GreekFontFamily
+import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +95,7 @@ fun BookmarksScreen(
                         )
                         Text(
                             text = hit.verse.text,
-                            fontFamily = GreekFontFamily,
+                            fontFamily = ScriptureFontFamily,
                             style = MaterialTheme.typography.bodyLarge,
                         )
                     }

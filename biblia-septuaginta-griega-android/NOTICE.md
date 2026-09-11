@@ -3,6 +3,23 @@
 Esta aplicación redistribuye textos preparados por terceros. Estas son las
 atribuciones exigidas por sus licencias.
 
+## Antiguo Testamento hebreo — Open Scriptures Hebrew Bible
+
+> *Westminster Leningrad Codex*, en dominio público, etiquetado con números
+> Strong y análisis morfológico por el Open Scriptures Hebrew Bible.
+
+Fuente: [openscriptures/morphhb](https://github.com/openscriptures/morphhb).
+
+Licencia: **Creative Commons Attribution 4.0 International** (CC BY 4.0), que
+permite el uso comercial. Atribución exigida por la licencia: «Original work of
+the Open Scriptures Hebrew Bible available at
+https://github.com/openscriptures/morphhb».
+
+Las descripciones morfológicas se traducen al español a partir de la clave
+oficial `parsing/Oshm.xml` del propio proyecto; esa traducción
+(`tools/hebrew.py`) es obra de este repositorio y se publica bajo la licencia
+MIT del código.
+
 ## Septuaginta — edición de Swete
 
 > *The Old Testament in Greek According to the Septuagint*, editado por
@@ -57,10 +74,11 @@ en dominio público. Los códigos de Robinson se distribuyen aquí traducidos al
 español; esa traducción es obra de este proyecto (`tools/morphology.py`) y se
 publica bajo la licencia MIT del código.
 
-**Diccionario griego de Strong** (James Strong, 1890; obra en dominio público):
-versión JSON de [openscriptures/strongs](https://github.com/openscriptures/strongs),
-publicada por Open Scriptures bajo **CC BY-SA**. Las entradas del léxico que
-viajan en `biblia.db` conservan esa licencia.
+**Diccionarios griego y hebreo de Strong** (James Strong, 1890; obra en dominio
+público): versiones JSON de
+[openscriptures/strongs](https://github.com/openscriptures/strongs), publicadas
+por Open Scriptures bajo **CC BY-SA**. Las 14 197 entradas de léxico que viajan
+en `biblia.db` conservan esa licencia.
 
 ## Código de terceros
 

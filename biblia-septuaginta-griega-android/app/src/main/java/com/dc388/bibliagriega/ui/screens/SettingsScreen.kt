@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dc388.bibliagriega.data.ThemeMode
 import com.dc388.bibliagriega.ui.BibliaViewModel
-import com.dc388.bibliagriega.ui.theme.GreekFontFamily
+import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
 private const val SAMPLE = "Ἐν ἀρχῇ ἦν ὁ λόγος, καὶ ὁ λόγος ἦν πρὸς τὸν θεόν."
 
@@ -74,7 +74,7 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
             ) {
                 Text(
                     text = SAMPLE,
-                    fontFamily = GreekFontFamily,
+                    fontFamily = ScriptureFontFamily,
                     fontSize = (18 * settings.fontScale).sp,
                     lineHeight = (30 * settings.fontScale * settings.lineHeightScale).sp,
                     modifier = Modifier.padding(16.dp),

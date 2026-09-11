@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dc388.bibliagriega.data.InterlinearWord
 import com.dc388.bibliagriega.ui.WordStudy
-import com.dc388.bibliagriega.ui.theme.GreekFontFamily
+import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
 /**
  * Interlineal: cada palabra griega sobre su transliteración y su número Strong.
@@ -58,7 +58,7 @@ fun InterlinearVerse(
             ) {
                 Text(
                     text = word.surface,
-                    fontFamily = GreekFontFamily,
+                    fontFamily = ScriptureFontFamily,
                     fontSize = fontSizeSp.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
@@ -102,7 +102,7 @@ fun WordChips(
             ) {
                 Text(
                     text = word.surface,
-                    fontFamily = GreekFontFamily,
+                    fontFamily = ScriptureFontFamily,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
                 )
@@ -131,7 +131,7 @@ fun WordStudySheet(
         ) {
             Text(
                 text = study.word.surface,
-                fontFamily = GreekFontFamily,
+                fontFamily = ScriptureFontFamily,
                 fontSize = 30.sp,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -158,7 +158,7 @@ fun WordStudySheet(
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = entry.lemma,
-                        fontFamily = GreekFontFamily,
+                        fontFamily = ScriptureFontFamily,
                         style = MaterialTheme.typography.titleLarge,
                     )
                     if (entry.transliteration != null) {

@@ -14,7 +14,10 @@ Fuentes:
   * Interlineal del NT: el mismo repositorio de byztxt trae el texto etiquetado
     con numeros Strong y analisis morfologico de Robinson, alineado palabra a
     palabra con el texto acentuado.
-  * Lexico griego: diccionario de Strong (1890) de
+  * Antiguo Testamento hebreo: Codice de Leningrado etiquetado con Strong y
+    morfologia por el Open Scriptures Hebrew Bible,
+    https://github.com/openscriptures/morphhb -- CC BY 4.0.
+  * Lexicos griego y hebreo: diccionarios de Strong (1890) de
     https://github.com/openscriptures/strongs -- JSON bajo CC BY-SA.
 
 Uso:
@@ -37,15 +40,26 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from clean import clean_text, count_residual  # noqa: E402
 from morphology import build_table  # noqa: E402
+from hebrew import (  # noqa: E402
+    HEBREW_BOOKS,
+    build_part_key,
+    describe,
+    load_morph_key,
+    read_book,
+    strong_of,
+    translate,
+    wlc_path,
+)
 
 REPOS = {
     "lxx-swete": "https://github.com/nathans/lxx-swete.git",
     "byz": "https://github.com/byztxt/byzantine-majority-text.git",
     "grb": "https://github.com/LukeSmithxyz/grb.git",
     "strongs": "https://github.com/openscriptures/strongs.git",
+    "morphhb": "https://github.com/openscriptures/morphhb.git",
 }
 
-# --- Septuaginta: numero de archivo de Swete -> (codigo, nombre es, nombre gr, alterno)
+# --- Septuaginta: numero de archivo de Swete -> (codigo, nombre es, nombre griego, alterno)
 LXX_BOOKS = {
     1:  ("GEN", "Génesis", "Γένεσις", None),
     2:  ("EXO", "Éxodo", "Ἔξοδος", None),
@@ -105,7 +119,7 @@ LXX_BOOKS = {
     59: ("BET", "Bel y el Dragón (Teodoción)", "Βὴλ καὶ Δράκων (Θ)", None),
 }
 
-# --- Nuevo Testamento: archivo CSV de byztxt -> (codigo, nombre es, nombre gr)
+# --- Nuevo Testamento: archivo CSV de byztxt -> (codigo, nombre es, nombre griego)
 NT_BOOKS = [
     ("MAT", "MAT", "Mateo", "Κατὰ Ματθαῖον"),
     ("MAR", "MAR", "Marcos", "Κατὰ Μάρκον"),
@@ -149,6 +163,8 @@ CREATE TABLE collections (
     edition     TEXT NOT NULL,
     license     TEXT NOT NULL,
     source_url  TEXT NOT NULL,
+    language    TEXT NOT NULL,
+    rtl         INTEGER NOT NULL DEFAULT 0,
     sort_order  INTEGER NOT NULL
 );
 CREATE TABLE books (
@@ -156,7 +172,7 @@ CREATE TABLE books (
     collection_id  TEXT NOT NULL REFERENCES collections(id),
     code           TEXT NOT NULL,
     name_es        TEXT NOT NULL,
-    name_gr        TEXT NOT NULL,
+    name_orig      TEXT NOT NULL,
     alt_name       TEXT,
     source_note    TEXT,
     sort_order     INTEGER NOT NULL,
@@ -282,7 +298,7 @@ def insert_book(
     collection: str,
     code: str,
     name_es: str,
-    name_gr: str,
+    name_orig: str,
     alt_name: str | None,
     source_note: str | None,
     order: int,
@@ -294,9 +310,9 @@ def insert_book(
         return None
     chapters = len({c for c, _, _, _ in verses})
     cur = con.execute(
-        "INSERT INTO books (collection_id, code, name_es, name_gr, alt_name, source_note,"
+        "INSERT INTO books (collection_id, code, name_es, name_orig, alt_name, source_note,"
         " sort_order, chapter_count, verse_count) VALUES (?,?,?,?,?,?,?,?,?)",
-        (collection, code, name_es, name_gr, alt_name, source_note, order, chapters, len(verses)),
+        (collection, code, name_es, name_orig, alt_name, source_note, order, chapters, len(verses)),
     )
     book_id = cur.lastrowid
     prepared = [(c, v, s, prepare(t, scrub)) for (c, v, s, t) in verses]
@@ -356,30 +372,94 @@ def insert_words(
     return len(rows), skipped
 
 
-def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
-    """Diccionario griego de Strong, distribuido como JSON dentro de un .js."""
-    path = sources / "strongs" / "greek" / "strongs-greek-dictionary.js"
+def insert_hebrew(
+    con: sqlite3.Connection,
+    sources: Path,
+    order: int,
+    osis_book: str,
+    code: str,
+    name_es: str,
+    name_he: str,
+    alt: str | None,
+) -> tuple[int, int, int]:
+    """Inserta un libro del Antiguo Testamento hebreo con su interlineal.
+
+    Devuelve (versículos, palabras con interlineal, palabras del texto). A
+    diferencia del griego, aquí el texto y el análisis vienen del mismo archivo
+    OSIS, así que no hay nada que alinear.
+    """
+    path = wlc_path(sources, osis_book)
     if not path.exists():
-        print("  AVISO: falta el diccionario Strong; se omite el léxico")
-        return 0
-    raw = path.read_text(encoding="utf-8")
-    entries = json.loads(raw[raw.index("{"): raw.rindex("}") + 1])
+        print(f"  AVISO: falta {path}")
+        return 0, 0, 0
+
+    chapters = read_book(path)
+    if not chapters:
+        return 0, 0, 0
+
+    verse_rows = [(c, v, "", text) for (c, v, text, _) in chapters]
+    book_id = insert_book(con, "at", code, name_es, name_he, alt, None, order, verse_rows)
+    if book_id is None:
+        return 0, 0, 0
+
+    ids = {
+        (chapter, number): verse_id
+        for verse_id, chapter, number in con.execute(
+            "SELECT id, chapter, verse FROM verses WHERE book_id = ?", (book_id,)
+        )
+    }
+
+    words = []
+    seen = 0
+    for chapter, number, _text, tokens in chapters:
+        verse_id = ids.get((chapter, number))
+        if verse_id is None:
+            continue
+        for position, (surface, lemma, morph) in enumerate(tokens, 1):
+            seen += 1
+            strong = strong_of(lemma)
+            if strong is None or not morph:
+                # Sin número Strong no hay nada que consultar en el léxico:
+                # se deja fuera del interlineal en vez de inventar una entrada.
+                continue
+            words.append((verse_id, position, surface, strong, morph))
+
     con.executemany(
-        "INSERT INTO lexicon (strong, lemma, translit, derivation, definition, kjv_usage)"
-        " VALUES (?,?,?,?,?,?)",
-        [
-            (
-                strong,
-                (e.get("lemma") or "").strip(),
-                (e.get("translit") or "").strip() or None,
-                (e.get("derivation") or "").strip() or None,
-                (e.get("strongs_def") or "").strip() or None,
-                (e.get("kjv_def") or "").strip() or None,
-            )
-            for strong, e in entries.items()
-        ],
+        "INSERT INTO words (verse_id, position, surface, strong, morph) VALUES (?,?,?,?,?)",
+        words,
     )
-    return len(entries)
+    return len(verse_rows), len(words), seen
+
+
+def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
+    """Diccionarios de Strong, griego y hebreo, distribuidos como JSON en un .js."""
+    total = 0
+    for language in ("greek", "hebrew"):
+        path = sources / "strongs" / language / f"strongs-{language}-dictionary.js"
+        if not path.exists():
+            print(f"  AVISO: falta el diccionario Strong de {language}")
+            continue
+        raw = path.read_text(encoding="utf-8")
+        entries = json.loads(raw[raw.index("{"): raw.rindex("}") + 1])
+        con.executemany(
+            "INSERT OR IGNORE INTO lexicon"
+            " (strong, lemma, translit, derivation, definition, kjv_usage)"
+            " VALUES (?,?,?,?,?,?)",
+            [
+                (
+                    strong,
+                    (e.get("lemma") or "").strip(),
+                    # el griego usa «translit» y el hebreo «xlit»
+                    (e.get("translit") or e.get("xlit") or "").strip() or None,
+                    (e.get("derivation") or "").strip() or None,
+                    (e.get("strongs_def") or "").strip() or None,
+                    (e.get("kjv_def") or "").strip() or None,
+                )
+                for strong, e in entries.items()
+            ],
+        )
+        total += len(entries)
+    return total
 
 
 def verify(con: sqlite3.Connection) -> list[str]:
@@ -400,13 +480,15 @@ def verify(con: sqlite3.Connection) -> list[str]:
     if sin_morf:
         problems.append(f"{sin_morf} palabras sin descripción morfológica")
 
-    sin_analizar = con.execute(
-        "SELECT COUNT(*) FROM verses v JOIN books b ON b.id = v.book_id"
-        " WHERE b.collection_id = 'nt'"
-        " AND NOT EXISTS (SELECT 1 FROM words w WHERE w.verse_id = v.id)"
-    ).fetchone()[0]
-    if sin_analizar:
-        problems.append(f"{sin_analizar} versículos del NT sin interlineal")
+    for collection, label in (("nt", "NT"), ("at", "AT hebreo")):
+        sin_analizar = con.execute(
+            "SELECT COUNT(*) FROM verses v JOIN books b ON b.id = v.book_id"
+            " WHERE b.collection_id = ?"
+            " AND NOT EXISTS (SELECT 1 FROM words w WHERE w.verse_id = v.id)",
+            (collection,),
+        ).fetchone()[0]
+        if sin_analizar:
+            problems.append(f"{sin_analizar} versículos del {label} sin interlineal")
 
     # Concatenar las palabras de un versículo debe devolver su texto exacto:
     # si no, alguna palabra quedaría emparejada con el análisis de otra.
@@ -435,9 +517,20 @@ def build(sources: Path, out: Path) -> None:
     con.executescript(SCHEMA)
 
     con.executemany(
-        "INSERT INTO collections (id, name, short_name, edition, license, source_url, sort_order)"
-        " VALUES (?,?,?,?,?,?,?)",
+        "INSERT INTO collections (id, name, short_name, edition, license, source_url,"
+        " language, rtl, sort_order) VALUES (?,?,?,?,?,?,?,?,?)",
         [
+            (
+                "at",
+                "Antiguo Testamento hebreo",
+                "Hebreo",
+                "Códice de Leningrado (Open Scriptures Hebrew Bible)",
+                "CC BY 4.0 — openscriptures/morphhb",
+                "https://github.com/openscriptures/morphhb",
+                "hbo",
+                1,
+                1,
+            ),
             (
                 "lxx",
                 "Septuaginta (Antiguo Testamento griego)",
@@ -445,7 +538,9 @@ def build(sources: Path, out: Path) -> None:
                 "H. B. Swete, Cambridge 1887–1912",
                 "CC BY-SA 4.0 — First1KGreek / nathans/lxx-swete",
                 "https://github.com/nathans/lxx-swete",
-                1,
+                "grc",
+                0,
+                2,
             ),
             (
                 "nt",
@@ -454,12 +549,33 @@ def build(sources: Path, out: Path) -> None:
                 "Robinson–Pierpont, Texto Bizantino Mayoritario (2018)",
                 "Dominio público (Unlicense)",
                 "https://github.com/byztxt/byzantine-majority-text",
-                2,
+                "grc",
+                0,
+                3,
             ),
         ],
     )
 
     total = 0
+    total_words = total_unaligned = 0
+
+    print("Antiguo Testamento hebreo (Códice de Leningrado):")
+    hebrew_words = hebrew_tagged = 0
+    for order, (osis, code, name_es, name_he, alt) in enumerate(HEBREW_BOOKS, 1):
+        n, w, seen = insert_hebrew(con, sources, order, osis, code, name_es, name_he, alt)
+        total += n
+        total_words += w
+        hebrew_words += seen
+        hebrew_tagged += w
+        if n:
+            print(f"  {name_es:32s} {n:5d} versículos  {w:6d} palabras")
+    if hebrew_words:
+        pct = 100 * hebrew_tagged / hebrew_words
+        print(
+            f"  interlineal hebreo: {hebrew_tagged} de {hebrew_words} palabras ({pct:.2f} %)."
+            " El resto no lleva número Strong en OSHB (qere/ketiv y partículas sueltas)."
+        )
+
     print("Septuaginta (Swete):")
     swete_dir = sources / "lxx-swete" / "data"
     grb_tsv = sources / "grb" / "grb.tsv"
@@ -467,7 +583,7 @@ def build(sources: Path, out: Path) -> None:
     for f in sorted(swete_dir.glob("*.txt")):
         files[int(f.name.split(".", 1)[0])] = f
 
-    for order, (num, (code, name_es, name_gr, alt)) in enumerate(sorted(LXX_BOOKS.items()), 1):
+    for order, (num, (code, name_es, name_orig, alt)) in enumerate(sorted(LXX_BOOKS.items()), 1):
         note = None
         if num in files:
             verses = read_swete(files[num])
@@ -478,21 +594,20 @@ def build(sources: Path, out: Path) -> None:
         else:
             print(f"  AVISO: sin fuente para {name_es} (archivo {num})")
             continue
-        insert_book(con, "lxx", code, name_es, name_gr, alt, note, order, verses, scrub=True)
+        insert_book(con, "lxx", code, name_es, name_orig, alt, note, order, verses, scrub=True)
         total += len(verses)
         print(f"  {name_es:32s} {len(verses):5d} versículos" + ("  [Rahlfs]" if note else ""))
 
     print("Nuevo Testamento (Robinson–Pierpont):")
     byz_dir = sources / "byz" / "csv-unicode" / "ccat" / "no-variants"
     tagged_dir = sources / "byz" / "csv-unicode" / "strongs" / "with-parsing"
-    total_words = total_unaligned = 0
-    for order, (src, code, name_es, name_gr) in enumerate(NT_BOOKS, 1):
+    for order, (src, code, name_es, name_orig) in enumerate(NT_BOOKS, 1):
         path = byz_dir / f"{src}.csv"
         if not path.exists():
             print(f"  AVISO: falta {path}")
             continue
         verses = read_byz_csv(path)
-        book_id = insert_book(con, "nt", code, name_es, name_gr, None, None, order, verses)
+        book_id = insert_book(con, "nt", code, name_es, name_orig, None, None, order, verses)
         total += len(verses)
 
         tagged_path = tagged_dir / f"{src}.csv"
@@ -506,14 +621,45 @@ def build(sources: Path, out: Path) -> None:
 
     print("Léxico y morfología:")
     lex = insert_lexicon(con, sources)
-    print(f"  diccionario Strong griego         {lex:5d} entradas")
+    print(f"  diccionarios Strong (gr. y heb.)  {lex:5d} entradas")
 
-    codes = {row[0] for row in con.execute("SELECT DISTINCT morph FROM words")}
-    table, unknown = build_table(codes)
+    # La lengua del código se decide por la colección del versículo, no por su
+    # inicial: el griego tiene códigos que empiezan por A (adjetivo) y por H (HEB).
+    hebrew_codes, greek_codes = set(), set()
+    for morph, collection in con.execute(
+        "SELECT DISTINCT w.morph, b.collection_id FROM words w"
+        " JOIN verses v ON v.id = w.verse_id"
+        " JOIN books b ON b.id = v.book_id"
+    ):
+        (hebrew_codes if collection == "at" else greek_codes).add(morph)
+
+    table, unknown = build_table(greek_codes)
+
+    # El hebreo no se reimplementa: OSHB publica la clave oficial de sus códigos.
+    key = load_morph_key(sources / "morphhb" / "parsing" / "Oshm.xml")
+    parts = build_part_key(key)
+    missing_key = []
+    for code in sorted(hebrew_codes):
+        description = describe(code, key, parts)
+        if description is None:
+            missing_key.append(code)
+            continue
+        spanish, unresolved = translate(description)
+        if spanish is None:
+            unknown.extend(f"{code} ({' '.join(unresolved)})")
+        else:
+            table[code] = spanish
+
     con.executemany(
         "INSERT INTO morph_codes (code, description) VALUES (?,?)", sorted(table.items())
     )
-    print(f"  códigos morfológicos              {len(table):5d} traducidos al español")
+    print(
+        f"  códigos morfológicos              {len(table):5d} traducidos al español"
+        f" ({len(greek_codes)} griegos, {len(hebrew_codes) - len(missing_key)} hebreos)"
+    )
+    if missing_key:
+        print(f"  AVISO: {len(missing_key)} códigos hebreos fuera de la clave de OSHB:"
+              f" {missing_key[:10]}")
     if unknown:
         print(f"  AVISO: {len(unknown)} códigos sin traducir: {unknown[:10]}")
 

@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dc388.bibliagriega.data.VerseHit
 import com.dc388.bibliagriega.ui.BibliaViewModel
-import com.dc388.bibliagriega.ui.theme.GreekFontFamily
+import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
 /** Todos los versículos donde aparece un mismo número Strong. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +53,7 @@ fun ConcordanceScreen(
                     Column {
                         Text(
                             text = state.lemma.ifBlank { strong },
-                            fontFamily = GreekFontFamily,
+                            fontFamily = ScriptureFontFamily,
                         )
                         Text(
                             text = if (state.loading) strong
@@ -111,7 +111,7 @@ fun ConcordanceScreen(
                     )
                     Text(
                         text = hit.verse.text,
-                        fontFamily = GreekFontFamily,
+                        fontFamily = ScriptureFontFamily,
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }

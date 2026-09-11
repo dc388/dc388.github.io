@@ -49,7 +49,8 @@ class BibleRepository private constructor(private val appContext: Context) {
     }
 
     suspend fun collections(): List<BibleCollection> = query(
-        "SELECT id, name, short_name, edition, license, source_url FROM collections ORDER BY sort_order"
+        "SELECT id, name, short_name, edition, license, source_url, language, rtl" +
+            " FROM collections ORDER BY sort_order"
     ) {
         BibleCollection(
             id = it.getString(0),
@@ -58,17 +59,19 @@ class BibleRepository private constructor(private val appContext: Context) {
             edition = it.getString(3),
             license = it.getString(4),
             sourceUrl = it.getString(5),
+            language = it.getString(6),
+            rtl = it.getInt(7) == 1,
         )
     }
 
     suspend fun books(collectionId: String): List<Book> = query(
-        BOOK_COLUMNS + " WHERE collection_id = ? ORDER BY sort_order",
+        BOOK_COLUMNS + " WHERE b.collection_id = ? ORDER BY b.sort_order",
         arrayOf(collectionId),
         ::readBook,
     )
 
     suspend fun book(bookId: Long): Book? = query(
-        BOOK_COLUMNS + " WHERE id = ?",
+        BOOK_COLUMNS + " WHERE b.id = ?",
         arrayOf(bookId.toString()),
         ::readBook,
     ).firstOrNull()
@@ -123,11 +126,12 @@ class BibleRepository private constructor(private val appContext: Context) {
         collectionId = c.getString(1),
         code = c.getString(2),
         nameEs = c.getString(3),
-        nameGr = c.getString(4),
+        nameOriginal = c.getString(4),
         altName = if (c.isNull(5)) null else c.getString(5),
         sourceNote = if (c.isNull(6)) null else c.getString(6),
         chapterCount = c.getInt(7),
         verseCount = c.getInt(8),
+        rtl = c.getInt(9) == 1,
     )
 
     private fun readVerse(c: Cursor) = Verse(
@@ -226,8 +230,9 @@ class BibleRepository private constructor(private val appContext: Context) {
         private const val DB_NAME = "biblia.db"
 
         private const val BOOK_COLUMNS =
-            "SELECT id, collection_id, code, name_es, name_gr, alt_name, source_note," +
-                " chapter_count, verse_count FROM books"
+            "SELECT b.id, b.collection_id, b.code, b.name_es, b.name_orig, b.alt_name," +
+                " b.source_note, b.chapter_count, b.verse_count, c.rtl" +
+                " FROM books b JOIN collections c ON c.id = b.collection_id"
 
         @Volatile
         private var instance: BibleRepository? = null

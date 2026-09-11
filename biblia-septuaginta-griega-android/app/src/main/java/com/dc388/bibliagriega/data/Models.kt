@@ -1,6 +1,6 @@
 package com.dc388.bibliagriega.data
 
-/** Una de las dos colecciones que trae la app: Septuaginta o Nuevo Testamento. */
+/** Cada uno de los tres corpus: hebreo, Septuaginta y Nuevo Testamento griego. */
 data class BibleCollection(
     val id: String,
     val name: String,
@@ -8,6 +8,10 @@ data class BibleCollection(
     val edition: String,
     val license: String,
     val sourceUrl: String,
+    /** Código ISO de la lengua del texto: `hbo` hebreo, `grc` griego antiguo. */
+    val language: String,
+    /** El hebreo se lee de derecha a izquierda. */
+    val rtl: Boolean,
 )
 
 data class Book(
@@ -15,13 +19,16 @@ data class Book(
     val collectionId: String,
     val code: String,
     val nameEs: String,
-    val nameGr: String,
+    /** Nombre del libro en su lengua original: griego o hebreo. */
+    val nameOriginal: String,
     /** Nombre con el que el libro se conoce en las biblias hebreas/modernas, si difiere. */
     val altName: String?,
     /** Nota de procedencia cuando el texto no viene de la edición principal. */
     val sourceNote: String?,
     val chapterCount: Int,
     val verseCount: Int,
+    /** Heredado de la colección: evita una consulta extra en el lector. */
+    val rtl: Boolean,
 ) {
     val displayName: String get() = if (altName != null) "$nameEs ($altName)" else nameEs
 }

@@ -41,7 +41,7 @@ La propuesta tiene cuatro módulos. Este es el estado real de cada uno.
 |---|---|---|---|
 | Septuaginta (AT griego) | **Hecho** — 29 490 versículos | Swete / First1KGreek | CC BY-SA 4.0 |
 | Nuevo Testamento griego | **Hecho** — 7 953 versículos | Robinson-Pierpont 2018 | Dominio público |
-| Hebreo/Arameo (Masorético) | Falta | [openscriptures/morphhb](https://github.com/openscriptures/morphhb) (OSHB) | **CC BY 4.0 — permite uso comercial** |
+| Hebreo/Arameo (Masorético) | **Hecho** — 23 213 versículos | [openscriptures/morphhb](https://github.com/openscriptures/morphhb) (OSHB) | **CC BY 4.0 — permite uso comercial** |
 
 El Antiguo Testamento hebreo es la incorporación más rentable que queda: OSHB
 trae el Códice de Leningrado completo en OSIS XML **ya etiquetado con números
@@ -141,10 +141,9 @@ En el dispositivo, el texto debe estar en tablas normalizadas indexadas; parsear
 XML en tiempo de lectura sería lento y sin motivo.
 
 **Un detalle concreto que la propuesta no menciona:** el hebreo se escribe de
-derecha a izquierda. El manifiesto actual declara `android:supportsRtl="false"`.
-Incorporar el Antiguo Testamento hebreo obliga a cambiarlo y a revisar todo el
-lector para que sea consciente de bidireccionalidad, incluida la mezcla de hebreo
-con números de versículo y con glosas en español.
+derecha a izquierda. Ya está resuelto: el manifiesto declara `supportsRtl` y el
+cuerpo del capítulo se dibuja en la dirección que marca la lengua del texto,
+mientras la interfaz en español se queda de izquierda a derecha.
 
 ---
 
@@ -157,23 +156,22 @@ Ordenado por valor entregado sobre coste, no por el orden de la propuesta.
    de Robinson traducidos al español.
 2. ~~**Léxico Strong griego.**~~ **Hecho.** 5 523 entradas, con concordancia:
    desde cualquier palabra se ve dónde más aparece.
-3. **Antiguo Testamento hebreo (OSHB).** Trabajo real: parsear OSIS y resolver el
-   soporte RTL. Trae Strong y morfología ya incluidos.
-4. **Léxicos hebreos (Strong hebreo y BDB).** Cierra el estudio en los dos
-   idiomas.
+3. ~~**Antiguo Testamento hebreo (OSHB).**~~ **Hecho.** 39 libros, 23 213
+   versículos y 299 556 palabras analizadas (98,05 % del texto), con el arameo
+   de Daniel y Esdras marcado. Lector de derecha a izquierda.
+4. **Léxico hebreo.** Strong hebreo **hecho** (8 674 entradas). Falta
+   Brown-Driver-Briggs, que da definiciones mucho más ricas.
 5. **Notas personales locales.** Sin servidor, sin cambiar la privacidad.
 6. **Comentarios clásicos.** Previa auditoría de la digitalización.
 7. **Interlineal de la Septuaginta.** Requiere resolver antes la licencia de la
    morfología.
 8. **Comunidad y wiki.** Producto aparte, con servidor y moderación.
 
-Los pasos 1 y 2 ya están implementados: fueron incrementos sobre
-`tools/build_db.py` y la base de datos, sin decidir nada sobre la arquitectura.
-La base pasó de 18,4 MB a 28,2 MB.
+Los pasos 1 a 4 ya están implementados. La base pasó de 18,4 MB a 59 MB (unos
+20 MB comprimidos en el APK).
 
-El paso 3 es el primero que sí obliga a decidir: el hebreo se escribe de derecha
-a izquierda y, si en algún momento se quiere iOS, conviene resolver antes si el
-lector sigue siendo nativo en Kotlin o pasa a multiplataforma.
+La decisión sobre iOS sigue abierta, pero cada vez pesa menos: el activo es la
+base de datos y el importador, que no cambian de lenguaje.
 
 ---
 

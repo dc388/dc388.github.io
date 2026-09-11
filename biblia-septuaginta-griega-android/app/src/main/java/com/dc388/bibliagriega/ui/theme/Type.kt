@@ -7,10 +7,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * El texto bíblico usa la serif del sistema, que en Android incluye la cobertura
- * politónica de Noto Serif (U+1F00–U+1FFF), necesaria para el griego de la LXX.
+ * El texto bíblico usa la serif del sistema. En Android la cadena de reserva
+ * incluye Noto Serif con cobertura politónica griega (U+1F00–U+1FFF) y Noto
+ * Serif Hebrew con vocalización y cantilación, que es lo que necesitan la
+ * Septuaginta y el Códice de Leningrado.
  */
-val GreekFontFamily = FontFamily.Serif
+val ScriptureFontFamily = FontFamily.Serif
 
 val BibliaTypography = Typography(
     titleLarge = TextStyle(

@@ -25,7 +25,7 @@ Después puedes borrar esta carpeta de `dc388.github.io`.
 
 ## Qué falta aquí respecto al proyecto completo
 
-Solo `app/src/main/assets/biblia.db` (29 MB), que no se subió a este repositorio
+Solo `app/src/main/assets/biblia.db` (59 MB), que no se subió a este repositorio
 de sitio web para no engordarlo. `python3 tools/build_db.py` lo reconstruye
 exactamente igual: clona las fuentes originales, aplica la limpieza de OCR,
 alinea el interlineal del Nuevo Testamento con los números Strong y la

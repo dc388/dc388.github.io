@@ -26,6 +26,10 @@ NOTA SOBRE LOS TEXTOS BÍBLICOS
 La licencia MIT cubre el código de esta aplicación. Los textos griegos que se
 distribuyen en app/src/main/assets/biblia.db tienen sus propias licencias:
 
+* Antiguo Testamento hebreo: Códice de Leningrado etiquetado por el Open
+  Scriptures Hebrew Bible, https://github.com/openscriptures/morphhb —
+  CC BY 4.0.
+
 * Septuaginta, edición de H. B. Swete (Cambridge, 1887–1912), digitalizada por
   el proyecto First1KGreek y normalizada en https://github.com/nathans/lxx-swete
   — Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0).
@@ -34,7 +38,8 @@ distribuyen en app/src/main/assets/biblia.db tienen sus propias licencias:
   Greek: Byzantine Textform" (2018),
   https://github.com/byztxt/byzantine-majority-text — dominio público.
 
-* Diccionario griego de Strong (1890, dominio público), en la versión JSON de
+* Diccionarios griego y hebreo de Strong (1890, dominio público), en las
+  versiones JSON de
   https://github.com/openscriptures/strongs — CC BY-SA. El análisis morfológico
   de Robinson que acompaña al Nuevo Testamento está en dominio público.
 

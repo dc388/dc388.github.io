@@ -38,6 +38,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,17 +48,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dc388.bibliagriega.data.InterlinearWord
 import com.dc388.bibliagriega.data.Verse
 import com.dc388.bibliagriega.data.VerseRef
 import com.dc388.bibliagriega.ui.BibliaViewModel
-import com.dc388.bibliagriega.ui.theme.GreekFontFamily
+import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,7 +96,7 @@ fun ReaderScreen(
                         Text("$bookName $chapter")
                         if (book != null) {
                             Text(
-                                text = book.nameGr,
+                                text = book.nameOriginal,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -157,6 +160,8 @@ fun ReaderScreen(
             return@Scaffold
         }
 
+        val rtl = book?.rtl == true
+        val direction = if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr
         val fontSize = (18 * settings.fontScale).sp
         val numberColor = MaterialTheme.colorScheme.secondary
         val textColor = MaterialTheme.colorScheme.onBackground
@@ -165,77 +170,78 @@ fun ReaderScreen(
             .map { it.verse to it.suffix }
             .toSet()
 
-        if (settings.paragraphMode) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 20.dp,
-                    end = 20.dp,
-                    top = padding.calculateTopPadding() + 12.dp,
-                    bottom = padding.calculateBottomPadding() + 32.dp,
-                ),
-            ) {
-                item {
-                    Text(
-                        text = buildAnnotatedString {
-                            state.verses.forEach { verse ->
-                                if (settings.showVerseNumbers) {
-                                    withStyle(
-                                        SpanStyle(
-                                            fontSize = fontSize * 0.6f,
-                                            fontWeight = FontWeight.Bold,
-                                            color = numberColor,
-                                        ),
-                                    ) { append("${verse.label} ") }
+        CompositionLocalProvider(LocalLayoutDirection provides direction) {
+            if (settings.paragraphMode) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        start = 20.dp,
+                        end = 20.dp,
+                        top = padding.calculateTopPadding() + 12.dp,
+                        bottom = padding.calculateBottomPadding() + 32.dp,
+                    ),
+                ) {
+                    item {
+                        Text(
+                            text = buildAnnotatedString {
+                                state.verses.forEach { verse ->
+                                    if (settings.showVerseNumbers) {
+                                        withStyle(
+                                            SpanStyle(
+                                                fontSize = fontSize * 0.6f,
+                                                fontWeight = FontWeight.Bold,
+                                                color = numberColor,
+                                            ),
+                                        ) { append("${verse.label} ") }
+                                    }
+                                    append(verse.text)
+                                    append("  ")
                                 }
-                                append(verse.text)
-                                append("  ")
-                            }
-                        },
-                        fontFamily = GreekFontFamily,
-                        fontSize = fontSize,
-                        lineHeight = lineHeight,
-                        color = textColor,
-                    )
-                }
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    top = padding.calculateTopPadding() + 8.dp,
-                    bottom = padding.calculateBottomPadding() + 32.dp,
-                ),
-            ) {
-                items(state.verses, key = { "${it.verse}${it.suffix}" }) { verse ->
-                    val isMarked = (verse.verse to verse.suffix) in marked
-                    val words = interlinear[verse.id]
-
-                    if (settings.interlinear && !words.isNullOrEmpty()) {
-                        InterlinearVerseRow(
-                            label = verse.label,
-                            words = words,
-                            showNumber = settings.showVerseNumbers,
-                            marked = isMarked,
-                            fontSizeSp = fontSize.value,
-                            onWordClick = { word ->
-                                vm.studyWord(word, "$bookName $chapter:${verse.label}")
                             },
-                            onVerseClick = { sheetVerse = verse },
-                        )
-                    } else {
-                        VerseRow(
-                            verse = verse,
-                            showNumber = settings.showVerseNumbers,
-                            marked = isMarked,
-                            fontSizeSp = fontSize.value,
-                            lineHeightSp = lineHeight.value,
-                            onClick = { sheetVerse = verse },
+                            fontFamily = ScriptureFontFamily,
+                            fontSize = fontSize,
+                            lineHeight = lineHeight,
+                            color = textColor,
                         )
                     }
                 }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        top = padding.calculateTopPadding() + 8.dp,
+                        bottom = padding.calculateBottomPadding() + 32.dp,
+                    ),
+                ) {
+                    items(state.verses, key = { "${it.verse}${it.suffix}" }) { verse ->
+                        val isMarked = (verse.verse to verse.suffix) in marked
+                        val words = interlinear[verse.id]
+
+                        if (settings.interlinear && !words.isNullOrEmpty()) {
+                            InterlinearVerseRow(
+                                label = verse.label,
+                                words = words,
+                                showNumber = settings.showVerseNumbers,
+                                marked = isMarked,
+                                fontSizeSp = fontSize.value,
+                                onWordClick = { word ->
+                                    vm.studyWord(word, "$bookName $chapter:${verse.label}")
+                                },
+                                onVerseClick = { sheetVerse = verse },
+                            )
+                        } else {
+                            VerseRow(
+                                verse = verse,
+                                showNumber = settings.showVerseNumbers,
+                                marked = isMarked,
+                                fontSizeSp = fontSize.value,
+                                lineHeightSp = lineHeight.value,
+                                onClick = { sheetVerse = verse },
+                            )
+                        }
+                    }
+                }
             }
-        }
     }
 
     sheetVerse?.let { verse ->
@@ -249,7 +255,7 @@ fun ReaderScreen(
                 Text(reference, style = MaterialTheme.typography.titleMedium)
                 Text(
                     text = verse.text,
-                    fontFamily = GreekFontFamily,
+                    fontFamily = ScriptureFontFamily,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(vertical = 12.dp),
                 )
@@ -304,6 +310,7 @@ fun ReaderScreen(
                     }
                 }
             }
+        }
         }
     }
 
@@ -388,7 +395,7 @@ private fun VerseRow(
         }
         Text(
             text = verse.text,
-            fontFamily = GreekFontFamily,
+            fontFamily = ScriptureFontFamily,
             fontSize = fontSizeSp.sp,
             lineHeight = lineHeightSp.sp,
             color = MaterialTheme.colorScheme.onBackground,

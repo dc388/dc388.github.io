@@ -198,7 +198,7 @@ private fun BookRow(book: Book, onClick: () -> Unit) {
                 fontWeight = FontWeight.Medium,
             )
             Text(
-                text = book.nameGr,
+                text = book.nameOriginal,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

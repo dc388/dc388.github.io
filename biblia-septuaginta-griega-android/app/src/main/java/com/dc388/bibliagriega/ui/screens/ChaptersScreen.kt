@@ -49,7 +49,7 @@ fun ChaptersScreen(
                         Text(book?.displayName ?: "Capítulos")
                         if (book != null) {
                             Text(
-                                text = book.nameGr,
+                                text = book.nameOriginal,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
