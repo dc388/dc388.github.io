@@ -49,6 +49,19 @@ Libros que Swete incluye pero que First1KGreek aún no ha digitalizado y que por
 tanto faltan: las recensiones alternativas de Josué y Jueces, y el Tobías del
 Códice Sinaítico.
 
+## Interlineal y léxico
+
+**Análisis morfológico y numeración Strong del Nuevo Testamento**: del mismo
+repositorio [byztxt/byzantine-majority-text](https://github.com/byztxt/byzantine-majority-text),
+en dominio público. Los códigos de Robinson se distribuyen aquí traducidos al
+español; esa traducción es obra de este proyecto (`tools/morphology.py`) y se
+publica bajo la licencia MIT del código.
+
+**Diccionario griego de Strong** (James Strong, 1890; obra en dominio público):
+versión JSON de [openscriptures/strongs](https://github.com/openscriptures/strongs),
+publicada por Open Scriptures bajo **CC BY-SA**. Las entradas del léxico que
+viajan en `biblia.db` conservan esa licencia.
+
 ## Código de terceros
 
 La app usa AndroidX y Jetpack Compose, bajo licencia Apache 2.0.

@@ -15,4 +15,8 @@ app/keystore.properties
 # Fuentes clonadas por tools/build_db.py
 build/sources/
 
+# Python
+__pycache__/
+*.pyc
+
 .DS_Store

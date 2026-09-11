@@ -74,15 +74,15 @@ class BibleRepository private constructor(private val appContext: Context) {
     ).firstOrNull()
 
     suspend fun chapter(bookId: Long, chapter: Int): List<Verse> = query(
-        "SELECT book_id, chapter, verse, suffix, text FROM verses" +
+        "SELECT id, book_id, chapter, verse, suffix, text FROM verses" +
             " WHERE book_id = ? AND chapter = ? ORDER BY verse, suffix",
         arrayOf(bookId.toString(), chapter.toString()),
         ::readVerse,
     )
 
     suspend fun verse(ref: VerseRef): VerseHit? = query(
-        "SELECT v.book_id, v.chapter, v.verse, v.suffix, v.text, b.name_es, b.collection_id" +
-            " FROM verses v JOIN books b ON b.id = v.book_id" +
+        "SELECT v.id, v.book_id, v.chapter, v.verse, v.suffix, v.text, b.name_es," +
+            " b.collection_id FROM verses v JOIN books b ON b.id = v.book_id" +
             " WHERE v.book_id = ? AND v.chapter = ? AND v.verse = ? AND v.suffix = ?",
         arrayOf(ref.bookId.toString(), ref.chapter.toString(), ref.verse.toString(), ref.suffix),
         ::readHit,
@@ -101,8 +101,8 @@ class BibleRepository private constructor(private val appContext: Context) {
 
         val sql = buildString {
             append(
-                "SELECT v.book_id, v.chapter, v.verse, v.suffix, v.text, b.name_es, b.collection_id" +
-                    " FROM verses v JOIN books b ON b.id = v.book_id" +
+                "SELECT v.id, v.book_id, v.chapter, v.verse, v.suffix, v.text, b.name_es," +
+                    " b.collection_id FROM verses v JOIN books b ON b.id = v.book_id" +
                     // El espacio inicial hace que el patrón «% needle%» ancle en inicio de palabra.
                     " WHERE ' ' || v.text_norm LIKE ?"
             )
@@ -131,17 +131,83 @@ class BibleRepository private constructor(private val appContext: Context) {
     )
 
     private fun readVerse(c: Cursor) = Verse(
-        bookId = c.getLong(0),
-        chapter = c.getInt(1),
-        verse = c.getInt(2),
-        suffix = c.getString(3) ?: "",
-        text = c.getString(4),
+        id = c.getLong(0),
+        bookId = c.getLong(1),
+        chapter = c.getInt(2),
+        verse = c.getInt(3),
+        suffix = c.getString(4) ?: "",
+        text = c.getString(5),
     )
 
     private fun readHit(c: Cursor) = VerseHit(
         verse = readVerse(c),
-        bookName = c.getString(5),
-        collectionId = c.getString(6),
+        bookName = c.getString(6),
+        collectionId = c.getString(7),
+    )
+
+    // --- Interlineal y léxico -------------------------------------------------
+
+    /**
+     * Análisis palabra por palabra de todo un capítulo, agrupado por id de versículo.
+     * Devuelve un mapa vacío en los textos que todavía no están etiquetados.
+     */
+    suspend fun wordsOfChapter(bookId: Long, chapter: Int): Map<Long, List<InterlinearWord>> {
+        val rows = query(
+            "SELECT w.verse_id, w.position, w.surface, w.strong, w.morph, m.description," +
+                " l.lemma, l.translit" +
+                " FROM words w" +
+                " JOIN verses v ON v.id = w.verse_id" +
+                " LEFT JOIN morph_codes m ON m.code = w.morph" +
+                " LEFT JOIN lexicon l ON l.strong = w.strong" +
+                " WHERE v.book_id = ? AND v.chapter = ?" +
+                " ORDER BY w.verse_id, w.position",
+            arrayOf(bookId.toString(), chapter.toString()),
+        ) {
+            it.getLong(0) to InterlinearWord(
+                position = it.getInt(1),
+                surface = it.getString(2),
+                strong = it.getString(3),
+                morphCode = it.getString(4),
+                morphology = if (it.isNull(5)) null else it.getString(5),
+                lemma = if (it.isNull(6)) null else it.getString(6),
+                transliteration = if (it.isNull(7)) null else it.getString(7),
+            )
+        }
+        return rows.groupBy({ it.first }, { it.second })
+    }
+
+    suspend fun lexiconEntry(strong: String): LexiconEntry? = query(
+        "SELECT strong, lemma, translit, derivation, definition, kjv_usage" +
+            " FROM lexicon WHERE strong = ?",
+        arrayOf(strong),
+    ) {
+        LexiconEntry(
+            strong = it.getString(0),
+            lemma = it.getString(1),
+            transliteration = if (it.isNull(2)) null else it.getString(2),
+            derivation = if (it.isNull(3)) null else it.getString(3),
+            definition = if (it.isNull(4)) null else it.getString(4),
+            kjvUsage = if (it.isNull(5)) null else it.getString(5),
+        )
+    }.firstOrNull()
+
+    /** Cuántas veces aparece un número Strong en todo el corpus etiquetado. */
+    suspend fun occurrenceCount(strong: String): Int = query(
+        "SELECT COUNT(*) FROM words WHERE strong = ?",
+        arrayOf(strong),
+    ) { it.getInt(0) }.firstOrNull() ?: 0
+
+    /** Concordancia: versículos donde aparece un número Strong. */
+    suspend fun occurrences(strong: String, limit: Int = 500): List<VerseHit> = query(
+        "SELECT DISTINCT v.id, v.book_id, v.chapter, v.verse, v.suffix, v.text, b.name_es," +
+            " b.collection_id, b.sort_order FROM words w" +
+            " JOIN verses v ON v.id = w.verse_id" +
+            " JOIN books b ON b.id = v.book_id" +
+            " WHERE w.strong = ?" +
+            " ORDER BY b.sort_order, v.chapter, v.verse" +
+            " LIMIT ${limit.coerceIn(1, 2000)}",
+        arrayOf(strong),
+        ::readHit,
     )
 
     private suspend fun <T> query(

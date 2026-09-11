@@ -22,6 +22,8 @@ data class Settings(
     val showVerseNumbers: Boolean = true,
     /** Cada versículo en su propio párrafo, o texto corrido como en las ediciones críticas. */
     val paragraphMode: Boolean = false,
+    /** Muestra cada palabra con su lema y análisis debajo, donde el texto está etiquetado. */
+    val interlinear: Boolean = false,
 )
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "ajustes")
@@ -36,6 +38,7 @@ class Prefs private constructor(private val context: Context) {
             lineHeightScale = p[KEY_LINE_HEIGHT] ?: 1.0f,
             showVerseNumbers = (p[KEY_VERSE_NUMBERS] ?: "1") == "1",
             paragraphMode = (p[KEY_PARAGRAPH] ?: "0") == "1",
+            interlinear = (p[KEY_INTERLINEAR] ?: "0") == "1",
         )
     }
 
@@ -62,6 +65,9 @@ class Prefs private constructor(private val context: Context) {
     suspend fun setParagraphMode(on: Boolean) =
         put { it[KEY_PARAGRAPH] = if (on) "1" else "0" }
 
+    suspend fun setInterlinear(on: Boolean) =
+        put { it[KEY_INTERLINEAR] = if (on) "1" else "0" }
+
     suspend fun setLastRead(ref: VerseRef) = put { it[KEY_LAST_READ] = ref.encode() }
 
     suspend fun toggleBookmark(ref: VerseRef) = put { prefs ->
@@ -85,6 +91,7 @@ class Prefs private constructor(private val context: Context) {
         private val KEY_LINE_HEIGHT = floatPreferencesKey("line_height")
         private val KEY_VERSE_NUMBERS = stringPreferencesKey("verse_numbers")
         private val KEY_PARAGRAPH = stringPreferencesKey("paragraph_mode")
+        private val KEY_INTERLINEAR = stringPreferencesKey("interlinear")
         private val KEY_LAST_READ = stringPreferencesKey("last_read")
         private val KEY_BOOKMARKS = stringSetPreferencesKey("bookmarks")
 

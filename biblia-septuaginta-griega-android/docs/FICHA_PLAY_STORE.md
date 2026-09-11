@@ -9,7 +9,7 @@ Biblia Griega: LXX y NT
 ## Descripción breve (máx. 80 caracteres)
 
 ```
-Septuaginta y Nuevo Testamento en griego, completos y sin conexión.
+Septuaginta y NT griego con interlineal Strong. Sin conexión y sin anuncios.
 ```
 
 ## Descripción completa (máx. 4000 caracteres)
@@ -31,6 +31,15 @@ TEXTOS
 
 • Nuevo Testamento griego en el Texto Bizantino Mayoritario de Robinson y
   Pierpont (edición de 2018), en dominio público.
+
+INTERLINEAL Y ESTUDIO
+
+• Cada una de las 140 149 palabras del Nuevo Testamento lleva su número Strong
+  y su análisis morfológico.
+• Toca cualquier palabra y verás su lema, su transliteración, su análisis
+  gramatical explicado en español y su definición en el Diccionario Strong.
+• Concordancia completa: desde una palabra, salta a todos los versículos donde
+  vuelve a aparecer.
 
 LECTURA
 

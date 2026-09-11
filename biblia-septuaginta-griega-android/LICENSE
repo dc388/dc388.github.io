@@ -34,6 +34,10 @@ distribuyen en app/src/main/assets/biblia.db tienen sus propias licencias:
   Greek: Byzantine Textform" (2018),
   https://github.com/byztxt/byzantine-majority-text — dominio público.
 
+* Diccionario griego de Strong (1890, dominio público), en la versión JSON de
+  https://github.com/openscriptures/strongs — CC BY-SA. El análisis morfológico
+  de Robinson que acompaña al Nuevo Testamento está en dominio público.
+
 * Eclesiastés, de tradición Rahlfs, tomado de https://github.com/LukeSmithxyz/grb
   porque la edición de Swete todavía no está digitalizada para ese libro.
 

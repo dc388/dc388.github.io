@@ -102,6 +102,13 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
                 onChange = vm::setShowVerseNumbers,
             )
             SwitchRow(
+                label = "Modo interlineal",
+                description = "Muestra cada palabra griega con su transliteración y su número " +
+                    "Strong; al tocarla se abre el léxico. Disponible en el Nuevo Testamento.",
+                checked = settings.interlinear,
+                onChange = vm::setInterlinear,
+            )
+            SwitchRow(
                 label = "Texto corrido",
                 description = "Une los versículos en párrafo, como en las ediciones críticas.",
                 checked = settings.paragraphMode,
@@ -155,6 +162,25 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+            }
+
+            Column(Modifier.fillMaxWidth().padding(16.dp, 8.dp)) {
+                Text("Léxico y análisis morfológico", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Diccionario Strong (1890), Open Scriptures",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "CC BY-SA — https://github.com/openscriptures/strongs",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = "Análisis morfológico de Robinson, dominio público, traducido al " +
+                        "español por este proyecto.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
 
             Text(

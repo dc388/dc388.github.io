@@ -3,8 +3,10 @@
 Aplicación Android nativa (Kotlin + Jetpack Compose) para leer la **Septuaginta**
 (Antiguo Testamento griego) y el **Nuevo Testamento griego** sin conexión.
 
-El texto completo viaja dentro del APK: **37 443 versículos en 83 libros**.
-La app no pide permisos, no usa internet y no recoge ningún dato.
+El texto completo viaja dentro del APK: **37 443 versículos en 83 libros**, y el
+Nuevo Testamento incluye **interlineal con números Strong, análisis morfológico
+en español y diccionario**. La app no pide permisos, no usa internet y no recoge
+ningún dato.
 
 ## Qué incluye
 
@@ -39,9 +41,33 @@ jurisdicciones de vida + 70 años). Por eso aquí se usa Swete por defecto.
 De ese origen ya viene Eclesiastés, porque Swete no está digitalizado para
 ese libro.
 
+## Interlineal del Nuevo Testamento
+
+Las 140 149 palabras del Nuevo Testamento llevan su número Strong y su análisis
+morfológico de Robinson, alineados palabra a palabra con el texto acentuado.
+
+Al tocar una palabra se abre su ficha: lema, transliteración, análisis
+gramatical **en español**, definición del Diccionario Strong y concordancia
+completa de dónde más aparece esa misma palabra.
+
+```
+Ἐν      ἀρχῇ            ἦν                          ὁ          λόγος,
+en      archḗ           eimí                        ho         lógos
+G1722   G746            G1510                       G3588      G3056
+prep.   dativo sing.    imperfecto, voz activa,     artículo   nominativo
+        femenino        indicativo, 3ª pers. sing.  nom. s. m. sing. masc.
+```
+
+Los 1 055 códigos morfológicos distintos del corpus están traducidos al español
+(`tools/morphology.py`), y la traducción se valida en cada compilación de la
+base: si apareciera un código desconocido, el importador avisa en vez de mostrar
+una etiqueta inventada.
+
 ## Funciones
 
 - Lector con dos modos: versículo por línea o texto corrido en párrafo.
+- Modo interlineal con lema, transliteración y número Strong bajo cada palabra.
+- Ficha de palabra con definición del léxico y concordancia completa.
 - Tamaño de letra e interlineado ajustables; tema claro, oscuro o del sistema.
 - Búsqueda en todo el texto **sin escribir acentos y por comienzo de palabra**:
   `λογ` encuentra `λόγος`, `λόγῳ` y `λόγον`, pero no `φλογός`. Se puede limitar
@@ -74,9 +100,15 @@ python3 tools/build_db.py
 El script clona los repositorios de origen en `build/sources/`, normaliza los
 textos y arma el SQLite. Solo necesita Python 3.9+ y `git`.
 
-Esquema: `collections` → `books` → `verses`. Cada versículo guarda además
-`text_norm`, una copia en minúsculas, sin diacríticos y sin puntuación, que es
-la que hace posible buscar sin acentos.
+Esquema: `collections` → `books` → `verses` → `words`, más `lexicon` y
+`morph_codes`. Cada versículo guarda además `text_norm`, una copia en
+minúsculas, sin diacríticos y sin puntuación, que es la que hace posible buscar
+sin acentos.
+
+El importador comprueba tres invariantes y falla ruidosamente si alguna se
+rompe: que cada palabra tenga entrada de léxico y morfología, que ningún
+versículo del NT quede sin analizar, y que concatenar las palabras de un
+versículo reproduzca su texto carácter por carácter.
 
 ## Publicar en Google Play
 
@@ -94,6 +126,8 @@ app/src/main/
     data/                          repositorio SQLite, preferencias, modelos
     ui/                            ViewModel, tema, pantallas Compose
 tools/build_db.py                  generador de la base de datos
+tools/clean.py                     limpieza de artefactos de OCR
+tools/morphology.py                códigos de Robinson traducidos al español
 docs/                              guía de publicación y ficha de la tienda
 ```
 
@@ -104,10 +138,10 @@ proyecto a interlineal con números Strong, morfología, léxicos y Antiguo
 Testamento hebreo: fuentes verificadas, licencias, y qué partes son baratas y
 cuáles caras.
 
-Resultado más relevante de esa comprobación: el etiquetado Strong y morfológico
-del Nuevo Testamento **alinea 1:1 con el texto que ya distribuimos en los 7 953
-versículos**, así que el interlineal del NT es un `JOIN`, no un proyecto de
-alineación.
+Los dos primeros pasos de esa hoja de ruta —interlineal del NT y léxico
+Strong— **ya están implementados**. Lo siguiente es el Antiguo Testamento
+hebreo (OSHB, CC BY 4.0), que exige soporte de escritura de derecha a
+izquierda.
 
 ## Licencias
 

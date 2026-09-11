@@ -31,10 +31,11 @@ jobs:
       - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Comprobar que la base de datos está presente
+      - name: Comprobar la integridad de la base de datos
         run: |
           test -f app/src/main/assets/biblia.db
           echo "Base de datos: $(du -h app/src/main/assets/biblia.db | cut -f1)"
+          python3 tools/verify_db.py
 
       - name: Compilar APK de depuración
         run: ./gradlew assembleDebug --stacktrace

@@ -27,6 +27,7 @@ data class Book(
 }
 
 data class Verse(
+    val id: Long,
     val bookId: Long,
     val chapter: Int,
     val verse: Int,
@@ -45,6 +46,29 @@ data class VerseHit(
 ) {
     val reference: String get() = "$bookName ${verse.chapter}:${verse.label}"
 }
+
+/** Una palabra del texto griego con su análisis Strong y morfológico. */
+data class InterlinearWord(
+    val position: Int,
+    /** La palabra tal como aparece en el texto, con su puntuación. */
+    val surface: String,
+    val strong: String,
+    val morphCode: String,
+    /** Descripción morfológica en español, ya resuelta desde `morph_codes`. */
+    val morphology: String?,
+    val lemma: String?,
+    val transliteration: String?,
+)
+
+/** Entrada del diccionario griego de Strong. */
+data class LexiconEntry(
+    val strong: String,
+    val lemma: String,
+    val transliteration: String?,
+    val derivation: String?,
+    val definition: String?,
+    val kjvUsage: String?,
+)
 
 /** Referencia serializable que identifica una posición de lectura. */
 data class VerseRef(val bookId: Long, val chapter: Int, val verse: Int, val suffix: String = "") {

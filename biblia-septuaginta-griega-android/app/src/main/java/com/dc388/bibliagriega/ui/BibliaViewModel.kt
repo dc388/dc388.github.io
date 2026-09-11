@@ -5,6 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.dc388.bibliagriega.data.BibleRepository
 import com.dc388.bibliagriega.data.Book
+import com.dc388.bibliagriega.data.InterlinearWord
+import com.dc388.bibliagriega.data.LexiconEntry
 import com.dc388.bibliagriega.data.BibleCollection
 import com.dc388.bibliagriega.data.Prefs
 import com.dc388.bibliagriega.data.Settings
@@ -35,6 +37,23 @@ data class ChapterState(
     val loading: Boolean = true,
 )
 
+/** Estado del panel de análisis de una palabra griega. */
+data class WordStudy(
+    val word: InterlinearWord,
+    val reference: String,
+    val entry: LexiconEntry? = null,
+    val occurrences: Int = 0,
+    val loading: Boolean = true,
+)
+
+data class ConcordanceState(
+    val strong: String = "",
+    val lemma: String = "",
+    val hits: List<VerseHit> = emptyList(),
+    val total: Int = 0,
+    val loading: Boolean = true,
+)
+
 data class SearchState(
     val query: String = "",
     val scope: String? = null,
@@ -59,6 +78,16 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _bookmarkHits = MutableStateFlow<List<VerseHit>>(emptyList())
     val bookmarkHits: StateFlow<List<VerseHit>> = _bookmarkHits.asStateFlow()
+
+    /** Análisis por versículo del capítulo abierto; vacío en los textos sin etiquetar. */
+    private val _interlinear = MutableStateFlow<Map<Long, List<InterlinearWord>>>(emptyMap())
+    val interlinear: StateFlow<Map<Long, List<InterlinearWord>>> = _interlinear.asStateFlow()
+
+    private val _wordStudy = MutableStateFlow<WordStudy?>(null)
+    val wordStudy: StateFlow<WordStudy?> = _wordStudy.asStateFlow()
+
+    private val _concordance = MutableStateFlow(ConcordanceState())
+    val concordance: StateFlow<ConcordanceState> = _concordance.asStateFlow()
 
     val settings: StateFlow<Settings> =
         prefs.settings.stateIn(viewModelScope, SharingStarted.Eagerly, Settings())
@@ -96,12 +125,39 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
     fun loadChapter(bookId: Long, chapter: Int) {
         viewModelScope.launch {
             _chapter.value = ChapterState(book = bookOf(bookId), chapter = chapter, loading = true)
+            _interlinear.value = emptyMap()
             val book = bookOf(bookId) ?: repo.book(bookId)
             val verses = repo.chapter(bookId, chapter)
             _chapter.value = ChapterState(book, chapter, verses, loading = false)
             verses.firstOrNull()?.let {
                 prefs.setLastRead(VerseRef(bookId, chapter, it.verse, it.suffix))
             }
+            _interlinear.value = repo.wordsOfChapter(bookId, chapter)
+        }
+    }
+
+    /** Abre el panel de una palabra: léxico y número de apariciones. */
+    fun studyWord(word: InterlinearWord, reference: String) {
+        _wordStudy.value = WordStudy(word, reference)
+        viewModelScope.launch {
+            val entry = repo.lexiconEntry(word.strong)
+            val count = repo.occurrenceCount(word.strong)
+            _wordStudy.value = _wordStudy.value
+                ?.takeIf { it.word.strong == word.strong }
+                ?.copy(entry = entry, occurrences = count, loading = false)
+        }
+    }
+
+    fun closeWordStudy() {
+        _wordStudy.value = null
+    }
+
+    fun loadConcordance(strong: String, lemma: String) {
+        _concordance.value = ConcordanceState(strong = strong, lemma = lemma, loading = true)
+        viewModelScope.launch {
+            val hits = repo.occurrences(strong)
+            val total = repo.occurrenceCount(strong)
+            _concordance.value = ConcordanceState(strong, lemma, hits, total, loading = false)
         }
     }
 
@@ -148,5 +204,9 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setParagraphMode(on: Boolean) {
         viewModelScope.launch { prefs.setParagraphMode(on) }
+    }
+
+    fun setInterlinear(on: Boolean) {
+        viewModelScope.launch { prefs.setInterlinear(on) }
     }
 }

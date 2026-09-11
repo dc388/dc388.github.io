@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dc388.bibliagriega.data.InterlinearWord
 import com.dc388.bibliagriega.data.Verse
 import com.dc388.bibliagriega.data.VerseRef
 import com.dc388.bibliagriega.ui.BibliaViewModel
@@ -67,10 +68,13 @@ fun ReaderScreen(
     onBack: () -> Unit,
     onOpenChapter: (Long, Int) -> Unit,
     onSettings: () -> Unit,
+    onOpenConcordance: (strong: String, lemma: String) -> Unit,
 ) {
     val state by vm.chapter.collectAsState()
     val settings by vm.settings.collectAsState()
     val bookmarks by vm.bookmarks.collectAsState()
+    val interlinear by vm.interlinear.collectAsState()
+    val wordStudy by vm.wordStudy.collectAsState()
     val context = LocalContext.current
 
     var sheetVerse by remember { mutableStateOf<Verse?>(null) }
@@ -205,14 +209,30 @@ fun ReaderScreen(
             ) {
                 items(state.verses, key = { "${it.verse}${it.suffix}" }) { verse ->
                     val isMarked = (verse.verse to verse.suffix) in marked
-                    VerseRow(
-                        verse = verse,
-                        showNumber = settings.showVerseNumbers,
-                        marked = isMarked,
-                        fontSizeSp = fontSize.value,
-                        lineHeightSp = lineHeight.value,
-                        onClick = { sheetVerse = verse },
-                    )
+                    val words = interlinear[verse.id]
+
+                    if (settings.interlinear && !words.isNullOrEmpty()) {
+                        InterlinearVerseRow(
+                            label = verse.label,
+                            words = words,
+                            showNumber = settings.showVerseNumbers,
+                            marked = isMarked,
+                            fontSizeSp = fontSize.value,
+                            onWordClick = { word ->
+                                vm.studyWord(word, "$bookName $chapter:${verse.label}")
+                            },
+                            onVerseClick = { sheetVerse = verse },
+                        )
+                    } else {
+                        VerseRow(
+                            verse = verse,
+                            showNumber = settings.showVerseNumbers,
+                            marked = isMarked,
+                            fontSizeSp = fontSize.value,
+                            lineHeightSp = lineHeight.value,
+                            onClick = { sheetVerse = verse },
+                        )
+                    }
                 }
             }
         }
@@ -233,6 +253,21 @@ fun ReaderScreen(
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(vertical = 12.dp),
                 )
+                interlinear[verse.id]?.takeIf { it.isNotEmpty() }?.let { words ->
+                    Text(
+                        text = "Toca una palabra para analizarla",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                    WordChips(
+                        words = words,
+                        onWordClick = { word ->
+                            sheetVerse = null
+                            vm.studyWord(word, reference)
+                        },
+                        modifier = Modifier.padding(top = 8.dp, bottom = 12.dp),
+                    )
+                }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     val isMarked = bookmarks.any {
                         it.bookId == bookId && it.chapter == chapter &&
@@ -270,6 +305,55 @@ fun ReaderScreen(
                 }
             }
         }
+    }
+
+    wordStudy?.let { study ->
+        WordStudySheet(
+            study = study,
+            onDismiss = vm::closeWordStudy,
+            onOpenConcordance = { strong, lemma ->
+                vm.closeWordStudy()
+                onOpenConcordance(strong, lemma)
+            },
+        )
+    }
+}
+
+@Composable
+private fun InterlinearVerseRow(
+    label: String,
+    words: List<InterlinearWord>,
+    showNumber: Boolean,
+    marked: Boolean,
+    fontSizeSp: Float,
+    onWordClick: (InterlinearWord) -> Unit,
+    onVerseClick: () -> Unit,
+) {
+    val background =
+        if (marked) MaterialTheme.colorScheme.secondaryContainer
+        else MaterialTheme.colorScheme.background
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(background)
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+    ) {
+        if (showNumber) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable(onClick = onVerseClick),
+            )
+        }
+        InterlinearVerse(
+            words = words,
+            fontSizeSp = fontSizeSp,
+            onWordClick = onWordClick,
+            modifier = Modifier.padding(top = 4.dp),
+        )
     }
 }
 

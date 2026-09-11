@@ -1,5 +1,6 @@
 package com.dc388.bibliagriega
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,6 +21,7 @@ import androidx.navigation.navArgument
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.screens.BookmarksScreen
 import com.dc388.bibliagriega.ui.screens.ChaptersScreen
+import com.dc388.bibliagriega.ui.screens.ConcordanceScreen
 import com.dc388.bibliagriega.ui.screens.HomeScreen
 import com.dc388.bibliagriega.ui.screens.ReaderScreen
 import com.dc388.bibliagriega.ui.screens.SearchScreen
@@ -41,6 +43,8 @@ object Routes {
     const val SETTINGS = "settings"
     fun chapters(bookId: Long) = "chapters/$bookId"
     fun reader(bookId: Long, chapter: Int) = "reader/$bookId/$chapter"
+    fun concordance(strong: String, lemma: String) =
+        "concordance/$strong/${Uri.encode(lemma.ifBlank { "-" })}"
 }
 
 @Composable
@@ -94,6 +98,26 @@ fun BibliaApp(vm: BibliaViewModel = viewModel()) {
                             }
                         },
                         onSettings = { nav.navigate(Routes.SETTINGS) },
+                        onOpenConcordance = { strong, lemma ->
+                            nav.navigate(Routes.concordance(strong, lemma))
+                        },
+                    )
+                }
+                composable(
+                    route = "concordance/{strong}/{lemma}",
+                    arguments = listOf(
+                        navArgument("strong") { type = NavType.StringType },
+                        navArgument("lemma") { type = NavType.StringType },
+                    ),
+                ) { entry ->
+                    ConcordanceScreen(
+                        vm = vm,
+                        strong = entry.arguments?.getString("strong").orEmpty(),
+                        lemma = entry.arguments?.getString("lemma")?.takeIf { it != "-" }.orEmpty(),
+                        onBack = { nav.popBackStack() },
+                        onOpenVerse = { hit ->
+                            nav.navigate(Routes.reader(hit.verse.bookId, hit.verse.chapter))
+                        },
                     )
                 }
                 composable(Routes.SEARCH) {

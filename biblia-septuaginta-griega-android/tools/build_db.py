@@ -11,6 +11,11 @@ Fuentes:
   * Eclesiastes: Swete todavia no esta transcrito en First1KGreek, asi que ese
     unico libro se toma de https://github.com/LukeSmithxyz/grb (texto de
     tradicion Rahlfs). Queda marcado como tal en la columna books.source_note.
+  * Interlineal del NT: el mismo repositorio de byztxt trae el texto etiquetado
+    con numeros Strong y analisis morfologico de Robinson, alineado palabra a
+    palabra con el texto acentuado.
+  * Lexico griego: diccionario de Strong (1890) de
+    https://github.com/openscriptures/strongs -- JSON bajo CC BY-SA.
 
 Uso:
     python3 tools/build_db.py                 # clona las fuentes si hacen falta
@@ -21,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import re
 import sqlite3
 import subprocess
@@ -30,11 +36,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from clean import clean_text, count_residual  # noqa: E402
+from morphology import build_table  # noqa: E402
 
 REPOS = {
     "lxx-swete": "https://github.com/nathans/lxx-swete.git",
     "byz": "https://github.com/byztxt/byzantine-majority-text.git",
     "grb": "https://github.com/LukeSmithxyz/grb.git",
+    "strongs": "https://github.com/openscriptures/strongs.git",
 }
 
 # --- Septuaginta: numero de archivo de Swete -> (codigo, nombre es, nombre gr, alterno)
@@ -164,9 +172,33 @@ CREATE TABLE verses (
     text      TEXT NOT NULL,
     text_norm TEXT NOT NULL
 );
+CREATE TABLE words (
+    id        INTEGER PRIMARY KEY,
+    verse_id  INTEGER NOT NULL REFERENCES verses(id),
+    position  INTEGER NOT NULL,
+    surface   TEXT NOT NULL,
+    strong    TEXT NOT NULL,
+    morph     TEXT NOT NULL
+);
+CREATE TABLE lexicon (
+    strong     TEXT PRIMARY KEY,
+    lemma      TEXT NOT NULL,
+    translit   TEXT,
+    derivation TEXT,
+    definition TEXT,
+    kjv_usage  TEXT
+);
+CREATE TABLE morph_codes (
+    code        TEXT PRIMARY KEY,
+    description TEXT NOT NULL
+);
 CREATE INDEX idx_verses_loc  ON verses(book_id, chapter, verse, suffix);
 CREATE INDEX idx_books_order ON books(collection_id, sort_order);
+CREATE INDEX idx_words_verse ON words(verse_id, position);
+CREATE INDEX idx_words_strong ON words(strong);
 """
+
+TAGGED_RE = re.compile(r"(\S+)\s+(\d+)\s+\{([^}]+)\}")
 
 VERSE_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)$")
 
@@ -256,9 +288,10 @@ def insert_book(
     order: int,
     verses: list[tuple[int, int, str, str]],
     scrub: bool = False,
-) -> int:
+) -> int | None:
+    """Inserta el libro y sus versículos; devuelve el id del libro."""
     if not verses:
-        return 0
+        return None
     chapters = len({c for c, _, _, _ in verses})
     cur = con.execute(
         "INSERT INTO books (collection_id, code, name_es, name_gr, alt_name, source_note,"
@@ -273,7 +306,125 @@ def insert_book(
         [(book_id, c, v, s, t, normalize(t)) for (c, v, s, t) in prepared],
     )
     globals()["RESIDUAL"] += sum(1 for (_, _, _, t) in prepared if count_residual(t))
-    return len(verses)
+    return book_id
+
+
+def read_tagged(path: Path) -> dict[tuple[int, int], list[tuple[str, str]]]:
+    """Lee el CSV etiquetado: (capítulo, versículo) -> [(Strong, morfología)]."""
+    out: dict[tuple[int, int], list[tuple[str, str]]] = {}
+    with path.open(encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            key = (int(row["chapter"]), int(row["verse"]))
+            out[key] = [
+                (f"G{num}", morph) for _, num, morph in TAGGED_RE.findall(row["text"])
+            ]
+    return out
+
+
+def insert_words(
+    con: sqlite3.Connection,
+    book_id: int,
+    tagged: dict[tuple[int, int], list[tuple[str, str]]],
+) -> tuple[int, int]:
+    """Alinea el texto acentuado ya insertado con el etiquetado Strong/morfología.
+
+    Devuelve (palabras insertadas, versículos que no alinearon). Un versículo cuyo
+    número de palabras no coincida se omite entero: es preferible quedarse sin
+    interlineal en ese versículo a mostrar una palabra con el análisis de otra.
+    """
+    rows, skipped = [], 0
+    cursor = con.execute(
+        "SELECT id, chapter, verse, text FROM verses WHERE book_id = ? ORDER BY id",
+        (book_id,),
+    )
+    for verse_id, chapter, verse, text in cursor.fetchall():
+        tags = tagged.get((chapter, verse))
+        if tags is None:
+            skipped += 1
+            continue
+        surfaces = text.split()
+        if len(surfaces) != len(tags):
+            skipped += 1
+            continue
+        for position, (surface, (strong, morph)) in enumerate(zip(surfaces, tags), 1):
+            rows.append((verse_id, position, surface, strong, morph))
+
+    con.executemany(
+        "INSERT INTO words (verse_id, position, surface, strong, morph) VALUES (?,?,?,?,?)",
+        rows,
+    )
+    return len(rows), skipped
+
+
+def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
+    """Diccionario griego de Strong, distribuido como JSON dentro de un .js."""
+    path = sources / "strongs" / "greek" / "strongs-greek-dictionary.js"
+    if not path.exists():
+        print("  AVISO: falta el diccionario Strong; se omite el léxico")
+        return 0
+    raw = path.read_text(encoding="utf-8")
+    entries = json.loads(raw[raw.index("{"): raw.rindex("}") + 1])
+    con.executemany(
+        "INSERT INTO lexicon (strong, lemma, translit, derivation, definition, kjv_usage)"
+        " VALUES (?,?,?,?,?,?)",
+        [
+            (
+                strong,
+                (e.get("lemma") or "").strip(),
+                (e.get("translit") or "").strip() or None,
+                (e.get("derivation") or "").strip() or None,
+                (e.get("strongs_def") or "").strip() or None,
+                (e.get("kjv_def") or "").strip() or None,
+            )
+            for strong, e in entries.items()
+        ],
+    )
+    return len(entries)
+
+
+def verify(con: sqlite3.Connection) -> list[str]:
+    """Invariantes del interlineal. Devuelve la lista de fallos encontrados."""
+    problems = []
+
+    huerfanas = con.execute(
+        "SELECT COUNT(*) FROM words w LEFT JOIN lexicon l ON l.strong = w.strong"
+        " WHERE l.strong IS NULL"
+    ).fetchone()[0]
+    if huerfanas:
+        problems.append(f"{huerfanas} palabras sin entrada en el léxico")
+
+    sin_morf = con.execute(
+        "SELECT COUNT(*) FROM words w LEFT JOIN morph_codes m ON m.code = w.morph"
+        " WHERE m.code IS NULL"
+    ).fetchone()[0]
+    if sin_morf:
+        problems.append(f"{sin_morf} palabras sin descripción morfológica")
+
+    sin_analizar = con.execute(
+        "SELECT COUNT(*) FROM verses v JOIN books b ON b.id = v.book_id"
+        " WHERE b.collection_id = 'nt'"
+        " AND NOT EXISTS (SELECT 1 FROM words w WHERE w.verse_id = v.id)"
+    ).fetchone()[0]
+    if sin_analizar:
+        problems.append(f"{sin_analizar} versículos del NT sin interlineal")
+
+    # Concatenar las palabras de un versículo debe devolver su texto exacto:
+    # si no, alguna palabra quedaría emparejada con el análisis de otra.
+    descuadre = con.execute(
+        "SELECT COUNT(*) FROM ("
+        "  SELECT v.id FROM verses v"
+        "  JOIN books b ON b.id = v.book_id"
+        "  JOIN words w ON w.verse_id = v.id"
+        "  WHERE b.collection_id = 'nt'"
+        "  GROUP BY v.id, v.text"
+        "  HAVING GROUP_CONCAT(w.surface, ' ') <> v.text)"
+    ).fetchone()[0]
+    if descuadre:
+        problems.append(
+            f"{descuadre} versículos cuyo interlineal no reconstruye el texto"
+        )
+
+    return problems
 
 
 def build(sources: Path, out: Path) -> None:
@@ -327,36 +478,76 @@ def build(sources: Path, out: Path) -> None:
         else:
             print(f"  AVISO: sin fuente para {name_es} (archivo {num})")
             continue
-        n = insert_book(con, "lxx", code, name_es, name_gr, alt, note, order, verses, scrub=True)
-        total += n
-        print(f"  {name_es:32s} {n:5d} versículos" + ("  [Rahlfs]" if note else ""))
+        insert_book(con, "lxx", code, name_es, name_gr, alt, note, order, verses, scrub=True)
+        total += len(verses)
+        print(f"  {name_es:32s} {len(verses):5d} versículos" + ("  [Rahlfs]" if note else ""))
 
     print("Nuevo Testamento (Robinson–Pierpont):")
     byz_dir = sources / "byz" / "csv-unicode" / "ccat" / "no-variants"
+    tagged_dir = sources / "byz" / "csv-unicode" / "strongs" / "with-parsing"
+    total_words = total_unaligned = 0
     for order, (src, code, name_es, name_gr) in enumerate(NT_BOOKS, 1):
         path = byz_dir / f"{src}.csv"
         if not path.exists():
             print(f"  AVISO: falta {path}")
             continue
         verses = read_byz_csv(path)
-        n = insert_book(con, "nt", code, name_es, name_gr, None, None, order, verses)
-        total += n
-        print(f"  {name_es:32s} {n:5d} versículos")
+        book_id = insert_book(con, "nt", code, name_es, name_gr, None, None, order, verses)
+        total += len(verses)
+
+        tagged_path = tagged_dir / f"{src}.csv"
+        words = unaligned = 0
+        if book_id is not None and tagged_path.exists():
+            words, unaligned = insert_words(con, book_id, read_tagged(tagged_path))
+            total_words += words
+            total_unaligned += unaligned
+        aviso = f"  ({unaligned} sin alinear)" if unaligned else ""
+        print(f"  {name_es:32s} {len(verses):5d} versículos  {words:6d} palabras{aviso}")
+
+    print("Léxico y morfología:")
+    lex = insert_lexicon(con, sources)
+    print(f"  diccionario Strong griego         {lex:5d} entradas")
+
+    codes = {row[0] for row in con.execute("SELECT DISTINCT morph FROM words")}
+    table, unknown = build_table(codes)
+    con.executemany(
+        "INSERT INTO morph_codes (code, description) VALUES (?,?)", sorted(table.items())
+    )
+    print(f"  códigos morfológicos              {len(table):5d} traducidos al español")
+    if unknown:
+        print(f"  AVISO: {len(unknown)} códigos sin traducir: {unknown[:10]}")
 
     con.executemany(
         "INSERT INTO meta (key, value) VALUES (?,?)",
         [
-            ("schema_version", "1"),
+            ("schema_version", "2"),
             ("verse_count", str(total)),
+            ("word_count", str(total_words)),
+            ("lexicon_count", str(lex)),
             ("built_by", "tools/build_db.py"),
         ],
     )
     con.commit()
+
+    problems = verify(con)
+    if problems:
+        con.close()
+        raise SystemExit(
+            "La base no supera las comprobaciones de integridad:\n  - "
+            + "\n  - ".join(problems)
+        )
+    print("  integridad del interlineal      correcta")
+
     con.execute("VACUUM")
     con.close()
 
     size_mb = out.stat().st_size / 1024 / 1024
-    print(f"\nListo: {out} — {total} versículos, {size_mb:.1f} MB")
+    print(
+        f"\nListo: {out} — {total} versículos, {total_words} palabras analizadas, "
+        f"{size_mb:.1f} MB"
+    )
+    if total_unaligned:
+        print(f"Aviso: {total_unaligned} versículos del NT quedaron sin interlineal.")
     if RESIDUAL:
         pct = 100 * RESIDUAL / total
         print(

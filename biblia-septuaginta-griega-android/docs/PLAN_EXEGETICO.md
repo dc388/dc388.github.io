@@ -152,11 +152,11 @@ con números de versículo y con glosas en español.
 
 Ordenado por valor entregado sobre coste, no por el orden de la propuesta.
 
-1. **Interlineal del Nuevo Testamento.** Riesgo ya eliminado, alineación probada
-   al 100 %. Convierte la app de lector a herramienta de estudio. Es el salto de
-   calidad más grande por el menor esfuerzo.
-2. **Léxico Strong griego.** 5 523 entradas, ya cargadas en el prototipo. Toca un
-   número y se abre la definición.
+1. ~~**Interlineal del Nuevo Testamento.**~~ **Hecho.** 140 149 palabras con
+   Strong y morfología, sin un solo versículo sin analizar, y los 1 055 códigos
+   de Robinson traducidos al español.
+2. ~~**Léxico Strong griego.**~~ **Hecho.** 5 523 entradas, con concordancia:
+   desde cualquier palabra se ve dónde más aparece.
 3. **Antiguo Testamento hebreo (OSHB).** Trabajo real: parsear OSIS y resolver el
    soporte RTL. Trae Strong y morfología ya incluidos.
 4. **Léxicos hebreos (Strong hebreo y BDB).** Cierra el estudio en los dos
@@ -167,8 +167,13 @@ Ordenado por valor entregado sobre coste, no por el orden de la propuesta.
    morfología.
 8. **Comunidad y wiki.** Producto aparte, con servidor y moderación.
 
-Los pasos 1 y 2 son incrementos sobre `tools/build_db.py` y la base de datos
-actual: no requieren decidir nada sobre la arquitectura.
+Los pasos 1 y 2 ya están implementados: fueron incrementos sobre
+`tools/build_db.py` y la base de datos, sin decidir nada sobre la arquitectura.
+La base pasó de 18,4 MB a 28,2 MB.
+
+El paso 3 es el primero que sí obliga a decidir: el hebreo se escribe de derecha
+a izquierda y, si en algún momento se quiere iOS, conviene resolver antes si el
+lector sigue siendo nativo en Kotlin o pasa a multiplataforma.
 
 ---
 
