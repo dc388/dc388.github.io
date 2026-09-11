@@ -1,0 +1,18 @@
+# Gradle / Android
+.gradle/
+build/
+app/build/
+local.properties
+*.iml
+.idea/
+.cxx/
+
+# Firma: nunca subir claves al repositorio
+app/keystore.properties
+*.jks
+*.keystore
+
+# Fuentes clonadas por tools/build_db.py
+build/sources/
+
+.DS_Store
