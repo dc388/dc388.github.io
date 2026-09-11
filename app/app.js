@@ -701,6 +701,11 @@ async function capturarRostroChecada() {
 const MIN_CALIDAD_ROSTRO = 0.02;
 // Que tan de acuerdo tienen que estar entre si las lecturas para creerles.
 const MIN_ACUERDO_LECTURAS = 0.55;
+// Acuerdo tan alto entre dos lecturas seguidas que ya no vale la pena tomar mas.
+// Dos lecturas buenas del mismo rostro se parecen muchisimo; las basura no
+// llegan ni cerca (0.036-0.29 en los casos reales), asi que este atajo lo toma
+// solo quien ya quedo bien leido.
+const ACUERDO_SUFICIENTE = 0.80;
 
 // Lee el rostro VARIAS veces y devuelve la lectura mas consistente, o null si
 // ninguna lo es.
@@ -728,8 +733,22 @@ async function leerRostroConfiable(video, msg) {
       const r = await LuftFace.embed(video);
       // Se guarda la lectura COMPLETA (vector + calidad): el enrolamiento
       // necesita la calidad para mandarla al servidor, y antes se perdia aqui.
-      if (r.quality >= MIN_CALIDAD_ROSTRO) lecturas.push(r);
-      else { msg.textContent = 'Acércate un poco: se te ve muy lejos…'; await new Promise((res) => setTimeout(res, 350)); }
+      if (r.quality >= MIN_CALIDAD_ROSTRO) {
+        lecturas.push(r);
+        // SALIDA TEMPRANA. Con DOS lecturas que concuerdan mucho entre si ya no
+        // hace falta seguir leyendo: la tercera y la cuarta no aportan nada y en
+        // un telefono cada lectura cuesta casi un segundo. Checar se sentia
+        // lento por esto.
+        //
+        // Esto NO afloja el filtro. Las lecturas basura no concuerdan ni entre
+        // ellas —el 11 de septiembre dieron 0.036, 0.073, 0.25 y 0.29—, asi que
+        // nunca van a llegar a 0.80 y siguen pagando las 4 lecturas completas.
+        // Solo se le deja de cobrar el tiempo a quien la camara ya vio bien.
+        if (lecturas.length >= 2) {
+          const a = lecturas[lecturas.length - 2].vec, b = lecturas[lecturas.length - 1].vec;
+          if (LuftFace.cosine(a, b) >= ACUERDO_SUFICIENTE) return lecturas[lecturas.length - 1];
+        }
+      } else { msg.textContent = 'Acércate un poco: se te ve muy lejos…'; await new Promise((res) => setTimeout(res, 350)); }
     } catch (e) {
       msg.textContent = (e.message || 'no se ve tu cara') + '…';
       await new Promise((res) => setTimeout(res, 400));
