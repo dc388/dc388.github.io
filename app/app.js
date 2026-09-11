@@ -538,19 +538,47 @@ async function capturarEnrolamiento() {
   const N = 4, captures = [];
   try {
     for (let i = 0; i < N; i++) {
-      let ok = false, intentos = 0;
-      while (!ok && intentos < 6) {
-        intentos++;
-        prog.textContent = 'Capturando ' + (i + 1) + ' de ' + N + '… mira de frente';
-        try {
-          const r = await LuftFace.embed(video);
-          captures.push({ embedding: Array.from(r.vec), quality_score: r.quality });
-          ok = true;
-        } catch (e) { prog.textContent = (e.message || 'no se ve la cara') + ' (reintentando…)'; await new Promise((res) => setTimeout(res, 700)); }
-      }
-      if (!ok) throw new Error('no se pudo captar el rostro; mejora la luz y acércate');
+      prog.textContent = 'Capturando ' + (i + 1) + ' de ' + N + '… mira de frente';
+      // ANTES: se llamaba a embed() directo y se guardaba LO QUE SALIERA, sin
+      // mirar la calidad ni si las lecturas concordaban. Esa es la razon de los
+      // "rostro no coincide (0.07)" del 11 de septiembre: quien se enrolaba a
+      // contraluz o de lejos guardaba un template de ruido, y de ahi en adelante
+      // la checada —que si lee bien— no le coincidia NUNCA. Un template malo es
+      // peor que una checada mala: la checada se reintenta, el template se queda
+      // bloqueando a la persona todos los dias hasta que alguien le dice que
+      // vuelva a registrarse.
+      //
+      // Ahora el enrolamiento pasa por la MISMA vara que la checada.
+      // El contador va en `prog` y la guia en vivo ("acércate", "contraluz") en
+      // `msg`: leerRostroConfiable le cambia la clase al elemento que recibe, y
+      // pasarle `prog` le borraba su estilo al contador.
+      const lectura = await leerRostroConfiable(video, msg);
+      if (!lectura) throw new Error('no se pudo leer bien tu rostro; ponte de frente, sin el sol atrás, y vuelve a intentar');
+      captures.push({ embedding: Array.from(lectura.vec), quality_score: lectura.quality });
       await new Promise((res) => setTimeout(res, 400));
     }
+
+    // Las 4 capturas son de la MISMA cara con segundos de diferencia: tienen que
+    // parecerse mucho entre si. Si no se parecen, el promedio que calcula
+    // enroll_face no es el rostro de nadie —es el centro de un ruido— y ese es
+    // justo el template que despues no coincide con nada. Se revisa aqui porque
+    // cada lectura pudo pasar su propio filtro y aun asi no concordar entre si.
+    let peor = 1;
+    for (let i = 0; i < captures.length; i++) {
+      for (let j = i + 1; j < captures.length; j++) {
+        const s = LuftFace.cosine(captures[i].embedding, captures[j].embedding);
+        if (s < peor) peor = s;
+      }
+    }
+    if (peor < MIN_ACUERDO_LECTURAS) {
+      msg.className = 'msg err';
+      msg.textContent = 'Las capturas salieron muy distintas entre sí (contraluz o movimiento). ' +
+        'Ponte de frente, con la luz dándote en la cara, y vuelve a intentar.';
+      prog.textContent = '';
+      btn.disabled = false;
+      return;
+    }
+
     prog.textContent = 'Guardando tu rostro en la plataforma…';
     if (!FACE || !FACE.consent_id) await loadFaceStatus();
     const token = await accessToken();
@@ -641,12 +669,12 @@ async function capturarRostroChecada() {
   const challengeId = await pedirRetoVida();
 
   msg.className = 'msg'; msg.textContent = 'Leyendo tu rostro…';
-  const vec = await leerRostroConfiable(video, msg);
+  const lectura = await leerRostroConfiable(video, msg);
   stop();
   $('selfie-take').hidden = false; // restaurar para la selfie de auditoría
-  if (!vec) return null;
+  if (!lectura) return null;
   // Solo se llega aquí con el gesto logrado (vivo=true): el candado se mantiene.
-  return { vec, challengeId, livenessPassed: true, padScore: 1 };
+  return { vec: lectura.vec, challengeId, livenessPassed: true, padScore: 1 };
 }
 
 // Cara demasiado chica en el cuadro: el recorte sale de pocos pixeles y el
@@ -681,7 +709,9 @@ async function leerRostroConfiable(video, msg) {
   for (let i = 0; i < 10 && lecturas.length < 4; i++) {
     try {
       const r = await LuftFace.embed(video);
-      if (r.quality >= MIN_CALIDAD_ROSTRO) lecturas.push(r.vec);
+      // Se guarda la lectura COMPLETA (vector + calidad): el enrolamiento
+      // necesita la calidad para mandarla al servidor, y antes se perdia aqui.
+      if (r.quality >= MIN_CALIDAD_ROSTRO) lecturas.push(r);
       else { msg.textContent = 'Acércate un poco: se te ve muy lejos…'; await new Promise((res) => setTimeout(res, 350)); }
     } catch (e) {
       msg.textContent = (e.message || 'no se ve tu cara') + '…';
@@ -701,7 +731,7 @@ async function leerRostroConfiable(video, msg) {
   for (let i = 0; i < lecturas.length; i++) {
     let suma = 0;
     for (let j = 0; j < lecturas.length; j++) {
-      if (i !== j) suma += LuftFace.cosine(lecturas[i], lecturas[j]);
+      if (i !== j) suma += LuftFace.cosine(lecturas[i].vec, lecturas[j].vec);
     }
     const acuerdo = suma / (lecturas.length - 1);
     if (acuerdo > mejorAcuerdo) { mejorAcuerdo = acuerdo; mejor = lecturas[i]; }
