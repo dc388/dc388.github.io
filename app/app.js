@@ -537,25 +537,42 @@ async function capturarEnrolamiento() {
   btn.disabled = true; msg.textContent = ''; msg.className = 'msg';
   const N = 4, captures = [];
   try {
-    for (let i = 0; i < N; i++) {
-      prog.textContent = 'Capturando ' + (i + 1) + ' de ' + N + '… mira de frente';
-      // ANTES: se llamaba a embed() directo y se guardaba LO QUE SALIERA, sin
-      // mirar la calidad ni si las lecturas concordaban. Esa es la razon de los
-      // "rostro no coincide (0.07)" del 11 de septiembre: quien se enrolaba a
-      // contraluz o de lejos guardaba un template de ruido, y de ahi en adelante
-      // la checada —que si lee bien— no le coincidia NUNCA. Un template malo es
-      // peor que una checada mala: la checada se reintenta, el template se queda
-      // bloqueando a la persona todos los dias hasta que alguien le dice que
-      // vuelva a registrarse.
-      //
-      // Ahora el enrolamiento pasa por la MISMA vara que la checada.
-      // El contador va en `prog` y la guia en vivo ("acércate", "contraluz") en
-      // `msg`: leerRostroConfiable le cambia la clase al elemento que recibe, y
-      // pasarle `prog` le borraba su estilo al contador.
-      const lectura = await leerRostroConfiable(video, msg);
-      if (!lectura) throw new Error('no se pudo leer bien tu rostro; ponte de frente, sin el sol atrás, y vuelve a intentar');
-      captures.push({ embedding: Array.from(lectura.vec), quality_score: lectura.quality });
-      await new Promise((res) => setTimeout(res, 400));
+    // UNA SOLA PASADA. La version anterior llamaba a leerRostroConfiable() por
+    // cada una de las 4 capturas, y como esa funcion busca internamente hasta 10
+    // lecturas, el enrolamiento pasaba de ~4 lecturas a hasta 40: se volvia
+    // lentisimo y parecia trabado en "Capturando 4 de 4".
+    //
+    // Aqui se junta todo en un recorrido: se toman lecturas hasta reunir N que
+    // pasen el piso de calidad, con un techo de intentos para no quedarse dando
+    // vueltas. Se conserva lo que importaba —no guardar lecturas basura— sin el
+    // costo de repetir la busqueda cuatro veces.
+    //
+    // El motivo del filtro sigue siendo el mismo: guardar un template de ruido
+    // (enrolarse a contraluz o de lejos) bloquea a la persona TODOS los dias,
+    // porque la checada, que si lee bien, nunca le coincide. Eso son los
+    // "rostro no coincide (0.07)" del 11 de septiembre.
+    const MAX_INTENTOS = 12;
+    for (let i = 0; i < MAX_INTENTOS && captures.length < N; i++) {
+      prog.textContent = 'Capturando ' + (captures.length + 1) + ' de ' + N + '… mira de frente';
+      try {
+        const r = await LuftFace.embed(video);
+        if (r.quality >= MIN_CALIDAD_ROSTRO) {
+          captures.push({ embedding: Array.from(r.vec), quality_score: r.quality });
+          msg.textContent = '';
+          await new Promise((res) => setTimeout(res, 250));
+        } else {
+          msg.className = 'msg';
+          msg.textContent = 'Acércate un poco: se te ve muy lejos…';
+          await new Promise((res) => setTimeout(res, 300));
+        }
+      } catch (e) {
+        msg.className = 'msg';
+        msg.textContent = (e.message || 'no se ve tu cara') + '…';
+        await new Promise((res) => setTimeout(res, 300));
+      }
+    }
+    if (captures.length < N) {
+      throw new Error('no se pudo leer bien tu rostro; ponte de frente, con la luz dándote en la cara, y vuelve a intentar');
     }
 
     // Las 4 capturas son de la MISMA cara con segundos de diferencia: tienen que
