@@ -24,9 +24,13 @@ Android pedirá permiso para instalar desde esa aplicación: **Ajustes →
 Instalar apps desconocidas → [la app desde la que abres el archivo] → Permitir**.
 Es lo normal en cualquier APK que no venga de Play.
 
-Requisitos: **Android 8.0 o superior** y unos **150 MB libres**. La app ocupa
-unos 85 MB instalada: el APK pesa alrededor de 25 MB, y al primer arranque
-descomprime la base de datos de 63 MB en su almacenamiento privado.
+Requisitos: **Android 8.0 o superior** y unos **250 MB libres**. El APK pesa
+**43 MB** y, al primer arranque, descomprime la base de datos de 63 MB en su
+almacenamiento privado: en total ronda los **110 MB** instalada.
+
+La versión firmada que se sube a Play pesará menos, porque pasa por la reducción
+de código de R8 y porque Play entrega un AAB del que cada teléfono descarga solo
+lo que necesita.
 
 El primer arranque tarda unos segundos justamente por esa copia. Los siguientes
 son inmediatos.
