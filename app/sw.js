@@ -1,8 +1,8 @@
 /* Service worker LUFT: cachea el "app shell" para que la app abra AL INSTANTE,
    con o sin internet. Las llamadas al backend NUNCA se cachean (van a la red). */
-const CACHE = 'luft-shell-v27';
+const CACHE = 'luft-shell-v28';
 const SHELL = [
-  './', './index.html', './styles.css', './app.js', './manifest.webmanifest',
+  './', './index.html', './styles.css', './app.js', './face.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png',
   // Tipografias: antes venian de Google en cada carga. Ahora las sirve este
   // mismo dominio, asi que la app ya no le pide NADA a terceros. Solo el
@@ -41,15 +41,29 @@ self.addEventListener('fetch', (e) => {
   // red, se refresca la copia en segundo plano para que la proxima apertura traiga
   // lo nuevo (politica o pantalla). Nunca se espera a la red para pintar la app.
   e.respondWith(
-    caches.open(CACHE).then((cache) =>
-      cache.match(e.request).then((hit) => {
-        const fresh = fetch(e.request).then((res) => {
-          if (res && res.ok) cache.put(e.request, res.clone());
-          return res;
-        }).catch(() => null);
-        // Con cache: responde ya y refresca atras. Sin cache: espera la red y, si
-        // no hay, cae al index para que la PWA abra igual.
-        return hit || fresh.then((res) => res || cache.match('./index.html'));
-      })),
+    caches.open(CACHE).then(async (cache) => {
+      // index.html pide los archivos con ?b=NN (app.js?b=26, styles.css?b=19) y
+      // el shell los guarda SIN query, asi que el match EXACTO nunca acierta.
+      // Sin este segundo intento que ignora la query, cada subida de ?b= dejaba
+      // a todo el mundo dependiendo de la red, y con señal debil se caia al
+      // index: el navegador recibia HTML donde esperaba JavaScript, el script no
+      // parseaba y la app quedaba muerta. Eso es lo que se vio en la nave.
+      const hit = (await cache.match(e.request)) ||
+                  (await cache.match(e.request, { ignoreSearch: true }));
+      const fresh = fetch(e.request).then((res) => {
+        if (res && res.ok) cache.put(e.request, res.clone());
+        return res;
+      }).catch(() => null);
+      // Con cache: responde ya y refresca atras.
+      if (hit) return hit;
+      const res = await fresh;
+      if (res) return res;
+      // Sin cache y sin red: SOLO una navegacion cae al index, para que la PWA
+      // abra igual. Para todo lo demas es mejor fallar: devolverle el index a
+      // app.js o a un .wasm es lo que dejaba la pantalla en blanco sin decir
+      // por que. Un recurso que falla si se nota y se puede reintentar.
+      if (e.request.mode === 'navigate') return cache.match('./index.html');
+      return Response.error();
+    }),
   );
 });
