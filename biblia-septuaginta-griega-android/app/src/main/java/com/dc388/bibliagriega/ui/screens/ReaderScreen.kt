@@ -222,11 +222,12 @@ fun ReaderScreen(
                 ) {
                     items(state.verses, key = { "${it.verse}${it.suffix}" }) { verse ->
                         val isMarked = (verse.verse to verse.suffix) in marked
+                        val hasNote = (verse.verse to verse.suffix) in annotated
                         val words = interlinear[verse.id]
 
                         if (settings.interlinear && !words.isNullOrEmpty()) {
                             InterlinearVerseRow(
-                                label = verse.label,
+                                label = if (hasNote) "${verse.label}•" else verse.label,
                                 words = words,
                                 showNumber = settings.showVerseNumbers,
                                 marked = isMarked,
@@ -241,6 +242,7 @@ fun ReaderScreen(
                                 verse = verse,
                                 showNumber = settings.showVerseNumbers,
                                 marked = isMarked,
+                                hasNote = hasNote,
                                 fontSizeSp = fontSize.value,
                                 lineHeightSp = lineHeight.value,
                                 onClick = { sheetVerse = verse },

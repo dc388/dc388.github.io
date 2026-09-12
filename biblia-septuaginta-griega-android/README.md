@@ -173,6 +173,12 @@ dos lenguas.
 
 La base ocupa 63 MB, unos 21 MB comprimidos dentro del APK.
 
+## Probar el APK
+
+[docs/PROBAR_EL_APK.md](docs/PROBAR_EL_APK.md): cómo descargar el APK de
+depuración que compila CI, instalarlo en un teléfono y qué conviene comprobar
+—empezando por el hebreo, que es lo más delicado de renderizar.
+
 ## Publicar en Google Play
 
 Ver [docs/PUBLICAR_EN_PLAY.md](docs/PUBLICAR_EN_PLAY.md): creación del almacén de
