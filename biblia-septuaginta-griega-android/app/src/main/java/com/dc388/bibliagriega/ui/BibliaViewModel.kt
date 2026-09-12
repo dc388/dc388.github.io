@@ -57,6 +57,15 @@ data class ConcordanceState(
     val loading: Boolean = true,
 )
 
+/** Un versículo con nota, ya resuelto para poder mostrarlo en una lista. */
+data class NoteEntry(
+    val ref: VerseRef,
+    val text: String,
+    val hit: VerseHit?,
+) {
+    val reference: String get() = hit?.reference ?: "${ref.chapter}:${ref.verse}"
+}
+
 data class SearchState(
     val query: String = "",
     val scope: String? = null,
@@ -101,6 +110,13 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
     val bookmarks: StateFlow<List<VerseRef>> =
         prefs.bookmarks.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    /** Notas del capítulo abierto, para marcar en el lector qué versículos tienen una. */
+    val notes: StateFlow<Map<VerseRef, String>> =
+        prefs.notes.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    private val _noteEntries = MutableStateFlow<List<NoteEntry>>(emptyList())
+    val noteEntries: StateFlow<List<NoteEntry>> = _noteEntries.asStateFlow()
+
     private var searchJob: Job? = null
 
     init {
@@ -119,6 +135,13 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
         }
         viewModelScope.launch {
             bookmarks.collect { refs -> _bookmarkHits.value = repo.verses(refs) }
+        }
+        viewModelScope.launch {
+            notes.collect { map ->
+                _noteEntries.value = map.entries
+                    .sortedWith(compareBy({ it.key.bookId }, { it.key.chapter }, { it.key.verse }))
+                    .map { (ref, text) -> NoteEntry(ref, text, repo.verse(ref)) }
+            }
         }
     }
 
@@ -188,6 +211,14 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
 
     fun removeBookmark(ref: VerseRef) {
         viewModelScope.launch { prefs.removeBookmark(ref) }
+    }
+
+    fun setNote(ref: VerseRef, text: String) {
+        viewModelScope.launch { prefs.setNote(ref, text) }
+    }
+
+    fun removeNote(ref: VerseRef) {
+        viewModelScope.launch { prefs.removeNote(ref) }
     }
 
     fun setTheme(mode: ThemeMode) {

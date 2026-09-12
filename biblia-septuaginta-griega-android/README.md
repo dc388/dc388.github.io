@@ -118,6 +118,7 @@ desconocido, el importador avisa en vez de mostrar una etiqueta inventada.
   misma normalización quita niqqud y cantilación, así que se busca por
   consonantes. Se puede limitar a una colección.
 - Marcadores por versículo y «continuar leyendo».
+- **Notas personales** por versículo, guardadas solo en el dispositivo.
 - Copiar y compartir versículo o capítulo completo.
 
 ## Compilar
@@ -132,6 +133,18 @@ Requiere JDK 17. El SDK de Android lo resuelve Gradle.
 También hay CI: cada push compila el APK de depuración y lo publica como
 artefacto (`.github/workflows/build.yml`). Al empujar una etiqueta `v*` se
 genera el AAB firmado (`.github/workflows/release.yml`).
+
+### Comprobar la sintaxis sin SDK
+
+```bash
+./tools/check_kotlin.sh
+```
+
+Baja el compilador de Kotlin de Maven Central y pasa el parser sobre las fuentes.
+Sirve donde no se puede compilar de verdad —sin SDK de Android, o sin acceso a
+dl.google.com para AGP y Compose—: señala paréntesis sin cerrar, comas de más y
+plantillas de cadena mal formadas, que es justo lo que se escapa al revisar a
+ojo. No comprueba nada que dependa de resolver símbolos; de eso se encarga CI.
 
 ## Regenerar la base de datos
 
@@ -182,6 +195,7 @@ tools/hebrew.py                    OSIS de OSHB y morfología hebrea en español
 tools/bdb.py                       léxico Brown-Driver-Briggs
 tools/abbott_smith.py              léxico griego de Abbott-Smith
 tools/verify_db.py                 comprobaciones de integridad para CI
+tools/check_kotlin.sh              parser de Kotlin sin SDK de Android
 docs/                              guía de publicación y ficha de la tienda
 ```
 
@@ -192,10 +206,10 @@ proyecto a interlineal con números Strong, morfología, léxicos y Antiguo
 Testamento hebreo: fuentes verificadas, licencias, y qué partes son baratas y
 cuáles caras.
 
-Los cinco primeros pasos de esa hoja de ruta **ya están implementados**:
-interlineal del NT, léxico Strong griego, Antiguo Testamento hebreo, léxico
-hebreo y los léxicos de referencia de ambas lenguas. Lo siguiente son las notas
-personales locales y los comentarios clásicos.
+Los cinco primeros pasos de esa hoja de ruta **ya están implementados**,
+más las notas personales: interlineal del NT, léxico Strong griego, Antiguo
+Testamento hebreo, léxico hebreo, los léxicos de referencia de ambas lenguas y
+las notas locales. Lo siguiente serían los comentarios clásicos.
 
 ## Licencias
 

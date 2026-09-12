@@ -23,6 +23,7 @@ import com.dc388.bibliagriega.ui.screens.BookmarksScreen
 import com.dc388.bibliagriega.ui.screens.ChaptersScreen
 import com.dc388.bibliagriega.ui.screens.ConcordanceScreen
 import com.dc388.bibliagriega.ui.screens.HomeScreen
+import com.dc388.bibliagriega.ui.screens.NotesScreen
 import com.dc388.bibliagriega.ui.screens.ReaderScreen
 import com.dc388.bibliagriega.ui.screens.SearchScreen
 import com.dc388.bibliagriega.ui.screens.SettingsScreen
@@ -40,6 +41,7 @@ object Routes {
     const val HOME = "home"
     const val SEARCH = "search"
     const val BOOKMARKS = "bookmarks"
+    const val NOTES = "notes"
     const val SETTINGS = "settings"
     fun chapters(bookId: Long) = "chapters/$bookId"
     fun reader(bookId: Long, chapter: Int) = "reader/$bookId/$chapter"
@@ -65,6 +67,7 @@ fun BibliaApp(vm: BibliaViewModel = viewModel()) {
                         onContinue = { ref -> nav.navigate(Routes.reader(ref.bookId, ref.chapter)) },
                         onSearch = { nav.navigate(Routes.SEARCH) },
                         onBookmarks = { nav.navigate(Routes.BOOKMARKS) },
+                        onNotes = { nav.navigate(Routes.NOTES) },
                         onSettings = { nav.navigate(Routes.SETTINGS) },
                     )
                 }
@@ -131,6 +134,15 @@ fun BibliaApp(vm: BibliaViewModel = viewModel()) {
                 }
                 composable(Routes.BOOKMARKS) {
                     BookmarksScreen(
+                        vm = vm,
+                        onBack = { nav.popBackStack() },
+                        onOpenVerse = { hit ->
+                            nav.navigate(Routes.reader(hit.verse.bookId, hit.verse.chapter))
+                        },
+                    )
+                }
+                composable(Routes.NOTES) {
+                    NotesScreen(
                         vm = vm,
                         onBack = { nav.popBackStack() },
                         onOpenVerse = { hit ->

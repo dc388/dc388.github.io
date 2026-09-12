@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -52,6 +53,7 @@ fun HomeScreen(
     onContinue: (VerseRef) -> Unit,
     onSearch: () -> Unit,
     onBookmarks: () -> Unit,
+    onNotes: () -> Unit,
     onSettings: () -> Unit,
 ) {
     val library by vm.library.collectAsState()
@@ -68,6 +70,9 @@ fun HomeScreen(
                     }
                     IconButton(onClick = onBookmarks) {
                         Icon(Icons.Default.Bookmarks, contentDescription = "Marcadores")
+                    }
+                    IconButton(onClick = onNotes) {
+                        Icon(Icons.Default.EditNote, contentDescription = "Mis notas")
                     }
                     IconButton(onClick = onSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Ajustes")

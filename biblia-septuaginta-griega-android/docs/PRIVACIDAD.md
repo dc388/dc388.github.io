@@ -1,6 +1,6 @@
 # Política de privacidad — Biblia Griega
 
-**Última actualización: 11 de septiembre de 2026**
+**Última actualización: 12 de septiembre de 2026**
 
 ## Resumen
 
@@ -11,6 +11,7 @@ Biblia Griega no recopila, transmite ni comparte ningún dato personal.
 La aplicación guarda **únicamente en tu dispositivo**:
 
 - tus marcadores de versículos,
+- **las notas personales que escribas sobre un versículo**,
 - la última posición de lectura,
 - tus preferencias de tamaño de letra, interlineado y tema.
 

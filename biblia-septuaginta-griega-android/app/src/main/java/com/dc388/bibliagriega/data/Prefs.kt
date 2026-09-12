@@ -51,6 +51,36 @@ class Prefs private constructor(private val context: Context) {
             .sortedWith(compareBy({ it.bookId }, { it.chapter }, { it.verse }))
     }
 
+    /**
+     * Notas personales, guardadas una por clave con el prefijo `nota:`.
+     *
+     * Se quedan en el dispositivo: no hay servidor, ni cuenta, ni sincronización.
+     * Es deliberado —ver docs/PLAN_EXEGETICO.md—: un sistema de aportes
+     * compartidos convertiría una app sin permisos ni recogida de datos en una
+     * plataforma con obligaciones de moderación.
+     */
+    val notes: Flow<Map<VerseRef, String>> = context.dataStore.data.map { p ->
+        buildMap {
+            for ((key, value) in p.asMap()) {
+                if (!key.name.startsWith(NOTE_PREFIX)) continue
+                val text = (value as? String)?.takeIf { it.isNotBlank() } ?: continue
+                val ref = VerseRef.decode(key.name.removePrefix(NOTE_PREFIX)) ?: continue
+                put(ref, text)
+            }
+        }
+    }
+
+    fun note(ref: VerseRef): Flow<String> = context.dataStore.data.map { p ->
+        p[noteKey(ref)].orEmpty()
+    }
+
+    suspend fun setNote(ref: VerseRef, text: String) = put { prefs ->
+        val trimmed = text.trim()
+        if (trimmed.isEmpty()) prefs.remove(noteKey(ref)) else prefs[noteKey(ref)] = trimmed
+    }
+
+    suspend fun removeNote(ref: VerseRef) = put { it.remove(noteKey(ref)) }
+
     suspend fun setTheme(mode: ThemeMode) = put { it[KEY_THEME] = mode.name }
 
     suspend fun setFontScale(scale: Float) =
@@ -94,6 +124,9 @@ class Prefs private constructor(private val context: Context) {
         private val KEY_INTERLINEAR = stringPreferencesKey("interlinear")
         private val KEY_LAST_READ = stringPreferencesKey("last_read")
         private val KEY_BOOKMARKS = stringSetPreferencesKey("bookmarks")
+        private const val NOTE_PREFIX = "nota:"
+
+        private fun noteKey(ref: VerseRef) = stringPreferencesKey(NOTE_PREFIX + ref.encode())
 
         @Volatile
         private var instance: Prefs? = null

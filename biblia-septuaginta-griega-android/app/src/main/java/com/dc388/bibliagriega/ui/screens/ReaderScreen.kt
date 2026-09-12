@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.BottomAppBar
@@ -78,9 +79,11 @@ fun ReaderScreen(
     val bookmarks by vm.bookmarks.collectAsState()
     val interlinear by vm.interlinear.collectAsState()
     val wordStudy by vm.wordStudy.collectAsState()
+    val notes by vm.notes.collectAsState()
     val context = LocalContext.current
 
     var sheetVerse by remember { mutableStateOf<Verse?>(null) }
+    var editingNote by remember { mutableStateOf<Verse?>(null) }
     val sheetState = rememberModalBottomSheetState()
 
     LaunchedEffect(bookId, chapter) { vm.loadChapter(bookId, chapter) }
@@ -167,6 +170,10 @@ fun ReaderScreen(
         val textColor = MaterialTheme.colorScheme.onBackground
         val lineHeight = (30 * settings.fontScale * settings.lineHeightScale).sp
         val marked = bookmarks.filter { it.bookId == bookId && it.chapter == chapter }
+            .map { it.verse to it.suffix }
+            .toSet()
+        val annotated = notes.keys
+            .filter { it.bookId == bookId && it.chapter == chapter }
             .map { it.verse to it.suffix }
             .toSet()
 
@@ -292,6 +299,18 @@ fun ReaderScreen(
                     }
                     TextButton(
                         onClick = {
+                            editingNote = verse
+                            sheetVerse = null
+                        },
+                    ) {
+                        Icon(Icons.Default.EditNote, contentDescription = null)
+                        Text(
+                            text = if (notes.containsKey(ref)) " Nota" else " Anotar",
+                            modifier = Modifier.padding(start = 4.dp),
+                        )
+                    }
+                    TextButton(
+                        onClick = {
                             copy(context, "$reference — ${verse.text}")
                             sheetVerse = null
                         },
@@ -312,6 +331,19 @@ fun ReaderScreen(
             }
         }
         }
+    }
+
+    editingNote?.let { verse ->
+        val ref = VerseRef(bookId, chapter, verse.verse, verse.suffix)
+        NoteEditor(
+            reference = "$bookName $chapter:${verse.label}",
+            initialText = notes[ref].orEmpty(),
+            onDismiss = { editingNote = null },
+            onSave = { text ->
+                vm.setNote(ref, text)
+                editingNote = null
+            },
+        )
     }
 
     wordStudy?.let { study ->
@@ -369,6 +401,7 @@ private fun VerseRow(
     verse: Verse,
     showNumber: Boolean,
     marked: Boolean,
+    hasNote: Boolean,
     fontSizeSp: Float,
     lineHeightSp: Float,
     onClick: () -> Unit,
@@ -386,7 +419,7 @@ private fun VerseRow(
     ) {
         if (showNumber) {
             Text(
-                text = verse.label,
+                text = if (hasNote) "${verse.label}•" else verse.label,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.secondary,
                 fontWeight = FontWeight.Bold,

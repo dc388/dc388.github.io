@@ -166,7 +166,9 @@ Ordenado por valor entregado sobre coste, no por el orden de la propuesta.
    Añadido además el equivalente griego, **Abbott-Smith** (5 363 artículos,
    99,89 % de las palabras del NT), que cubre lo que la propuesta pedía a Thayer
    con mejor digitalización y licencia inequívoca.
-5. **Notas personales locales.** Sin servidor, sin cambiar la privacidad.
+5. ~~**Notas personales locales.**~~ **Hecho.** Una nota por versículo, guardada
+   en el dispositivo. Sin servidor, sin cuenta y sin tocar la declaración de
+   seguridad de datos de Play: siguen siendo datos que nunca salen del teléfono.
 6. **Comentarios clásicos.** Previa auditoría de la digitalización.
 7. **Interlineal de la Septuaginta.** Requiere resolver antes la licencia de la
    morfología.

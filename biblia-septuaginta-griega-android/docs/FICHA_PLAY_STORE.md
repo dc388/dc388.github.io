@@ -49,7 +49,8 @@ LECTURA
   ediciones críticas impresas.
 • Tamaño de letra e interlineado ajustables.
 • Tema claro, oscuro o el del sistema.
-• Marcadores por versículo y vuelta directa a donde dejaste la lectura.
+• Marcadores y notas personales por versículo, y vuelta directa a donde
+  dejaste la lectura.
 • Copia y comparte un versículo o un capítulo entero.
 
 BÚSQUEDA
@@ -61,8 +62,8 @@ Septuaginta o al Nuevo Testamento.
 PRIVACIDAD
 
 La aplicación no pide ni un solo permiso, ni siquiera acceso a internet. No hay
-publicidad, ni analítica, ni rastreadores. Tus marcadores se quedan en tu
-teléfono.
+publicidad, ni analítica, ni rastreadores. Tus marcadores y tus notas se quedan
+en tu teléfono.
 
 Ideal para estudiantes de griego koiné, seminaristas, docentes y cualquiera que
 quiera leer las Escrituras en su lengua original.
