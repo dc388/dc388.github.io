@@ -1,0 +1,65 @@
+name: APK de prueba — Biblia
+
+# Compila el APK de depuración de biblia-septuaginta-griega-android para poder
+# instalarlo en un teléfono antes de publicarlo en Google Play.
+#
+# Este workflow vive aquí, y no en el repositorio propio de la app, porque la
+# sesión que generó el proyecto no tenía permiso para crear repositorios. En
+# cuanto exista el repositorio definitivo, su .github/workflows/build.yml hace
+# lo mismo y este archivo se puede borrar.
+
+on:
+  push:
+    branches: ["claude/biblia-**"]
+    paths:
+      - "biblia-septuaginta-griega-android/**"
+      - ".github/workflows/biblia-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    name: APK de depuración
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: biblia-septuaginta-griega-android
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar plataforma de Android 36
+        run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
+
+      # La base de datos no se versiona en este repositorio de sitio web para no
+      # engordarlo, así que se reconstruye desde las fuentes originales.
+      - name: Reconstruir la base de datos
+        run: python3 tools/build_db.py
+
+      - name: Comprobar la integridad de la base de datos
+        run: python3 tools/verify_db.py
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilar APK de depuración
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Publicar el APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: biblia-apk-debug
+          path: biblia-septuaginta-griega-android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30

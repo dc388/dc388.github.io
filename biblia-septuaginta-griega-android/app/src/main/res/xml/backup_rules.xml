@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Se respaldan marcadores y ajustes; la base de datos se regenera del asset. -->
+    <include domain="file" path="datastore/" />
+    <exclude domain="file" path="biblia.db" />
+</full-backup-content>

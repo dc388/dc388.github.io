@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3E4A66"/>
+      <stop offset="100%" stop-color="#1B2136"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="500" fill="url(#fondo)"/>
+  <g transform="translate(150 250) scale(2.3) translate(-54 -56)">
+    <path fill="#F3E9D2" d="M54,41 C48,36 39,33 28,33 L28,71 C39,71 48,74 54,79 Z"/>
+    <path fill="#F3E9D2" d="M54,41 C60,36 69,33 80,33 L80,71 C69,71 60,74 54,79 Z"/>
+    <path fill="#C9B68C" d="M52.5,41 L55.5,41 L55.5,79 L52.5,79 Z"/>
+    <path fill="#E8B04B" d="M54,20 L60.5,33 L56.8,33 L54,26.8 L51.2,33 L47.5,33 Z"/>
+  </g>
+  <text x="330" y="215" font-family="Georgia, 'Times New Roman', serif" font-size="62" fill="#F3E9D2">Biblia Griega</text>
+  <text x="332" y="268" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#E8B04B">Septuaginta y Nuevo Testamento</text>
+  <text x="332" y="320" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#AEBBDA">Ἐν ἀρχῇ ἦν ὁ λόγος</text>
+  <text x="332" y="368" font-family="Helvetica, Arial, sans-serif" font-size="24" fill="#8F9CBC">37 443 versículos · sin conexión · sin anuncios</text>
+</svg>
