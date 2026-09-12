@@ -665,7 +665,15 @@ async function capturarRostroChecada() {
   $('selfie-take').hidden = true; $('selfie-skip').hidden = true;
   // Equipo sin WebAssembly / sin IndexedDB / sin camara: no hay motor que
   // cargar. Se sabe ANTES de encender la camara, sin hacerlo esperar.
-  if (!(window.LuftFace && LuftFace.supported())) return SIN_MOTOR;
+  //
+  // El boton se restaura ANTES de salir. Arriba se oculto para la pantalla de
+  // reconocimiento, y quien sigue en este camino es captureSelfie, que muestra
+  // la pantalla pero NO toca el boton: si se sale de aqui con el oculto, la
+  // persona se queda viendo la camara sin nada que tocar.
+  if (!(window.LuftFace && LuftFace.supported())) {
+    $('selfie-take').hidden = false;
+    return SIN_MOTOR;
+  }
   title.textContent = 'Reconociendo tu rostro…';
   msg.className = 'msg'; msg.textContent = 'Un momento…';
   show('selfie');
@@ -826,6 +834,11 @@ function captureSelfie(label, required) {
       stopSelfieStream();
       return resolve(null);
     }
+    // El boton se muestra SIEMPRE al entrar aqui, sin depender de en que estado
+    // lo dejo la pantalla anterior. La de reconocimiento facial lo oculta, y
+    // cualquier salida suya que no lo restaure dejaba esta pantalla sin nada que
+    // tocar. Que esta funcion no dependa de eso corta el problema de raiz.
+    $('selfie-take').hidden = false;
     show('selfie');
 
     const cleanup = () => { $('selfie-take').onclick = null; stopSelfieStream(); };
