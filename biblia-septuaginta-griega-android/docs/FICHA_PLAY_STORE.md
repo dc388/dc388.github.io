@@ -37,7 +37,9 @@ INTERLINEAL Y ESTUDIO
 • Cada una de las 140 149 palabras del Nuevo Testamento lleva su número Strong
   y su análisis morfológico.
 • Toca cualquier palabra y verás su lema, su transliteración, su análisis
-  gramatical explicado en español y su definición en el Diccionario Strong.
+  gramatical explicado en español, su definición en el Diccionario Strong y el
+  artículo completo del léxico de referencia: Brown-Driver-Briggs en hebreo y
+  Abbott-Smith en griego.
 • Concordancia completa: desde una palabra, salta a todos los versículos donde
   vuelve a aparecer.
 

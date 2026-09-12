@@ -85,10 +85,11 @@ conviene decidirla pronto, no al final.
 
 | Recurso | Fuente verificada | Estado |
 |---|---|---|
-| Strong griego | [openscriptures/strongs](https://github.com/openscriptures/strongs) | **5 523 entradas cargadas y probadas** |
-| Strong hebreo | openscriptures/strongs | Disponible (XML) |
-| Brown-Driver-Briggs | [openscriptures/HebrewLexicon](https://github.com/openscriptures/HebrewLexicon) | Disponible (XML) |
-| Thayer | Repositorios comunitarios de poca difusión | Existe, **calidad sin auditar** |
+| Strong griego | [openscriptures/strongs](https://github.com/openscriptures/strongs) | **Hecho** — 5 523 entradas |
+| Strong hebreo | openscriptures/strongs | **Hecho** — 8 674 entradas |
+| Brown-Driver-Briggs | [openscriptures/HebrewLexicon](https://github.com/openscriptures/HebrewLexicon) | **Hecho** — 9 247 artículos |
+| Thayer | Repositorios comunitarios de poca difusión | Existe, **calidad sin auditar**; se usó Abbott-Smith en su lugar |
+| Abbott-Smith | [translatable-exegetical-tools/Abbott-Smith](https://github.com/translatable-exegetical-tools/Abbott-Smith) | **Hecho** — 5 363 artículos, dominio público declarado |
 
 Los tres primeros vienen de Open Scriptures y son sólidos. Thayer solo aparece en
 repositorios recientes y con poco uso: antes de incorporarlo hay que cotejarlo
@@ -159,16 +160,20 @@ Ordenado por valor entregado sobre coste, no por el orden de la propuesta.
 3. ~~**Antiguo Testamento hebreo (OSHB).**~~ **Hecho.** 39 libros, 23 213
    versículos y 299 556 palabras analizadas (98,05 % del texto), con el arameo
    de Daniel y Esdras marcado. Lector de derecha a izquierda.
-4. **Léxico hebreo.** Strong hebreo **hecho** (8 674 entradas). Falta
-   Brown-Driver-Briggs, que da definiciones mucho más ricas.
+4. ~~**Léxicos hebreos (Strong hebreo y BDB).**~~ **Hecho.** Strong hebreo
+   (8 674 entradas) y Brown-Driver-Briggs completo (9 247 artículos, 99,98 % de
+   las palabras), con los homónimos resueltos por la letra del lema de OSHB.
+   Añadido además el equivalente griego, **Abbott-Smith** (5 363 artículos,
+   99,89 % de las palabras del NT), que cubre lo que la propuesta pedía a Thayer
+   con mejor digitalización y licencia inequívoca.
 5. **Notas personales locales.** Sin servidor, sin cambiar la privacidad.
 6. **Comentarios clásicos.** Previa auditoría de la digitalización.
 7. **Interlineal de la Septuaginta.** Requiere resolver antes la licencia de la
    morfología.
 8. **Comunidad y wiki.** Producto aparte, con servidor y moderación.
 
-Los pasos 1 a 4 ya están implementados. La base pasó de 18,4 MB a 59 MB (unos
-20 MB comprimidos en el APK).
+Los pasos 1 a 4 ya están implementados. La base pasó de 18,4 MB a 63 MB (unos
+21 MB comprimidos en el APK).
 
 La decisión sobre iOS sigue abierta, pero cada vez pesa menos: el activo es la
 base de datos y el importador, que no cambian de lenguaje.

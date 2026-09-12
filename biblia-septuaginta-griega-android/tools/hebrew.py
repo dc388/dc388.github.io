@@ -210,10 +210,18 @@ def translate(description: str) -> tuple[str | None, list[str]]:
     return (f"arameo · {joined}" if language == "Aramaic" else joined), []
 
 
-def strong_of(lemma: str) -> str | None:
-    """`b/7225` -> `H7225`; `1254 a` -> `H1254`. El lema es prefijo(s) + raíz."""
-    numbers = re.findall(r"\d+", lemma or "")
-    return f"H{int(numbers[-1])}" if numbers else None
+def strong_of(lemma: str) -> tuple[str, str] | None:
+    """`b/7225` -> `("H7225", "")`; `1254 a` -> `("H1254", "a")`.
+
+    El lema es prefijo(s) + raíz, y la raíz puede llevar una letra de homónimo.
+    Esa letra no es decorativa: `1254 a` es «crear» y `1254 b` es «engordar», y
+    es la que permite elegir el artículo correcto en Brown-Driver-Briggs.
+    """
+    matches = re.findall(r"(\d+)(?:\s+([a-z]))?", lemma or "")
+    if not matches:
+        return None
+    number, homonym = matches[-1]
+    return f"H{int(number)}", homonym or ""
 
 
 def read_book(path: Path) -> list[tuple[int, int, str, list[tuple[str, str, str]]]]:

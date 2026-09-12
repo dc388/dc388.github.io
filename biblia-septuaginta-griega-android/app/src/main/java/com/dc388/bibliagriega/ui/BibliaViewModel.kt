@@ -3,6 +3,7 @@ package com.dc388.bibliagriega.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.dc388.bibliagriega.data.LexiconArticle
 import com.dc388.bibliagriega.data.BibleRepository
 import com.dc388.bibliagriega.data.Book
 import com.dc388.bibliagriega.data.InterlinearWord
@@ -42,6 +43,8 @@ data class WordStudy(
     val word: InterlinearWord,
     val reference: String,
     val entry: LexiconEntry? = null,
+    /** Artículo del léxico de referencia: BDB en hebreo, Abbott-Smith en griego. */
+    val article: LexiconArticle? = null,
     val occurrences: Int = 0,
     val loading: Boolean = true,
 )
@@ -141,10 +144,11 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
         _wordStudy.value = WordStudy(word, reference)
         viewModelScope.launch {
             val entry = repo.lexiconEntry(word.strong)
+            val article = repo.articleOf(word.strong, word.homonym)
             val count = repo.occurrenceCount(word.strong)
             _wordStudy.value = _wordStudy.value
                 ?.takeIf { it.word.strong == word.strong }
-                ?.copy(entry = entry, occurrences = count, loading = false)
+                ?.copy(entry = entry, article = article, occurrences = count, loading = false)
         }
     }
 

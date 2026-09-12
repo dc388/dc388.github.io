@@ -80,6 +80,21 @@ público): versiones JSON de
 por Open Scriptures bajo **CC BY-SA**. Las 14 197 entradas de léxico que viajan
 en `biblia.db` conservan esa licencia.
 
+## Léxicos de referencia
+
+**Brown-Driver-Briggs**, *A Hebrew and English Lexicon of the Old Testament*
+(1906), obra en dominio público, digitalizada por Open Scriptures en
+[openscriptures/HebrewLexicon](https://github.com/openscriptures/HebrewLexicon).
+
+**Abbott-Smith**, *A Manual Greek Lexicon of the New Testament* (1922), obra en
+dominio público, digitalizada en
+[translatable-exegetical-tools/Abbott-Smith](https://github.com/translatable-exegetical-tools/Abbott-Smith),
+repositorio que declara expresamente el dominio público de la obra y de su
+marcado.
+
+Ambos se distribuyen en `biblia.db` como texto plano, conservando la jerarquía
+de acepciones del original.
+
 ## Código de terceros
 
 La app usa AndroidX y Jetpack Compose, bajo licencia Apache 2.0.

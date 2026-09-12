@@ -27,7 +27,10 @@ def main() -> int:
     con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
     counts = {
         name: con.execute(f"SELECT COUNT(*) FROM {name}").fetchone()[0]
-        for name in ("collections", "books", "verses", "words", "lexicon", "morph_codes")
+        for name in (
+            "collections", "books", "verses", "words", "lexicon", "articles",
+            "morph_codes",
+        )
     }
     problems = verify(con)
     con.close()

@@ -19,6 +19,10 @@ Fuentes:
     https://github.com/openscriptures/morphhb -- CC BY 4.0.
   * Lexicos griego y hebreo: diccionarios de Strong (1890) de
     https://github.com/openscriptures/strongs -- JSON bajo CC BY-SA.
+  * Lexicos de referencia, ambos en dominio publico: Brown-Driver-Briggs (1906)
+    para el hebreo, desde https://github.com/openscriptures/HebrewLexicon, y
+    Abbott-Smith (1922) para el griego, desde
+    https://github.com/translatable-exegetical-tools/Abbott-Smith.
 
 Uso:
     python3 tools/build_db.py                 # clona las fuentes si hacen falta
@@ -40,6 +44,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from clean import clean_text, count_residual  # noqa: E402
 from morphology import build_table  # noqa: E402
+from abbott_smith import build as build_abbott_smith  # noqa: E402
+from bdb import build as build_bdb, resolve as resolve_bdb  # noqa: E402
 from hebrew import (  # noqa: E402
     HEBREW_BOOKS,
     build_part_key,
@@ -57,6 +63,8 @@ REPOS = {
     "grb": "https://github.com/LukeSmithxyz/grb.git",
     "strongs": "https://github.com/openscriptures/strongs.git",
     "morphhb": "https://github.com/openscriptures/morphhb.git",
+    "HebrewLexicon": "https://github.com/openscriptures/HebrewLexicon.git",
+    "Abbott-Smith": "https://github.com/translatable-exegetical-tools/Abbott-Smith.git",
 }
 
 # --- Septuaginta: numero de archivo de Swete -> (codigo, nombre es, nombre griego, alterno)
@@ -194,6 +202,9 @@ CREATE TABLE words (
     position  INTEGER NOT NULL,
     surface   TEXT NOT NULL,
     strong    TEXT NOT NULL,
+    -- Letra que distingue homónimos del mismo número Strong: «1254 a» es crear
+    -- y «1254 b» es engordar. Vacía cuando el lema no la trae.
+    homonym   TEXT NOT NULL DEFAULT '',
     morph     TEXT NOT NULL
 );
 CREATE TABLE lexicon (
@@ -203,6 +214,19 @@ CREATE TABLE lexicon (
     derivation TEXT,
     definition TEXT,
     kjv_usage  TEXT
+);
+-- Artículos de léxico de referencia: Brown-Driver-Briggs para el hebreo y
+-- Abbott-Smith para el griego. Una fila por cada palabra distinta del texto,
+-- con el respaldo de homónimo ya resuelto en la importación.
+CREATE TABLE articles (
+    strong   TEXT NOT NULL,
+    homonym  TEXT NOT NULL,
+    source   TEXT NOT NULL,
+    headword TEXT,
+    gloss    TEXT,
+    pos      TEXT,
+    article  TEXT NOT NULL,
+    PRIMARY KEY (strong, homonym)
 );
 CREATE TABLE morph_codes (
     code        TEXT PRIMARY KEY,
@@ -417,18 +441,109 @@ def insert_hebrew(
             continue
         for position, (surface, lemma, morph) in enumerate(tokens, 1):
             seen += 1
-            strong = strong_of(lemma)
-            if strong is None or not morph:
+            parsed = strong_of(lemma)
+            if parsed is None or not morph:
                 # Sin número Strong no hay nada que consultar en el léxico:
                 # se deja fuera del interlineal en vez de inventar una entrada.
                 continue
-            words.append((verse_id, position, surface, strong, morph))
+            strong, homonym = parsed
+            words.append((verse_id, position, surface, strong, homonym, morph))
 
     con.executemany(
-        "INSERT INTO words (verse_id, position, surface, strong, morph) VALUES (?,?,?,?,?)",
+        "INSERT INTO words (verse_id, position, surface, strong, homonym, morph)"
+        " VALUES (?,?,?,?,?,?)",
         words,
     )
     return len(verse_rows), len(words), seen
+
+
+def insert_articles(con: sqlite3.Connection, sources: Path) -> tuple[int, int]:
+    """Artículos de léxico para cada palabra distinta del texto etiquetado.
+
+    Hebreo con Brown-Driver-Briggs y griego con Abbott-Smith. Se inserta una fila
+    por cada par (Strong, homónimo) que realmente aparece, resolviendo aquí el
+    respaldo de homónimo: así la consulta del lector es un JOIN directo y nunca
+    se queda sin artículo por una distinción que el léxico no hace.
+    """
+    rows: list[tuple[str, str, str, str | None, str | None, str | None, str]] = []
+
+    hebrew_dir = sources / "HebrewLexicon"
+    hebrew_count = 0
+    if (hebrew_dir / "LexicalIndex.xml").exists():
+        articles = build_bdb(hebrew_dir)
+        used = con.execute(
+            "SELECT DISTINCT w.strong, w.homonym FROM words w"
+            " JOIN verses v ON v.id = w.verse_id"
+            " JOIN books b ON b.id = v.book_id"
+            " WHERE b.collection_id = 'at'"
+        ).fetchall()
+        for strong, homonym in used:
+            found = resolve_bdb(articles, strong, homonym)
+            if found:
+                rows.append(
+                    (
+                        strong,
+                        homonym,
+                        "Brown-Driver-Briggs",
+                        None,
+                        found["gloss"] or None,
+                        found["pos"] or None,
+                        found["text"],
+                    )
+                )
+                hebrew_count += 1
+    else:
+        print("  AVISO: falta HebrewLexicon; se omite Brown-Driver-Briggs")
+
+    greek_file = sources / "Abbott-Smith" / "abbott-smith.tei.xml"
+    greek_count = 0
+    if greek_file.exists():
+        articles = build_abbott_smith(greek_file)
+        used = con.execute(
+            "SELECT DISTINCT w.strong FROM words w"
+            " JOIN verses v ON v.id = w.verse_id"
+            " JOIN books b ON b.id = v.book_id"
+            " WHERE b.collection_id = 'nt'"
+        ).fetchall()
+        for (strong,) in used:
+            found = articles.get(strong)
+            if found:
+                gloss = found["gloss"]
+                rows.append(
+                    (
+                        strong,
+                        "",
+                        "Abbott-Smith",
+                        found["headword"] or None,
+                        gloss or found["pos"] or None,
+                        found["pos"] or None,
+                        found["article"],
+                    )
+                )
+                greek_count += 1
+    else:
+        print("  AVISO: falta Abbott-Smith; se omite el léxico griego de referencia")
+
+    con.executemany(
+        "INSERT OR REPLACE INTO articles"
+        " (strong, homonym, source, headword, gloss, pos, article)"
+        " VALUES (?,?,?,?,?,?,?)",
+        rows,
+    )
+    return hebrew_count, greek_count
+
+
+def coverage(con: sqlite3.Connection, collection: str) -> float:
+    """Porcentaje de palabras de una colección que tienen artículo de léxico."""
+    total, with_article = con.execute(
+        "SELECT COUNT(*), COUNT(a.strong) FROM words w"
+        " JOIN verses v ON v.id = w.verse_id"
+        " JOIN books b ON b.id = v.book_id"
+        " LEFT JOIN articles a ON a.strong = w.strong AND a.homonym = w.homonym"
+        " WHERE b.collection_id = ?",
+        (collection,),
+    ).fetchone()
+    return 100.0 * with_article / total if total else 0.0
 
 
 def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
@@ -489,6 +604,21 @@ def verify(con: sqlite3.Connection) -> list[str]:
         ).fetchone()[0]
         if sin_analizar:
             problems.append(f"{sin_analizar} versículos del {label} sin interlineal")
+
+    # Ningún léxico cubre absolutamente todo: H2007 (הֵנָּה, «ellas») no tiene
+    # entrada propia en esta digitalización de BDB. Eso no es un fallo, así que
+    # en vez de exigir el 100 % se vigila que la cobertura no se desplome, que
+    # es lo que delataría una regresión de verdad.
+    for collection, label, minimum in (
+        ("at", "hebreas (Brown-Driver-Briggs)", 99.0),
+        ("nt", "del NT (Abbott-Smith)", 99.0),
+    ):
+        pct = coverage(con, collection)
+        if pct < minimum:
+            problems.append(
+                f"solo el {pct:.2f} % de las palabras {label} tiene artículo de"
+                f" léxico (se esperaba más del {minimum:.0f} %)"
+            )
 
     # Concatenar las palabras de un versículo debe devolver su texto exacto:
     # si no, alguna palabra quedaría emparejada con el análisis de otra.
@@ -621,6 +751,16 @@ def build(sources: Path, out: Path) -> None:
 
     print("Léxico y morfología:")
     lex = insert_lexicon(con, sources)
+    hebrew_articles, greek_articles = insert_articles(con, sources)
+    print(
+        f"  Brown-Driver-Briggs               {hebrew_articles:5d} artículos"
+        f"  ({coverage(con, 'at'):.2f} % de las palabras hebreas)"
+    )
+    print(
+        f"  Abbott-Smith                      {greek_articles:5d} artículos"
+        f"  ({coverage(con, 'nt'):.2f} % de las palabras del NT)"
+    )
+
     print(f"  diccionarios Strong (gr. y heb.)  {lex:5d} entradas")
 
     # La lengua del código se decide por la colección del versículo, no por su

@@ -2,7 +2,8 @@
 
 Aplicación Android nativa (Kotlin + Jetpack Compose) para leer sin conexión el
 **Antiguo Testamento hebreo**, la **Septuaginta** y el **Nuevo Testamento
-griego**, con interlineal, análisis morfológico en español y léxico.
+griego**, con interlineal, análisis morfológico en español y los léxicos de
+referencia de cada lengua.
 
 Todo viaja dentro del APK: **60 656 versículos en 122 libros** y **439 705
 palabras analizadas**. La app no pide permisos, no usa internet y no recoge
@@ -46,6 +47,32 @@ jurisdicciones de vida + 70 años). Por eso aquí se usa Swete por defecto.
 De ese origen ya viene Eclesiastés, porque Swete no está digitalizado para
 ese libro.
 
+## Léxicos
+
+Cada palabra analizada enlaza con dos obras: el **Diccionario Strong** (1890),
+que da la definición de una línea, y el léxico de referencia de su lengua, que
+da el artículo completo con sus acepciones numeradas y las citas de cada una.
+
+| Lengua | Léxico de referencia | Artículos | Cobertura | Licencia |
+|---|---|---|---|---|
+| Hebreo | Brown-Driver-Briggs (1906) | 9 247 | 99,98 % de las palabras | Dominio público |
+| Griego | Abbott-Smith (1922) | 5 363 | 99,89 % de las palabras del NT | Dominio público |
+
+La propuesta original pedía Thayer para el griego; Abbott-Smith cubre la misma
+necesidad, está mucho mejor digitalizado y su licencia es inequívoca.
+
+En hebreo, el enlace respeta los **homónimos**: el lema de OSHB distingue
+`1254 a` («crear», el de Génesis 1:1) de `1254 b` («engordar»), y esa letra
+decide qué artículo se muestra. Afecta a 59 092 palabras, una de cada cinco del
+Antiguo Testamento.
+
+Bajo cada palabra del interlineal aparece además una **definición breve**. En
+hebreo sale del índice de BDB; en griego, de la primera glosa de Abbott-Smith,
+tal cual la da la obra. En unas pocas palabras funcionales esa primera glosa es
+la de la acepción con que el léxico abre y no la más corriente —`ὁ` sale como
+*he*, porque Abbott-Smith empieza por el uso demostrativo homérico—. Se prefiere
+esa rareza a inventar una traducción que la fuente no dice.
+
 ## Interlineal
 
 Las 140 149 palabras del Nuevo Testamento llevan su número Strong y su análisis
@@ -83,7 +110,8 @@ desconocido, el importador avisa en vez de mostrar una etiqueta inventada.
 - Lector con dos modos: versículo por línea o texto corrido en párrafo, con
   dirección de escritura según la lengua del texto.
 - Modo interlineal con lema, transliteración y número Strong bajo cada palabra.
-- Ficha de palabra con definición del léxico y concordancia completa.
+- Ficha de palabra con la definición de Strong, el artículo completo del léxico
+  de referencia y la concordancia de todas sus apariciones.
 - Tamaño de letra e interlineado ajustables; tema claro, oscuro o del sistema.
 - Búsqueda en todo el texto **sin escribir acentos y por comienzo de palabra**:
   `λογ` encuentra `λόγος`, `λόγῳ` y `λόγον`, pero no `φλογός`. En hebreo la
@@ -117,18 +145,20 @@ python3 tools/build_db.py
 El script clona los repositorios de origen en `build/sources/`, normaliza los
 textos y arma el SQLite. Solo necesita Python 3.9+ y `git`.
 
-Esquema: `collections` → `books` → `verses` → `words`, más `lexicon` y
-`morph_codes`. Cada versículo guarda además `text_norm`, una copia en
+Esquema: `collections` → `books` → `verses` → `words`, más `lexicon`,
+`articles` y `morph_codes`. Cada versículo guarda además `text_norm`, una copia en
 minúsculas, sin diacríticos y sin puntuación, que es la que hace posible buscar
 sin acentos.
 
-El importador comprueba cinco invariantes y aborta si alguna se rompe: que cada
+El importador comprueba siete invariantes y aborta si alguna se rompe: que cada
 palabra tenga entrada de léxico y descripción morfológica, que ningún versículo
-del Nuevo Testamento ni del Antiguo hebreo quede sin analizar, y que concatenar
-las palabras de un versículo del NT reproduzca su texto carácter por carácter.
+del Nuevo Testamento ni del Antiguo hebreo quede sin analizar, que concatenar
+las palabras de un versículo del NT reproduzca su texto carácter por carácter, y
+que la cobertura de los léxicos de referencia no baje del 99 % en ninguna de las
+dos lenguas.
 `tools/verify_db.py` repite esas comprobaciones en CI sobre la base versionada.
 
-La base ocupa 59 MB, unos 20 MB comprimidos dentro del APK.
+La base ocupa 63 MB, unos 21 MB comprimidos dentro del APK.
 
 ## Publicar en Google Play
 
@@ -149,6 +179,8 @@ tools/build_db.py                  generador de la base de datos
 tools/clean.py                     limpieza de artefactos de OCR
 tools/morphology.py                códigos de Robinson traducidos al español
 tools/hebrew.py                    OSIS de OSHB y morfología hebrea en español
+tools/bdb.py                       léxico Brown-Driver-Briggs
+tools/abbott_smith.py              léxico griego de Abbott-Smith
 tools/verify_db.py                 comprobaciones de integridad para CI
 docs/                              guía de publicación y ficha de la tienda
 ```
@@ -160,10 +192,10 @@ proyecto a interlineal con números Strong, morfología, léxicos y Antiguo
 Testamento hebreo: fuentes verificadas, licencias, y qué partes son baratas y
 cuáles caras.
 
-Los cuatro primeros pasos de esa hoja de ruta —interlineal del NT, léxico
-Strong griego, Antiguo Testamento hebreo y léxico Strong hebreo— **ya están
-implementados**. Lo siguiente son las notas personales locales y los
-comentarios clásicos.
+Los cinco primeros pasos de esa hoja de ruta **ya están implementados**:
+interlineal del NT, léxico Strong griego, Antiguo Testamento hebreo, léxico
+hebreo y los léxicos de referencia de ambas lenguas. Lo siguiente son las notas
+personales locales y los comentarios clásicos.
 
 ## Licencias
 

@@ -157,12 +157,13 @@ class BibleRepository private constructor(private val appContext: Context) {
      */
     suspend fun wordsOfChapter(bookId: Long, chapter: Int): Map<Long, List<InterlinearWord>> {
         val rows = query(
-            "SELECT w.verse_id, w.position, w.surface, w.strong, w.morph, m.description," +
-                " l.lemma, l.translit" +
+            "SELECT w.verse_id, w.position, w.surface, w.strong, w.homonym, w.morph," +
+                " m.description, l.lemma, l.translit, d.gloss" +
                 " FROM words w" +
                 " JOIN verses v ON v.id = w.verse_id" +
                 " LEFT JOIN morph_codes m ON m.code = w.morph" +
                 " LEFT JOIN lexicon l ON l.strong = w.strong" +
+                " LEFT JOIN articles d ON d.strong = w.strong AND d.homonym = w.homonym" +
                 " WHERE v.book_id = ? AND v.chapter = ?" +
                 " ORDER BY w.verse_id, w.position",
             arrayOf(bookId.toString(), chapter.toString()),
@@ -171,10 +172,12 @@ class BibleRepository private constructor(private val appContext: Context) {
                 position = it.getInt(1),
                 surface = it.getString(2),
                 strong = it.getString(3),
-                morphCode = it.getString(4),
-                morphology = if (it.isNull(5)) null else it.getString(5),
-                lemma = if (it.isNull(6)) null else it.getString(6),
-                transliteration = if (it.isNull(7)) null else it.getString(7),
+                homonym = it.getString(4) ?: "",
+                morphCode = it.getString(5),
+                morphology = if (it.isNull(6)) null else it.getString(6),
+                lemma = if (it.isNull(7)) null else it.getString(7),
+                transliteration = if (it.isNull(8)) null else it.getString(8),
+                gloss = if (it.isNull(9)) null else it.getString(9),
             )
         }
         return rows.groupBy({ it.first }, { it.second })
@@ -192,6 +195,23 @@ class BibleRepository private constructor(private val appContext: Context) {
             derivation = if (it.isNull(3)) null else it.getString(3),
             definition = if (it.isNull(4)) null else it.getString(4),
             kjvUsage = if (it.isNull(5)) null else it.getString(5),
+        )
+    }.firstOrNull()
+
+    /** Artículo del léxico de referencia de una palabra, si lo tiene. */
+    suspend fun articleOf(strong: String, homonym: String): LexiconArticle? = query(
+        "SELECT strong, homonym, source, headword, gloss, pos, article FROM articles" +
+            " WHERE strong = ? AND homonym = ?",
+        arrayOf(strong, homonym),
+    ) {
+        LexiconArticle(
+            strong = it.getString(0),
+            homonym = it.getString(1),
+            source = it.getString(2),
+            headword = if (it.isNull(3)) null else it.getString(3),
+            gloss = if (it.isNull(4)) null else it.getString(4),
+            partOfSpeech = if (it.isNull(5)) null else it.getString(5),
+            article = it.getString(6),
         )
     }.firstOrNull()
 

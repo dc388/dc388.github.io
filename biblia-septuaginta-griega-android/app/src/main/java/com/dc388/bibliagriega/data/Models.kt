@@ -60,11 +60,34 @@ data class InterlinearWord(
     /** La palabra tal como aparece en el texto, con su puntuación. */
     val surface: String,
     val strong: String,
+    /**
+     * Letra que distingue homónimos del mismo número Strong: «1254 a» es crear
+     * y «1254 b» es engordar. Vacía en griego y en los lemas que no la traen.
+     */
+    val homonym: String,
     val morphCode: String,
     /** Descripción morfológica en español, ya resuelta desde `morph_codes`. */
     val morphology: String?,
     val lemma: String?,
     val transliteration: String?,
+    /** Definición breve, tomada de Brown-Driver-Briggs o de Abbott-Smith. */
+    val gloss: String?,
+)
+
+/**
+ * Artículo de un léxico de referencia: Brown-Driver-Briggs en hebreo,
+ * Abbott-Smith en griego.
+ */
+data class LexiconArticle(
+    val strong: String,
+    val homonym: String,
+    /** Obra de la que procede, para citarla en pantalla. */
+    val source: String,
+    val headword: String?,
+    val gloss: String?,
+    val partOfSpeech: String?,
+    /** Texto del artículo, con sus acepciones numeradas y sangradas. */
+    val article: String,
 )
 
 /** Entrada del diccionario griego de Strong. */

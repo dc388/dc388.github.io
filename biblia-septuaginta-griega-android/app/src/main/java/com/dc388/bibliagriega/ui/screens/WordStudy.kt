@@ -33,8 +33,8 @@ import com.dc388.bibliagriega.ui.WordStudy
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
 /**
- * Interlineal: cada palabra griega sobre su transliteración y su número Strong.
- * Al tocar una palabra se abre su entrada del léxico.
+ * Interlineal: cada palabra sobre su transliteración, su definición breve —donde
+ * la hay— y su número Strong. Al tocarla se abre su entrada del léxico.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -68,6 +68,15 @@ fun InterlinearVerse(
                         fontSize = (fontSizeSp * 0.58f).sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
+                    )
+                }
+                if (word.gloss != null) {
+                    Text(
+                        text = word.gloss,
+                        fontSize = (fontSizeSp * 0.55f).sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.widthIn(max = 140.dp),
                     )
                 }
                 Text(
@@ -173,9 +182,11 @@ fun WordStudySheet(
 
             Field("Número Strong", study.word.strong)
             Field("Análisis", study.word.morphology ?: study.word.morphCode)
-            entry?.definition?.let { Field("Definición", it) }
+            study.article?.gloss?.let { Field("Definición breve", it) }
+            entry?.definition?.let { Field("Strong", it) }
             entry?.derivation?.let { Field("Etimología", it) }
             entry?.kjvUsage?.let { Field("Traducciones (KJV)", it) }
+            study.article?.let { Field(it.source, it.article) }
 
             if (study.occurrences > 0 && entry != null) {
                 TextButton(
@@ -190,8 +201,10 @@ fun WordStudySheet(
             }
 
             Text(
-                text = "Definiciones del Diccionario Strong (1890). El análisis morfológico " +
-                    "es el de Robinson, traducido al español.",
+                text = "Definiciones del Diccionario Strong (1890) y de los léxicos de " +
+                    "referencia: Brown-Driver-Briggs (1906) en hebreo y Abbott-Smith " +
+                    "(1922) en griego. El análisis morfológico procede de Robinson en " +
+                    "griego y de OSHB en hebreo, traducido al español.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 16.dp),

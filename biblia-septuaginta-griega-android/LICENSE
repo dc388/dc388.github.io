@@ -43,6 +43,10 @@ distribuyen en app/src/main/assets/biblia.db tienen sus propias licencias:
   https://github.com/openscriptures/strongs — CC BY-SA. El análisis morfológico
   de Robinson que acompaña al Nuevo Testamento está en dominio público.
 
+* Léxicos de referencia, ambos en dominio público: Brown-Driver-Briggs (1906),
+  https://github.com/openscriptures/HebrewLexicon, y Abbott-Smith (1922),
+  https://github.com/translatable-exegetical-tools/Abbott-Smith.
+
 * Eclesiastés, de tradición Rahlfs, tomado de https://github.com/LukeSmithxyz/grb
   porque la edición de Swete todavía no está digitalizada para ese libro.
 
