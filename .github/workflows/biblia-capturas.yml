@@ -8,15 +8,19 @@ name: Capturas — Biblia
 # capturas representen lo que el usuario se va a encontrar, y esta es la única
 # forma de garantizarlo sin tener el teléfono delante.
 #
-# El emulador es de 1080×1920 a propósito: Play solo acepta 16:9 o 9:16, y los
-# teléfonos modernos son más alargados que eso.
+# Play pide capturas de teléfono (obligatorias) y ofrece además las de tablet de
+# 7 y 10 pulgadas. Sin las de tablet, Play avisa de que la aplicación puede no
+# aparecer recomendada en esos aparatos, y esta tiene diseño adaptable: merece
+# la pena enseñarlo.
+#
+# Cada tamaño va en su propio trabajo para que un fallo en las de tablet no deje
+# al usuario sin las del teléfono, que son las que bloquean la publicación.
 
 on:
   workflow_dispatch:
   # GitHub solo ofrece el botón «Run workflow» en la rama por defecto, así que
   # mientras esto viva en una rama de trabajo se dispara al tocar el test o el
-  # propio flujo. Es un trabajo de media hora: no conviene lanzarlo con cada
-  # cambio del proyecto.
+  # propio flujo. Es un trabajo largo: no conviene lanzarlo con cada cambio.
   push:
     branches: ["claude/biblia-**"]
     paths:
@@ -28,9 +32,29 @@ permissions:
 
 jobs:
   capturas:
-    name: Capturas en el emulador
+    name: Capturas ${{ matrix.nombre }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Todas en 9:16 exacto, que es lo único que Play acepta junto con
+          # 16:9. La densidad es lo que decide cuánta interfaz cabe: a 420 ppp
+          # son 411 dp de ancho, la medida de un teléfono; a 240 ppp, 720 dp,
+          # que es un tablet de 7 pulgadas.
+          - nombre: de teléfono
+            sufijo: telefono
+            tamano: 1080x1920
+            densidad: 420
+          - nombre: de tablet de 7″
+            sufijo: tablet7
+            tamano: 1080x1920
+            densidad: 240
+          - nombre: de tablet de 10″
+            sufijo: tablet10
+            tamano: 1440x2560
+            densidad: 240
     defaults:
       run:
         working-directory: biblia-septuaginta-griega-android
@@ -68,25 +92,32 @@ jobs:
 
       - name: Tomar las capturas
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          TAMANO: ${{ matrix.tamano }}
+          DENSIDAD: ${{ matrix.densidad }}
         with:
           api-level: 34
           target: google_apis
           arch: x86_64
-          # Nexus 5: 1080×1920, que es 9:16 exacto. Un Pixel moderno da 1080×2400
-          # y Play lo rechaza por proporción.
           profile: Nexus 5
           ram-size: 4096M
           disk-size: 4096M
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           working-directory: biblia-septuaginta-griega-android
+          # Cada línea se ejecuta con su propio `sh -c`, así que aquí no se
+          # pueden partir comandos con `\`: la barra llegaría a Gradle como
+          # nombre de tarea, que es justo lo que pasó la primera vez.
+          #
+          # El tamaño y la densidad se fijan por adb en vez de con perfiles de
+          # AVD porque ningún perfil de tablet da 16:9 ni 9:16, y Play no acepta
+          # otra proporción.
           script: |
-            ./gradlew connectedDebugAndroidTest \
-              -Pandroid.testInstrumentationRunnerArguments.class=com.dc388.bibliagriega.CapturasTest \
-              --stacktrace
-            mkdir -p capturas
-            adb pull /sdcard/Android/data/com.dc388.bibliagriega.debug/files/capturas/. capturas/
-            ls -la capturas/
+            adb shell wm size $TAMANO
+            adb shell wm density $DENSIDAD
+            ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.dc388.bibliagriega.CapturasTest --stacktrace
+            adb pull /sdcard/Android/data/com.dc388.bibliagriega.debug/files/capturas .
+            ls -la capturas
 
       - name: Comprobar que sirven para Play
         run: |
@@ -95,13 +126,16 @@ jobs:
           fotos = sorted(pathlib.Path("capturas").glob("*.png"))
           if len(fotos) < 2:
               sys.exit(f"Play pide 2 capturas como mínimo y hay {len(fotos)}")
+          if len(fotos) > 8:
+              sys.exit(f"Play admite 8 como máximo y hay {len(fotos)}")
           malas = []
           for f in fotos:
               d = f.read_bytes()
               w, h = struct.unpack(">II", d[16:24])
-              razon = round(w / h, 4)
-              ok = (abs(razon - 9/16) < 0.01 or abs(razon - 16/9) < 0.01)
-              ok = ok and 320 <= w <= 3840 and 320 <= h <= 3840 and len(d) <= 8*1024*1024
+              razon = w / h
+              ok = abs(razon - 9/16) < 0.01 or abs(razon - 16/9) < 0.01
+              ok = ok and 320 <= w <= 3840 and 320 <= h <= 3840
+              ok = ok and len(d) <= 8 * 1024 * 1024
               print(f"{f.name}: {w}×{h}  {len(d)/1024:.0f} KB  {'ok' if ok else 'NO VALE'}")
               if not ok:
                   malas.append(f.name)
@@ -113,7 +147,7 @@ jobs:
       - name: Publicar las capturas
         uses: actions/upload-artifact@v4
         with:
-          name: biblia-capturas
+          name: biblia-capturas-${{ matrix.sufijo }}
           path: biblia-septuaginta-griega-android/capturas/*.png
           if-no-files-found: error
           retention-days: 30
