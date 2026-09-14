@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToString
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -101,7 +102,10 @@ class CapturasTest {
         //    esta aplicación de cualquier otra Biblia.
         regla.onNodeWithContentDescription("Tipografía").performClick()
         esperar("Modo interlineal")
-        regla.onNodeWithText("Modo interlineal").performClick()
+        // Hay que bajar hasta la fila: desde que Ajustes empieza por la tarjeta
+        // de la suscripción, «Modo interlineal» queda fuera de la pantalla, y
+        // Compose no deja pulsar lo que no se ve.
+        regla.onNodeWithText("Modo interlineal").performScrollTo().performClick()
         regla.waitForIdle()
         regla.onNodeWithContentDescription("Atrás").performClick()
         esperar("Ἐν ἀρχῇ")
@@ -132,6 +136,7 @@ class CapturasTest {
         esperar("AT hebreo")
         regla.onNodeWithContentDescription("Ajustes").performClick()
         esperar("Swete")
+        regla.onNodeWithText("Textos y licencias").performScrollTo()
         capturar("ajustes")
 
         val hechas = carpeta.listFiles()?.size ?: 0

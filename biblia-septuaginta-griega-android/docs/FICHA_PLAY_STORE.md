@@ -23,8 +23,8 @@ Septuaginta, NT griego y AT hebreo con interlineal. Se lee entera sin conexión.
 ## Descripción completa (máx. 4000 caracteres)
 
 ```
-Biblia Griega reúne los tres textos originales de la Escritura en una sola
-aplicación que funciona por completo sin conexión: el Antiguo Testamento
+Biblia Griega y Hebrea reúne los tres textos originales de la Escritura en una
+sola aplicación que funciona por completo sin conexión: el Antiguo Testamento
 hebreo, la Septuaginta y el Nuevo Testamento griego.
 
 122 libros y 60 651 versículos viajan dentro de la aplicación. No hace falta
@@ -58,8 +58,8 @@ INTERLINEAL Y ESTUDIO
   análisis morfológico.
 • El análisis gramatical está explicado en español, no en códigos: «verbo qal
   perfecto 3ª persona masculino singular», y no «HVqp3ms».
-• La definición breve de los 800 lemas más frecuentes también está traducida al
-  español: cubre el 82 % de las palabras del Nuevo Testamento y el 73 % del
+• La definición breve de los 1 196 lemas más frecuentes también está traducida
+  al español: cubre el 85 % de las palabras del Nuevo Testamento y el 75 % del
   Antiguo.
 • Toca cualquier palabra y verás su lema, su transliteración, su análisis, su
   definición en el Diccionario Strong y el artículo completo del léxico de
