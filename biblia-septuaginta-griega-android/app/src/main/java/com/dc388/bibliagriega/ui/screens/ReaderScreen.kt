@@ -253,6 +253,8 @@ fun ReaderScreen(
                                 hasNote = hasNote,
                                 fontSizeSp = fontSize.value,
                                 lineHeightSp = lineHeight.value,
+                                translation = state.translation[verse.verse]
+                                    ?.takeIf { settings.translation },
                                 onClick = { sheetVerse = verse },
                             )
                         }
@@ -443,6 +445,7 @@ private fun VerseRow(
     hasNote: Boolean,
     fontSizeSp: Float,
     lineHeightSp: Float,
+    translation: String?,
     onClick: () -> Unit,
 ) {
     val background =
@@ -465,14 +468,26 @@ private fun VerseRow(
                 modifier = Modifier.padding(end = 10.dp, top = 4.dp).width(30.dp),
             )
         }
-        Text(
-            text = verse.text,
-            fontFamily = ScriptureFontFamily,
-            fontSize = fontSizeSp.sp,
-            lineHeight = lineHeightSp.sp,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.weight(1f),
-        )
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = verse.text,
+                fontFamily = ScriptureFontFamily,
+                fontSize = fontSizeSp.sp,
+                lineHeight = lineHeightSp.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            // La traducción va debajo y más pequeña: el original manda, esto
+            // acompaña. En la Septuaginta no hay, y entonces no se pinta nada.
+            translation?.let {
+                Text(
+                    text = it,
+                    fontSize = (fontSizeSp * 0.82f).sp,
+                    lineHeight = (lineHeightSp * 0.85f).sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+        }
     }
 }
 

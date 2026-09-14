@@ -1,7 +1,7 @@
 # Auditoría del APK y del orden de los textos
 
 Revisión del orden de las tres colecciones contra el texto que llevan dentro, y
-de la aplicación pantalla por pantalla. Diez fallos corregidos, dos puntos que
+de la aplicación pantalla por pantalla. Once fallos corregidos, dos puntos que
 siguen abiertos, dos comprobaciones que pasan.
 
 Para verlo en marcha sin instalar nada hay una vista previa de la app en el
@@ -133,6 +133,29 @@ aparece así en el Nuevo Testamento». No es un análisis del texto de los Seten
 Septuaginta no siempre usa el vocabulario con el sentido del Nuevo Testamento—,
 y la ficha lo advierte al pie. Cuando la forma no aparece, se dice también, y
 queda el botón de buscarla en el texto.
+
+### 11. No se podía leer en español
+
+La aplicación traía los tres textos en su lengua y ni una línea de traducción.
+Servía para estudiar el original, pero quien abre Marcos 11 quiere saber qué
+dice, y no había forma de averiguarlo dentro de la aplicación.
+
+Ahora lleva la **Reina-Valera de 1909**, en dominio público, debajo de cada
+versículo y en la ficha que sale al tocarlo. Cubre el 99,3 % de los versículos
+del hebreo y del Nuevo Testamento —31 084 en total—, y se puede apagar en
+Ajustes.
+
+Se descartaron las revisiones modernas: la de 1960 y las posteriores son
+propiedad de las Sociedades Bíblicas Unidas y no se pueden distribuir con una
+aplicación. De las libres, la de 1909 es la que sigue el mismo tipo de texto que
+lleva la aplicación —masorético en el Antiguo Testamento, mayoritario en el
+Nuevo—, así que casa versículo a versículo casi siempre.
+
+La Septuaginta se queda sin traducción, y es deliberado: la Reina-Valera traduce
+del hebreo, y la numeración de la Septuaginta se aparta de la hebrea en los
+Salmos, en Jeremías y en varios libros más, además de traer libros que la
+Reina-Valera no tiene. Poner una traducción desalineada sería peor que no poner
+ninguna.
 
 ### Y para que no vuelva a pasar
 

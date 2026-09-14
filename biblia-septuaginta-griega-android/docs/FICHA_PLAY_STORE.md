@@ -30,6 +30,12 @@ hebreo, la Septuaginta y el Nuevo Testamento griego.
 122 libros y 60 651 versículos viajan dentro de la aplicación. No hace falta
 descargar nada ni tener datos móviles para leer.
 
+EN ESPAÑOL
+
+Debajo de cada versículo va la Reina-Valera de 1909, en dominio público, para
+poder leer lo que dice el original. Se puede apagar. No está en la Septuaginta:
+la Reina-Valera traduce del hebreo y la numeración griega no cuadra con la suya.
+
 TEXTOS
 
 • Antiguo Testamento hebreo según el Códice de Leningrado, con su vocalización

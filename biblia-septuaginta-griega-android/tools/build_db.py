@@ -47,6 +47,7 @@ from morphology import build_table  # noqa: E402
 from abbott_smith import build as build_abbott_smith  # noqa: E402
 from glosario import GRIEGO, HEBREO  # noqa: E402
 from etimologia import traducir as traducir_etimologia  # noqa: E402
+from traduccion import LIBROS_AT, LIBROS_NT, leer as leer_rv1909  # noqa: E402
 from bdb import build as build_bdb, resolve as resolve_bdb  # noqa: E402
 from hebrew import (  # noqa: E402
     HEBREW_BOOKS,
@@ -67,6 +68,7 @@ REPOS = {
     "morphhb": "https://github.com/openscriptures/morphhb.git",
     "HebrewLexicon": "https://github.com/openscriptures/HebrewLexicon.git",
     "Abbott-Smith": "https://github.com/translatable-exegetical-tools/Abbott-Smith.git",
+    "open-bibles": "https://github.com/seven1m/open-bibles.git",
 }
 
 # --- Septuaginta: numero de archivo de Swete -> (codigo, nombre es, nombre griego, alterno)
@@ -266,6 +268,16 @@ CREATE TABLE nt_forms (
     PRIMARY KEY (form, strong, morph)
 );
 CREATE INDEX idx_nt_forms ON nt_forms(form, n DESC);
+-- Reina-Valera de 1909, en dominio público, para leer en español lo que dice el
+-- original. Solo cubre el Antiguo Testamento hebreo y el Nuevo Testamento: la
+-- Reina-Valera traduce del hebreo y su numeración no cuadra con la Septuaginta.
+CREATE TABLE translation (
+    book_id INTEGER NOT NULL REFERENCES books(id),
+    chapter INTEGER NOT NULL,
+    verse   INTEGER NOT NULL,
+    text    TEXT NOT NULL,
+    PRIMARY KEY (book_id, chapter, verse)
+);
 CREATE INDEX idx_verses_loc  ON verses(book_id, chapter, verse, suffix);
 CREATE INDEX idx_books_order ON books(collection_id, sort_order);
 CREATE INDEX idx_words_verse ON words(verse_id, position);
@@ -598,6 +610,53 @@ def coverage(con: sqlite3.Connection, collection: str) -> float:
         (collection,),
     ).fetchone()
     return 100.0 * with_article / total if total else 0.0
+
+
+def insert_translation(con: sqlite3.Connection, sources: Path) -> tuple[int, float]:
+    """Importa la Reina-Valera de 1909 alineada con los libros de la base.
+
+    Devuelve (versículos importados, porcentaje de los versículos hebreos y
+    griegos del Nuevo Testamento que quedan con traducción al lado).
+    """
+    path = sources / "open-bibles" / "spa-rv1909.usfx.xml"
+    if not path.exists():
+        print("  AVISO: falta spa-rv1909.usfx.xml; la app se queda sin traducción")
+        return 0, 0.0
+
+    rv = leer_rv1909(path)
+
+    filas = []
+    for collection, mapa in (("at", LIBROS_AT), ("nt", LIBROS_NT)):
+        for code, usfx in mapa.items():
+            fila = con.execute(
+                "SELECT id FROM books WHERE collection_id = ? AND code = ?",
+                (collection, code),
+            ).fetchone()
+            if fila is None:
+                continue
+            book_id = fila[0]
+            for (libro, capitulo, versiculo), texto in rv.items():
+                if libro == usfx:
+                    filas.append((book_id, capitulo, versiculo, texto))
+
+    con.executemany(
+        "INSERT OR IGNORE INTO translation (book_id, chapter, verse, text)"
+        " VALUES (?,?,?,?)",
+        filas,
+    )
+    con.commit()
+
+    # Cuántos versículos del original se quedan con su traducción enfrente. No
+    # llega al 100 %: la Reina-Valera parte los versículos en algunos sitios de
+    # otra manera, y el hebreo numera los títulos de los Salmos como versículo 1.
+    total, con_traduccion = con.execute(
+        "SELECT COUNT(*), COUNT(t.text) FROM verses v"
+        " JOIN books b ON b.id = v.book_id"
+        " LEFT JOIN translation t"
+        "   ON t.book_id = v.book_id AND t.chapter = v.chapter AND t.verse = v.verse"
+        " WHERE b.collection_id IN ('at', 'nt')"
+    ).fetchone()
+    return len(filas), round(con_traduccion * 100 / total, 1) if total else 0.0
 
 
 def insert_nt_forms(con: sqlite3.Connection) -> tuple[int, int]:
@@ -987,6 +1046,12 @@ def build(sources: Path, out: Path) -> None:
     con.commit()
 
     problems = verify(con)
+    versiculos_es, cobertura_es = insert_translation(con, sources)
+    print(
+        f"  Reina-Valera 1909    {versiculos_es:6d} versículos en español"
+        f"  ({cobertura_es} % del hebreo y del NT)"
+    )
+
     formas, cobertura = insert_nt_forms(con)
     print(
         f"  formas del NT          {formas:6d} para consultar la Septuaginta"

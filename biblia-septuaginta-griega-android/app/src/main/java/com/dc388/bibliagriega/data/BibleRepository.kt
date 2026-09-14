@@ -220,6 +220,16 @@ class BibleRepository private constructor(private val appContext: Context) {
     }.firstOrNull()
 
     /**
+     * La Reina-Valera de 1909 de un capítulo, por número de versículo. Vacío en
+     * la Septuaginta, que no se importó por no cuadrar la numeración.
+     */
+    suspend fun translationOfChapter(bookId: Long, chapter: Int): Map<Int, String> =
+        query(
+            "SELECT verse, text FROM translation WHERE book_id = ? AND chapter = ?",
+            arrayOf(bookId.toString(), chapter.toString()),
+        ) { it.getInt(0) to it.getString(1) }.toMap()
+
+    /**
      * Lecturas de una forma griega en el Nuevo Testamento, de la más corriente a
      * la más rara. Vacío si esa forma no aparece allí.
      */

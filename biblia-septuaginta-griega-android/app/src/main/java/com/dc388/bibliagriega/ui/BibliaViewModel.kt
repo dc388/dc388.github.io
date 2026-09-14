@@ -36,6 +36,8 @@ data class ChapterState(
     val book: Book? = null,
     val chapter: Int = 1,
     val verses: List<Verse> = emptyList(),
+    /** Reina-Valera de 1909 por número de versículo, donde la haya. */
+    val translation: Map<Int, String> = emptyMap(),
     val loading: Boolean = true,
 )
 
@@ -169,7 +171,8 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
             _interlinear.value = emptyMap()
             val book = bookOf(bookId) ?: repo.book(bookId)
             val verses = repo.chapter(bookId, chapter)
-            _chapter.value = ChapterState(book, chapter, verses, loading = false)
+            val translation = repo.translationOfChapter(bookId, chapter)
+            _chapter.value = ChapterState(book, chapter, verses, translation, loading = false)
             verses.firstOrNull()?.let {
                 prefs.setLastRead(VerseRef(bookId, chapter, it.verse, it.suffix))
             }
@@ -188,6 +191,10 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
                 ?.takeIf { it.word.strong == word.strong }
                 ?.copy(entry = entry, article = article, occurrences = count, loading = false)
         }
+    }
+
+    fun setTranslation(on: Boolean) {
+        viewModelScope.launch { prefs.setTranslation(on) }
     }
 
     fun closeWordStudy() {

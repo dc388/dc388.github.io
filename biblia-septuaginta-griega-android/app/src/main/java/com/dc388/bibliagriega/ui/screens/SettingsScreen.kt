@@ -111,6 +111,14 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
                 onChange = vm::setInterlinear,
             )
             SwitchRow(
+                label = "Traducción al español",
+                description = "Pone la Reina-Valera de 1909 debajo de cada versículo. No está " +
+                    "en la Septuaginta: la Reina-Valera traduce del hebreo y la numeración de " +
+                    "la Septuaginta no cuadra con la suya.",
+                checked = settings.translation,
+                onChange = vm::setTranslation,
+            )
+            SwitchRow(
                 label = "Texto corrido",
                 description = "Une los versículos en párrafo, como en las ediciones críticas.",
                 checked = settings.paragraphMode,
@@ -164,6 +172,19 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+            }
+
+            Column(Modifier.fillMaxWidth().padding(16.dp, 8.dp)) {
+                Text("Traducción al español", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Reina-Valera 1909",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "Dominio público — https://github.com/seven1m/open-bibles",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
 
             Column(Modifier.fillMaxWidth().padding(16.dp, 8.dp)) {

@@ -95,6 +95,18 @@ marcado.
 Ambos se distribuyen en `biblia.db` como texto plano, conservando la jerarquía
 de acepciones del original.
 
+## Traducción al español del texto bíblico
+
+**Reina-Valera 1909**, obra en dominio público. Se distribuye en `biblia.db`
+para el Antiguo Testamento hebreo y el Nuevo Testamento, tomada de
+[seven1m/open-bibles](https://github.com/seven1m/open-bibles), archivo
+`spa-rv1909.usfx.xml`.
+
+No se usan las revisiones posteriores —la de 1960 y las siguientes— porque son
+propiedad de las Sociedades Bíblicas Unidas y no se pueden redistribuir con una
+aplicación. La Septuaginta se queda sin traducción: la Reina-Valera traduce del
+hebreo y su numeración no cuadra con la griega.
+
 ## Traducciones propias
 
 Dos partes de lo que se lee en pantalla no vienen de ninguna de las obras
