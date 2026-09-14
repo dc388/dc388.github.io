@@ -1,7 +1,9 @@
 package com.dc388.bibliagriega
 
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
@@ -28,26 +30,46 @@ class FlujoDeLecturaTest {
     @get:Rule
     val regla = createAndroidComposeRule<MainActivity>()
 
-    /** Espera a que aparezca algo, dando tiempo a la copia de la base. */
-    private fun esperar(texto: String, substring: Boolean = true, ms: Long = 120_000) {
-        regla.waitUntil(timeoutMillis = ms) {
-            regla.onAllNodes(hasText(texto, substring = substring))
-                .fetchSemanticsNodes().isNotEmpty()
+    /**
+     * Espera a que aparezca algo, dando tiempo a la copia de la base: son 63 MB
+     * y en un emulador sin aceleración tarda. Si no aparece, el error lleva el
+     * árbol de la pantalla, que es lo único que dice qué se estaba viendo.
+     */
+    private fun esperar(texto: String, substring: Boolean = true, ms: Long = 180_000) {
+        try {
+            regla.waitUntil(timeoutMillis = ms) {
+                regla.onAllNodes(hasText(texto, substring = substring))
+                    .fetchSemanticsNodes().isNotEmpty()
+            }
+        } catch (e: ComposeTimeoutException) {
+            throw AssertionError(
+                "No apareció «$texto» en ${ms / 1000} s. Esto había en pantalla:\n" +
+                    regla.onRoot().printToString(maxDepth = 12),
+                e,
+            )
         }
     }
 
+    /**
+     * La biblioteca tarda en cargar y la barra superior ya dice «Biblia Griega»
+     * mientras tanto, así que esperar por el título no sirve de nada: hay que
+     * esperar al selector de colecciones, que solo aparece con los libros ya
+     * leídos.
+     */
+    private fun esperarBiblioteca() = esperar("AT hebreo")
+
     @Test
     fun la_biblioteca_trae_las_tres_colecciones() {
-        esperar("Biblia Griega")
+        esperarBiblioteca()
 
-        regla.onNodeWithText("AT hebreo").assertIsDisplayed()
-        regla.onNodeWithText("Septuaginta").assertIsDisplayed()
-        regla.onNodeWithText("NT griego").assertIsDisplayed()
+        regla.onNodeWithText("AT hebreo").assertExists()
+        regla.onNodeWithText("Septuaginta").assertExists()
+        regla.onNodeWithText("NT griego").assertExists()
     }
 
     @Test
     fun se_puede_leer_un_capitulo_del_nuevo_testamento() {
-        esperar("Biblia Griega")
+        esperarBiblioteca()
 
         regla.onNodeWithText("NT griego").performClick()
         esperar("Juan")
@@ -63,7 +85,7 @@ class FlujoDeLecturaTest {
 
     @Test
     fun el_hebreo_se_carga_con_su_vocalizacion() {
-        esperar("Biblia Griega")
+        esperarBiblioteca()
 
         regla.onNodeWithText("AT hebreo").performClick()
         esperar("Génesis")
@@ -79,7 +101,7 @@ class FlujoDeLecturaTest {
 
     @Test
     fun la_busqueda_encuentra_por_el_principio_de_la_palabra() {
-        esperar("Biblia Griega")
+        esperarBiblioteca()
 
         regla.onNodeWithContentDescription("Buscar").performClick()
         esperar("Buscar")
@@ -91,7 +113,7 @@ class FlujoDeLecturaTest {
 
     @Test
     fun los_ajustes_muestran_la_procedencia_de_cada_texto() {
-        esperar("Biblia Griega")
+        esperarBiblioteca()
 
         regla.onNodeWithContentDescription("Ajustes").performClick()
         esperar("Tamaño de letra")
