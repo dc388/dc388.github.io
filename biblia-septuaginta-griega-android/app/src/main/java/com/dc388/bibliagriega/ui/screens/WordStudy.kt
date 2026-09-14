@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dc388.bibliagriega.data.InterlinearWord
+import com.dc388.bibliagriega.ui.PlainWordStudy
 import com.dc388.bibliagriega.ui.WordStudy
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
@@ -246,5 +247,163 @@ private fun Field(label: String, value: String) {
             fontWeight = FontWeight.Bold,
         )
         Text(text = value, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+/**
+ * Panel de una palabra de un texto sin análisis.
+ *
+ * La Septuaginta de Swete es texto corrido: no lleva números Strong ni
+ * morfología. Lo que se enseña aquí es lo que esa misma forma significa en el
+ * Nuevo Testamento, y el panel lo dice con todas las letras, porque no es lo
+ * mismo: una forma puede coincidir y venir de otra palabra, y el griego de los
+ * Setenta no siempre usa el vocabulario con el sentido que tiene en el Nuevo.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PlainWordSheet(
+    study: PlainWordStudy,
+    onDismiss: () -> Unit,
+    onSearch: (String) -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp, 0.dp, 20.dp, 32.dp),
+        ) {
+            Text(
+                text = study.surface,
+                fontFamily = ScriptureFontFamily,
+                fontSize = 30.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = study.reference,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+
+            if (study.loading) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                    horizontalArrangement = Arrangement.Center,
+                ) { CircularProgressIndicator() }
+                return@Column
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 14.dp),
+                color = MaterialTheme.colorScheme.outlineVariant,
+            )
+
+            if (study.readings.isEmpty()) {
+                Text(
+                    text = "Esta palabra no aparece con esta misma forma en el Nuevo " +
+                        "Testamento, que es el texto griego que llevamos analizado, así que " +
+                        "no hay nada que enseñar de ella.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            } else {
+                Text(
+                    text = "La Septuaginta no viene analizada. Esta forma aparece así en el " +
+                        "Nuevo Testamento:",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                // Agrupadas por lema: la misma palabra en dos casos distintos es
+                // una entrada con dos análisis, no dos entradas repetidas.
+                study.readings.groupBy { it.strong }.forEach { (strong, lecturas) ->
+                    val primera = lecturas.first()
+                    Column(Modifier.padding(top = 16.dp)) {
+                        Row(verticalAlignment = Alignment.Bottom) {
+                            Text(
+                                text = primera.lemma ?: strong,
+                                fontFamily = ScriptureFontFamily,
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                            primera.transliteration?.let {
+                                Text(
+                                    text = "  $it",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                        primera.gloss?.let {
+                            Text(text = it, style = MaterialTheme.typography.bodyLarge)
+                        }
+                        lecturas.forEach { lectura ->
+                            Text(
+                                text = lectura.morphology ?: lectura.morphCode,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        val veces = lecturas.sumOf { it.times }
+                        Text(
+                            text = "$strong · $veces " +
+                                if (veces == 1) "vez en el NT" else "veces en el NT",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                    }
+                }
+            }
+
+            TextButton(
+                onClick = { onSearch(study.surface) },
+                modifier = Modifier.padding(top = 12.dp),
+            ) { Text("Buscar esta palabra") }
+
+            Text(
+                text = "La edición de Swete es texto corrido, sin numeración Strong ni " +
+                    "morfología: no existe una digitalización analizada de la Septuaginta " +
+                    "cuya licencia permita distribuirla con la aplicación. Esto es una ayuda " +
+                    "por coincidencia de forma, no un análisis del texto griego de los Setenta.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 18.dp),
+            )
+        }
+    }
+}
+
+/**
+ * Las palabras de un versículo sin análisis, para poder tocarlas.
+ *
+ * Se parte el texto por espacios, que es lo que hay: sin etiquetar, no existe
+ * una segmentación mejor. La puntuación se recorta al consultar, no aquí, para
+ * que en pantalla la palabra se vea como está impresa.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun PlainWordChips(
+    text: String,
+    onWordClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FlowRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        text.split(' ').filter { it.isNotBlank() }.forEach { palabra ->
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = Modifier.clickable { onWordClick(palabra) },
+            ) {
+                Text(
+                    text = palabra,
+                    fontFamily = ScriptureFontFamily,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
+                )
+            }
+        }
     }
 }

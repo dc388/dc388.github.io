@@ -60,6 +60,9 @@ INTERLINEAL Y ESTUDIO
   referencia: Brown-Driver-Briggs en hebreo y Abbott-Smith en griego.
 • Concordancia completa: desde una palabra, salta a todos los versículos donde
   vuelve a aparecer.
+• En la Septuaginta, que se edita como texto corrido y no lleva análisis, al
+  tocar una palabra se muestra lo que esa misma forma significa en el Nuevo
+  Testamento, diciendo de dónde sale. Cubre el 82 % de sus palabras.
 
 LECTURA
 

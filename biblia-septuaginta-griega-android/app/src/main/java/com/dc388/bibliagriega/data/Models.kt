@@ -117,6 +117,25 @@ data class LexiconEntry(
     val kjvUsage: String?,
 )
 
+/**
+ * Lo que una forma griega significa en el Nuevo Testamento.
+ *
+ * Sirve para consultar la Septuaginta, que no viene analizada: si la palabra
+ * aparece con la misma forma exacta en el Nuevo Testamento, se puede enseñar lo
+ * que allí significa. No es un análisis de la Septuaginta, y la aplicación lo
+ * dice al mostrarlo.
+ */
+data class FormReading(
+    val strong: String,
+    val morphCode: String,
+    val morphology: String?,
+    val lemma: String?,
+    val transliteration: String?,
+    val gloss: String?,
+    /** Veces que esa lectura aparece en el Nuevo Testamento. */
+    val times: Int,
+)
+
 /** Referencia serializable que identifica una posición de lectura. */
 data class VerseRef(val bookId: Long, val chapter: Int, val verse: Int, val suffix: String = "") {
     fun encode(): String = "$bookId:$chapter:$verse:$suffix"

@@ -219,6 +219,34 @@ class BibleRepository private constructor(private val appContext: Context) {
         )
     }.firstOrNull()
 
+    /**
+     * Lecturas de una forma griega en el Nuevo Testamento, de la más corriente a
+     * la más rara. Vacío si esa forma no aparece allí.
+     */
+    suspend fun formReadings(surface: String): List<FormReading> {
+        val form = normalize(surface)
+        if (form.isEmpty()) return emptyList()
+        return query(
+            "SELECT f.strong, f.morph, m.description, l.lemma, l.translit, g.gloss_es, f.n" +
+                " FROM nt_forms f" +
+                " LEFT JOIN morph_codes m ON m.code = f.morph" +
+                " LEFT JOIN lexicon l ON l.strong = f.strong" +
+                " LEFT JOIN glosario g ON g.strong = f.strong AND g.homonym = ''" +
+                " WHERE f.form = ? ORDER BY f.n DESC",
+            arrayOf(form),
+        ) {
+            FormReading(
+                strong = it.getString(0),
+                morphCode = it.getString(1),
+                morphology = if (it.isNull(2)) null else it.getString(2),
+                lemma = if (it.isNull(3)) null else it.getString(3),
+                transliteration = if (it.isNull(4)) null else it.getString(4),
+                gloss = if (it.isNull(5)) null else it.getString(5),
+                times = it.getInt(6),
+            )
+        }
+    }
+
     /** Cuántas veces aparece un número Strong en todo el corpus etiquetado. */
     suspend fun occurrenceCount(strong: String): Int = query(
         "SELECT COUNT(*) FROM words WHERE strong = ?",

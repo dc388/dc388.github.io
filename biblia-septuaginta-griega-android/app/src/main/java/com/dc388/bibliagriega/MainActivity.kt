@@ -101,6 +101,7 @@ fun BibliaApp(vm: BibliaViewModel = viewModel()) {
                             }
                         },
                         onSettings = { nav.navigate(Routes.SETTINGS) },
+                        onSearch = { nav.navigate(Routes.SEARCH) },
                         onOpenConcordance = { strong, lemma ->
                             nav.navigate(Routes.concordance(strong, lemma))
                         },

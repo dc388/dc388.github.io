@@ -73,6 +73,7 @@ fun ReaderScreen(
     onBack: () -> Unit,
     onOpenChapter: (Long, Int) -> Unit,
     onSettings: () -> Unit,
+    onSearch: () -> Unit,
     onOpenConcordance: (strong: String, lemma: String) -> Unit,
 ) {
     val state by vm.chapter.collectAsState()
@@ -80,6 +81,7 @@ fun ReaderScreen(
     val bookmarks by vm.bookmarks.collectAsState()
     val interlinear by vm.interlinear.collectAsState()
     val wordStudy by vm.wordStudy.collectAsState()
+    val plainWord by vm.plainWord.collectAsState()
     val notes by vm.notes.collectAsState()
     val context = LocalContext.current
 
@@ -274,7 +276,8 @@ fun ReaderScreen(
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(vertical = 12.dp),
                 )
-                interlinear[verse.id]?.takeIf { it.isNotEmpty() }?.let { words ->
+                val words = interlinear[verse.id]
+                if (!words.isNullOrEmpty()) {
                     Text(
                         text = "Toca una palabra para analizarla",
                         style = MaterialTheme.typography.labelMedium,
@@ -285,6 +288,22 @@ fun ReaderScreen(
                         onWordClick = { word ->
                             sheetVerse = null
                             vm.studyWord(word, reference)
+                        },
+                        modifier = Modifier.padding(top = 8.dp, bottom = 12.dp),
+                    )
+                } else if (book?.collectionId == "lxx") {
+                    // La Septuaginta no viene analizada, pero se puede consultar
+                    // cada palabra por su forma en el Nuevo Testamento.
+                    Text(
+                        text = "Toca una palabra para consultarla",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                    PlainWordChips(
+                        text = verse.text,
+                        onWordClick = { palabra ->
+                            sheetVerse = null
+                            vm.studyPlainWord(palabra, reference)
                         },
                         modifier = Modifier.padding(top = 8.dp, bottom = 12.dp),
                     )
@@ -350,6 +369,18 @@ fun ReaderScreen(
             onSave = { text ->
                 vm.setNote(ref, text)
                 editingNote = null
+            },
+        )
+    }
+
+    plainWord?.let { study ->
+        PlainWordSheet(
+            study = study,
+            onDismiss = { vm.closePlainWord() },
+            onSearch = { palabra ->
+                vm.closePlainWord()
+                vm.onQueryChange(palabra, null)
+                onSearch()
             },
         )
     }

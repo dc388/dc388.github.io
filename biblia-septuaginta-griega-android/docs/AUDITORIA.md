@@ -1,7 +1,7 @@
 # Auditoría del APK y del orden de los textos
 
 Revisión del orden de las tres colecciones contra el texto que llevan dentro, y
-de la aplicación pantalla por pantalla. Nueve fallos corregidos, dos puntos que
+de la aplicación pantalla por pantalla. Diez fallos corregidos, dos puntos que
 siguen abiertos, dos comprobaciones que pasan.
 
 Para verlo en marcha sin instalar nada hay una vista previa de la app en el
@@ -108,6 +108,31 @@ siguen sin respaldarse —nunca lo estuvieron— y la app ya compila para Play.
 Es justo el tipo de fallo que motivó montar el flujo de publicación antes de
 tener la clave de firma: no aparece en la compilación de depuración, y se habría
 descubierto el día de subir la app.
+
+### 10. En la Septuaginta no se podía consultar ninguna palabra
+
+Al tocar un versículo de la Septuaginta salía el texto y los botones de
+marcador, nota y compartir, pero ninguna palabra que tocar. El motivo es real y
+no tiene que ver con el código: **la edición de Swete es texto corrido**, sin
+numeración Strong ni morfología. Los otros dos textos sí vienen analizados —el
+Nuevo Testamento por Robinson, el hebreo por OSHB—, pero de la Septuaginta no
+existe una digitalización etiquetada cuya licencia permita distribuirla con una
+aplicación en Play: la de CATSS, que es la referencia, restringe el uso a fines
+académicos.
+
+Lo que sí se puede hacer, y se ha hecho: **el 82,3 % de las palabras de la
+Septuaginta aparecen con la forma exacta en el Nuevo Testamento**, que sí está
+analizado. La tabla `nt_forms` guarda, por cada una de las 17 174 formas del
+Nuevo Testamento, hasta sus tres lecturas más frecuentes. Al tocar una palabra
+griega de la Septuaginta, la aplicación enseña lo que esa misma forma significa
+allí.
+
+Y lo dice con todas las letras: «La Septuaginta no viene analizada. Esta forma
+aparece así en el Nuevo Testamento». No es un análisis del texto de los Setenta
+—una forma puede coincidir y venir de otra palabra, y el griego de la
+Septuaginta no siempre usa el vocabulario con el sentido del Nuevo Testamento—,
+y la ficha lo advierte al pie. Cuando la forma no aparece, se dice también, y
+queda el botón de buscarla en el texto.
 
 ### Y para que no vuelva a pasar
 

@@ -245,6 +245,27 @@ CREATE TABLE morph_codes (
     code        TEXT PRIMARY KEY,
     description TEXT NOT NULL
 );
+-- Puente para la Septuaginta, que no viene analizada.
+--
+-- La edición de Swete es texto corrido: no lleva números Strong ni morfología,
+-- y no existe una digitalización etiquetada con licencia que permita
+-- redistribuirla. Pero el 82 % de sus palabras aparecen con la misma forma
+-- exacta en el Nuevo Testamento, que sí está analizado, así que al tocar una
+-- palabra griega de la Septuaginta se puede enseñar lo que esa misma forma
+-- significa allí.
+--
+-- No es un análisis de la Septuaginta y la aplicación no lo presenta como tal:
+-- dice de dónde sale. `n` es cuántas veces aparece esa combinación en el Nuevo
+-- Testamento, para ordenar las lecturas de la más corriente a la más rara
+-- cuando una forma admite varias.
+CREATE TABLE nt_forms (
+    form    TEXT NOT NULL,
+    strong  TEXT NOT NULL,
+    morph   TEXT NOT NULL,
+    n       INTEGER NOT NULL,
+    PRIMARY KEY (form, strong, morph)
+);
+CREATE INDEX idx_nt_forms ON nt_forms(form, n DESC);
 CREATE INDEX idx_verses_loc  ON verses(book_id, chapter, verse, suffix);
 CREATE INDEX idx_books_order ON books(collection_id, sort_order);
 CREATE INDEX idx_words_verse ON words(verse_id, position);
@@ -577,6 +598,53 @@ def coverage(con: sqlite3.Connection, collection: str) -> float:
         (collection,),
     ).fetchone()
     return 100.0 * with_article / total if total else 0.0
+
+
+def insert_nt_forms(con: sqlite3.Connection) -> tuple[int, int]:
+    """Índice de formas del Nuevo Testamento, para consultar la Septuaginta.
+
+    Devuelve (formas distintas, porcentaje de la Septuaginta que cubren).
+    """
+    cuenta: dict[tuple[str, str, str], int] = {}
+    for surface, strong, morph in con.execute(
+        "SELECT w.surface, w.strong, w.morph FROM words w"
+        " JOIN verses v ON v.id = w.verse_id"
+        " JOIN books b ON b.id = v.book_id"
+        " WHERE b.collection_id = 'nt'"
+    ):
+        form = normalize(surface)
+        if form:
+            clave = (form, strong, morph)
+            cuenta[clave] = cuenta.get(clave, 0) + 1
+
+    # Como mucho tres lecturas por forma: más allá de la tercera son rarezas que
+    # solo estorban en una pantalla de teléfono.
+    por_forma: dict[str, list[tuple[str, str, int]]] = {}
+    for (form, strong, morph), veces in cuenta.items():
+        por_forma.setdefault(form, []).append((strong, morph, veces))
+    filas = []
+    for form, lecturas in por_forma.items():
+        lecturas.sort(key=lambda x: -x[2])
+        filas.extend((form, s, m, v) for s, m, v in lecturas[:3])
+
+    con.executemany(
+        "INSERT INTO nt_forms (form, strong, morph, n) VALUES (?,?,?,?)", filas
+    )
+    con.commit()
+
+    total = cubiertas = 0
+    for (texto,) in con.execute(
+        "SELECT v.text FROM verses v JOIN books b ON b.id = v.book_id"
+        " WHERE b.collection_id = 'lxx'"
+    ):
+        for palabra in texto.split():
+            form = normalize(palabra)
+            if not form:
+                continue
+            total += 1
+            if form in por_forma:
+                cubiertas += 1
+    return len(por_forma), round(cubiertas * 100 / total, 1) if total else 0
 
 
 def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
@@ -919,6 +987,12 @@ def build(sources: Path, out: Path) -> None:
     con.commit()
 
     problems = verify(con)
+    formas, cobertura = insert_nt_forms(con)
+    print(
+        f"  formas del NT          {formas:6d} para consultar la Septuaginta"
+        f"  ({cobertura} % de sus palabras)"
+    )
+
     print("Glosario español de la definición breve:")
     cargar_glosario(con)
 

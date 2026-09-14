@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.dc388.bibliagriega.data.LexiconArticle
 import com.dc388.bibliagriega.data.BibleRepository
 import com.dc388.bibliagriega.data.Book
+import com.dc388.bibliagriega.data.FormReading
 import com.dc388.bibliagriega.data.InterlinearWord
 import com.dc388.bibliagriega.data.LexiconEntry
 import com.dc388.bibliagriega.data.BibleCollection
@@ -46,6 +47,17 @@ data class WordStudy(
     /** Artículo del léxico de referencia: BDB en hebreo, Abbott-Smith en griego. */
     val article: LexiconArticle? = null,
     val occurrences: Int = 0,
+    val loading: Boolean = true,
+)
+
+/**
+ * Una palabra de la Septuaginta, que no viene analizada: lo que se enseña son
+ * las lecturas de esa misma forma en el Nuevo Testamento.
+ */
+data class PlainWordStudy(
+    val surface: String,
+    val reference: String,
+    val readings: List<FormReading> = emptyList(),
     val loading: Boolean = true,
 )
 
@@ -97,6 +109,9 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _wordStudy = MutableStateFlow<WordStudy?>(null)
     val wordStudy: StateFlow<WordStudy?> = _wordStudy.asStateFlow()
+
+    private val _plainWord = MutableStateFlow<PlainWordStudy?>(null)
+    val plainWord: StateFlow<PlainWordStudy?> = _plainWord.asStateFlow()
 
     private val _concordance = MutableStateFlow(ConcordanceState())
     val concordance: StateFlow<ConcordanceState> = _concordance.asStateFlow()
@@ -177,6 +192,22 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
 
     fun closeWordStudy() {
         _wordStudy.value = null
+    }
+
+    /** Consulta una palabra de un texto sin análisis, por su forma. */
+    fun studyPlainWord(surface: String, reference: String) {
+        val limpia = surface.trim().trim('·', ',', '.', ';', ':', '(', ')', '\u2019', '\u00b7')
+        _plainWord.value = PlainWordStudy(limpia, reference)
+        viewModelScope.launch {
+            val readings = repo.formReadings(limpia)
+            _plainWord.value = _plainWord.value
+                ?.takeIf { it.surface == limpia }
+                ?.copy(readings = readings, loading = false)
+        }
+    }
+
+    fun closePlainWord() {
+        _plainWord.value = null
     }
 
     fun loadConcordance(strong: String, lemma: String) {
