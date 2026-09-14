@@ -38,6 +38,13 @@ jobs:
 
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # Por defecto la acción instala «tools», el paquete que Google
+          # retiró del repositorio; sdkmanager devuelve «Failed to find
+          # package 'tools'» y el trabajo se cae antes de compilar nada.
+          # Se pide solo lo que hace falta de verdad; la plataforma y las
+          # build-tools las instala el paso siguiente.
+          packages: platform-tools
 
       - name: Instalar plataforma de Android 36
         run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
