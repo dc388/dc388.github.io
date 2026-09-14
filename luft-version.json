@@ -1,6 +1,6 @@
 {
-  "version_code": 14,
-  "version_name": "0.2.8",
+  "version_code": 21,
+  "version_name": "0.3.1",
   "apk_url": "https://dc388.github.io/luft-checador.apk",
-  "notes": "Arregla que la pantalla se quedara girando en 'Confirma con tu huella o tu cara' sin que apareciera el lector."
+  "notes": "Ya se puede checar sin senal: la checada se guarda y se envia sola cuando vuelve el internet. La sesion ya no se cierra: ni por tiempo, ni al cambiar la huella del telefono, ni por tocar sin querer 'Salir de mi cuenta'. La app ya no puede quedarse sin abrir. NO LA DESINSTALES para actualizar: se instala encima y conserva tu registro."
 }
