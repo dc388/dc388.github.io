@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-extraction-rules>
+    <!-- Ver backup_rules.xml: solo el DataStore, y la base se regenera del asset. -->
     <cloud-backup>
         <include domain="file" path="datastore/" />
-        <exclude domain="file" path="biblia.db" />
     </cloud-backup>
     <device-transfer>
         <include domain="file" path="datastore/" />
-        <exclude domain="file" path="biblia.db" />
     </device-transfer>
 </data-extraction-rules>

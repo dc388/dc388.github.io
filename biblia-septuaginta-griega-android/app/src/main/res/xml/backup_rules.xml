@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- Se respaldan marcadores y ajustes; la base de datos se regenera del asset. -->
+    <!--
+      Solo se respalda el DataStore, que es donde viven los ajustes, los
+      marcadores y las notas: apenas unos kilobytes.
+
+      No hace falta excluir biblia.db. En cuanto hay un <include>, se respalda
+      únicamente lo incluido, así que los 63 MB de la base ya se quedan fuera
+      por omisión, y de todas formas se regenera sola desde el asset del APK en
+      el primer arranque. Un <exclude> apuntando a algo que no está incluido es
+      lo que hacía fallar a lintVitalRelease.
+    -->
     <include domain="file" path="datastore/" />
-    <exclude domain="file" path="biblia.db" />
 </full-backup-content>

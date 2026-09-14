@@ -1,7 +1,7 @@
 # Auditoría del APK y del orden de los textos
 
 Revisión del orden de las tres colecciones contra el texto que llevan dentro, y
-de la aplicación pantalla por pantalla. Ocho fallos corregidos, dos puntos que
+de la aplicación pantalla por pantalla. Nueve fallos corregidos, dos puntos que
 siguen abiertos, dos comprobaciones que pasan.
 
 Para verlo en marcha sin instalar nada hay una vista previa de la app en el
@@ -86,6 +86,27 @@ vez de forzar una traducción.
 El resto de las palabras sigue mostrando la glosa inglesa, y el artículo
 completo del léxico —que también está en inglés— sigue a un toque en la ficha:
 esto sustituye la línea corta, no la obra de referencia.
+
+### 9. La compilación de publicación no pasaba
+
+El APK de depuración compilaba sin quejarse, pero `bundleRelease` fallaba en
+`lintVitalRelease`, la comprobación que Android solo ejecuta al compilar para
+publicar:
+
+```
+Error: biblia.db is not in an included path [FullBackupContent]
+    <exclude domain="file" path="biblia.db" />
+```
+
+Las reglas de copia de seguridad incluían `datastore/` y además excluían
+`biblia.db`. Pero en cuanto hay un `<include>`, Android respalda *únicamente* lo
+incluido, así que excluir algo que no estaba incluido no significa nada, y lint
+lo trata como error fatal. Quitados los tres `<exclude>`: los 63 MB de la base
+siguen sin respaldarse —nunca lo estuvieron— y la app ya compila para Play.
+
+Es justo el tipo de fallo que motivó montar el flujo de publicación antes de
+tener la clave de firma: no aparece en la compilación de depuración, y se habría
+descubierto el día de subir la app.
 
 ### Y para que no vuelva a pasar
 
