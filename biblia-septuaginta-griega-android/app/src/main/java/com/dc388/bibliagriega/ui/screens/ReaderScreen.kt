@@ -127,10 +127,15 @@ fun ReaderScreen(
         },
         bottomBar = {
             BottomAppBar {
+                // Se navega por los capítulos que el libro tiene de verdad: sumar
+                // uno caería en la Oda 4 o en Sabiduría 15, que no existen.
+                val previous = book?.chapterBefore(chapter)
+                val next = book?.chapterAfter(chapter)
                 val total = book?.chapterCount ?: 1
+                val position = book?.chapters?.indexOf(chapter)?.plus(1) ?: 1
                 IconButton(
-                    onClick = { onOpenChapter(bookId, chapter - 1) },
-                    enabled = chapter > 1,
+                    onClick = { previous?.let { onOpenChapter(bookId, it) } },
+                    enabled = previous != null,
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
@@ -138,13 +143,13 @@ fun ReaderScreen(
                     )
                 }
                 Text(
-                    text = "Capítulo $chapter de $total",
+                    text = "Capítulo $position de $total",
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 IconButton(
-                    onClick = { onOpenChapter(bookId, chapter + 1) },
-                    enabled = chapter < total,
+                    onClick = { next?.let { onOpenChapter(bookId, it) } },
+                    enabled = next != null,
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowForward,

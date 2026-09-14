@@ -185,6 +185,7 @@ CREATE TABLE books (
     source_note    TEXT,
     sort_order     INTEGER NOT NULL,
     chapter_count  INTEGER NOT NULL,
+    chapter_list   TEXT NOT NULL,
     verse_count    INTEGER NOT NULL
 );
 CREATE TABLE verses (
@@ -332,14 +333,34 @@ def insert_book(
     """Inserta el libro y sus versículos; devuelve el id del libro."""
     if not verses:
         return None
-    chapters = len({c for c, _, _, _ in verses})
+
+    prepared = [(c, v, s, prepare(t, scrub)) for (c, v, s, t) in verses]
+
+    # Swete numera los encabezados de capítulo como si fueran el versículo 1
+    # («2.20.1 XX» es el título «XX» de Éxodo 20, no texto bíblico). clean.py
+    # los deja en blanco; aquí se descartan, para que la app no muestre
+    # versículos vacíos y el capítulo empiece donde empieza el texto.
+    prepared = [(c, v, s, t) for (c, v, s, t) in prepared if t.strip()]
+    if not prepared:
+        return None
+
+    # La Carta de Jeremías no tiene capítulos: la fuente la numera entera como
+    # capítulo 0. Se renumera a 1 para que sea navegable como cualquier otro
+    # libro de un solo capítulo.
+    if {c for c, _, _, _ in prepared} == {0}:
+        prepared = [(1, v, s, t) for (_, v, s, t) in prepared]
+
+    # Lista real de capítulos. No se puede dar por hecho que sean 1..N
+    # contiguos: a las Odas les falta la 4 y a Sabiduría el 15, así que contar
+    # capítulos escondería la última Oda y ofrecería una Sabiduría 15 vacía.
+    chapters = sorted({c for c, _, _, _ in prepared})
     cur = con.execute(
         "INSERT INTO books (collection_id, code, name_es, name_orig, alt_name, source_note,"
-        " sort_order, chapter_count, verse_count) VALUES (?,?,?,?,?,?,?,?,?)",
-        (collection, code, name_es, name_orig, alt_name, source_note, order, chapters, len(verses)),
+        " sort_order, chapter_count, chapter_list, verse_count) VALUES (?,?,?,?,?,?,?,?,?,?)",
+        (collection, code, name_es, name_orig, alt_name, source_note, order, len(chapters),
+         ",".join(str(c) for c in chapters), len(prepared)),
     )
     book_id = cur.lastrowid
-    prepared = [(c, v, s, prepare(t, scrub)) for (c, v, s, t) in verses]
     con.executemany(
         "INSERT INTO verses (book_id, chapter, verse, suffix, text, text_norm)"
         " VALUES (?,?,?,?,?,?)",
@@ -636,6 +657,31 @@ def verify(con: sqlite3.Connection) -> list[str]:
             f"{descuadre} versículos cuyo interlineal no reconstruye el texto"
         )
 
+    # Navegación: todo capítulo que la app vaya a ofrecer tiene que existir, y
+    # todo capítulo que exista tiene que poder alcanzarse. Contar capítulos en
+    # vez de listarlos dejaba la Oda 14 y Sabiduría 20 fuera del selector.
+    for book_id, name, listed in con.execute(
+        "SELECT id, name_es, chapter_list FROM books"
+    ).fetchall():
+        ofrecidos = {int(c) for c in listed.split(",") if c}
+        reales = {
+            c for (c,) in con.execute(
+                "SELECT DISTINCT chapter FROM verses WHERE book_id = ?", (book_id,)
+            )
+        }
+        if ofrecidos - reales:
+            problems.append(
+                f"{name}: el selector ofrece capítulos vacíos {sorted(ofrecidos - reales)}"
+            )
+        if reales - ofrecidos:
+            problems.append(
+                f"{name}: capítulos inalcanzables desde el selector {sorted(reales - ofrecidos)}"
+            )
+
+    vacios = con.execute("SELECT COUNT(*) FROM verses WHERE TRIM(text) = ''").fetchone()[0]
+    if vacios:
+        problems.append(f"{vacios} versículos sin texto")
+
     return problems
 
 
@@ -653,7 +699,7 @@ def build(sources: Path, out: Path) -> None:
             (
                 "at",
                 "Antiguo Testamento hebreo",
-                "Hebreo",
+                "AT hebreo",
                 "Códice de Leningrado (Open Scriptures Hebrew Bible)",
                 "CC BY 4.0 — openscriptures/morphhb",
                 "https://github.com/openscriptures/morphhb",
@@ -675,7 +721,7 @@ def build(sources: Path, out: Path) -> None:
             (
                 "nt",
                 "Nuevo Testamento griego",
-                "Nuevo Testamento",
+                "NT griego",
                 "Robinson–Pierpont, Texto Bizantino Mayoritario (2018)",
                 "Dominio público (Unlicense)",
                 "https://github.com/byztxt/byzantine-majority-text",
@@ -823,6 +869,11 @@ def build(sources: Path, out: Path) -> None:
             + "\n  - ".join(problems)
         )
     print("  integridad del interlineal      correcta")
+
+    # Lo que se anuncia tiene que ser lo que hay en la base: los contadores del
+    # recorrido suman lo leído de las fuentes, no lo insertado, y los
+    # encabezados de capítulo que se descartan quedarían contados de más.
+    total = con.execute("SELECT COUNT(*) FROM verses").fetchone()[0]
 
     con.execute("VACUUM")
     con.close()

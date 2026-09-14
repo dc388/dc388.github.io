@@ -26,11 +26,25 @@ data class Book(
     /** Nota de procedencia cuando el texto no viene de la edición principal. */
     val sourceNote: String?,
     val chapterCount: Int,
+    /**
+     * Los capítulos que el libro tiene de verdad. No siempre son 1..N: a las
+     * Odas les falta la 4 y a Sabiduría el 15, y el Eclesiástico abre con el
+     * prólogo del traductor, numerado 0.
+     */
+    val chapters: List<Int>,
     val verseCount: Int,
     /** Heredado de la colección: evita una consulta extra en el lector. */
     val rtl: Boolean,
 ) {
     val displayName: String get() = if (altName != null) "$nameEs ($altName)" else nameEs
+
+    /** Etiqueta del capítulo: el 0 del Eclesiástico es el prólogo, no un capítulo. */
+    fun chapterLabel(chapter: Int): String = if (chapter == 0) "Pról." else chapter.toString()
+
+    fun chapterAfter(chapter: Int): Int? = chapters.getOrNull(chapters.indexOf(chapter) + 1)
+
+    fun chapterBefore(chapter: Int): Int? =
+        chapters.indexOf(chapter).takeIf { it > 0 }?.let { chapters[it - 1] }
 }
 
 data class Verse(

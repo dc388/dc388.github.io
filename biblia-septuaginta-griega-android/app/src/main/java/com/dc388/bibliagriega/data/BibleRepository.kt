@@ -130,8 +130,9 @@ class BibleRepository private constructor(private val appContext: Context) {
         altName = if (c.isNull(5)) null else c.getString(5),
         sourceNote = if (c.isNull(6)) null else c.getString(6),
         chapterCount = c.getInt(7),
-        verseCount = c.getInt(8),
-        rtl = c.getInt(9) == 1,
+        chapters = c.getString(8).split(',').mapNotNull(String::toIntOrNull),
+        verseCount = c.getInt(9),
+        rtl = c.getInt(10) == 1,
     )
 
     private fun readVerse(c: Cursor) = Verse(
@@ -251,7 +252,7 @@ class BibleRepository private constructor(private val appContext: Context) {
 
         private const val BOOK_COLUMNS =
             "SELECT b.id, b.collection_id, b.code, b.name_es, b.name_orig, b.alt_name," +
-                " b.source_note, b.chapter_count, b.verse_count, c.rtl" +
+                " b.source_note, b.chapter_count, b.chapter_list, b.verse_count, c.rtl" +
                 " FROM books b JOIN collections c ON c.id = b.collection_id"
 
         @Volatile

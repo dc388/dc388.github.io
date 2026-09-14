@@ -103,8 +103,9 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
             )
             SwitchRow(
                 label = "Modo interlineal",
-                description = "Muestra cada palabra griega con su transliteración y su número " +
-                    "Strong; al tocarla se abre el léxico. Disponible en el Nuevo Testamento.",
+                description = "Muestra cada palabra con su transliteración, su definición " +
+                    "breve y su número Strong; al tocarla se abre el léxico. Disponible en " +
+                    "el Nuevo Testamento y en el Antiguo Testamento hebreo.",
                 checked = settings.interlinear,
                 onChange = vm::setInterlinear,
             )

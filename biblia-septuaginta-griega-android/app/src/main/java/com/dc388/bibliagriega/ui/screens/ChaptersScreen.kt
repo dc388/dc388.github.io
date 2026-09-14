@@ -79,7 +79,7 @@ fun ChaptersScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                items((1..(book?.chapterCount ?: 0)).toList()) { chapter ->
+                items(book?.chapters.orEmpty()) { chapter ->
                     Card(
                         onClick = { onOpenChapter(chapter) },
                         modifier = Modifier.aspectRatio(1f),
@@ -93,7 +93,7 @@ fun ChaptersScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
-                                text = chapter.toString(),
+                                text = book?.chapterLabel(chapter) ?: chapter.toString(),
                                 style = MaterialTheme.typography.titleMedium,
                                 textAlign = TextAlign.Center,
                             )
