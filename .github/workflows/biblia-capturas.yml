@@ -119,6 +119,36 @@ jobs:
             adb pull /sdcard/Android/data/com.dc388.bibliagriega.debug/files/capturas .
             ls -la capturas
 
+      # Sin esto, un fallo del test solo deja «There were failing tests» y un
+      # enlace a un informe HTML que nadie puede abrir desde aquí. El XML lleva
+      # la aserción exacta y el árbol de la pantalla que imprime el test.
+      - name: Qué falló exactamente
+        if: failure()
+        run: |
+          for f in app/build/outputs/androidTest-results/connected/*.xml; do
+            [ -f "$f" ] || continue
+            echo "===== $f"
+            python3 - "$f" <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          r = ET.parse(sys.argv[1]).getroot()
+          for c in r.iter("testcase"):
+              for f in list(c.iter("failure")) + list(c.iter("error")):
+                  print(f"\n--- {c.get('classname')}.{c.get('name')}")
+                  print((f.text or "").strip()[:6000])
+          PY
+          done
+
+      - name: Guardar el informe de las pruebas
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-capturas-${{ matrix.sufijo }}
+          path: |
+            biblia-septuaginta-griega-android/app/build/reports/androidTests/
+            biblia-septuaginta-griega-android/app/build/outputs/androidTest-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Comprobar que sirven para Play
         run: |
           python3 - <<'PY'

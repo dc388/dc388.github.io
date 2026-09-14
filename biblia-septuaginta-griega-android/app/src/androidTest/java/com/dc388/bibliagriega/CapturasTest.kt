@@ -123,7 +123,7 @@ class CapturasTest {
         esperar("בְּרֵאשִׁית")
         capturar("hebreo")
 
-        // 5. La búsqueda sin acentos.
+        // 5. La búsqueda sin acentos, abierta desde el lector.
         regla.onNodeWithContentDescription("Buscar").performClick()
         esperar("Buscar")
         regla.onNode(hasText("Palabra griega o hebrea", substring = true))
@@ -132,9 +132,14 @@ class CapturasTest {
         capturar("busqueda")
 
         // 6. Las licencias: de dónde sale cada texto.
+        //
+        // Se vuelve al lector, no a la biblioteca: la búsqueda se abrió desde
+        // aquí, así que atrás devuelve al capítulo. Y desde el lector, los
+        // ajustes se abren con «Tipografía», que es como se llama ese botón en
+        // la barra superior; «Ajustes» solo existe en la pantalla de inicio.
         regla.onNodeWithContentDescription("Atrás").performClick()
-        esperar("AT hebreo")
-        regla.onNodeWithContentDescription("Ajustes").performClick()
+        esperar("בְּרֵאשִׁית")
+        regla.onNodeWithContentDescription("Tipografía").performClick()
         esperar("Swete")
         regla.onNodeWithText("Textos y licencias").performScrollTo()
         capturar("ajustes")
