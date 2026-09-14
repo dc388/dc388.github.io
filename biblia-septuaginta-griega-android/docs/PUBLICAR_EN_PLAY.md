@@ -129,17 +129,34 @@ Las respuestas, ya resueltas para esta app:
 - Icono: `docs/store/icono-512.png` · Gráfico destacado: `docs/store/grafico-destacado-1024x500.png`
 - Capturas: mínimo 2 (ver abajo)
 
-**Seguridad de los datos** — el formulario más largo, y aquí es todo «no»:
-- ¿La app recopila o comparte datos de usuario? **No**
-- ¿Los datos están cifrados en tránsito? *(no aplica, no hay tránsito)*
-- ¿Se pueden solicitar la eliminación de datos? *(no aplica)*
+**Seguridad de los datos** — el formulario más largo. Desde que la aplicación
+lleva anuncios ya no es todo «no»; contestarlo mal es de las cosas por las que
+Play retira una aplicación, así que va literal:
 
-  Es cierto y comprobable: el manifiesto no declara ni un permiso. Si Play
-  pregunta por qué, la razón está en `AndroidManifest.xml`.
+- ¿La app recopila o comparte datos de usuario? **Sí**
+- Tipo de dato: **Identificadores del dispositivo o de otro tipo** →
+  *ID de publicidad*
+  - ¿Se recopila? **Sí** · ¿Se comparte? **Sí**
+  - ¿Es obligatorio? **Los usuarios pueden elegir** (la suscripción los quita)
+  - Finalidad: **Publicidad o marketing**
+- Tipo de dato: **Ubicación** → *Ubicación aproximada*
+  - ¿Se recopila? **Sí** · ¿Se comparte? **Sí** · Finalidad: **Publicidad**
+  - Es la que AdMob deduce de la dirección IP; la app no pide permiso de
+    ubicación ni sabe dónde estás.
+- ¿Los datos están cifrados en tránsito? **Sí** (AdMob y Play usan HTTPS)
+- ¿Se puede solicitar la eliminación de datos? **Sí** — se borra el ID de
+  publicidad desde Ajustes de Android → Google → Anuncios
+
+Lo que **no** se declara, porque de verdad no sale del teléfono: las notas, los
+marcadores, la posición de lectura, las preferencias y qué pasajes se leen.
+
+Quien rellene esto encontrará las respuestas de AdMob ya preparadas en la
+[guía de Google para el formulario](https://support.google.com/admob/answer/11116017).
 
 **Clasificación de contenido** (cuestionario IARC)
 - Categoría: **Libros y obras de consulta** (no es un juego)
-- Violencia, sexo, lenguaje soez, drogas, juego, compras: **no** en todas
+- Violencia, sexo, lenguaje soez, drogas, juego: **no** en todas
+- Compras dentro de la aplicación: **sí** (la suscripción que quita los anuncios)
 - Resultado esperado: apta para todos los públicos
 
   El texto bíblico contiene pasajes violentos, pero el cuestionario pregunta por
@@ -151,7 +168,8 @@ Las respuestas, ya resueltas para esta app:
   app no necesita.
 
 **Declaraciones**
-- Anuncios: **no contiene anuncios**
+- Anuncios: **sí, contiene anuncios** — y hay que marcar la casilla en la ficha,
+  porque Play pone la etiqueta «Contiene anuncios» junto al botón de instalar
 - App de finanzas, salud, gobierno, noticias, COVID: **no**
 - Contenido generado por usuarios: **no** (las notas se quedan en el teléfono)
 

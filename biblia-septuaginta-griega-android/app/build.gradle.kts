@@ -18,6 +18,29 @@ val keystoreProperties = Properties().apply {
 fun secret(key: String, env: String): String? =
     keystoreProperties.getProperty(key) ?: System.getenv(env)
 
+// Identificadores de AdMob.
+//
+// Los de aquí son los de PRUEBA que publica Google: enseñan un anuncio de
+// mentira y no pagan nada. Sirven para desarrollar; usar los de verdad mientras
+// se prueba va contra las políticas de AdMob y puede costar la cuenta.
+//
+// Los reales no se guardan en el repositorio: entran por -PadmobAppId=... o por
+// las variables de entorno ADMOB_APP_ID y ADMOB_BANNER, que el flujo de
+// publicación saca de los secretos de GitHub. Una compilación de release con
+// los de prueba falla a propósito, para que no se suba a Play una versión que
+// no puede ganar nada. Ver docs/ANUNCIOS_Y_SUSCRIPCION.md.
+val admobAppIdDePrueba = "ca-app-pub-3940256099942544~3347511713"
+val admobBannerDePrueba = "ca-app-pub-3940256099942544/6300978111"
+
+fun ajuste(propiedad: String, env: String, pruebas: String): String =
+    (findProperty(propiedad) as String?)?.takeIf { it.isNotBlank() }
+        ?: System.getenv(env)?.takeIf { it.isNotBlank() }
+        ?: pruebas
+
+val admobAppId = ajuste("admobAppId", "ADMOB_APP_ID", admobAppIdDePrueba)
+val admobBanner = ajuste("admobBanner", "ADMOB_BANNER", admobBannerDePrueba)
+val admobEsDePrueba = admobAppId == admobAppIdDePrueba || admobBanner == admobBannerDePrueba
+
 android {
     namespace = "com.dc388.bibliagriega"
     compileSdk = 36
@@ -29,6 +52,13 @@ android {
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // El manifiesto necesita el identificador como recurso; el código, como
+        // constante. Se generan los dos aquí para que no puedan discrepar.
+        resValue("string", "admob_app_id", admobAppId)
+        buildConfigField("String", "ADMOB_APP_ID", "\"$admobAppId\"")
+        buildConfigField("String", "ADMOB_BANNER", "\"$admobBanner\"")
+        buildConfigField("boolean", "ADMOB_DE_PRUEBA", admobEsDePrueba.toString())
     }
 
     signingConfigs {
@@ -72,6 +102,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {
@@ -87,6 +118,25 @@ android {
         }
     }
 }
+
+// Una release con los anuncios de prueba se ve idéntica y no ingresa un céntimo,
+// así que es mejor que no compile. Para generar una release de prueba a
+// propósito —probar la firma, por ejemplo— basta con -PadmobPruebasEnRelease=true.
+tasks.matching { it.name == "bundleRelease" || it.name == "assembleRelease" }
+    .configureEach {
+        doFirst {
+            val permitido = (findProperty("admobPruebasEnRelease") as String?) == "true"
+            if (admobEsDePrueba && !permitido) {
+                throw GradleException(
+                    "Esta compilación de publicación lleva los anuncios de prueba de Google, " +
+                        "que no pagan nada. Define ADMOB_APP_ID y ADMOB_BANNER con los " +
+                        "identificadores de tu cuenta de AdMob (docs/ANUNCIOS_Y_SUSCRIPCION.md), " +
+                        "o añade -PadmobPruebasEnRelease=true si de verdad quieres una " +
+                        "release sin anuncios reales.",
+                )
+            }
+        }
+    }
 
 kotlin {
     compilerOptions {
@@ -108,6 +158,11 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
+
+    // Anuncios, consentimiento para el espacio europeo y suscripción para quitarlos.
+    implementation(libs.play.services.ads)
+    implementation(libs.user.messaging.platform)
+    implementation(libs.billing.ktx)
 
     debugImplementation(libs.androidx.ui.tooling)
 

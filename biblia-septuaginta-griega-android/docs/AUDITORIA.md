@@ -186,9 +186,13 @@ digitalización auditable. El módulo no existe; no se ha fingido que exista.
 
 ## Comprobado
 
-- **Ni un permiso en el manifiesto.** Sin `INTERNET`, sin almacenamiento, sin
-  ubicación. La app funciona igual en modo avión y la ficha de Play no tiene que
-  declarar recogida de datos.
+- **Tres permisos, y ninguno toca el teléfono.** `INTERNET`,
+  `ACCESS_NETWORK_STATE` y el identificador de publicidad, que son los que
+  piden AdMob y Google Play. Sin almacenamiento, sin ubicación, sin contactos.
+  Todo el contenido —texto, léxico, traducción— se lee en modo avión; la red
+  solo trae el anuncio y pregunta por la suscripción. La ficha de Play sí tiene
+  que declarar recogida de datos desde que hay anuncios: ver
+  [ANUNCIOS_Y_SUSCRIPCION.md](ANUNCIOS_Y_SUSCRIPCION.md).
 - **El interlineal reconstruye el texto.** Concatenar las palabras analizadas
   devuelve el versículo carácter por carácter en los 7 957 del Nuevo Testamento.
   Si no fuera así, alguna palabra estaría mostrando el análisis de la de al lado.

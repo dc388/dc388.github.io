@@ -77,13 +77,37 @@ jobs:
             echo "firmado=si" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Comprobar los anuncios
+        id: anuncios
+        env:
+          ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
+          ADMOB_BANNER: ${{ secrets.ADMOB_BANNER }}
+        run: |
+          if [ -n "$ADMOB_APP_ID" ] && [ -n "$ADMOB_BANNER" ]; then
+            echo "reales=si" >> "$GITHUB_OUTPUT"
+            echo "extra=" >> "$GITHUB_OUTPUT"
+          elif [ "${{ steps.firma.outputs.firmado }}" = "si" ]; then
+            # Firmada y sin identificadores de AdMob es justo la combinación
+            # peligrosa: este AAB sí se puede subir a Play, y subiría anuncios
+            # de mentira que no pagan nada. Se para aquí, no en Gradle, para
+            # que el mensaje se lea sin abrir el registro entero.
+            echo "::error::Faltan los secretos ADMOB_APP_ID y ADMOB_BANNER. Esta compilación está firmada, así que se podría subir a Play con los anuncios de prueba de Google, que no ingresan nada. Ver docs/ANUNCIOS_Y_SUSCRIPCION.md"
+            exit 1
+          else
+            echo "::warning::Sin ADMOB_APP_ID ni ADMOB_BANNER: se usan los anuncios de prueba de Google. Como esta compilación va sin firmar y no se puede subir a Play, se deja pasar. Ver docs/ANUNCIOS_Y_SUSCRIPCION.md"
+            echo "reales=no" >> "$GITHUB_OUTPUT"
+            echo "extra=-PadmobPruebasEnRelease=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Compilar AAB y APK
         env:
           KEYSTORE_FILE: ${{ steps.firma.outputs.firmado == 'si' && format('{0}/release.jks', runner.temp) || '' }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease assembleRelease --stacktrace
+          ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
+          ADMOB_BANNER: ${{ secrets.ADMOB_BANNER }}
+        run: ./gradlew bundleRelease assembleRelease ${{ steps.anuncios.outputs.extra }} --stacktrace
 
       - name: Borrar el almacén de claves
         if: always()
@@ -99,6 +123,12 @@ jobs:
             else
               echo "**Sin firmar.** Comprueba que la compilación pasa, pero Play no lo acepta."
               echo "Para firmarla, configura los secretos que explica \`docs/PUBLICAR_EN_PLAY.md\`."
+            fi
+            echo
+            if [ "${{ steps.anuncios.outputs.reales }}" = "si" ]; then
+              echo "Anuncios: identificadores reales de AdMob."
+            else
+              echo "**Anuncios de prueba.** No ingresan nada; ver \`docs/ANUNCIOS_Y_SUSCRIPCION.md\`."
             fi
             echo
             echo "| Archivo | Tamaño |"

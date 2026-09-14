@@ -1,45 +1,13 @@
-# Política de privacidad — Biblia Griega
+# Política de privacidad — Biblia Griega y Hebrea
 
-**Última actualización: 12 de septiembre de 2026**
+La política vigente es la que está publicada en
 
-## Resumen
+**<https://dc388.github.io/biblia-privacidad.html>**
 
-Biblia Griega no recopila, transmite ni comparte ningún dato personal.
+y su fuente vive en [`docs/store/privacidad.html`](store/privacidad.html).
 
-## Qué datos se guardan
-
-La aplicación guarda **únicamente en tu dispositivo**:
-
-- tus marcadores de versículos,
-- **las notas personales que escribas sobre un versículo**,
-- la última posición de lectura,
-- tus preferencias de tamaño de letra, interlineado y tema.
-
-Esa información nunca sale del teléfono. Si tienes activada la copia de
-seguridad de Android, se incluye en la copia de tu cuenta de Google, igual que
-la de cualquier otra app; ese respaldo lo gestiona Google, no nosotros.
-
-## Conexiones de red
-
-Ninguna. El texto bíblico completo viene dentro de la aplicación. El manifiesto
-no declara ningún permiso, ni siquiera acceso a internet, por lo que el sistema
-operativo impide cualquier conexión.
-
-## Publicidad y analítica
-
-La aplicación no incluye publicidad, analítica, rastreadores ni SDK de terceros
-que recojan datos.
-
-## Menores
-
-La aplicación no recoge datos de nadie, incluidos los menores de edad.
-
-## Eliminar tus datos
-
-Desinstalar la aplicación borra todos los datos que guarda, o puedes usar
-Ajustes de Android → Aplicaciones → Biblia Griega → Almacenamiento → Borrar datos.
-
-## Contacto
-
-Para cualquier duda sobre esta política, abre una incidencia en el repositorio
-del proyecto en GitHub.
+Antes había aquí una segunda copia en Markdown. Se quitó a propósito: un texto
+legal duplicado acaba divergiendo, y es precisamente lo que pasó cuando la
+aplicación pasó a mostrar anuncios —esta copia siguió diciendo durante un
+tiempo que no había publicidad ni conexiones de red—. Si hay que cambiar la
+política, se cambia en el HTML y se vuelve a publicar.

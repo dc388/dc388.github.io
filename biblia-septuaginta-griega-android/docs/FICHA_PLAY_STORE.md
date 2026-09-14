@@ -17,7 +17,7 @@ coincidan, cambia ese texto antes de compilar la versión de publicación.
 ## Descripción breve (máx. 80 caracteres)
 
 ```
-Septuaginta, NT griego y AT hebreo con interlineal. Sin conexión, sin anuncios.
+Septuaginta, NT griego y AT hebreo con interlineal. Se lee entera sin conexión.
 ```
 
 ## Descripción completa (máx. 4000 caracteres)
@@ -86,11 +86,20 @@ Busca en todo el texto sin tener que escribir los acentos politónicos ni la
 vocalización hebrea: escribe «λογος» y aparecerán también «λόγος» y «λόγῳ».
 Puedes limitar la búsqueda a una de las tres colecciones.
 
+GRATIS, CON UN ANUNCIO AL PIE
+
+La aplicación es gratuita y completa: no hay libros bloqueados ni funciones de
+pago. Se sostiene con un único anuncio al pie del lector, que nunca se cruza
+sobre el texto. Si prefieres leer sin él, hay una suscripción mensual que lo
+quita; todo lo demás es idéntico con ella o sin ella.
+
 PRIVACIDAD
 
-La aplicación no pide ni un solo permiso, ni siquiera acceso a internet. No hay
-publicidad, ni analítica, ni rastreadores. Tus marcadores y tus notas se quedan
-en tu teléfono.
+No hace falta crear una cuenta ni dar ningún dato. Lo que lees, tus notas y tus
+marcadores se quedan en tu teléfono; no hay analítica ni rastreadores. La única
+conexión que hace la aplicación es para traer el anuncio y para preguntarle a
+Google Play si tienes la suscripción. Con la suscripción activa no se conecta a
+nada.
 
 Ideal para estudiantes de griego koiné y de hebreo bíblico, seminaristas,
 docentes y cualquiera que quiera leer las Escrituras en su lengua original.

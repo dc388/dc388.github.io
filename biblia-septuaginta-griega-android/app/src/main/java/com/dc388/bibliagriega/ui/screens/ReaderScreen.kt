@@ -57,9 +57,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dc388.bibliagriega.data.Compras
 import com.dc388.bibliagriega.data.InterlinearWord
 import com.dc388.bibliagriega.data.Verse
 import com.dc388.bibliagriega.data.VerseRef
+import com.dc388.bibliagriega.ui.Banner
 import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
@@ -84,6 +86,7 @@ fun ReaderScreen(
     val plainWord by vm.plainWord.collectAsState()
     val notes by vm.notes.collectAsState()
     val context = LocalContext.current
+    val sinAnuncios by Compras.get(context).sinAnuncios.collectAsState()
 
     var sheetVerse by remember { mutableStateOf<Verse?>(null) }
     var editingNote by remember { mutableStateOf<Verse?>(null) }
@@ -129,35 +132,41 @@ fun ReaderScreen(
             )
         },
         bottomBar = {
-            BottomAppBar {
-                // Se navega por los capítulos que el libro tiene de verdad: sumar
-                // uno caería en la Oda 4 o en Sabiduría 15, que no existen.
-                val previous = book?.chapterBefore(chapter)
-                val next = book?.chapterAfter(chapter)
-                val total = book?.chapterCount ?: 1
-                val position = book?.chapters?.indexOf(chapter)?.plus(1) ?: 1
-                IconButton(
-                    onClick = { previous?.let { onOpenChapter(bookId, it) } },
-                    enabled = previous != null,
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Capítulo anterior",
+            Column {
+                // El banner va encima de la barra de capítulos, nunca sobre el
+                // texto: leer no debe competir con un anuncio. Quien paga la
+                // suscripción no ve ni el hueco.
+                if (!sinAnuncios) Banner()
+                BottomAppBar {
+                    // Se navega por los capítulos que el libro tiene de verdad:
+                    // sumar uno caería en la Oda 4 o en Sabiduría 15, que no existen.
+                    val previous = book?.chapterBefore(chapter)
+                    val next = book?.chapterAfter(chapter)
+                    val total = book?.chapterCount ?: 1
+                    val position = book?.chapters?.indexOf(chapter)?.plus(1) ?: 1
+                    IconButton(
+                        onClick = { previous?.let { onOpenChapter(bookId, it) } },
+                        enabled = previous != null,
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Capítulo anterior",
+                        )
+                    }
+                    Text(
+                        text = "Capítulo $position de $total",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium,
                     )
-                }
-                Text(
-                    text = "Capítulo $position de $total",
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                IconButton(
-                    onClick = { next?.let { onOpenChapter(bookId, it) } },
-                    enabled = next != null,
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Capítulo siguiente",
-                    )
+                    IconButton(
+                        onClick = { next?.let { onOpenChapter(bookId, it) } },
+                        enabled = next != null,
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Capítulo siguiente",
+                        )
+                    }
                 }
             }
         },

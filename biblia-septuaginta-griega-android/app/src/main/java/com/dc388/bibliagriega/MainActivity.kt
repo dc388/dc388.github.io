@@ -12,13 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.dc388.bibliagriega.data.Compras
 import com.dc388.bibliagriega.ui.BibliaViewModel
+import com.dc388.bibliagriega.ui.prepararAnuncios
 import com.dc388.bibliagriega.ui.screens.BookmarksScreen
 import com.dc388.bibliagriega.ui.screens.ChaptersScreen
 import com.dc388.bibliagriega.ui.screens.ConcordanceScreen
@@ -28,12 +31,35 @@ import com.dc388.bibliagriega.ui.screens.ReaderScreen
 import com.dc388.bibliagriega.ui.screens.SearchScreen
 import com.dc388.bibliagriega.ui.screens.SettingsScreen
 import com.dc388.bibliagriega.ui.theme.BibliaGriegaTheme
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent { BibliaApp() }
+
+        lifecycleScope.launch {
+            val compras = Compras.get(applicationContext)
+            // Se espera a que Play diga si hay suscripción, pero no
+            // indefinidamente: si no contesta en tres segundos se sigue como si
+            // no la hubiera, y el banner desaparecerá solo cuando conteste.
+            withTimeoutOrNull(ESPERA_DE_PLAY) { compras.estadoConocido.first { it } }
+            if (!compras.sinAnuncios.value) prepararAnuncios(this@MainActivity)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Se vuelve aquí después de comprar, de cancelar desde Play o de que
+        // caduque el cobro; Play es quien sabe el estado real.
+        lifecycleScope.launch { Compras.get(applicationContext).consultarEstado() }
+    }
+
+    private companion object {
+        const val ESPERA_DE_PLAY = 3_000L
     }
 }
 
