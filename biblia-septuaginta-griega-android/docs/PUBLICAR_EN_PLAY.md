@@ -9,13 +9,19 @@ Lo que ya está hecho y lo que falta:
 | | Qué | Estado |
 |---|---|---|
 | 1 | Clave de firma | **tuya, falta** |
-| 2 | Secretos en GitHub | **falta** (depende de 1) |
-| 3 | AAB compilado | listo — se genera solo |
-| 4 | Textos de la ficha | listos, en [FICHA_PLAY_STORE.md](FICHA_PLAY_STORE.md) |
-| 5 | Icono y gráfico destacado | listos, en `docs/store/` |
-| 6 | Capturas de pantalla | **tuyas, faltan** |
-| 7 | Política de privacidad publicada | página lista, **falta subirla** |
-| 8 | Formularios de Play Console | respuestas preparadas, abajo |
+| 2 | Secretos de firma en GitHub | **falta** (depende de 1) |
+| 3 | Cuenta de AdMob y bloque de banner | **tuya, falta** — [ANUNCIOS_Y_SUSCRIPCION.md](ANUNCIOS_Y_SUSCRIPCION.md) |
+| 4 | Secretos de AdMob en GitHub | **falta** (depende de 3) |
+| 5 | Producto de suscripción en Play | **tuyo, falta** (después de subir la primera versión) |
+| 6 | AAB compilado | listo — se genera solo |
+| 7 | Textos de la ficha | listos, en [FICHA_PLAY_STORE.md](FICHA_PLAY_STORE.md) |
+| 8 | Icono y gráfico destacado | listos, en `docs/store/` |
+| 9 | Capturas de pantalla | **tuyas, faltan** |
+| 10 | Política de privacidad publicada | **hecho** — https://dc388.github.io/biblia-privacidad.html |
+| 11 | Formularios de Play Console | respuestas preparadas, abajo |
+
+Lo marcado como **tuyo** lo es porque exige una cuenta, un pago o un teléfono:
+nadie más puede hacerlo por ti.
 
 ---
 
@@ -94,28 +100,20 @@ salió firmado y cuánto pesa.
 Para cada versión nueva hay que subir `versionCode` en `app/build.gradle.kts`:
 Play rechaza dos veces el mismo número.
 
-## 7. Publicar la política de privacidad
+## 7. La política de privacidad — ya está publicada
 
 **Play exige una dirección web pública** con la política de privacidad; no vale
-un archivo dentro del repositorio.
+un archivo dentro del repositorio. Está publicada en
 
-La página está escrita y lista en `docs/store/privacidad.html`. Antes de subirla,
-**sustituye `CORREO_DE_CONTACTO`** por la dirección donde quieras recibir dudas
-—se queda a la vista de cualquiera, así que elige cuál—.
+**https://dc388.github.io/biblia-privacidad.html**
 
-Tu sitio ya publica en `dc388.github.io`, así que lo más corto es dejarla ahí, en
-la rama `main` del repositorio del sitio:
+y esa es la dirección que se pega en Play Console. Su fuente es
+`docs/store/privacidad.html`; para cambiarla, se edita ahí y se vuelve a copiar
+a `biblia-privacidad.html` en la rama `main` del repositorio del sitio.
 
-```bash
-git checkout main
-cp biblia-septuaginta-griega-android/docs/store/privacidad.html biblia-privacidad.html
-git add biblia-privacidad.html
-git commit -m "Política de privacidad de la app Biblia Griega"
-git push
-```
-
-Queda publicada en **https://dc388.github.io/biblia-privacidad.html**, y esa es
-la dirección que se pega en Play Console.
+Ojo: esa página describe los anuncios y la suscripción. Si alguna vez se quitan
+los anuncios, o se añade algo que recoja más datos, hay que actualizarla **antes**
+de subir la versión que lo cambie.
 
 ## 8. Los formularios de Play Console
 
