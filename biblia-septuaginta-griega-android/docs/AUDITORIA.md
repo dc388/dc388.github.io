@@ -1,8 +1,8 @@
 # Auditoría del APK y del orden de los textos
 
 Revisión del orden de las tres colecciones contra el texto que llevan dentro, y
-de la aplicación pantalla por pantalla. Siete fallos corregidos, cuatro puntos
-que siguen abiertos, dos comprobaciones que pasan.
+de la aplicación pantalla por pantalla. Ocho fallos corregidos, dos puntos que
+siguen abiertos, dos comprobaciones que pasan.
 
 Para verlo en marcha sin instalar nada hay una vista previa de la app en el
 navegador, con el texto y el léxico reales: **[Biblia Griega en el
@@ -59,6 +59,30 @@ Las etiquetas pasan a ser «AT hebreo», «Septuaginta» y «NT griego».
 Anunciaba 60 656 versículos cuando la base tenía 60 651: sumaba lo leído de las
 fuentes, no lo insertado. Ahora el resumen consulta la base.
 
+### 8. La definición breve del interlineal estaba en inglés
+
+Bajo cada palabra, el interlineal mostraba la glosa del léxico tal cual: `λόγος →
+a word`, `θεός → a god or deity`. Y el artículo `ὁ`, la palabra más frecuente del
+Nuevo Testamento, salía glosado «he», porque Abbott-Smith abre su artículo por el
+uso demostrativo homérico. Cuatro veces seguidas en Juan 1:1.
+
+`tools/glosario.py` traduce a mano los 800 lemas más frecuentes —400 griegos y
+400 hebreos—, que cubren el 82,6 % de las palabras del Nuevo Testamento y el
+72,9 % del Antiguo. Van en su propia tabla, `glosario`, no mezclados con los
+léxicos: la traducción es obra de este proyecto y las obras de referencia se
+citan aparte, en su lengua.
+
+Los criterios están en la cabecera del módulo, para que las entradas nuevas
+sigan los mismos: se glosa el lema y no la forma concreta, los verbos en
+infinitivo, de una a cuatro palabras porque la glosa se pinta en una columna
+estrecha, y las acepciones principales separadas por coma cuando el sentido
+depende del caso. Donde el griego no tiene equivalente —la partícula `ἄν`— se
+dice qué hace la partícula en vez de forzar una traducción.
+
+El resto de las palabras sigue mostrando la glosa inglesa, y el artículo
+completo del léxico —que también está en inglés— sigue a un toque en la ficha:
+esto sustituye la línea corta, no la obra de referencia.
+
 ### Y para que no vuelva a pasar
 
 `verify()` —que corre en cada compilación y en CI, sobre la base ya construida—
@@ -66,31 +90,12 @@ comprueba ahora dos invariantes más:
 
 - todo capítulo que el selector vaya a ofrecer tiene que existir;
 - todo capítulo que exista tiene que poder alcanzarse desde el selector;
-- ningún versículo puede quedarse sin texto.
+- ningún versículo puede quedarse sin texto;
+- ninguna entrada del glosario puede apuntar a un número Strong que no aparezca
+  en el texto, que es como se vería una errata de tecleo: la palabra seguiría
+  mostrando la glosa inglesa y la traducción quedaría muerta en el diccionario.
 
 ## Abierto
-
-### La definición breve del interlineal está en inglés
-
-Bajo cada palabra, el interlineal muestra la glosa del léxico: `λόγος → a word`,
-`θεός → a god or deity`. Strong, Brown-Driver-Briggs y Abbott-Smith son obras
-inglesas y se muestran tal cual. El análisis morfológico sí está traducido al
-español, palabra por palabra, por este proyecto.
-
-Es lo primero que va a notar un lector español, y no tiene arreglo barato:
-traducir los tres léxicos es un trabajo editorial, no una conversión. Lo que sí
-es abordable —y sería lo más rentable— es un glosario español cerrado para las
-cuarenta o cincuenta palabras funcionales más frecuentes (artículo, `καί`, `ἐν`,
-`εἰμί`, los pronombres), que cubren cerca de la mitad de las apariciones del
-Nuevo Testamento. Es exactamente el método que ya se usa con la morfología
-hebrea. Queda fuera de este cambio porque es una decisión editorial.
-
-### El artículo ὁ aparece glosado «he»
-
-Abbott-Smith abre el artículo por el uso demostrativo homérico, así que su
-primera acepción no es «el». `tools/abbott_smith.py` toma la primera glosa sin
-heurísticas, que es lo honesto con la fuente, pero repetido cuatro veces en Juan
-1:1 despista. Se resolvería con el mismo glosario del punto anterior.
 
 ### 91 versículos con restos de OCR
 

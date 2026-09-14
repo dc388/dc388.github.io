@@ -159,12 +159,13 @@ class BibleRepository private constructor(private val appContext: Context) {
     suspend fun wordsOfChapter(bookId: Long, chapter: Int): Map<Long, List<InterlinearWord>> {
         val rows = query(
             "SELECT w.verse_id, w.position, w.surface, w.strong, w.homonym, w.morph," +
-                " m.description, l.lemma, l.translit, d.gloss" +
+                " m.description, l.lemma, l.translit, COALESCE(g.gloss_es, d.gloss)" +
                 " FROM words w" +
                 " JOIN verses v ON v.id = w.verse_id" +
                 " LEFT JOIN morph_codes m ON m.code = w.morph" +
                 " LEFT JOIN lexicon l ON l.strong = w.strong" +
                 " LEFT JOIN articles d ON d.strong = w.strong AND d.homonym = w.homonym" +
+                " LEFT JOIN glosario g ON g.strong = w.strong AND g.homonym = w.homonym" +
                 " WHERE v.book_id = ? AND v.chapter = ?" +
                 " ORDER BY w.verse_id, w.position",
             arrayOf(bookId.toString(), chapter.toString()),
@@ -201,8 +202,10 @@ class BibleRepository private constructor(private val appContext: Context) {
 
     /** Artículo del léxico de referencia de una palabra, si lo tiene. */
     suspend fun articleOf(strong: String, homonym: String): LexiconArticle? = query(
-        "SELECT strong, homonym, source, headword, gloss, pos, article FROM articles" +
-            " WHERE strong = ? AND homonym = ?",
+        "SELECT a.strong, a.homonym, a.source, a.headword," +
+            " COALESCE(g.gloss_es, a.gloss), a.pos, a.article FROM articles a" +
+            " LEFT JOIN glosario g ON g.strong = a.strong AND g.homonym = a.homonym" +
+            " WHERE a.strong = ? AND a.homonym = ?",
         arrayOf(strong, homonym),
     ) {
         LexiconArticle(

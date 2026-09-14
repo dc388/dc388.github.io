@@ -95,6 +95,20 @@ marcado.
 Ambos se distribuyen en `biblia.db` como texto plano, conservando la jerarquía
 de acepciones del original.
 
+## Traducciones propias
+
+Dos partes de lo que se lee en pantalla no vienen de ninguna de las obras
+anteriores, sino que son traducción original de este proyecto, y se publican
+bajo la misma licencia MIT que el código:
+
+- La descripción en español de los 4 490 códigos morfológicos, en
+  `tools/morphology.py` (griego de Robinson) y `tools/hebrew.py` (hebreo y
+  arameo de OSHB).
+- La definición breve en español de los 800 lemas más frecuentes —400 griegos y
+  400 hebreos—, en `tools/glosario.py`. Sustituye la glosa inglesa del léxico
+  bajo cada palabra del interlineal; el artículo completo se sigue citando en su
+  lengua original.
+
 ## Código de terceros
 
 La app usa AndroidX y Jetpack Compose, bajo licencia Apache 2.0.

@@ -178,7 +178,9 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
                 )
                 Text(
                     text = "Análisis morfológico de Robinson, dominio público, traducido al " +
-                        "español por este proyecto.",
+                        "español por este proyecto, que traduce también la definición breve " +
+                        "de los 800 lemas más frecuentes: el 82 % de las palabras del Nuevo " +
+                        "Testamento y el 73 % del Antiguo.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

@@ -201,10 +201,10 @@ fun WordStudySheet(
             }
 
             Text(
-                text = "Definiciones del Diccionario Strong (1890) y de los léxicos de " +
-                    "referencia: Brown-Driver-Briggs (1906) en hebreo y Abbott-Smith " +
-                    "(1922) en griego. El análisis morfológico procede de Robinson en " +
-                    "griego y de OSHB en hebreo, traducido al español.",
+                text = "La definición breve y el análisis morfológico están traducidos al " +
+                    "español por este proyecto. Las obras de referencia se citan en su " +
+                    "lengua original, que es el inglés: Diccionario Strong (1890), " +
+                    "Brown-Driver-Briggs (1906) en hebreo y Abbott-Smith (1922) en griego.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 16.dp),

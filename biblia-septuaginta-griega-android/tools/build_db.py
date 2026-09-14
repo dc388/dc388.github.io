@@ -45,6 +45,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from clean import clean_text, count_residual  # noqa: E402
 from morphology import build_table  # noqa: E402
 from abbott_smith import build as build_abbott_smith  # noqa: E402
+from glosario import GRIEGO, HEBREO  # noqa: E402
 from bdb import build as build_bdb, resolve as resolve_bdb  # noqa: E402
 from hebrew import (  # noqa: E402
     HEBREW_BOOKS,
@@ -227,6 +228,12 @@ CREATE TABLE articles (
     gloss    TEXT,
     pos      TEXT,
     article  TEXT NOT NULL,
+    PRIMARY KEY (strong, homonym)
+);
+CREATE TABLE glosario (
+    strong   TEXT NOT NULL,
+    homonym  TEXT NOT NULL,
+    gloss_es TEXT NOT NULL,
     PRIMARY KEY (strong, homonym)
 );
 CREATE TABLE morph_codes (
@@ -598,6 +605,36 @@ def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
     return total
 
 
+def cargar_glosario(con: sqlite3.Connection) -> None:
+    """Vuelca el glosario español y dice cuánto texto queda cubierto."""
+    filas = []
+    for clave, glosa in {**GRIEGO, **HEBREO}.items():
+        # La letra final es el homónimo de OSHB: «H1254a» es (H1254, a).
+        if clave[-1].isalpha():
+            filas.append((clave[:-1], clave[-1], glosa))
+        else:
+            filas.append((clave, "", glosa))
+    con.executemany(
+        "INSERT INTO glosario (strong, homonym, gloss_es) VALUES (?,?,?)", filas
+    )
+    con.commit()
+
+    for collection, label in (("nt", "griego"), ("at", "hebreo")):
+        total, cubierto = con.execute(
+            "SELECT COUNT(*), COUNT(g.gloss_es) FROM words w"
+            " JOIN verses v ON v.id = w.verse_id"
+            " JOIN books b ON b.id = v.book_id"
+            " LEFT JOIN glosario g ON g.strong = w.strong AND g.homonym = w.homonym"
+            " WHERE b.collection_id = ?",
+            (collection,),
+        ).fetchone()
+        entradas = len(GRIEGO if collection == "nt" else HEBREO)
+        print(
+            f"  {label:<10} {entradas:5d} lemas traducidos"
+            f"  ({cubierto * 100 / total:.1f} % de las palabras)"
+        )
+
+
 def verify(con: sqlite3.Connection) -> list[str]:
     """Invariantes del interlineal. Devuelve la lista de fallos encontrados."""
     problems = []
@@ -681,6 +718,20 @@ def verify(con: sqlite3.Connection) -> list[str]:
     vacios = con.execute("SELECT COUNT(*) FROM verses WHERE TRIM(text) = ''").fetchone()[0]
     if vacios:
         problems.append(f"{vacios} versículos sin texto")
+
+    # Una entrada del glosario cuyo número Strong no aparezca en el texto es una
+    # errata de tecleo que nunca se vería: la palabra seguiría mostrando la glosa
+    # inglesa y la traducción quedaría muerta en el diccionario.
+    huerfanas = con.execute(
+        "SELECT g.strong || g.homonym FROM glosario g"
+        " WHERE NOT EXISTS (SELECT 1 FROM words w"
+        "   WHERE w.strong = g.strong AND w.homonym = g.homonym)"
+    ).fetchall()
+    if huerfanas:
+        problems.append(
+            f"{len(huerfanas)} entradas del glosario no corresponden a ninguna palabra"
+            f" del texto: {', '.join(h[0] for h in huerfanas[:8])}"
+        )
 
     return problems
 
@@ -862,6 +913,9 @@ def build(sources: Path, out: Path) -> None:
     con.commit()
 
     problems = verify(con)
+    print("Glosario español de la definición breve:")
+    cargar_glosario(con)
+
     if problems:
         con.close()
         raise SystemExit(
