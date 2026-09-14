@@ -32,8 +32,12 @@ android {
 
     signingConfigs {
         create("release") {
+            // isNullOrBlank y no null: si el flujo de publicación exporta
+            // KEYSTORE_FILE vacío porque no hay clave, file("") resuelve al
+            // directorio del proyecto, que existe, y la firma se configuraría
+            // apuntando a una carpeta.
             val storePath = secret("storeFile", "KEYSTORE_FILE")
-            if (storePath != null && file(storePath).exists()) {
+            if (!storePath.isNullOrBlank() && file(storePath).exists()) {
                 storeFile = file(storePath)
                 storePassword = secret("storePassword", "KEYSTORE_PASSWORD")
                 keyAlias = secret("keyAlias", "KEY_ALIAS")

@@ -74,10 +74,14 @@ citan aparte, en su lengua.
 
 Los criterios están en la cabecera del módulo, para que las entradas nuevas
 sigan los mismos: se glosa el lema y no la forma concreta, los verbos en
-infinitivo, de una a cuatro palabras porque la glosa se pinta en una columna
-estrecha, y las acepciones principales separadas por coma cuando el sentido
-depende del caso. Donde el griego no tiene equivalente —la partícula `ἄν`— se
-dice qué hace la partícula en vez de forzar una traducción.
+infinitivo, y una sola acepción por lema —seis caracteres de media—, porque la
+glosa se pinta en una columna estrecha bajo cada palabra y dos acepciones
+separadas por coma parten el interlineal en más líneas. Entre dos posibles gana
+la que distingue el lema de sus sinónimos, para que el interlineal no diga lo
+mismo de dos palabras distintas: `ὁράω` es «ver» y `βλέπω` «mirar», `λόγος` es
+«palabra» y `ῥῆμα` «dicho», `χρόνος` es «tiempo» y `καιρός` «momento». Donde el
+griego no tiene equivalente —la partícula `ἄν`— se dice qué hace la partícula en
+vez de forzar una traducción.
 
 El resto de las palabras sigue mostrando la glosa inglesa, y el artículo
 completo del léxico —que también está en inglés— sigue a un toque en la ficha:
