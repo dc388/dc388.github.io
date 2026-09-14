@@ -46,6 +46,7 @@ from clean import clean_text, count_residual  # noqa: E402
 from morphology import build_table  # noqa: E402
 from abbott_smith import build as build_abbott_smith  # noqa: E402
 from glosario import GRIEGO, HEBREO  # noqa: E402
+from etimologia import traducir as traducir_etimologia  # noqa: E402
 from bdb import build as build_bdb, resolve as resolve_bdb  # noqa: E402
 from hebrew import (  # noqa: E402
     HEBREW_BOOKS,
@@ -214,6 +215,10 @@ CREATE TABLE lexicon (
     lemma      TEXT NOT NULL,
     translit   TEXT,
     derivation TEXT,
+    -- La etimología traducida al español por tools/etimologia.py. Nula cuando
+    -- la fórmula tiene alguna palabra que el traductor no conoce: en ese caso
+    -- la aplicación no muestra el campo, en vez de enseñarlo en inglés.
+    derivation_es TEXT,
     definition TEXT,
     kjv_usage  TEXT
 );
@@ -586,8 +591,8 @@ def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
         entries = json.loads(raw[raw.index("{"): raw.rindex("}") + 1])
         con.executemany(
             "INSERT OR IGNORE INTO lexicon"
-            " (strong, lemma, translit, derivation, definition, kjv_usage)"
-            " VALUES (?,?,?,?,?,?)",
+            " (strong, lemma, translit, derivation, derivation_es, definition, kjv_usage)"
+            " VALUES (?,?,?,?,?,?,?)",
             [
                 (
                     strong,
@@ -595,6 +600,7 @@ def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
                     # el griego usa «translit» y el hebreo «xlit»
                     (e.get("translit") or e.get("xlit") or "").strip() or None,
                     (e.get("derivation") or "").strip() or None,
+                    traducir_etimologia((e.get("derivation") or "").strip() or None),
                     (e.get("strongs_def") or "").strip() or None,
                     (e.get("kjv_def") or "").strip() or None,
                 )
@@ -915,6 +921,14 @@ def build(sources: Path, out: Path) -> None:
     problems = verify(con)
     print("Glosario español de la definición breve:")
     cargar_glosario(con)
+
+    con_etim, traducidas = con.execute(
+        "SELECT COUNT(derivation), COUNT(derivation_es) FROM lexicon"
+    ).fetchone()
+    print(
+        f"  etimología {traducidas:5d} de {con_etim} fórmulas traducidas"
+        f"  ({traducidas * 100 / con_etim:.1f} %)"
+    )
 
     if problems:
         con.close()

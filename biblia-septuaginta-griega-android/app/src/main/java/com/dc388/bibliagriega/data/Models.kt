@@ -41,7 +41,8 @@ data class Book(
     /** Etiqueta del capítulo: el 0 del Eclesiástico es el prólogo, no un capítulo. */
     fun chapterLabel(chapter: Int): String = if (chapter == 0) "Pról." else chapter.toString()
 
-    fun chapterAfter(chapter: Int): Int? = chapters.getOrNull(chapters.indexOf(chapter) + 1)
+    fun chapterAfter(chapter: Int): Int? =
+        chapters.indexOf(chapter).takeIf { it >= 0 }?.let { chapters.getOrNull(it + 1) }
 
     fun chapterBefore(chapter: Int): Int? =
         chapters.indexOf(chapter).takeIf { it > 0 }?.let { chapters[it - 1] }
@@ -110,6 +111,8 @@ data class LexiconEntry(
     val lemma: String,
     val transliteration: String?,
     val derivation: String?,
+    /** La etimología en español; nula cuando no se pudo traducir entera. */
+    val derivationEs: String?,
     val definition: String?,
     val kjvUsage: String?,
 )

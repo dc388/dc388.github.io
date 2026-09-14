@@ -8,9 +8,9 @@ funcionales además despista: Abbott-Smith abre el artículo ὁ por el uso
 demostrativo homérico, así que el artículo más frecuente del Nuevo Testamento
 salía glosado «he».
 
-Aquí están traducidos a mano los lemas más frecuentes: 400 griegos, que cubren
-el 82,6 % de las palabras del Nuevo Testamento, y 400 hebreos, que cubren el
-72,9 % del Antiguo. El resto sigue mostrando la glosa del léxico en inglés, y
+Aquí están traducidos a mano los lemas más frecuentes: 632 griegos, que cubren
+el 84,5 % de las palabras del Nuevo Testamento, y 564 hebreos, que cubren el
+74,9 % del Antiguo. El resto sigue mostrando la glosa del léxico en inglés, y
 el artículo completo —que también está en inglés— sigue a un toque en la ficha
 de la palabra: esto sustituye la línea corta, no la obra de referencia.
 
@@ -848,3 +848,120 @@ HEBREO: dict[str, str] = {
     "H3671": "ala",
     "H7535": "solamente",
 }
+
+# Tercer lote: los lemas que quedaban sin traducir en los capítulos que la
+# aplicación enseña de entrada —Génesis 1, Juan 1 y 3, Mateo 1, Romanos 8, el
+# Salmo 23, Isaías 53 y Rut 1—, más los que rondan el puesto 400 de frecuencia.
+# Sin él, «בָּרָא» de Génesis 1:1 se quedaba sin definición: aparece 53 veces y
+# no entraba en los cuatrocientos primeros.
+HEBREO.update({
+    "H7992": "tercero", "H5162": "consolar", "H539": "creer", "H2416c": "ser vivo",
+    "H7451b": "mal", "H4758": "aspecto", "H7458": "hambre", "H7646": "saciarse",
+    "H753": "longitud", "H7489a": "hacer mal", "H6588": "transgresión",
+    "H1847": "conocimiento", "H2220": "brazo", "H2896b": "bien", "H3206": "niño",
+    "H2145": "varón", "H1035": "Belén", "H4910": "gobernar", "H1481a": "residir",
+    "H2822": "tiniebla", "H6031b": "afligir", "H226": "señal", "H5061": "plaga",
+    "H2654a": "complacerse", "H7998": "botín", "H5775": "ave", "H7979": "mesa",
+    "H6186a": "ordenar", "H3885a": "pernoctar", "H7495": "sanar", "H6913": "sepulcro",
+    "H1516": "valle", "H2555": "violencia", "H2470a": "enfermar", "H2308": "cesar",
+    "H4392": "lleno", "H4210": "salmo", "H2232": "sembrar", "H2505a": "repartir",
+    "H6996b": "pequeño", "H7243": "cuarto", "H6743b": "prosperar", "H5999": "fatiga",
+    "H1692": "adherirse", "H1254a": "crear", "H7225": "principio", "H4148": "disciplina",
+    "H8582": "extraviarse", "H7105a": "cosecha", "H7706": "Todopoderoso",
+    "H7716": "cordero", "H6293": "encontrarse", "H817": "culpa", "H2549": "quinto",
+    "H5978": "conmigo", "H959": "despreciar", "H914": "separar", "H215": "alumbrar",
+    "H6663": "ser justo", "H6586": "rebelarse", "H553": "esforzarse", "H5148": "guiar",
+    "H4820": "engaño", "H2656": "deleite", "H3556": "estrella", "H8415": "abismo",
+    "H748": "alargar", "H2399": "pecado", "H3618": "nuera", "H8184": "cebada",
+    "H6212": "hierba", "H8328": "raíz", "H5401a": "besar", "H4578": "entrañas",
+    "H8615b": "esperanza", "H4327": "especie", "H6099": "poderoso", "H7257": "echarse",
+    "H3563a": "copa", "H1926": "esplendor", "H5774a": "volar", "H6509": "fructificar",
+    "H8345": "sexto", "H4487": "contar", "H8052": "noticia", "H2204": "envejecer",
+    "H6504": "separarse", "H1823": "semejanza", "H6887d": "hostigar", "H7287a": "dominar",
+    "H2483": "enfermedad", "H5065": "oprimir", "H6223": "rico", "H5347": "hembra",
+    "H4496": "reposo", "H8462": "comienzo", "H2637": "faltar", "H2530a": "codiciar",
+    "H5281": "Noemí", "H8414": "caos", "H7878": "meditar", "H3974": "lumbrera",
+    "H834b": "en el cual", "H402": "alimento", "H6757": "sombra de muerte",
+    "H403": "ciertamente", "H1792": "quebrantar", "H2986": "conducir",
+    "H7549": "firmamento", "H7430": "arrastrarse", "H7431": "reptil", "H6754": "imagen",
+    "H4570": "senda", "H6723": "sequedal", "H4341": "dolor", "H4125": "moabita",
+    "H7387": "con las manos vacías", "H1877": "hierba tierna", "H4475": "dominio",
+    "H8318": "enjambre", "H1710": "pez", "H8389": "figura", "H1494": "esquilar",
+    "H6168": "desnudar", "H3004": "tierra seca", "H8317": "bullir",
+    "H8577b": "monstruo marino", "H3533": "someter", "H4843": "amargar",
+    "H1504": "cortar", "H4999": "pastizal", "H2874": "matanza", "H7327": "Rut",
+    "H4938b": "báculo", "H1878": "engordar", "H2545": "suegra", "H5095": "conducir",
+    "H5445": "cargar", "H481": "enmudecer", "H2250": "llaga", "H3418": "verdor",
+    "H2490a": "traspasar", "H458": "Elimelec", "H7663b": "esperar", "H673": "efrateo",
+    "H2994": "cuñada", "H1949": "alborotarse", "H7353": "oveja", "H4248": "Mahlón",
+    "H922": "vacío", "H6960b": "reunirse", "H4723c": "depósito", "H2310": "que cesa",
+    "H6115": "esterilidad", "H3630": "Quelión", "H3860": "por tanto",
+    "H7363b": "aletear", "H1876": "reverdecer", "H7310": "abundancia", "H6204": "Orfa",
+    "H3126": "renuevo", "H4564": "escondite", "H5702": "recluirse", "H4755": "Mara",
+})
+
+GRIEGO.update({
+    "G3141": "testimonio", "G3694": "detrás", "G737": "ahora", "G758": "jefe",
+    "G3854": "llegar", "G5376": "Felipe", "G3709": "ira", "G770": "estar enfermo",
+    "G2396": "¡mira!", "G2501": "José", "G686": "entonces", "G1014": "querer",
+    "G2409": "sacerdote", "G4655": "tiniebla", "G4905": "reunirse",
+    "G5281": "perseverancia", "G5316": "aparecer", "G720": "negar", "G5616": "como",
+    "G1679": "esperar", "G2243": "Elías", "G1451": "cerca", "G5384": "amigo",
+    "G5426": "pensar", "G3162": "espada", "G4159": "¿de dónde?", "G228": "verdadero",
+    "G2384": "Jacob", "G601": "revelar", "G1752": "a causa de", "G227": "veraz",
+    "G2300": "contemplar", "G3670": "confesar", "G1360": "porque", "G769": "debilidad",
+    "G1588": "escogido", "G4008": "al otro lado", "G2836": "vientre",
+    "G3768": "todavía no", "G837": "crecer", "G1504": "imagen", "G5483": "conceder",
+    "G473": "en lugar de", "G2268": "Isaías", "G230": "verdaderamente",
+    "G2032": "celestial", "G5312": "exaltar", "G1883": "encima de", "G2464": "Isaac",
+    "G4762": "volver", "G5088": "dar a luz", "G2937": "creación", "G1651": "reprender",
+    "G602": "revelación", "G5615": "igualmente", "G4134": "lleno", "G4138": "plenitud",
+    "G1887": "al día siguiente", "G4461": "rabí", "G2632": "condenar", "G700": "agradar",
+    "G4653": "oscuridad", "G4808": "higuera", "G3566": "novio", "G544": "desobedecer",
+    "G3804": "padecimiento", "G2638": "alcanzar", "G2446": "Jordán", "G4972": "sellar",
+    "G2818": "heredero", "G1065": "al menos", "G3789": "serpiente", "G3358": "medida",
+    "G4250": "antes de que", "G3933": "virgen", "G406": "Andrés", "G2495": "Jonás",
+    "G509": "de arriba", "G5563": "separar", "G963": "Betania",
+    "G1689": "mirar fijamente", "G3478": "Nazaret", "G4672": "Salomón",
+    "G897": "Babilonia", "G2227": "vivificar", "G4286": "propósito", "G2822": "llamado",
+    "G3042": "hambre", "G5461": "iluminar", "G994": "clamar", "G1388": "engaño",
+    "G2289": "dar muerte", "G1657": "libertad", "G5266": "sandalia", "G4058": "paloma",
+    "G1304": "permanecer", "G102": "imposible", "G1345": "precepto",
+    "G629": "redención", "G5339": "perdonar", "G1375": "persecución",
+    "G3439": "unigénito", "G2475": "israelita", "G5270": "debajo de", "G976": "libro",
+    "G1064": "vientre", "G4416": "primogénito", "G3611": "habitar", "G5356": "corrupción",
+    "G2794": "peligro", "G3565": "novia", "G4367": "mandar", "G553": "aguardar",
+    "G536": "primicia", "G899": "profundidad", "G3177": "traducir", "G966": "Betsaida",
+    "G4154": "soplar", "G1919": "terrenal", "G2214": "discusión", "G2512": "purificación",
+    "G1326": "despertar", "G1659": "libertar", "G3781": "deudor", "G1458": "acusar",
+    "G1764": "estar presente", "G4455": "jamás", "G2859": "seno",
+    "G1834": "dar a conocer", "G4225": "en alguna parte", "G2786": "Cefas",
+    "G3482": "Natanael", "G3677": "sueño", "G5258": "sueño", "G3667": "semejanza",
+    "G2189": "enemistad", "G1512": "si es que", "G2349": "mortal", "G4234": "obra",
+    "G4727": "gemir", "G2045": "escudriñar", "G4309": "predestinar", "G4637": "habitar",
+    "G3530": "Nicodemo", "G2421": "Isaí", "G1180": "catorce", "G1774": "habitar en",
+    "G1397": "esclavitud", "G5206": "adopción", "G1793": "interceder",
+    "G4903": "cooperar", "G4267": "conocer de antemano", "G612": "respuesta",
+    "G2438": "correa", "G286": "cordero", "G2059": "traducir", "G5337": "malo",
+    "G3350": "deportación", "G2977": "en secreto", "G5427": "modo de pensar",
+    "G4789": "coheredero", "G2526": "según", "G4730": "angustia", "G3019": "levita",
+    "G1182": "décimo", "G4532": "Salem", "G1642": "disminuir", "G1078": "origen",
+    "G5329": "Fares", "G2074": "Esrom", "G689": "Aram", "G284": "Aminadab",
+    "G3476": "Naasón", "G4533": "Salmón", "G1003": "Booz", "G5601": "Obed",
+    "G7": "Abías", "G3128": "Manasés", "G4528": "Salatiel", "G2216": "Zorobabel",
+    "G1662": "Eliaquim", "G3423": "desposar", "G1760": "pensar", "G2631": "condenación",
+    "G5": "Abba", "G4828": "dar testimonio juntamente", "G3153": "vanidad",
+    "G1132": "desnudez", "G4967": "matadero", "G2116": "enderezar", "G3323": "Mesías",
+    "G4497": "Roboam", "G760": "Asa", "G2498": "Josafat", "G2496": "Joram",
+    "G3604": "Uzías", "G2488": "Jotam", "G881": "Acaz", "G1478": "Ezequías",
+    "G300": "Amón", "G2502": "Josías", "G2423": "Jeconías", "G10": "Abiud",
+    "G107": "Azor", "G4524": "Sadoc", "G885": "Aquim", "G1664": "Eliud",
+    "G1648": "Eleazar", "G3157": "Matán", "G1083": "nacimiento",
+    "G3856": "exponer a infamia", "G4841": "padecer juntamente", "G603": "anhelo",
+    "G1635": "voluntariamente", "G4878": "ayudar", "G4726": "gemido",
+    "G4832": "conforme", "G5313": "altura", "G1088": "anciano", "G137": "Enón",
+    "G2196": "Zara", "G2283": "Tamar", "G4477": "Rahab", "G4503": "Rut",
+    "G3774": "Urías", "G1694": "Emmanuel", "G4888": "glorificar juntamente",
+    "G4959": "gemir juntamente", "G4944": "sufrir dolores juntamente",
+    "G5241": "interceder", "G215": "indecible", "G5245": "vencer ampliamente",
+})

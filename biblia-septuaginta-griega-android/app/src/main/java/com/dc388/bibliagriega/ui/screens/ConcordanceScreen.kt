@@ -29,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dc388.bibliagriega.data.VerseHit
+import com.dc388.bibliagriega.ui.AnchoDeLista
+import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
@@ -73,14 +75,14 @@ fun ConcordanceScreen(
     ) { padding ->
         if (state.loading) {
             Box(
-                Modifier.fillMaxSize().padding(padding),
+                Modifier.columna(AnchoDeLista).padding(padding),
                 contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
             return@Scaffold
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.columna(AnchoDeLista),
             contentPadding = PaddingValues(
                 top = padding.calculateTopPadding(),
                 bottom = padding.calculateBottomPadding() + 24.dp,

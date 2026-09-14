@@ -180,13 +180,36 @@ fun WordStudySheet(
                 }
             }
 
+            // Primero lo que está en español, que es lo que la mayoría viene a
+            // leer. Los léxicos de referencia son obras inglesas del XIX y
+            // principios del XX y no se pueden traducir sin reescribirlas, así
+            // que van después y dichas por su nombre, como cita de la fuente.
             Field("Número Strong", study.word.strong)
             Field("Análisis", study.word.morphology ?: study.word.morphCode)
-            study.article?.gloss?.let { Field("Definición breve", it) }
-            entry?.definition?.let { Field("Strong", it) }
-            entry?.derivation?.let { Field("Etimología", it) }
-            entry?.kjvUsage?.let { Field("Traducciones (KJV)", it) }
-            study.article?.let { Field(it.source, it.article) }
+            study.article?.gloss?.let { Field("Definición", it) }
+            entry?.derivationEs?.let { Field("Procede de", it) }
+
+            val hayObrasEnIngles = entry?.definition != null || study.article != null
+            if (hayObrasEnIngles) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(top = 22.dp, bottom = 4.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                )
+                Text(
+                    text = "Obras de referencia, en su lengua original",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 10.dp),
+                )
+                Text(
+                    text = "Los léxicos que se citan a continuación están escritos en inglés.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                entry?.definition?.let { Field("Diccionario Strong (1890)", it) }
+                study.article?.let { Field(it.source, it.article) }
+            }
 
             if (study.occurrences > 0 && entry != null) {
                 TextButton(
@@ -201,10 +224,10 @@ fun WordStudySheet(
             }
 
             Text(
-                text = "La definición breve y el análisis morfológico están traducidos al " +
-                    "español por este proyecto. Las obras de referencia se citan en su " +
-                    "lengua original, que es el inglés: Diccionario Strong (1890), " +
-                    "Brown-Driver-Briggs (1906) en hebreo y Abbott-Smith (1922) en griego.",
+                text = "El análisis, la definición y la procedencia de la palabra están " +
+                    "traducidos al español por este proyecto. Cuando una palabra poco " +
+                    "frecuente todavía no tiene definición traducida, se deja en blanco " +
+                    "antes que ponerla en un idioma que no sea el tuyo.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 16.dp),

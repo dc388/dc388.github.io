@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import com.dc388.bibliagriega.data.InterlinearWord
 import com.dc388.bibliagriega.data.Verse
 import com.dc388.bibliagriega.data.VerseRef
+import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
@@ -161,7 +162,7 @@ fun ReaderScreen(
     ) { padding ->
         if (state.loading) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier.columna().padding(padding),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) { CircularProgressIndicator() }
@@ -185,7 +186,7 @@ fun ReaderScreen(
         CompositionLocalProvider(LocalLayoutDirection provides direction) {
             if (settings.paragraphMode) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.columna(),
                     contentPadding = PaddingValues(
                         start = 20.dp,
                         end = 20.dp,
@@ -219,7 +220,7 @@ fun ReaderScreen(
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.columna(),
                     contentPadding = PaddingValues(
                         top = padding.calculateTopPadding() + 8.dp,
                         bottom = padding.calculateBottomPadding() + 32.dp,

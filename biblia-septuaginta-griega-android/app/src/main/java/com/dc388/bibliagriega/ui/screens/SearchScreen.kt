@@ -37,6 +37,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dc388.bibliagriega.data.VerseHit
+import com.dc388.bibliagriega.ui.AnchoDeLista
+import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
@@ -65,7 +67,7 @@ fun SearchScreen(
             )
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
+        Column(Modifier.columna(AnchoDeLista).padding(padding)) {
             OutlinedTextField(
                 value = search.query,
                 onValueChange = { vm.onQueryChange(it, search.scope) },
@@ -74,7 +76,7 @@ fun SearchScreen(
                     .padding(16.dp, 8.dp)
                     .focusRequester(focus),
                 singleLine = true,
-                label = { Text("Palabra griega") },
+                label = { Text("Palabra griega o hebrea") },
                 supportingText = {
                     Text(
                         "Sin acentos y por el comienzo de la palabra: «λογ» encuentra " +

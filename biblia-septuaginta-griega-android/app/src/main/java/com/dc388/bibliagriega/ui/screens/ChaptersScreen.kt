@@ -28,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.dc388.bibliagriega.ui.AnchoDeLista
+import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +66,7 @@ fun ChaptersScreen(
             )
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
+        Column(Modifier.columna(AnchoDeLista).padding(padding)) {
             book?.sourceNote?.let { note ->
                 Text(
                     text = note,

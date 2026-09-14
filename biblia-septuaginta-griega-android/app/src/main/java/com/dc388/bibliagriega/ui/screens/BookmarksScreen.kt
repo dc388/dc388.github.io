@@ -31,6 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dc388.bibliagriega.data.VerseHit
 import com.dc388.bibliagriega.data.VerseRef
+import com.dc388.bibliagriega.ui.AnchoDeLista
+import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
@@ -57,7 +59,7 @@ fun BookmarksScreen(
     ) { padding ->
         if (hits.isEmpty()) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(padding).padding(32.dp),
+                modifier = Modifier.columna(AnchoDeLista).padding(padding).padding(32.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -72,7 +74,7 @@ fun BookmarksScreen(
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.columna(AnchoDeLista),
             contentPadding = PaddingValues(
                 top = padding.calculateTopPadding(),
                 bottom = padding.calculateBottomPadding() + 24.dp,

@@ -66,11 +66,12 @@ a word`, `θεός → a god or deity`. Y el artículo `ὁ`, la palabra más fr
 Nuevo Testamento, salía glosado «he», porque Abbott-Smith abre su artículo por el
 uso demostrativo homérico. Cuatro veces seguidas en Juan 1:1.
 
-`tools/glosario.py` traduce a mano los 800 lemas más frecuentes —400 griegos y
-400 hebreos—, que cubren el 82,6 % de las palabras del Nuevo Testamento y el
-72,9 % del Antiguo. Van en su propia tabla, `glosario`, no mezclados con los
-léxicos: la traducción es obra de este proyecto y las obras de referencia se
-citan aparte, en su lengua.
+`tools/glosario.py` traduce a mano los 1 196 lemas más frecuentes —632 griegos y
+564 hebreos—, que cubren el 84,5 % de las palabras del Nuevo Testamento y el
+74,9 % del Antiguo, y el 100 % de los capítulos que la aplicación enseña de
+entrada. Van en su propia tabla, `glosario`, no mezclados con los léxicos: la
+traducción es obra de este proyecto y las obras de referencia se citan aparte,
+en su lengua.
 
 Los criterios están en la cabecera del módulo, para que las entradas nuevas
 sigan los mismos: se glosa el lema y no la forma concreta, los verbos en

@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dc388.bibliagriega.data.ThemeMode
+import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
@@ -59,7 +60,7 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
     ) { padding ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .columna()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 32.dp),
@@ -178,9 +179,9 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
                 )
                 Text(
                     text = "Análisis morfológico de Robinson, dominio público, traducido al " +
-                        "español por este proyecto, que traduce también la definición breve " +
-                        "de los 800 lemas más frecuentes: el 82 % de las palabras del Nuevo " +
-                        "Testamento y el 73 % del Antiguo.",
+                        "español por este proyecto, que traduce también la definición de " +
+                        "los 1 196 lemas más frecuentes —el 85 % de las palabras del Nuevo " +
+                        "Testamento y el 75 % del Antiguo— y la procedencia de la palabra.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

@@ -8,7 +8,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.text.Normalizer
 
 /**
  * Acceso de solo lectura a `assets/biblia.db`.
@@ -159,7 +158,7 @@ class BibleRepository private constructor(private val appContext: Context) {
     suspend fun wordsOfChapter(bookId: Long, chapter: Int): Map<Long, List<InterlinearWord>> {
         val rows = query(
             "SELECT w.verse_id, w.position, w.surface, w.strong, w.homonym, w.morph," +
-                " m.description, l.lemma, l.translit, COALESCE(g.gloss_es, d.gloss)" +
+                " m.description, l.lemma, l.translit, g.gloss_es" +
                 " FROM words w" +
                 " JOIN verses v ON v.id = w.verse_id" +
                 " LEFT JOIN morph_codes m ON m.code = w.morph" +
@@ -186,8 +185,8 @@ class BibleRepository private constructor(private val appContext: Context) {
     }
 
     suspend fun lexiconEntry(strong: String): LexiconEntry? = query(
-        "SELECT strong, lemma, translit, derivation, definition, kjv_usage" +
-            " FROM lexicon WHERE strong = ?",
+        "SELECT strong, lemma, translit, derivation, derivation_es, definition," +
+            " kjv_usage FROM lexicon WHERE strong = ?",
         arrayOf(strong),
     ) {
         LexiconEntry(
@@ -195,15 +194,16 @@ class BibleRepository private constructor(private val appContext: Context) {
             lemma = it.getString(1),
             transliteration = if (it.isNull(2)) null else it.getString(2),
             derivation = if (it.isNull(3)) null else it.getString(3),
-            definition = if (it.isNull(4)) null else it.getString(4),
-            kjvUsage = if (it.isNull(5)) null else it.getString(5),
+            derivationEs = if (it.isNull(4)) null else it.getString(4),
+            definition = if (it.isNull(5)) null else it.getString(5),
+            kjvUsage = if (it.isNull(6)) null else it.getString(6),
         )
     }.firstOrNull()
 
     /** Artículo del léxico de referencia de una palabra, si lo tiene. */
     suspend fun articleOf(strong: String, homonym: String): LexiconArticle? = query(
         "SELECT a.strong, a.homonym, a.source, a.headword," +
-            " COALESCE(g.gloss_es, a.gloss), a.pos, a.article FROM articles a" +
+            " g.gloss_es, a.pos, a.article FROM articles a" +
             " LEFT JOIN glosario g ON g.strong = a.strong AND g.homonym = a.homonym" +
             " WHERE a.strong = ? AND a.homonym = ?",
         arrayOf(strong, homonym),
@@ -267,20 +267,6 @@ class BibleRepository private constructor(private val appContext: Context) {
             }
 
         /** Misma normalización que usa `tools/build_db.py` para la columna `text_norm`. */
-        fun normalize(text: String): String {
-            val decomposed = Normalizer.normalize(text.lowercase(), Normalizer.Form.NFD)
-            val sb = StringBuilder(decomposed.length)
-            for (ch in decomposed) {
-                when {
-                    Character.getType(ch) == Character.NON_SPACING_MARK.toInt() -> Unit
-                    ch == 'ς' -> sb.append('σ')
-                    ch.isLetterOrDigit() -> sb.append(ch)
-                    else -> sb.append(' ')
-                }
-            }
-            return sb.toString().trim().replace(WHITESPACE, " ")
-        }
-
-        private val WHITESPACE = Regex("\\s+")
+        fun normalize(text: String): String = normalizarTexto(text)
     }
 }

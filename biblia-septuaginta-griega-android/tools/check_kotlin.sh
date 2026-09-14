@@ -45,7 +45,7 @@ fetch "org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/$COROUTINES_VERSION/kot
 fetch "org/jetbrains/intellij/deps/trove4j/$TROVE_VERSION/trove4j-$TROVE_VERSION.jar" \
     "trove4j.jar"
 
-sources=$(find "$root/app/src/main/java" -name '*.kt')
+sources=$(find "$root/app/src/main/java" "$root/app/src/test/java" "$root/app/src/androidTest/java" -name '*.kt' 2>/dev/null)
 count=$(echo "$sources" | wc -l)
 output="$cache/salida.txt"
 

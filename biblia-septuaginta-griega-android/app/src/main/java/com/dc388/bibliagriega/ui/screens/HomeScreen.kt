@@ -43,6 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dc388.bibliagriega.data.Book
 import com.dc388.bibliagriega.data.VerseRef
+import com.dc388.bibliagriega.ui.AnchoDeLista
+import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,12 +85,12 @@ fun HomeScreen(
     ) { padding ->
         when {
             library.loading -> Box(
-                Modifier.fillMaxSize().padding(padding),
+                Modifier.columna(AnchoDeLista).padding(padding),
                 contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
 
             library.error != null -> Box(
-                Modifier.fillMaxSize().padding(padding).padding(24.dp),
+                Modifier.columna(AnchoDeLista).padding(padding).padding(24.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -103,7 +105,7 @@ fun HomeScreen(
                 val books = current?.let { library.booksByCollection[it.id] }.orEmpty()
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.columna(AnchoDeLista),
                     contentPadding = PaddingValues(
                         top = padding.calculateTopPadding(),
                         bottom = padding.calculateBottomPadding() + 16.dp,

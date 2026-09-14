@@ -104,10 +104,14 @@ bajo la misma licencia MIT que el código:
 - La descripción en español de los 4 490 códigos morfológicos, en
   `tools/morphology.py` (griego de Robinson) y `tools/hebrew.py` (hebreo y
   arameo de OSHB).
-- La definición breve en español de los 800 lemas más frecuentes —400 griegos y
-  400 hebreos—, en `tools/glosario.py`. Sustituye la glosa inglesa del léxico
-  bajo cada palabra del interlineal; el artículo completo se sigue citando en su
+- La definición en español de los 1 196 lemas más frecuentes —632 griegos y 564
+  hebreos—, en `tools/glosario.py`. Sustituye la glosa inglesa del léxico bajo
+  cada palabra del interlineal; el artículo completo se sigue citando en su
   lengua original.
+- La traducción de la etimología del Diccionario Strong, en `tools/etimologia.py`:
+  10 854 de las 14 179 fórmulas («from H1234 and H5678», «a primitive root»), por
+  sustitución de un vocabulario cerrado. Las que contienen alguna palabra fuera
+  de ese vocabulario no se traducen ni se muestran.
 
 ## Código de terceros
 
