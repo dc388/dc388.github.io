@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -32,7 +33,12 @@ val AnchoDeLista: Dp = 840.dp
  * Ocupa la pantalla, se aparta de los recortes laterales —muescas y barras de
  * navegación cuando el teléfono está tumbado— y, si sobra sitio, se queda en el
  * centro con un ancho legible en vez de estirarse.
+ *
+ * Es @Composable porque `WindowInsets.safeDrawing` lo es: los recortes de la
+ * pantalla cambian al girar el teléfono o al abrir el teclado, y hay que leerlos
+ * dentro de la composición para que el contenido se recoloque.
  */
+@Composable
 fun Modifier.columna(ancho: Dp = AnchoDeLectura): Modifier =
     this.fillMaxSize()
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
