@@ -87,6 +87,27 @@ class CapturasTest {
         }
     }
 
+    /**
+     * Espera a la rejilla de capítulos.
+     *
+     * No se espera por el último capítulo del libro: la rejilla solo dibuja lo
+     * que cabe, y en una pantalla 9:16 el 50 de Génesis queda sin componer. Se
+     * espera por el 1, que está siempre y que es el que se va a tocar.
+     */
+    private fun esperarCapitulos(ms: Long = 180_000) {
+        try {
+            regla.waitUntil(timeoutMillis = ms) {
+                regla.onAllNodesWithText("1").fetchSemanticsNodes().isNotEmpty()
+            }
+        } catch (e: ComposeTimeoutException) {
+            throw AssertionError(
+                "No apareció la rejilla de capítulos en ${ms / 1000} s. " +
+                    "Esto había en pantalla:\n" + regla.onRoot().printToString(maxDepth = 10),
+                e,
+            )
+        }
+    }
+
     @Test
     fun capturas_para_la_ficha_de_play() {
         dispositivo.executeShellCommand("rm -rf $carpeta")
@@ -100,7 +121,7 @@ class CapturasTest {
         regla.onNodeWithText("NT griego").performClick()
         esperar("Juan")
         regla.onAllNodesWithText("Juan").onFirst().performClick()
-        esperar("21")
+        esperarCapitulos()
         regla.onAllNodesWithText("1").onFirst().performClick()
         esperar("Ἐν ἀρχῇ")
         capturar("nt-griego")
@@ -129,7 +150,7 @@ class CapturasTest {
         regla.onNodeWithText("AT hebreo").performClick()
         esperar("Génesis")
         regla.onAllNodesWithText("Génesis").onFirst().performClick()
-        esperar("50")
+        esperarCapitulos()
         regla.onAllNodesWithText("1").onFirst().performClick()
         esperar("בְּרֵאשִׁית")
         capturar("hebreo")
