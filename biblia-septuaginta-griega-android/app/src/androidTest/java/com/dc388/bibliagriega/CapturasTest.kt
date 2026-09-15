@@ -1,6 +1,5 @@
 package com.dc388.bibliagriega
 
-import android.graphics.Bitmap
 import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -19,7 +18,6 @@ import androidx.test.uiautomator.UiDevice
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.File
 
 /**
  * Toma las capturas de pantalla que pide Google Play, de la aplicación de
@@ -44,22 +42,15 @@ class CapturasTest {
         get() = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     /**
-     * Dónde se guardan las imágenes.
+     * Dónde se guardan las imágenes: una carpeta del almacenamiento compartido,
+     * escrita por el shell.
      *
-     * En el directorio de la aplicación **de pruebas**, no en el de la
-     * aplicación. Quien escribe el archivo es el proceso de pruebas, y el
-     * almacenamiento por ámbitos de Android no le deja escribir en la carpeta
-     * externa de otra aplicación, aunque sea la que está probando.
+     * No se usa el directorio de ninguna de las dos aplicaciones porque
+     * `getExternalFilesDir` devuelve null en este emulador, y entonces la ruta
+     * queda relativa y no se escribe nada. El shell sí puede escribir en
+     * /sdcard siempre, y es de donde el flujo las recoge con `adb pull`.
      */
-    private val carpeta: File by lazy {
-        val destino = File(
-            InstrumentationRegistry.getInstrumentation().context
-                .getExternalFilesDir(null),
-            "capturas",
-        )
-        destino.mkdirs()
-        destino
-    }
+    private val carpeta = "/sdcard/capturas"
 
     private var numero = 0
 
@@ -70,13 +61,14 @@ class CapturasTest {
         // medias en la imagen.
         Thread.sleep(700)
         numero += 1
-        val archivo = File(carpeta, "%d-%s.png".format(numero, nombre))
-        if (!dispositivo.takeScreenshot(archivo, 1f, 100)) {
-            error(
-                "No se pudo escribir la captura en $archivo. " +
-                    "La carpeta existe: ${carpeta.exists()}, " +
-                    "se puede escribir: ${carpeta.canWrite()}",
-            )
+        val ruta = "%s/%d-%s.png".format(carpeta, numero, nombre)
+        // `screencap` es lo que usa `adb screenshot` por dentro: fotografía la
+        // pantalla entera, con barra de estado, y la escribe como shell.
+        dispositivo.executeShellCommand("screencap -p $ruta")
+        val bytes = dispositivo.executeShellCommand("stat -c %s $ruta").trim()
+        val tamano = bytes.toLongOrNull() ?: 0L
+        check(tamano > 1_000) {
+            "La captura $ruta no se escribió o salió vacía: stat devolvió «$bytes»"
         }
     }
 
@@ -97,6 +89,9 @@ class CapturasTest {
 
     @Test
     fun capturas_para_la_ficha_de_play() {
+        dispositivo.executeShellCommand("rm -rf $carpeta")
+        dispositivo.executeShellCommand("mkdir -p $carpeta")
+
         // 1. La biblioteca, con las tres colecciones.
         esperar("AT hebreo")
         capturar("biblioteca")
@@ -156,8 +151,9 @@ class CapturasTest {
         regla.onNodeWithText("Textos y licencias").performScrollTo()
         capturar("ajustes")
 
-        val hechas = carpeta.listFiles()?.size ?: 0
-        check(hechas >= 2) { "Play pide 2 capturas como mínimo y solo salieron $hechas" }
-        println("Capturas en ${carpeta.absolutePath}: $hechas")
+        val listado = dispositivo.executeShellCommand("ls $carpeta").trim()
+        val hechas = listado.lines().count { it.isNotBlank() }
+        check(hechas >= 2) { "Play pide 2 capturas como mínimo y solo salieron $hechas: $listado" }
+        println("Capturas en $carpeta: $hechas\n$listado")
     }
 }

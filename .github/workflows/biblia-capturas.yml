@@ -116,7 +116,7 @@ jobs:
             adb shell wm size $TAMANO
             adb shell wm density $DENSIDAD
             ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.dc388.bibliagriega.CapturasTest --stacktrace
-            adb pull /sdcard/Android/data/com.dc388.bibliagriega.debug.test/files/capturas .
+            adb pull /sdcard/capturas .
             ls -la capturas
 
       - name: Comprobar que sirven para Play
