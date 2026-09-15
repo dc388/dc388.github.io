@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Códice abierto -->
+    <path
+        android:fillColor="#F3E9D2"
+        android:pathData="M54,41 C48,36 39,33 28,33 L28,71 C39,71 48,74 54,79 Z" />
+    <path
+        android:fillColor="#F3E9D2"
+        android:pathData="M54,41 C60,36 69,33 80,33 L80,71 C69,71 60,74 54,79 Z" />
+
+    <!-- Lomo -->
+    <path
+        android:fillColor="#C9B68C"
+        android:pathData="M52.5,41 L55.5,41 L55.5,79 L52.5,79 Z" />
+
+    <!-- Renglones de texto -->
+    <path android:fillColor="#B9A882" android:pathData="M33,43 L49,45 L49,47.5 L33,45.5 Z" />
+    <path android:fillColor="#B9A882" android:pathData="M33,50 L49,52 L49,54.5 L33,52.5 Z" />
+    <path android:fillColor="#B9A882" android:pathData="M33,57 L45,58.5 L45,61 L33,59.5 Z" />
+    <path android:fillColor="#B9A882" android:pathData="M59,45 L75,43 L75,45.5 L59,47.5 Z" />
+    <path android:fillColor="#B9A882" android:pathData="M59,52 L75,50 L75,52.5 L59,54.5 Z" />
+    <path android:fillColor="#B9A882" android:pathData="M59,58.5 L71,57 L71,59.5 L59,61 Z" />
+
+    <!-- Alfa y Omega sobre el códice -->
+    <path
+        android:fillColor="#E8B04B"
+        android:pathData="M54,20 L60.5,33 L56.8,33 L54,26.8 L51.2,33 L47.5,33 Z" />
+</vector>
