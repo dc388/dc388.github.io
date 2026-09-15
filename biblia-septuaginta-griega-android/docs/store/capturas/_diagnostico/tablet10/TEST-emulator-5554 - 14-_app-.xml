@@ -1,21 +1,179 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<testsuite name="com.dc388.bibliagriega.CapturasTest" tests="1" failures="1" errors="0" skipped="0" time="19.151" timestamp="2026-09-15T01:30:39" hostname="localhost">
+<testsuite name="com.dc388.bibliagriega.CapturasTest" tests="1" failures="1" errors="0" skipped="0" time="47.305" timestamp="2026-09-15T01:47:05" hostname="localhost">
   <properties>
     <property name="device" value="emulator-5554 - 14" />
     <property name="flavor" value="" />
     <property name="project" value=":app" />
   </properties>
-  <testcase name="capturas_para_la_ficha_de_play" classname="com.dc388.bibliagriega.CapturasTest" time="17.036">
-    <failure>java.lang.AssertionError: Failed to inject touch input.
-Reason: Expected exactly '1' node but could not find any node that satisfies: (ContentDescription = 'Buscar' (ignoreCase: false))
-
-at androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow(SemanticsNodeInteraction.kt:178)
-at androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow$default(SemanticsNodeInteraction.kt:150)
-at androidx.compose.ui.test.SemanticsNodeInteraction.fetchSemanticsNode(SemanticsNodeInteraction.kt:84)
-at androidx.compose.ui.test.ActionsKt.performTouchInput(Actions.kt:394)
-at androidx.compose.ui.test.Actions_androidKt.performClickImpl(Actions.android.kt:20)
-at androidx.compose.ui.test.ActionsKt.performClick(Actions.kt:54)
-at com.dc388.bibliagriega.CapturasTest.capturas_para_la_ficha_de_play(CapturasTest.kt:159)
+  <testcase name="capturas_para_la_ficha_de_play" classname="com.dc388.bibliagriega.CapturasTest" time="45.794">
+    <failure>java.lang.AssertionError: No hay ningún «Ajustes» en esta pantalla. Esto había:
+Printing with useUnmergedTree = 'false'
+Node #1 at (l=0.0, t=0.0, r=1440.0, b=2560.0)px
+|-Node #2 at (l=0.0, t=0.0, r=1440.0, b=2560.0)px
+IsTraversalGroup = 'true'
+|-Node #5958 at (l=0.0, t=0.0, r=1440.0, b=2560.0)px
+IsTraversalGroup = 'true'
+|-Node #5975 at (l=114.0, t=144.0, r=1326.0, b=270.0)px
+| EditableText = 'λογ'
+| TextSelectionRange = 'TextRange(3, 3)'
+| IsEditable = 'true'
+| ImeAction = 'Default'
+| Focused = 'true'
+| Text = '[Palabra griega o hebrea, Sin acentos y por el comienzo de la palabra: «λογ» encuentra «λόγος», «λόγῳ» y «λόγον».]'
+| Actions = [GetTextLayoutResult, SetText, InsertTextAtCursor, SetSelection, PerformImeAction, OnClick, OnLongClick, PasteText, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, MagnifierPositionInRoot]
+| MergeDescendants = 'true'
+|  |-Node #6006 at (l=1260.0, t=168.0, r=1320.0, b=228.0)px
+|    Role = 'Button'
+|    Focused = 'false'
+|    ContentDescription = '[Limpiar]'
+|    Actions = [OnClick, RequestFocus]
+|    MergeDescendants = 'true'
+|-Node #5989 at (l=114.0, t=294.0, r=286.0, b=342.0)px
+| Focused = 'false'
+| Selected = 'true'
+| Role = 'Checkbox'
+| Text = '[Toda la Biblia]'
+| Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+| MergeDescendants = 'true'
+|-Node #5993 at (l=298.0, t=294.0, r=442.0, b=342.0)px
+| Focused = 'false'
+| Selected = 'false'
+| Role = 'Checkbox'
+| Text = '[AT hebreo]'
+| Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+| MergeDescendants = 'true'
+|-Node #5997 at (l=454.0, t=294.0, r=615.0, b=342.0)px
+| Focused = 'false'
+| Selected = 'false'
+| Role = 'Checkbox'
+| Text = '[Septuaginta]'
+| Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+| MergeDescendants = 'true'
+|-Node #6001 at (l=627.0, t=294.0, r=767.0, b=342.0)px
+| Focused = 'false'
+| Selected = 'false'
+| Role = 'Checkbox'
+| Text = '[NT griego]'
+| Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+| MergeDescendants = 'true'
+|-Node #6005 at (l=90.0, t=354.0, r=1350.0, b=2470.0)px
+| IsTraversalGroup = 'true'
+| VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=100.0, reverseScrolling=false)'
+| CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo&#64;617017e'
+| Actions = [ScrollBy, ScrollByOffset, IndexForKey, ScrollToIndex, GetScrollViewportLength]
+|  |-Node #6009 at (l=114.0, t=372.0, r=242.0, b=396.0)px
+|  | Text = '[300 versículos]'
+|  | Actions = [SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  |-Node #6011 at (l=90.0, t=402.0, r=1350.0, b=520.0)px
+|  | Focused = 'false'
+|  | Text = '[Génesis 4:23, εἶπεν δὲ Λάμεχ ταῖς ἑαυτοῦ Ἄδα καὶ Σέλλα, ἀκούσατέ μου τῆς φωνῆς· γυναῖκες Λάμεχ, ἐνωτίσασθέ μου τοὺς λόγους· ὅτι ἄνδρα ἀπέκτεινα εἰς τραῦμα ἐμοί, καὶ νεανίσκον εἰς μώλωπα ἐμοί·]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6016 at (l=90.0, t=522.0, r=1350.0, b=676.0)px
+|  | Focused = 'false'
+|  | Text = '[Génesis 29:13, καὶ ἐγένετο ὡς ἤκουσεν Λαβὰν τὸ ὄνομα Ἰακὼβ τοῦ υἱοῦ τῆς ἀδελφῆς αὐτοῦ, ἔδραμεν εἰς συνάντησιν αὐτοῦ, καὶ περιλαβὼν αὐτὸν ἐφίλησεν, καὶ εἰσήγαγεν αὐτὸν εἰς τὸν οἶκον αὐτοῦ· καὶ διηγήσατο τῷ Λαβὰν πάντας τοὺς λόγους τούτους.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6021 at (l=90.0, t=678.0, r=1350.0, b=760.0)px
+|  | Focused = 'false'
+|  | Text = '[Génesis 34:18, καὶ ἤρεσαν οἱ λόγοι ἐναντίον Ἐμμὼρ καὶ ἐναντίον Συχὲμ τοῦ υἱοῦ Ἐμμώρ.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6026 at (l=90.0, t=762.0, r=1350.0, b=880.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 4:28, καὶ ἀνήγγειλεν Μωυσῆς τῷ Ἀαρὼν πάντας τοὺς λόγους Τυρίου οὓς ἀπέστειλεν καὶ πάντα τὰ ῥήματα ἃ ἐνετείλατο αὐτῷ.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6031 at (l=90.0, t=882.0, r=1350.0, b=1000.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 5:9, βαρυνέσθω τὰ ἔργα τῶν ἀνθρώπων τούτων, καὶ μεριμνάτωσαν ταῦτα, καὶ μὴ μεριμνάτωσαν ἐν λόγοις κενοῖς.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6036 at (l=90.0, t=1002.0, r=1350.0, b=1120.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 18:19, νῦν οὖν ἄκουσόν μου, καὶ συμβουλεύσω σοι, καὶ ἔσται ὁ θεὸς μετὰ σοῦ. γίνου σὺ τῷ λαῷ τὰ πρὸς τὸν θεόν, καὶ ἀνοίσεις τοὺς λόγους αὐτῶν πρὸς τὸν θεόν·]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6041 at (l=90.0, t=1122.0, r=1350.0, b=1240.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 19:7, ἦλθεν δὲ Μωυσῆς καὶ ἐλάλησεν πρὸς τοὺς πρεσβυτέρους τοῦ λαοῦ, καὶ παρέθηκεν αὐτοῖς πάντας τοὺς λόγους τούτους οὓς συνέταξεν αὐτῷ ὁ θεός.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6046 at (l=90.0, t=1242.0, r=1350.0, b=1360.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 19:8, ἀπεκρίθη δὲ πᾶς ὁ λαὸς ὁμοθυμαδὸν καὶ εἶπαν Πάντα ὅσα εἶπεν ὁ θεὸς σομεν καὶ ἀκουσόμεθα· ἀνήνεγκεν δὲ Μωυσῆς τοὺς λόγους τούτους πρὸς τὸν θεόν.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6051 at (l=90.0, t=1362.0, r=1350.0, b=1480.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 24:3, εἰσῆλθεν δὲ Μωυσῆς καὶ διηγήσατο τῷ λαῷ πάντα τὰ ῥήματα τοῦ θεοῦ καὶ τὰ δικαιώματα· ἀπεκρίθη δὲ πᾶς ὁ λαὸς φωνῇ μιᾷ λέγοντες Πάντας τοὺς λόγους οὓς ἐλάλησεν κύριος ποιήσομεν καὶ ἀκουσόμεθα.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6056 at (l=90.0, t=1482.0, r=1350.0, b=1600.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 24:8, λαβὼν δὲ Μωυσῆς τὸ αἷμα κατεσκέδασεν τοῦ λαοῦ καὶ εἶπεν Ἴδου τὸ αἷμα τῆς διαθήκης ἧς διέθετο κύριος πρὸς ὑμᾶς περὶ πάντων τῶν λόγων τούτων.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6061 at (l=90.0, t=1602.0, r=1350.0, b=1720.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 28:23, καὶ λήμψεται Ἀαρὼν τὰ ὀνόματα τῶν υἱῶν Ἰσραὴλ ἐπὶ τοῦ λογίου τῆς κρίσεως ἐπὶ τοῦ στήθους, εἰσιόντι εἰς τὸ ἅγιον, μνημόσυνον ἔναντι τοῦ θεοῦ.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6066 at (l=90.0, t=1722.0, r=1350.0, b=1840.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 33:17, Καὶ εἶπεν κύριος πρὸς Μωυσῆν καὶ τοῦτόν σοι τὸν λόγον ὃν εἴρηκας ποιήσω· εὕρηκας γὰρ χάριν ἐνώπιόν μου, καὶ οἶδά σε παρὰ πάντας.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6071 at (l=90.0, t=1842.0, r=1350.0, b=1960.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 34:27, καὶ εἶπεν Κύρος πρὸς Μωυσῆν Γράψον σεαυτῷ τὰ ῥήματα ταῦτα· ἐπὶ γὰρ τῶν λόγων τούτων τέθειμαί σοι διαθήκην καὶ τῷ Ἰσραήλ.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6076 at (l=90.0, t=1962.0, r=1350.0, b=2116.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 34:28, Καὶ ἦν ἐκεῖ Μωυσῆς ἐναντίον κυρίου τεσσεράκοντα ἡμέρας καὶ τεσσεράκοντα νύ· κτὰς· ἄρτον οὐκ ἔφαγεν καὶ ὕδωρ οὐκ ἔπιεν· καὶ ἔγραψεν τὰ ῥήματα ταῦτα ἐπὶ τῶν πλακῶν τῆς διαθήκης, τοὺς δέκα λόγους.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6081 at (l=90.0, t=2118.0, r=1350.0, b=2236.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 35:1, Καὶ συνήθροισεν Μωυσῆς πᾶσαν συναγωγὴν υἱῶν Ἰσραὴλ εἶπεν Οὗτοι οἱ λόγοι οὓς εἶπεν κύριος ποιῆσαι αὐτούς.]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6086 at (l=90.0, t=2238.0, r=1350.0, b=2356.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 36:15, Καὶ ἐποίησαν λόγιον ἔργον ὑφαντὸν ποικιλίᾳ κατὰ τὸ ἔργον τῆς ἐπωμίδος, ἐκ χρυσίου καὶ ὑακίνθου καὶ πορφύρας καὶ κοκκίνου διανενησμένου καὶ βύσσου κεκλωσμένης·]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6091 at (l=90.0, t=2358.0, r=1350.0, b=2440.0)px
+|  | Focused = 'false'
+|  | Text = '[Éxodo 36:24, καὶ θῆκαν τοὺς δύο δακτυλίους τοὺς χρυσοῦς ἐπ’ ἀμφοτέρας τὰς τοῦ λογίου·]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #6096 at (l=90.0, t=2442.0, r=1350.0, b=2560.0)px
+|    Focused = 'false'
+|    Text = '[Éxodo 36:25, καὶ ἐπέθηκαν τὰ ἐμπλόκια ἐκ χρυσίου ἐπὶ τοὺς δακτυλίους ἐπ’ ἀμφοτέρων τῶν μερῶν τοῦ λογίου, (18) καὶ εἰς τὰς τὰ δύο ἐμπλόκια,]'
+|    Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|    MergeDescendants = 'true'
+|-Node #5961 at (l=0.0, t=0.0, r=1440.0, b=132.0)px
+IsTraversalGroup = 'true'
+|-Node #5964 at (l=12.0, t=54.0, r=72.0, b=114.0)px
+| Role = 'Button'
+| Focused = 'false'
+| ContentDescription = '[Atrás]'
+| Actions = [OnClick, RequestFocus]
+| MergeDescendants = 'true'
+|-Node #5967 at (l=84.0, t=64.0, r=178.0, b=103.0)px
+Text = '[Buscar]'
+Actions = [SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+at com.dc388.bibliagriega.CapturasTest.tocar(CapturasTest.kt:126)
+at com.dc388.bibliagriega.CapturasTest.tocar$default(CapturasTest.kt:119)
+at com.dc388.bibliagriega.CapturasTest.capturas_para_la_ficha_de_play(CapturasTest.kt:207)
+... 53 trimmed
+Caused by: androidx.compose.ui.test.ComposeTimeoutException: Condition still not satisfied after 30000 ms
+at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$AndroidComposeUiTestImpl.waitUntil(ComposeUiTest.android.kt:441)
+at androidx.compose.ui.test.junit4.AndroidComposeTestRule.waitUntil(AndroidComposeTestRule.android.kt:306)
+at com.dc388.bibliagriega.CapturasTest.tocar(CapturasTest.kt:121)
+... 56 more
 </failure>
   </testcase>
 </testsuite>
