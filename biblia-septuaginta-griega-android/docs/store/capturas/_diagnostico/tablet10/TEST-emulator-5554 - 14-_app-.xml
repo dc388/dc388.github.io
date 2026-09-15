@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<testsuite name="com.dc388.bibliagriega.CapturasTest" tests="1" failures="1" errors="0" skipped="0" time="14.384" timestamp="2026-09-15T01:13:58" hostname="localhost">
+<testsuite name="com.dc388.bibliagriega.CapturasTest" tests="1" failures="1" errors="0" skipped="0" time="19.151" timestamp="2026-09-15T01:30:39" hostname="localhost">
   <properties>
     <property name="device" value="emulator-5554 - 14" />
     <property name="flavor" value="" />
     <property name="project" value=":app" />
   </properties>
-  <testcase name="capturas_para_la_ficha_de_play" classname="com.dc388.bibliagriega.CapturasTest" time="12.749">
+  <testcase name="capturas_para_la_ficha_de_play" classname="com.dc388.bibliagriega.CapturasTest" time="17.036">
     <failure>java.lang.AssertionError: Failed to inject touch input.
 Reason: Expected exactly '1' node but could not find any node that satisfies: (ContentDescription = 'Buscar' (ignoreCase: false))
 
@@ -15,7 +15,7 @@ at androidx.compose.ui.test.SemanticsNodeInteraction.fetchSemanticsNode(Semantic
 at androidx.compose.ui.test.ActionsKt.performTouchInput(Actions.kt:394)
 at androidx.compose.ui.test.Actions_androidKt.performClickImpl(Actions.android.kt:20)
 at androidx.compose.ui.test.ActionsKt.performClick(Actions.kt:54)
-at com.dc388.bibliagriega.CapturasTest.capturas_para_la_ficha_de_play(CapturasTest.kt:138)
+at com.dc388.bibliagriega.CapturasTest.capturas_para_la_ficha_de_play(CapturasTest.kt:159)
 </failure>
   </testcase>
 </testsuite>
