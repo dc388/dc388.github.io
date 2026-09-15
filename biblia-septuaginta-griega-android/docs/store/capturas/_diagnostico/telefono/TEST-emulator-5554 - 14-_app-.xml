@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.dc388.bibliagriega.CapturasTest" tests="1" failures="1" errors="0" skipped="0" time="5.61" timestamp="2026-09-15T00:41:52" hostname="localhost">
+  <properties>
+    <property name="device" value="emulator-5554 - 14" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="capturas_para_la_ficha_de_play" classname="com.dc388.bibliagriega.CapturasTest" time="3.842">
+    <failure>java.lang.IllegalStateException: No se pudo escribir la captura en capturas/1-biblioteca.png. La carpeta existe: false, se puede escribir: false
+at com.dc388.bibliagriega.CapturasTest.capturar(CapturasTest.kt:78)
+at com.dc388.bibliagriega.CapturasTest.capturas_para_la_ficha_de_play(CapturasTest.kt:102)
+</failure>
+  </testcase>
+</testsuite>
