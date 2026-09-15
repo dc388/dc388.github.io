@@ -79,10 +79,30 @@ jobs:
           if [ -z "$KEYSTORE_BASE64" ]; then
             echo "::warning::Sin KEYSTORE_BASE64: se compilará sin firmar, solo para comprobar que la compilación pasa. Ver docs/PUBLICAR_EN_PLAY.md"
             echo "firmado=no" >> "$GITHUB_OUTPUT"
-          else
-            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
-            echo "firmado=si" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          # Se limpia antes de decodificar. Al pegar el secreto en el navegador
+          # se cuelan saltos de línea —en Windows, además, con retorno de carro—
+          # y `base64 -d` los rechaza enteros con un escueto «invalid input».
+          # También se descartan las líneas de cabecera por si se pegó la salida
+          # de `certutil -encode`, que envuelve el texto entre BEGIN y END.
+          printf '%s' "$KEYSTORE_BASE64" \
+            | grep -v -- '-----' \
+            | tr -d '\r\n \t' \
+            | base64 -d > "$RUNNER_TEMP/release.jks" || {
+              echo "::error::KEYSTORE_BASE64 no es base64 válido. Vuelve a generarlo y pégalo entero, sin espacios ni saltos: ver docs/PUBLICAR_EN_PLAY.md"
+              exit 1
+            }
+          # Un almacén de claves real pesa un par de miles de bytes. Si sale
+          # algo diminuto, el secreto llegó cortado y conviene decirlo aquí y no
+          # cuatro minutos después, cuando falle la firma.
+          tamano=$(stat -c %s "$RUNNER_TEMP/release.jks")
+          if [ "$tamano" -lt 1000 ]; then
+            echo "::error::El almacén de claves decodificado pesa solo $tamano bytes: el secreto KEYSTORE_BASE64 llegó incompleto."
+            exit 1
+          fi
+          echo "Almacén de claves restaurado: $tamano bytes."
+          echo "firmado=si" >> "$GITHUB_OUTPUT"
 
       - name: Comprobar los anuncios
         id: anuncios
