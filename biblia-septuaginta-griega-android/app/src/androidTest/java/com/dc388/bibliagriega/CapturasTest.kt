@@ -14,6 +14,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToString
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import org.junit.Rule
@@ -216,6 +217,11 @@ class CapturasTest {
         // también en el texto de ayuda de debajo del campo, así que la captura
         // salía con la rueda girando y la lista todavía vacía.
         esperar("versículos")
+        // Al escribir se abre el teclado y tapa media pantalla. Se cierra antes
+        // de la foto: lo que hay que enseñar son los resultados, no el teclado
+        // del emulador.
+        Espresso.closeSoftKeyboard()
+        regla.waitForIdle()
         capturar("busqueda")
 
         // 6. Las licencias: de dónde sale cada texto.
