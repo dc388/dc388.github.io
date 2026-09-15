@@ -115,7 +115,11 @@ class CapturasTest {
         regla.onNodeWithText("Modo interlineal").performScrollTo().performClick()
         regla.waitForIdle()
         regla.onNodeWithContentDescription("Atrás").performClick()
-        esperar("Ἐν ἀρχῇ")
+        // En interlineal el versículo deja de ser una frase: cada palabra es su
+        // propio nodo, con su transliteración, su glosa y su número Strong. Por
+        // eso no se espera «Ἐν ἀρχῇ», que ya no existe seguido, sino el Strong
+        // de la primera palabra, que solo aparece en este modo.
+        esperar("G1722")
         capturar("interlineal")
 
         // 4. El hebreo con su vocalización, de derecha a izquierda.
