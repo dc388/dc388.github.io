@@ -43,9 +43,17 @@ class CapturasTest {
     private val dispositivo: UiDevice
         get() = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
+    /**
+     * Dónde se guardan las imágenes.
+     *
+     * En el directorio de la aplicación **de pruebas**, no en el de la
+     * aplicación. Quien escribe el archivo es el proceso de pruebas, y el
+     * almacenamiento por ámbitos de Android no le deja escribir en la carpeta
+     * externa de otra aplicación, aunque sea la que está probando.
+     */
     private val carpeta: File by lazy {
         val destino = File(
-            InstrumentationRegistry.getInstrumentation().targetContext
+            InstrumentationRegistry.getInstrumentation().context
                 .getExternalFilesDir(null),
             "capturas",
         )
@@ -64,7 +72,11 @@ class CapturasTest {
         numero += 1
         val archivo = File(carpeta, "%d-%s.png".format(numero, nombre))
         if (!dispositivo.takeScreenshot(archivo, 1f, 100)) {
-            error("No se pudo tomar la captura $archivo")
+            error(
+                "No se pudo escribir la captura en $archivo. " +
+                    "La carpeta existe: ${carpeta.exists()}, " +
+                    "se puede escribir: ${carpeta.canWrite()}",
+            )
         }
     }
 

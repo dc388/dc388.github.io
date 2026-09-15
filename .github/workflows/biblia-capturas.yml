@@ -28,7 +28,7 @@ on:
       - ".github/workflows/biblia-capturas.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   capturas:
@@ -116,38 +116,8 @@ jobs:
             adb shell wm size $TAMANO
             adb shell wm density $DENSIDAD
             ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.dc388.bibliagriega.CapturasTest --stacktrace
-            adb pull /sdcard/Android/data/com.dc388.bibliagriega.debug/files/capturas .
+            adb pull /sdcard/Android/data/com.dc388.bibliagriega.debug.test/files/capturas .
             ls -la capturas
-
-      # Sin esto, un fallo del test solo deja «There were failing tests» y un
-      # enlace a un informe HTML que nadie puede abrir desde aquí. El XML lleva
-      # la aserción exacta y el árbol de la pantalla que imprime el test.
-      - name: Qué falló exactamente
-        if: failure()
-        run: |
-          for f in app/build/outputs/androidTest-results/connected/*.xml; do
-            [ -f "$f" ] || continue
-            echo "===== $f"
-            python3 - "$f" <<'PY'
-          import sys, xml.etree.ElementTree as ET
-          r = ET.parse(sys.argv[1]).getroot()
-          for c in r.iter("testcase"):
-              for f in list(c.iter("failure")) + list(c.iter("error")):
-                  print(f"\n--- {c.get('classname')}.{c.get('name')}")
-                  print((f.text or "").strip()[:6000])
-          PY
-          done
-
-      - name: Guardar el informe de las pruebas
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: informe-capturas-${{ matrix.sufijo }}
-          path: |
-            biblia-septuaginta-griega-android/app/build/reports/androidTests/
-            biblia-septuaginta-griega-android/app/build/outputs/androidTest-results/
-          if-no-files-found: ignore
-          retention-days: 14
 
       - name: Comprobar que sirven para Play
         run: |
@@ -181,3 +151,87 @@ jobs:
           path: biblia-septuaginta-griega-android/capturas/*.png
           if-no-files-found: error
           retention-days: 30
+
+      # Sin esto, un fallo del test solo deja «There were failing tests» y un
+      # enlace a un informe HTML que nadie puede abrir desde aquí. El XML lleva
+      # la aserción exacta y el árbol de la pantalla que imprime el test.
+      - name: Qué falló exactamente
+        if: failure()
+        run: |
+          for f in app/build/outputs/androidTest-results/connected/*.xml; do
+            [ -f "$f" ] || continue
+            echo "===== $f"
+            python3 - "$f" <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          r = ET.parse(sys.argv[1]).getroot()
+          for c in r.iter("testcase"):
+              for f in list(c.iter("failure")) + list(c.iter("error")):
+                  print(f"\n--- {c.get('classname')}.{c.get('name')}")
+                  print((f.text or "").strip()[:6000])
+          PY
+          done
+
+      - name: Guardar el informe de las pruebas
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-capturas-${{ matrix.sufijo }}
+          path: |
+            biblia-septuaginta-griega-android/app/build/reports/androidTests/
+            biblia-septuaginta-griega-android/app/build/outputs/androidTest-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  publicar:
+    name: Guardar las capturas en el repositorio
+    needs: capturas
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Recoger las tres tandas
+        uses: actions/download-artifact@v4
+        with:
+          pattern: biblia-capturas-*
+          path: descargadas
+
+      - name: Ordenarlas
+        run: |
+          set -e
+          base=biblia-septuaginta-griega-android/docs/store/capturas
+          rm -rf "$base"
+          for d in descargadas/biblia-capturas-*; do
+            [ -d "$d" ] || continue
+            destino="$base/$(basename "$d" | sed 's/^biblia-capturas-//')"
+            mkdir -p "$destino"
+            cp "$d"/*.png "$destino"/
+          done
+          find "$base" -name '*.png' | sort
+
+      - name: Subirlas a la rama
+        run: |
+          set -e
+          base=biblia-septuaginta-griega-android/docs/store/capturas
+          if [ -z "$(find "$base" -name '*.png' 2>/dev/null)" ]; then
+            echo "::notice::Ninguna tanda produjo capturas; no hay nada que subir."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$base"
+          git diff --cached --quiet && { echo "Sin cambios."; exit 0; }
+          git commit -m "Capturas de pantalla para la ficha de Play [skip ci]
+
+          Tomadas por el flujo «Capturas — Biblia» sobre la aplicación instalada
+          en un emulador, en los tres tamaños que pide Play. Se guardan aquí
+          porque los artefactos de Actions caducan y no se pueden mirar desde
+          fuera; estas se pueden revisar antes de subirlas a la tienda."
+          for i in 1 2 3 4 5; do
+            git push origin HEAD:${{ github.ref_name }} && exit 0
+            git pull --rebase origin ${{ github.ref_name }}
+            sleep $((2 ** i))
+          done
+          exit 1
