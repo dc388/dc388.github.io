@@ -3,6 +3,7 @@ package com.dc388.bibliagriega
 import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -108,6 +109,39 @@ class CapturasTest {
         }
     }
 
+    /**
+     * Pulsa un botón de la barra, esperando antes a que exista.
+     *
+     * Un `performClick` suelto falla con «no encontré el nodo» y sin decir qué
+     * había en pantalla, que es lo que obliga a adivinar. Aquí se espera, y si
+     * no aparece se cuenta lo que sí estaba.
+     */
+    private fun tocar(descripcion: String, ms: Long = 30_000) {
+        try {
+            regla.waitUntil(timeoutMillis = ms) {
+                regla.onAllNodesWithContentDescription(descripcion)
+                    .fetchSemanticsNodes().isNotEmpty()
+            }
+        } catch (e: ComposeTimeoutException) {
+            throw AssertionError(
+                "No hay ningún «$descripcion» en esta pantalla. Esto había:\n" +
+                    regla.onRoot().printToString(maxDepth = 10),
+                e,
+            )
+        }
+        regla.onAllNodesWithContentDescription(descripcion).onFirst().performClick()
+    }
+
+    /** Vuelve atrás hasta la biblioteca, esté donde esté. */
+    private fun volverAlInicio() {
+        repeat(3) {
+            if (regla.onAllNodesWithText("AT hebreo").fetchSemanticsNodes().isNotEmpty()) return
+            tocar("Atrás")
+            regla.waitForIdle()
+        }
+        esperar("AT hebreo")
+    }
+
     @Test
     fun capturas_para_la_ficha_de_play() {
         dispositivo.executeShellCommand("rm -rf $carpeta")
@@ -128,14 +162,14 @@ class CapturasTest {
 
         // 3. El mismo capítulo en modo interlineal, que es lo que distingue a
         //    esta aplicación de cualquier otra Biblia.
-        regla.onNodeWithContentDescription("Tipografía").performClick()
+        tocar("Tipografía")
         esperar("Modo interlineal")
         // Hay que bajar hasta la fila: desde que Ajustes empieza por la tarjeta
         // de la suscripción, «Modo interlineal» queda fuera de la pantalla, y
         // Compose no deja pulsar lo que no se ve.
         regla.onNodeWithText("Modo interlineal").performScrollTo().performClick()
         regla.waitForIdle()
-        regla.onNodeWithContentDescription("Atrás").performClick()
+        tocar("Atrás")
         // En interlineal el versículo deja de ser una frase: cada palabra es su
         // propio nodo, con su transliteración, su glosa y su número Strong. Por
         // eso no se espera «Ἐν ἀρχῇ», que ya no existe seguido, sino el Strong
@@ -144,9 +178,7 @@ class CapturasTest {
         capturar("interlineal")
 
         // 4. El hebreo con su vocalización, de derecha a izquierda.
-        regla.onNodeWithContentDescription("Atrás").performClick()
-        regla.onNodeWithContentDescription("Atrás").performClick()
-        esperar("AT hebreo")
+        volverAlInicio()
         regla.onNodeWithText("AT hebreo").performClick()
         esperar("Génesis")
         regla.onAllNodesWithText("Génesis").onFirst().performClick()
@@ -155,23 +187,24 @@ class CapturasTest {
         esperar("בְּרֵאשִׁית")
         capturar("hebreo")
 
-        // 5. La búsqueda sin acentos, abierta desde el lector.
-        regla.onNodeWithContentDescription("Buscar").performClick()
-        esperar("Buscar")
+        // 5. La búsqueda sin acentos.
+        //
+        // Se vuelve al inicio: «Buscar» y «Ajustes» están en la barra de la
+        // biblioteca, no en la del lector, que solo lleva atrás, tipografía y
+        // compartir.
+        volverAlInicio()
+        tocar("Buscar")
+        // Se espera por la etiqueta del campo, no por «Buscar»: ese es el
+        // nombre del botón que se acaba de pulsar, no algo de esta pantalla.
+        esperar("Palabra griega o hebrea")
         regla.onNode(hasText("Palabra griega o hebrea", substring = true))
             .performTextInput("λογ")
         esperar("λόγος")
         capturar("busqueda")
 
         // 6. Las licencias: de dónde sale cada texto.
-        //
-        // Se vuelve al lector, no a la biblioteca: la búsqueda se abrió desde
-        // aquí, así que atrás devuelve al capítulo. Y desde el lector, los
-        // ajustes se abren con «Tipografía», que es como se llama ese botón en
-        // la barra superior; «Ajustes» solo existe en la pantalla de inicio.
-        regla.onNodeWithContentDescription("Atrás").performClick()
-        esperar("בְּרֵאשִׁית")
-        regla.onNodeWithContentDescription("Tipografía").performClick()
+        volverAlInicio()
+        tocar("Ajustes")
         esperar("Swete")
         regla.onNodeWithText("Textos y licencias").performScrollTo()
         capturar("ajustes")
