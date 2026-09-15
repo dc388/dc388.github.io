@@ -132,14 +132,27 @@ class CapturasTest {
         regla.onAllNodesWithContentDescription(descripcion).onFirst().performClick()
     }
 
+    /**
+     * Si esta es la biblioteca.
+     *
+     * Se mira el botón de ajustes, que solo está aquí. No vale mirar el texto
+     * «AT hebreo»: la pantalla de búsqueda lo lleva también, como filtro de
+     * colección, y entonces se da por vuelto sin haber vuelto.
+     */
+    private fun enElInicio(): Boolean =
+        regla.onAllNodesWithContentDescription("Ajustes").fetchSemanticsNodes().isNotEmpty()
+
     /** Vuelve atrás hasta la biblioteca, esté donde esté. */
     private fun volverAlInicio() {
-        repeat(3) {
-            if (regla.onAllNodesWithText("AT hebreo").fetchSemanticsNodes().isNotEmpty()) return
+        repeat(4) {
+            if (enElInicio()) return
             tocar("Atrás")
             regla.waitForIdle()
         }
-        esperar("AT hebreo")
+        check(enElInicio()) {
+            "No se pudo volver a la biblioteca. Esto había en pantalla:\n" +
+                regla.onRoot().printToString(maxDepth = 10)
+        }
     }
 
     @Test
