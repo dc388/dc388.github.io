@@ -23,7 +23,7 @@ Nota para retomar sin reconstruir nada de memoria.
 |---|---|---|
 | 1 | **AdMob**: crear la app y el bloque de banner | tuyo, 5 minutos |
 | 2 | Secretos `ADMOB_APP_ID` y `ADMOB_BANNER` en GitHub | depende de 1 |
-| 3 | **Capturas de pantalla** | el flujo las genera, ver abajo |
+| 3 | Capturas de pantalla | **hecho** — `docs/store/capturas/` |
 | 4 | Borrar los idiomas sobrantes de la ficha de Play | tuyo |
 | 5 | Formulario de **Seguridad de los datos** | respuestas en PUBLICAR_EN_PLAY.md |
 | 6 | Perfil de pagos de AdMob | tuyo, y sin él no sirven anuncios |
@@ -32,19 +32,33 @@ Sin los secretos de AdMob, `assembleRelease` **falla a propósito**: una versió
 firmada con los identificadores de prueba se vería idéntica y no ingresaría
 nada.
 
-## Las capturas
+## Las capturas — hechas
 
-El flujo «Capturas — Biblia» las toma en un emulador, de la aplicación de
-verdad, en los tres tamaños que pide Play (teléfono, tablet de 7 y de 10),
-todos en 9:16 exacto.
+Seis por tamaño, en `docs/store/capturas/{telefono,tablet7,tablet10}/`, todas
+en 9:16 exacto: biblioteca, Juan 1 con la Reina-Valera, el interlineal, Génesis
+en hebreo, la búsqueda y los ajustes. Las toma el flujo «Capturas — Biblia» con
+`screencap` sobre la aplicación instalada en un emulador.
 
-Dos intentos fallidos y lo que se aprendió:
+Costó once intentos, y lo que más costó fue no poder ver nada: los artefactos
+de Actions están en un almacenamiento que la sesión no alcanza, y la cola del
+registro se corta antes de llegar al error. Hasta que el informe de fallos no
+se subió a la propia rama, cada arreglo era una suposición. Las lecciones, por
+si hay que volver a tocarlo:
 
-1. El comando de Gradle iba partido con `\`. La acción ejecuta cada línea con
-   su propio `sh -c`, así que la barra llegó como nombre de tarea. Corregido.
-2. El test no podía pulsar «Modo interlineal»: al añadir la tarjeta de la
-   suscripción al principio de Ajustes, esa fila quedó fuera de la pantalla y
-   Compose no deja pulsar lo que no se ve. Corregido con `performScrollTo()`.
+- El informe y las imágenes se dejan en la rama, no solo como artefacto.
+- Las comprobaciones copiadas de `FlujoDeLecturaTest` asumen una pantalla más
+  alta que la 9:16 que exige Play: lo que allí se ve, aquí no se compone.
+- Antes de dar por hecho que un botón existe en una pantalla, hay que mirar el
+  código de `ui/screens/`. El simulador HTML no coincide con la aplicación.
+
+**Mirar la aplicación por primera vez sacó tres defectos que nadie había
+notado**, y ese fue el verdadero resultado del ejercicio:
+
+- Los filtros de la búsqueda no cabían en 411 dp y «NT griego» se partía en
+  vertical, una letra por línea. La fila se desplaza ahora en horizontal.
+- La barra inferior salía lavanda sobre pergamino: el tema no definía los tonos
+  `surfaceContainer` y Material caía a su paleta de fábrica.
+- La captura de la búsqueda salía con el teclado tapando media pantalla.
 
 ## Datos que conviene tener a mano
 
