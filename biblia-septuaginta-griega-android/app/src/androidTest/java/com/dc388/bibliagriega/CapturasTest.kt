@@ -212,14 +212,20 @@ class CapturasTest {
         esperar("Palabra griega o hebrea")
         regla.onNode(hasText("Palabra griega o hebrea", substring = true))
             .performTextInput("λογ")
-        esperar("λόγος")
+        // Se espera al recuento de resultados, no a «λόγος»: esa palabra está
+        // también en el texto de ayuda de debajo del campo, así que la captura
+        // salía con la rueda girando y la lista todavía vacía.
+        esperar("versículos")
         capturar("busqueda")
 
         // 6. Las licencias: de dónde sale cada texto.
         volverAlInicio()
         tocar("Ajustes")
         esperar("Swete")
-        regla.onNodeWithText("Textos y licencias").performScrollTo()
+        // Se baja hasta el último interruptor: así entran enteras las opciones
+        // de lectura con su explicación, que es lo que interesa enseñar. Bajar
+        // hasta las licencias dejaba la primera fila cortada por la mitad.
+        regla.onNodeWithText("Texto corrido").performScrollTo()
         capturar("ajustes")
 
         val listado = dispositivo.executeShellCommand("ls $carpeta").trim()

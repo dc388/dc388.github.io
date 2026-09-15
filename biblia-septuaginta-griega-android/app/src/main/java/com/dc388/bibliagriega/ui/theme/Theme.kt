@@ -35,6 +35,15 @@ private val LightColors = lightColorScheme(
     surfaceVariant = ParchmentDim,
     onSurfaceVariant = Color(0xFF4C4A44),
     outlineVariant = Color(0xFFDED5C4),
+    // Los tonos «container» que Material usa para barras y tarjetas. Sin
+    // definirlos aquí, componentes como la barra inferior caen a la paleta de
+    // fábrica —un lavanda que no pinta nada junto al pergamino— y el resultado
+    // es una franja de otro color al pie de cada capítulo.
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    surfaceContainerLow = Color(0xFFF8F3EA),
+    surfaceContainer = ParchmentDim,
+    surfaceContainerHigh = Color(0xFFEDE4D4),
+    surfaceContainerHighest = Color(0xFFE7DCC9),
 )
 
 private val DarkColors = darkColorScheme(
@@ -53,6 +62,11 @@ private val DarkColors = darkColorScheme(
     surfaceVariant = NightSurface,
     onSurfaceVariant = Color(0xFFB9B4A9),
     outlineVariant = Color(0xFF33343C),
+    surfaceContainerLowest = Color(0xFF0D0E14),
+    surfaceContainerLow = Color(0xFF16171E),
+    surfaceContainer = NightSurface,
+    surfaceContainerHigh = Color(0xFF24252D),
+    surfaceContainerHighest = Color(0xFF2E2F38),
 )
 
 @Composable
