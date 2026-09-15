@@ -153,21 +153,27 @@ jobs:
           retention-days: 30
 
       # Sin esto, un fallo del test solo deja «There were failing tests» y un
-      # enlace a un informe HTML que nadie puede abrir desde aquí. El XML lleva
-      # la aserción exacta y el árbol de la pantalla que imprime el test.
+      # enlace a un informe HTML que no se puede abrir desde aquí. El XML lleva
+      # la aserción exacta. Se busca con find y no con una ruta fija: AGP los
+      # deja bajo una carpeta por variante que cambia de versión en versión.
       - name: Qué falló exactamente
         if: failure()
         run: |
-          for f in app/build/outputs/androidTest-results/connected/*.xml; do
-            [ -f "$f" ] || continue
+          encontrados=$(find app/build/outputs/androidTest-results -name '*.xml' 2>/dev/null)
+          if [ -z "$encontrados" ]; then
+            echo "No hay XML de resultados. Esto hay bajo app/build/outputs:"
+            find app/build/outputs -maxdepth 4 -type d 2>/dev/null | head -40
+            exit 0
+          fi
+          for f in $encontrados; do
             echo "===== $f"
             python3 - "$f" <<'PY'
           import sys, xml.etree.ElementTree as ET
           r = ET.parse(sys.argv[1]).getroot()
           for c in r.iter("testcase"):
               for f in list(c.iter("failure")) + list(c.iter("error")):
-                  print(f"\n--- {c.get('classname')}.{c.get('name')}")
-                  print((f.text or "").strip()[:6000])
+                  print(f"--- {c.get('classname')}.{c.get('name')}")
+                  print((f.text or "").strip()[:4000])
           PY
           done
 
@@ -195,7 +201,6 @@ jobs:
       - name: Recoger las tres tandas
         uses: actions/download-artifact@v4
         with:
-          pattern: biblia-capturas-*
           path: descargadas
 
       - name: Ordenarlas
@@ -209,14 +214,22 @@ jobs:
             mkdir -p "$destino"
             cp "$d"/*.png "$destino"/
           done
-          find "$base" -name '*.png' | sort
+          # Los informes de fallo van también a la rama: ni los artefactos ni
+          # la cola del registro se pueden leer desde donde se diagnostica.
+          for d in descargadas/informe-capturas-*; do
+            [ -d "$d" ] || continue
+            destino="$base/_diagnostico/$(basename "$d" | sed 's/^informe-capturas-//')"
+            mkdir -p "$destino"
+            find "$d" -name '*.xml' -exec cp {} "$destino"/ ';' 2>/dev/null || true
+          done
+          find "$base" -type f | sort
 
       - name: Subirlas a la rama
         run: |
           set -e
           base=biblia-septuaginta-griega-android/docs/store/capturas
-          if [ -z "$(find "$base" -name '*.png' 2>/dev/null)" ]; then
-            echo "::notice::Ninguna tanda produjo capturas; no hay nada que subir."
+          if [ -z "$(find "$base" -type f 2>/dev/null)" ]; then
+            echo "::notice::Nada que subir."
             exit 0
           fi
           git config user.name "github-actions[bot]"
