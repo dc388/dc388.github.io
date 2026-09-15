@@ -1,264 +1,240 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<testsuite name="com.dc388.bibliagriega.CapturasTest" tests="1" failures="1" errors="0" skipped="0" time="190.414" timestamp="2026-09-15T01:01:18" hostname="localhost">
+<testsuite name="com.dc388.bibliagriega.CapturasTest" tests="1" failures="1" errors="0" skipped="0" time="192.435" timestamp="2026-09-15T01:17:32" hostname="localhost">
   <properties>
     <property name="device" value="emulator-5554 - 14" />
     <property name="flavor" value="" />
     <property name="project" value=":app" />
   </properties>
-  <testcase name="capturas_para_la_ficha_de_play" classname="com.dc388.bibliagriega.CapturasTest" time="188.474">
-    <failure>java.lang.AssertionError: No apareció «Ἐν ἀρχῇ» en 180 s. Esto había en pantalla:
+  <testcase name="capturas_para_la_ficha_de_play" classname="com.dc388.bibliagriega.CapturasTest" time="190.739">
+    <failure>java.lang.AssertionError: No apareció «50» en 180 s. Esto había en pantalla:
 Printing with useUnmergedTree = 'false'
 Node #1 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
 |-Node #2 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
 IsTraversalGroup = 'true'
-|-Node #510 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
+|-Node #1441 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
 IsTraversalGroup = 'true'
-|-Node #738 at (l=0.0, t=0.0, r=1080.0, b=1920.0)px
+|-Node #1460 at (l=0.0, t=231.0, r=1080.0, b=1857.0)px
 | IsTraversalGroup = 'true'
 | VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=100.0, reverseScrolling=false)'
-| CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo&#64;a180264'
+| CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo&#64;1007eab'
 | Actions = [ScrollBy, ScrollByOffset, IndexForKey, ScrollToIndex, GetScrollViewportLength]
-|  |-Node #776 at (l=53.0, t=278.0, r=72.0, b=320.0)px
+|  |-Node #1462 at (l=42.0, t=273.0, r=221.0, b=452.0)px
+|  | Focused = 'false'
 |  | Text = '[1]'
-|  | Focused = 'false'
-|  | Actions = [SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus]
-|  | MergeDescendants = 'true'
-|  |-Node #779 at (l=53.0, t=331.0, r=125.0, b=593.0)px
-|  | Focused = 'false'
-|  | Text = '[Ἐν, en, en, G1722]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #784 at (l=151.0, t=331.0, r=262.0, b=593.0)px
+|  |-Node #1467 at (l=247.0, t=273.0, r=426.0, b=452.0)px
 |  | Focused = 'false'
-|  | Text = '[ἀρχῇ, archḗ, principio, G746]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #789 at (l=288.0, t=331.0, r=360.0, b=593.0)px
-|  | Focused = 'false'
-|  | Text = '[ἦν, eimí, ser, G1510]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #794 at (l=386.0, t=331.0, r=458.0, b=593.0)px
-|  | Focused = 'false'
-|  | Text = '[ὁ, ho, el, G3588]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #799 at (l=484.0, t=331.0, r=624.0, b=593.0)px
-|  | Focused = 'false'
-|  | Text = '[λόγος,, lógos, palabra, G3056]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #804 at (l=650.0, t=331.0, r=723.0, b=593.0)px
-|  | Focused = 'false'
-|  | Text = '[καὶ, kaí, y, G2532]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #809 at (l=749.0, t=331.0, r=821.0, b=593.0)px
-|  | Focused = 'false'
-|  | Text = '[ὁ, ho, el, G3588]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #814 at (l=847.0, t=331.0, r=975.0, b=593.0)px
-|  | Focused = 'false'
-|  | Text = '[λόγος, lógos, palabra, G3056]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #819 at (l=53.0, t=609.0, r=125.0, b=871.0)px
-|  | Focused = 'false'
-|  | Text = '[ἦν, eimí, ser, G1510]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #824 at (l=151.0, t=609.0, r=259.0, b=871.0)px
-|  | Focused = 'false'
-|  | Text = '[πρὸς, prós, hacia, G4314]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #829 at (l=285.0, t=609.0, r=362.0, b=871.0)px
-|  | Focused = 'false'
-|  | Text = '[τὸν, ho, el, G3588]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #834 at (l=388.0, t=609.0, r=501.0, b=871.0)px
-|  | Focused = 'false'
-|  | Text = '[θεόν,, theós, Dios, G2316]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #839 at (l=527.0, t=609.0, r=600.0, b=871.0)px
-|  | Focused = 'false'
-|  | Text = '[καὶ, kaí, y, G2532]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #844 at (l=626.0, t=609.0, r=725.0, b=871.0)px
-|  | Focused = 'false'
-|  | Text = '[θεὸς, theós, Dios, G2316]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #849 at (l=751.0, t=609.0, r=823.0, b=871.0)px
-|  | Focused = 'false'
-|  | Text = '[ἦν, eimí, ser, G1510]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #854 at (l=849.0, t=609.0, r=921.0, b=871.0)px
-|  | Focused = 'false'
-|  | Text = '[ὁ, ho, el, G3588]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #859 at (l=53.0, t=887.0, r=193.0, b=1149.0)px
-|  | Focused = 'false'
-|  | Text = '[λόγος., lógos, palabra, G3056]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #865 at (l=53.0, t=1201.0, r=72.0, b=1243.0)px
 |  | Text = '[2]'
-|  | Focused = 'false'
-|  | Actions = [SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus]
-|  | MergeDescendants = 'true'
-|  |-Node #868 at (l=53.0, t=1254.0, r=188.0, b=1516.0)px
-|  | Focused = 'false'
-|  | Text = '[Οὗτος, hoûtos, este, G3778]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #873 at (l=214.0, t=1254.0, r=286.0, b=1516.0)px
+|  |-Node #1472 at (l=452.0, t=273.0, r=630.0, b=451.0)px
 |  | Focused = 'false'
-|  | Text = '[ἦν, eimí, ser, G1510]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #878 at (l=312.0, t=1254.0, r=384.0, b=1516.0)px
-|  | Focused = 'false'
-|  | Text = '[ἐν, en, en, G1722]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #883 at (l=410.0, t=1254.0, r=521.0, b=1516.0)px
-|  | Focused = 'false'
-|  | Text = '[ἀρχῇ, archḗ, principio, G746]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #888 at (l=547.0, t=1254.0, r=655.0, b=1516.0)px
-|  | Focused = 'false'
-|  | Text = '[πρὸς, prós, hacia, G4314]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #893 at (l=681.0, t=1254.0, r=758.0, b=1516.0)px
-|  | Focused = 'false'
-|  | Text = '[τὸν, ho, el, G3588]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #898 at (l=784.0, t=1254.0, r=897.0, b=1516.0)px
-|  | Focused = 'false'
-|  | Text = '[θεόν., theós, Dios, G2316]'
-|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  | MergeDescendants = 'true'
-|  |-Node #904 at (l=53.0, t=1568.0, r=72.0, b=1610.0)px
 |  | Text = '[3]'
-|  | Focused = 'false'
-|  | Actions = [SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus]
-|  | MergeDescendants = 'true'
-|  |-Node #907 at (l=53.0, t=1621.0, r=197.0, b=1883.0)px
-|  | Focused = 'false'
-|  | Text = '[Πάντα, pâs, todo, G3956]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #912 at (l=223.0, t=1621.0, r=295.0, b=1883.0)px
+|  |-Node #1477 at (l=656.0, t=273.0, r=834.0, b=451.0)px
 |  | Focused = 'false'
-|  | Text = '[δι’, diá, por, G1223]'
+|  | Text = '[4]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #917 at (l=321.0, t=1621.0, r=456.0, b=1883.0)px
+|  |-Node #1482 at (l=860.0, t=273.0, r=1038.0, b=451.0)px
 |  | Focused = 'false'
-|  | Text = '[αὐτοῦ, autós, él, G846]'
+|  | Text = '[5]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #922 at (l=482.0, t=1621.0, r=667.0, b=1883.0)px
+|  |-Node #1487 at (l=42.0, t=478.0, r=221.0, b=657.0)px
 |  | Focused = 'false'
-|  | Text = '[ἐγένετο,, gínomai, llegar a ser, G1096]'
+|  | Text = '[6]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #927 at (l=693.0, t=1621.0, r=766.0, b=1883.0)px
+|  |-Node #1492 at (l=247.0, t=478.0, r=426.0, b=657.0)px
 |  | Focused = 'false'
-|  | Text = '[καὶ, kaí, y, G2532]'
+|  | Text = '[7]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #932 at (l=792.0, t=1621.0, r=920.0, b=1883.0)px
+|  |-Node #1497 at (l=452.0, t=478.0, r=630.0, b=656.0)px
 |  | Focused = 'false'
-|  | Text = '[χωρὶς, chōrís, sin, G5565]'
+|  | Text = '[8]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #937 at (l=53.0, t=1899.0, r=188.0, b=2161.0)px
+|  |-Node #1502 at (l=656.0, t=478.0, r=834.0, b=656.0)px
 |  | Focused = 'false'
-|  | Text = '[αὐτοῦ, autós, él, G846]'
+|  | Text = '[9]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #942 at (l=214.0, t=1899.0, r=387.0, b=2161.0)px
+|  |-Node #1507 at (l=860.0, t=478.0, r=1038.0, b=656.0)px
 |  | Focused = 'false'
-|  | Text = '[ἐγένετο, gínomai, llegar a ser, G1096]'
+|  | Text = '[10]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #947 at (l=413.0, t=1899.0, r=518.0, b=2161.0)px
+|  |-Node #1512 at (l=42.0, t=683.0, r=221.0, b=862.0)px
 |  | Focused = 'false'
-|  | Text = '[οὐδὲ, oudé, ni, G3761]'
+|  | Text = '[11]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #952 at (l=544.0, t=1899.0, r=616.0, b=2161.0)px
+|  |-Node #1517 at (l=247.0, t=683.0, r=426.0, b=862.0)px
 |  | Focused = 'false'
-|  | Text = '[ἓν, heîs, uno, G1520]'
+|  | Text = '[12]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #957 at (l=642.0, t=1899.0, r=714.0, b=2161.0)px
+|  |-Node #1522 at (l=452.0, t=683.0, r=630.0, b=861.0)px
 |  | Focused = 'false'
-|  | Text = '[ὃ, hós, que, G3739]'
+|  | Text = '[13]'
 |  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |  | MergeDescendants = 'true'
-|  |-Node #962 at (l=740.0, t=1899.0, r=930.0, b=2161.0)px
+|  |-Node #1527 at (l=656.0, t=683.0, r=834.0, b=861.0)px
+|  | Focused = 'false'
+|  | Text = '[14]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1532 at (l=860.0, t=683.0, r=1038.0, b=861.0)px
+|  | Focused = 'false'
+|  | Text = '[15]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1537 at (l=42.0, t=888.0, r=221.0, b=1067.0)px
+|  | Focused = 'false'
+|  | Text = '[16]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1542 at (l=247.0, t=888.0, r=426.0, b=1067.0)px
+|  | Focused = 'false'
+|  | Text = '[17]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1547 at (l=452.0, t=888.0, r=630.0, b=1066.0)px
+|  | Focused = 'false'
+|  | Text = '[18]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1552 at (l=656.0, t=888.0, r=834.0, b=1066.0)px
+|  | Focused = 'false'
+|  | Text = '[19]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1557 at (l=860.0, t=888.0, r=1038.0, b=1066.0)px
+|  | Focused = 'false'
+|  | Text = '[20]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1562 at (l=42.0, t=1093.0, r=221.0, b=1272.0)px
+|  | Focused = 'false'
+|  | Text = '[21]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1567 at (l=247.0, t=1093.0, r=426.0, b=1272.0)px
+|  | Focused = 'false'
+|  | Text = '[22]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1572 at (l=452.0, t=1093.0, r=630.0, b=1271.0)px
+|  | Focused = 'false'
+|  | Text = '[23]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1577 at (l=656.0, t=1093.0, r=834.0, b=1271.0)px
+|  | Focused = 'false'
+|  | Text = '[24]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1582 at (l=860.0, t=1093.0, r=1038.0, b=1271.0)px
+|  | Focused = 'false'
+|  | Text = '[25]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1587 at (l=42.0, t=1298.0, r=221.0, b=1477.0)px
+|  | Focused = 'false'
+|  | Text = '[26]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1592 at (l=247.0, t=1298.0, r=426.0, b=1477.0)px
+|  | Focused = 'false'
+|  | Text = '[27]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1597 at (l=452.0, t=1298.0, r=630.0, b=1476.0)px
+|  | Focused = 'false'
+|  | Text = '[28]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1602 at (l=656.0, t=1298.0, r=834.0, b=1476.0)px
+|  | Focused = 'false'
+|  | Text = '[29]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1607 at (l=860.0, t=1298.0, r=1038.0, b=1476.0)px
+|  | Focused = 'false'
+|  | Text = '[30]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1612 at (l=42.0, t=1503.0, r=221.0, b=1682.0)px
+|  | Focused = 'false'
+|  | Text = '[31]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1617 at (l=247.0, t=1503.0, r=426.0, b=1682.0)px
+|  | Focused = 'false'
+|  | Text = '[32]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1622 at (l=452.0, t=1503.0, r=630.0, b=1681.0)px
+|  | Focused = 'false'
+|  | Text = '[33]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1627 at (l=656.0, t=1503.0, r=834.0, b=1681.0)px
+|  | Focused = 'false'
+|  | Text = '[34]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1632 at (l=860.0, t=1503.0, r=1038.0, b=1681.0)px
+|  | Focused = 'false'
+|  | Text = '[35]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1637 at (l=42.0, t=1708.0, r=221.0, b=1887.0)px
+|  | Focused = 'false'
+|  | Text = '[36]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1642 at (l=247.0, t=1708.0, r=426.0, b=1887.0)px
+|  | Focused = 'false'
+|  | Text = '[37]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1647 at (l=452.0, t=1708.0, r=630.0, b=1886.0)px
+|  | Focused = 'false'
+|  | Text = '[38]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1652 at (l=656.0, t=1708.0, r=834.0, b=1886.0)px
+|  | Focused = 'false'
+|  | Text = '[39]'
+|  | Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
+|  | MergeDescendants = 'true'
+|  |-Node #1657 at (l=860.0, t=1708.0, r=1038.0, b=1886.0)px
 |    Focused = 'false'
-|    Text = '[γέγονεν., gínomai, llegar a ser, G1096]'
+|    Text = '[40]'
 |    Actions = [OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 |    MergeDescendants = 'true'
-|-Node #513 at (l=0.0, t=0.0, r=1080.0, b=231.0)px
-| IsTraversalGroup = 'true'
-|  |-Node #516 at (l=22.0, t=95.0, r=127.0, b=200.0)px
-|  | Role = 'Button'
-|  | Focused = 'false'
-|  | ContentDescription = '[Atrás]'
-|  | Actions = [OnClick, RequestFocus]
-|  | MergeDescendants = 'true'
-|  |-Node #520 at (l=148.0, t=91.0, r=306.0, b=160.0)px
-|  | Text = '[Juan 1]'
-|  | Actions = [SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  |-Node #521 at (l=148.0, t=160.0, r=358.0, b=202.0)px
-|  | Text = '[Κατὰ Ἰωάννην]'
-|  | Actions = [SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|  |-Node #524 at (l=828.0, t=95.0, r=933.0, b=200.0)px
-|  | Role = 'Button'
-|  | Focused = 'false'
-|  | ContentDescription = '[Tipografía]'
-|  | Actions = [OnClick, RequestFocus]
-|  | MergeDescendants = 'true'
-|  |-Node #526 at (l=954.0, t=95.0, r=1059.0, b=200.0)px
-|    Role = 'Button'
-|    Focused = 'false'
-|    ContentDescription = '[Compartir capítulo]'
-|    Actions = [OnClick, RequestFocus]
-|    MergeDescendants = 'true'
-|-Node #532 at (l=0.0, t=1647.0, r=1080.0, b=1920.0)px
+|-Node #1444 at (l=0.0, t=0.0, r=1080.0, b=231.0)px
 IsTraversalGroup = 'true'
-|-Node #534 at (l=22.0, t=1706.0, r=127.0, b=1811.0)px
+|-Node #1447 at (l=22.0, t=95.0, r=127.0, b=200.0)px
 | Role = 'Button'
-| ContentDescription = '[Capítulo anterior]'
-| [Disabled]
-| Actions = [OnClick]
+| Focused = 'false'
+| ContentDescription = '[Atrás]'
+| Actions = [OnClick, RequestFocus]
 | MergeDescendants = 'true'
-|-Node #536 at (l=137.0, t=1736.0, r=943.0, b=1779.0)px
-| Text = '[Capítulo 1 de 21]'
+|-Node #1451 at (l=148.0, t=91.0, r=336.0, b=160.0)px
+| Text = '[Génesis]'
 | Actions = [SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
-|-Node #537 at (l=954.0, t=1706.0, r=1059.0, b=1811.0)px
-Role = 'Button'
-Focused = 'false'
-ContentDescription = '[Capítulo siguiente]'
-Actions = [OnClick, RequestFocus]
-MergeDescendants = 'true'
+|-Node #1452 at (l=148.0, t=160.0, r=263.0, b=202.0)px
+Text = '[בְּרֵאשִׁית]'
+Actions = [SetTextSubstitution, ShowTextSubstitution, ClearTextSubstitution, GetTextLayoutResult]
 at com.dc388.bibliagriega.CapturasTest.esperar(CapturasTest.kt:82)
 at com.dc388.bibliagriega.CapturasTest.esperar$default(CapturasTest.kt:75)
-at com.dc388.bibliagriega.CapturasTest.capturas_para_la_ficha_de_play(CapturasTest.kt:118)
+at com.dc388.bibliagriega.CapturasTest.capturas_para_la_ficha_de_play(CapturasTest.kt:132)
 ... 53 trimmed
 Caused by: androidx.compose.ui.test.ComposeTimeoutException: Condition still not satisfied after 180000 ms
 at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$AndroidComposeUiTestImpl.waitUntil(ComposeUiTest.android.kt:441)
