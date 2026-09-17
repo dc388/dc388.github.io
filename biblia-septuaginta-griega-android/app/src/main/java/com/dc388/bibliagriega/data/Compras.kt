@@ -13,7 +13,6 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.acknowledgePurchase
-import com.android.billingclient.api.queryProductDetails
 import com.android.billingclient.api.queryPurchasesAsync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +21,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 /**
  * La suscripción que quita los anuncios.
@@ -137,8 +138,15 @@ class Compras private constructor(context: Context) {
                 ),
             )
             .build()
-        val resultado = cliente.queryProductDetails(consulta)
-        detalles = resultado.productDetailsList?.firstOrNull()
+        // Desde la versión 8 de la biblioteca, la respuesta separa los productos
+        // que sí llegaron de los que no, así que se pide por el listener y se
+        // devuelve solo la primera lista.
+        val encontrados = suspendCancellableCoroutine { continuacion ->
+            cliente.queryProductDetailsAsync(consulta) { _, respuesta ->
+                if (continuacion.isActive) continuacion.resume(respuesta.productDetailsList)
+            }
+        }
+        detalles = encontrados.firstOrNull()
         _precio.value = detalles
             ?.subscriptionOfferDetails
             ?.firstOrNull()
