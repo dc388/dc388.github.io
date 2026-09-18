@@ -134,6 +134,25 @@ jobs:
           working-directory: biblia-septuaginta-griega-android
           script: ./gradlew connectedDebugAndroidTest --stacktrace
 
+      # El informe se sube como artefacto, pero los artefactos viven en un
+      # almacenamiento que no siempre se alcanza desde fuera del runner. Cuando
+      # algo falla, lo que hace falta es el volcado del árbol de la pantalla que
+      # la prueba imprime al rendirse, así que se escribe también en el registro:
+      # ahí se lee siempre, sin descargar nada.
+      - name: Contar qué falló
+        if: failure()
+        run: |
+          for x in $(find app/build/outputs/androidTest-results -name '*.xml' 2>/dev/null); do
+            echo "===== $x"
+            python3 - "$x" <<'FIN'
+          import sys, xml.etree.ElementTree as ET
+          for caso in ET.parse(sys.argv[1]).getroot().iter("testcase"):
+              for fallo in list(caso.iter("failure")) + list(caso.iter("error")):
+                  print(f"--- {caso.get('classname')}.{caso.get('name')}")
+                  print("\n".join((fallo.text or "").splitlines()[:160]))
+          FIN
+          done
+
       - name: Publicar el informe
         if: always()
         uses: actions/upload-artifact@v4
