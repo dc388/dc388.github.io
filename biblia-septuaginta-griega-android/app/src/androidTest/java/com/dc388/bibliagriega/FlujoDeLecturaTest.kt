@@ -80,7 +80,13 @@ class FlujoDeLecturaTest {
         regla.onAllNodesWithText("1").onFirst().performClick()
 
         // Juan 1:1. Si el texto griego no está, la base no se copió bien.
-        esperar("Ἐν ἀρχῇ")
+        //
+        // Se busca un trozo de palabra y no la frase entera porque el modo
+        // interlineal parte el versículo: cada palabra pasa a ser su propio
+        // nodo y «Ἐν ἀρχῇ» deja de existir seguido. «ἀρχ» aparece en los dos
+        // modos, así que la prueba comprueba lo que quiere comprobar —que el
+        // griego de la base llega a la pantalla— sin depender de un ajuste.
+        esperar("ἀρχ", substring = true)
     }
 
     @Test

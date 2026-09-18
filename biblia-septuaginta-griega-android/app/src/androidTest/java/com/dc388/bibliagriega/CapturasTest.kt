@@ -234,6 +234,14 @@ class CapturasTest {
         regla.onNodeWithText("Texto corrido").performScrollTo()
         capturar("ajustes")
 
+        // El modo interlineal se encendió para la captura 3, y la preferencia
+        // se guarda en el teléfono: sobrevive a esta prueba y a la aplicación.
+        // Dejarlo encendido cambia lo que ven las demás pruebas —en interlineal
+        // el versículo deja de ser una frase y cada palabra es su propio nodo—,
+        // así que fallan por algo que no es suyo. Se apaga antes de salir.
+        regla.onNodeWithText("Modo interlineal").performScrollTo().performClick()
+        regla.waitForIdle()
+
         val listado = dispositivo.executeShellCommand("ls $carpeta").trim()
         val hechas = listado.lines().count { it.isNotBlank() }
         check(hechas >= 2) { "Play pide 2 capturas como mínimo y solo salieron $hechas: $listado" }
