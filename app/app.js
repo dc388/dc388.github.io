@@ -127,11 +127,14 @@ async function leerIdentidad() {
 
 /** Identidad nueva de cero: id y llave, siempre los dos, siempre juntos. */
 async function nuevaIdentidad() {
-  // `true` (extractable) aplica a la PRIVADA en algunos navegadores y a ninguna
-  // en otros; lo que importa es poder exportar la PUBLICA para registrarla. La
-  // privada nunca sale de aqui: no hay una sola linea que la exporte.
+  // `false` = la PRIVADA no se puede exportar ni con acceso al codigo de la
+  // pagina. La PUBLICA si: en WebCrypto el flag solo aplica a la privada, la
+  // publica de un par siempre es exportable. Por eso el registro funciona sin
+  // hacer exportable la privada, y el codigo viejo que regeneraba el par
+  // "porque algunos navegadores exigen extractable" estaba resolviendo un
+  // problema que no existe —y de paso cambiaba la llave sin avisarle a nadie—.
   const pair = await crypto.subtle.generateKey(
-    { name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+    { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign', 'verify']);
   const ident = { id: uuid(), pair, creadaEn: Date.now() };
   await idbSet(IDENT_KEY, ident);
   // Se sigue escribiendo el id en localStorage por compatibilidad con una
@@ -1177,6 +1180,18 @@ async function punch(type) {
     const blob = await captureSelfie(PUNCH_LABEL[type],
       rostroFallado || (POL && POL.offsite_requires_photo));
     if (blob) { busy(true, 'Subiendo foto…'); auditPhotoPath = await uploadSelfie(blob, opId); }
+  }
+
+  // La ruta alterna existe para que nadie se quede sin registro, no para
+  // saltarse el rostro. Lo que la sostiene es la foto: sin ella quedaria una
+  // checada valida, de alguien con rostro enrolado, sin una sola evidencia de
+  // quien la hizo. Si la foto no se pudo tomar, se pide reintentar el rostro
+  // —que es justo lo que ya hacia falta—, no se deja pasar a medias.
+  if (rostroFallado && !auditPhotoPath) {
+    busy(false);
+    return showResult('warn', 'Falta la foto',
+      'Para checar sin reconocer tu rostro hace falta la foto. Vuelve a ' +
+      'intentarlo: acércate, con buena luz, y si te pide la foto, tómala.');
   }
 
   busy(true, 'Registrando checada…');
