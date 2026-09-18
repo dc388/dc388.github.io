@@ -61,6 +61,7 @@ from hebrew import (  # noqa: E402
 )
 
 import padres
+import pseudoepigrafos
 
 REPOS = {
     "lxx-swete": "https://github.com/nathans/lxx-swete.git",
@@ -329,6 +330,7 @@ def ensure_sources(sources: Path) -> None:
 
     # First1KGreek pesa demasiado para clonarlo entero por quince archivos.
     padres.descargar(sources / "padres")
+    pseudoepigrafos.descargar(sources / "pseudoepigrafos")
 
 
 def read_swete(path: Path) -> list[tuple[int, int, str, str]]:
@@ -698,7 +700,7 @@ def insert_nt_forms(con: sqlite3.Connection) -> tuple[int, dict[str, float]]:
     con.commit()
 
     cobertura: dict[str, float] = {}
-    for coleccion in ("lxx", "padres"):
+    for coleccion in ("lxx", "padres", "pseudo"):
         total = cubiertas = 0
         for (texto,) in con.execute(
             "SELECT v.text FROM verses v JOIN books b ON b.id = v.book_id"
@@ -935,6 +937,17 @@ def build(sources: Path, out: Path) -> None:
                 0,
                 4,
             ),
+            (
+                "pseudo",
+                "Pseudoepígrafos",
+                "Pseudoepígrafos",
+                "Johannes Flemming, Das Buch Henoch (GCS, Leipzig 1901)",
+                "CC BY-SA 4.0 — First1KGreek",
+                "https://github.com/OpenGreekAndLatin/First1KGreek",
+                "grc",
+                0,
+                5,
+            ),
         ],
     )
 
@@ -1014,6 +1027,21 @@ def build(sources: Path, out: Path) -> None:
         total += len(verses)
         print(f"  {name_es:32s} {len(verses):5d} versículos")
 
+    print("Pseudoepígrafos:")
+    pseudo_dir = sources / "pseudoepigrafos"
+    for order, (code, name_es, name_orig, alt, archivo, parte) in enumerate(
+        pseudoepigrafos.PSEUDOEPIGRAFOS, 1
+    ):
+        ruta = pseudo_dir / archivo
+        if not ruta.exists():
+            print(f"  AVISO: falta {ruta}")
+            continue
+        verses = pseudoepigrafos.leer(ruta, parte)
+        nota = pseudoepigrafos.NOTAS.get(code)
+        insert_book(con, "pseudo", code, name_es, name_orig, alt, nota, order, verses)
+        total += len(verses)
+        print(f"  {name_es:32s} {len(verses):5d} versículos")
+
     print("Léxico y morfología:")
     lex = insert_lexicon(con, sources)
     hebrew_articles, greek_articles = insert_articles(con, sources)
@@ -1089,7 +1117,11 @@ def build(sources: Path, out: Path) -> None:
 
     formas, cobertura = insert_nt_forms(con)
     print(f"  formas del NT          {formas:6d} para el griego sin analizar")
-    for coleccion, nombre in (("lxx", "Septuaginta"), ("padres", "Padres Apostólicos")):
+    for coleccion, nombre in (
+        ("lxx", "Septuaginta"),
+        ("padres", "Padres Apostólicos"),
+        ("pseudo", "Pseudoepígrafos"),
+    ):
         if coleccion in cobertura:
             print(f"    {nombre:30s} {cobertura[coleccion]} % de sus palabras")
 

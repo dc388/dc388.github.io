@@ -74,7 +74,7 @@ import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
  * está etiquetado. El hebreo queda fuera: su forma no se busca en un índice
  * griego.
  */
-private val GRIEGO_SIN_ANALIZAR = setOf("lxx", "padres")
+private val GRIEGO_SIN_ANALIZAR = setOf("lxx", "padres", "pseudo")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -11,7 +11,8 @@ y qué falta.
 | Antiguo Testamento hebreo | Códice de Leningrado (OSHB) | CC BY 4.0 |
 | Septuaginta | H. B. Swete, Cambridge 1887–1912 | CC BY-SA 4.0 |
 | Nuevo Testamento griego | Robinson–Pierpont 2018 | Dominio público |
-| **Padres Apostólicos** | **Kirsopp Lake, Loeb 1912–1917** | **CC BY-SA 4.0** |
+| Padres Apostólicos | Kirsopp Lake, Loeb 1912–1917 | CC BY-SA 4.0 |
+| **Pseudoepígrafos** | **Johannes Flemming, GCS 1901** | **CC BY-SA 4.0** |
 
 Los Padres Apostólicos son 15 obras y 1 941 versículos: 1 y 2 Clemente, las
 siete cartas auténticas de Ignacio, Policarpo a los Filipenses, el Martirio de
@@ -40,16 +41,42 @@ La cita sale sola: la pantalla de ajustes recorre las colecciones de la base y
 enseña edición, licencia y dirección de cada una, así que basta con que la fila
 de `collections` esté bien puesta.
 
+## Pseudoepígrafos
+
+De momento, el Libro de Enoc. Es el que más se busca: lo cita Judas 14-15, lo
+leyeron en Qumrán y forma parte del canon de la Iglesia etíope, pero no del
+hebreo ni del de ninguna iglesia occidental.
+
+Va **solo el griego que sobrevive**: los capítulos 1 a 32 del Códice
+Panopolitano, encontrado en Ajmim en 1886, que son el Libro de los Vigilantes
+—justamente la sección que cita Judas—. El resto del libro únicamente se
+conserva completo en etíope, y eso queda fuera: no hay edición redistribuible
+y la aplicación no sabe presentar esa escritura. El libro lo dice en su nota,
+para que nadie crea que tiene el Enoc entero.
+
+## Dos textos que se descartaron, y por qué
+
+Conviene dejarlo escrito para no volver a intentarlo.
+
+**Oráculos Sibilinos** (Geffcken, 1902). Están en la misma fuente y en dominio
+público, pero la transcripción no conserva la numeración de versos: los libros
+vienen como bloques de párrafo sin `n`, y la mitad ni siquiera marca las líneas.
+Nadie cita «Oráculos Sibilinos, libro 3, párrafo 2»; se cita por verso. Un texto
+que no se puede referenciar no sirve para estudiar, así que se queda fuera hasta
+que aparezca una edición numerada.
+
+**Testamentos de los Doce Patriarcas.** No están en First1KGreek ni en Perseus.
+Habría que sacarlos de otra digitalización, que es un trabajo distinto.
+
 ## Lo que falta, por orden de dificultad
 
 **Josefo y Filón.** Griego, ediciones de Niese y de Cohn-Wendland, en dominio
 público y ya en Perseus. Es el paso más rentable: mucho texto, cero problemas de
 derechos y el mismo puente de formas los cubre.
 
-**Pseudoepígrafos del Antiguo Testamento.** Enoc, Jubileos, los Testamentos de
-los Doce Patriarcas, 4 Esdras, 2 Baruc, los Oráculos Sibilinos, la Vida de Adán
-y Eva. El griego y el etiópico están disponibles; la traducción inglesa de
-Charles (1913) también.
+**Más pseudoepígrafos.** Jubileos, 4 Esdras, 2 Baruc, la Vida de Adán y Eva.
+Ninguno está en las fuentes TEI que ya se usan, así que cada uno pide buscar su
+digitalización aparte.
 
 **Apócrifos del Nuevo Testamento.** Tomás (copto y los fragmentos griegos de
 Oxirrinco), el Protoevangelio de Santiago, el Evangelio de Pedro, los Hechos de
