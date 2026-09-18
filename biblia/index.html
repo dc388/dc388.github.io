@@ -12,6 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600&family=Noto+Serif+Hebrew:wght@400;600&display=swap" rel="stylesheet">
+<!-- AdSense. El identificador de editor es el mismo que el de AdMob: las dos
+     cuentas comparten el «pub-», así que no hace falta abrir nada nuevo. Hasta
+     que Google apruebe el sitio esto no pinta nada; dejarlo puesto es lo que
+     permite verificar la propiedad cuando se dé de alta. -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9626426230545339" crossorigin="anonymous"></script>
 <style>
 :root{
   --papel:#f5efe2; --papel-alto:#ede4d4; --tinta:#2b2620; --tinta-suave:#6b6255;
@@ -80,6 +85,12 @@ h2:first-child{margin-top:4px}
 .anuncio{margin:28px auto 0; min-height:90px; text-align:center}
 .cargando{color:var(--tinta-suave); padding:24px 0}
 a.volver{text-decoration:none; color:var(--realce); font-size:.9375rem}
+footer{
+  max-width:44rem; margin:0 auto; padding:24px 16px calc(32px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--borde); color:var(--tinta-suave); font-size:.8125rem; line-height:1.6;
+}
+footer p{margin:0 0 6px}
+footer a{color:var(--realce)}
 </style>
 </head>
 <body>
@@ -94,6 +105,17 @@ a.volver{text-decoration:none; color:var(--realce); font-size:.9375rem}
 </header>
 
 <main id="vista"><p class="cargando">Cargando la biblioteca…</p></main>
+
+<footer>
+  <p>
+    Textos en dominio público o con licencia libre; cada colección dice su
+    edición y su licencia en la biblioteca.
+  </p>
+  <p>
+    <a href="../biblia-privacidad.html">Política de privacidad</a> ·
+    <a href="https://play.google.com/store/apps/details?id=com.dc388.bibliagriega">La aplicación para Android</a>
+  </p>
+</footer>
 
 <script>
 const vista = document.getElementById('vista');
