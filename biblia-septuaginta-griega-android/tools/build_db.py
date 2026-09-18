@@ -60,6 +60,8 @@ from hebrew import (  # noqa: E402
     wlc_path,
 )
 
+import padres
+
 REPOS = {
     "lxx-swete": "https://github.com/nathans/lxx-swete.git",
     "byz": "https://github.com/byztxt/byzantine-majority-text.git",
@@ -324,6 +326,9 @@ def ensure_sources(sources: Path) -> None:
             ["git", "clone", "--depth", "1", "--quiet", url, str(target)],
             check=True,
         )
+
+    # First1KGreek pesa demasiado para clonarlo entero por quince archivos.
+    padres.descargar(sources / "padres")
 
 
 def read_swete(path: Path) -> list[tuple[int, int, str, str]]:
@@ -659,10 +664,11 @@ def insert_translation(con: sqlite3.Connection, sources: Path) -> tuple[int, flo
     return len(filas), round(con_traduccion * 100 / total, 1) if total else 0.0
 
 
-def insert_nt_forms(con: sqlite3.Connection) -> tuple[int, int]:
-    """Índice de formas del Nuevo Testamento, para consultar la Septuaginta.
+def insert_nt_forms(con: sqlite3.Connection) -> tuple[int, dict[str, float]]:
+    """Índice de formas del Nuevo Testamento, para el griego sin analizar.
 
-    Devuelve (formas distintas, porcentaje de la Septuaginta que cubren).
+    Sirve para la Septuaginta y para los Padres Apostólicos, que tampoco vienen
+    etiquetados. Devuelve (formas distintas, porcentaje cubierto por colección).
     """
     cuenta: dict[tuple[str, str, str], int] = {}
     for surface, strong, morph in con.execute(
@@ -691,19 +697,24 @@ def insert_nt_forms(con: sqlite3.Connection) -> tuple[int, int]:
     )
     con.commit()
 
-    total = cubiertas = 0
-    for (texto,) in con.execute(
-        "SELECT v.text FROM verses v JOIN books b ON b.id = v.book_id"
-        " WHERE b.collection_id = 'lxx'"
-    ):
-        for palabra in texto.split():
-            form = normalize(palabra)
-            if not form:
-                continue
-            total += 1
-            if form in por_forma:
-                cubiertas += 1
-    return len(por_forma), round(cubiertas * 100 / total, 1) if total else 0
+    cobertura: dict[str, float] = {}
+    for coleccion in ("lxx", "padres"):
+        total = cubiertas = 0
+        for (texto,) in con.execute(
+            "SELECT v.text FROM verses v JOIN books b ON b.id = v.book_id"
+            " WHERE b.collection_id = ?",
+            (coleccion,),
+        ):
+            for palabra in texto.split():
+                form = normalize(palabra)
+                if not form:
+                    continue
+                total += 1
+                if form in por_forma:
+                    cubiertas += 1
+        if total:
+            cobertura[coleccion] = round(cubiertas * 100 / total, 1)
+    return len(por_forma), cobertura
 
 
 def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
@@ -913,6 +924,17 @@ def build(sources: Path, out: Path) -> None:
                 0,
                 3,
             ),
+            (
+                "padres",
+                "Padres Apostólicos",
+                "Padres",
+                "Kirsopp Lake, The Apostolic Fathers (Loeb, 1912–1917)",
+                "CC BY-SA 4.0 — First1KGreek",
+                "https://github.com/OpenGreekAndLatin/First1KGreek",
+                "grc",
+                0,
+                4,
+            ),
         ],
     )
 
@@ -978,6 +1000,19 @@ def build(sources: Path, out: Path) -> None:
             total_unaligned += unaligned
         aviso = f"  ({unaligned} sin alinear)" if unaligned else ""
         print(f"  {name_es:32s} {len(verses):5d} versículos  {words:6d} palabras{aviso}")
+
+    print("Padres Apostólicos (Lake):")
+    padres_dir = sources / "padres"
+    for order, (code, name_es, name_orig, alt, archivo, parte) in enumerate(padres.PADRES, 1):
+        ruta = padres_dir / archivo
+        if not ruta.exists():
+            print(f"  AVISO: falta {ruta}")
+            continue
+        verses = padres.leer(ruta, parte)
+        nota = padres.NOTA_HERMAS if code == "HERM" else None
+        insert_book(con, "padres", code, name_es, name_orig, alt, nota, order, verses)
+        total += len(verses)
+        print(f"  {name_es:32s} {len(verses):5d} versículos")
 
     print("Léxico y morfología:")
     lex = insert_lexicon(con, sources)
@@ -1053,10 +1088,10 @@ def build(sources: Path, out: Path) -> None:
     )
 
     formas, cobertura = insert_nt_forms(con)
-    print(
-        f"  formas del NT          {formas:6d} para consultar la Septuaginta"
-        f"  ({cobertura} % de sus palabras)"
-    )
+    print(f"  formas del NT          {formas:6d} para el griego sin analizar")
+    for coleccion, nombre in (("lxx", "Septuaginta"), ("padres", "Padres Apostólicos")):
+        if coleccion in cobertura:
+            print(f"    {nombre:30s} {cobertura[coleccion]} % de sus palabras")
 
     print("Glosario español de la definición breve:")
     cargar_glosario(con)

@@ -66,6 +66,16 @@ import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
+/**
+ * Colecciones griegas que no traen interlineal.
+ *
+ * Sus palabras no llevan número Strong ni análisis propio, así que al tocarlas
+ * se consulta lo que esa misma forma significa en el Nuevo Testamento, que sí
+ * está etiquetado. El hebreo queda fuera: su forma no se busca en un índice
+ * griego.
+ */
+private val GRIEGO_SIN_ANALIZAR = setOf("lxx", "padres")
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReaderScreen(
@@ -302,9 +312,10 @@ fun ReaderScreen(
                         },
                         modifier = Modifier.padding(top = 8.dp, bottom = 12.dp),
                     )
-                } else if (book?.collectionId == "lxx") {
-                    // La Septuaginta no viene analizada, pero se puede consultar
-                    // cada palabra por su forma en el Nuevo Testamento.
+                } else if ((book?.collectionId ?: "") in GRIEGO_SIN_ANALIZAR) {
+                    // Ni la Septuaginta ni los Padres Apostólicos vienen
+                    // analizados, pero se puede consultar cada palabra por su
+                    // forma en el Nuevo Testamento.
                     Text(
                         text = "Toca una palabra para consultarla",
                         style = MaterialTheme.typography.labelMedium,
