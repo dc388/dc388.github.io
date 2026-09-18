@@ -16,7 +16,18 @@
 const SUPABASE_URL = 'https://lsduggmuwbvrudpfcgtm.supabase.co';
 const ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzZHVnZ211d2J2cnVkcGZjZ3RtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3NTc2NTIsImV4cCI6MjEwMzMzMzY1Mn0.lyRwNkwnzvwN6EN1j35VFlzgBeii8AWicNZaB1MfxGw';
+// Version del AVISO de control de asistencia. Solo se sube cuando cambia el
+// texto del aviso: si se moviera en cada build, el banner le volveria a salir a
+// todo el mundo en cada deploy.
 const APP_VERSION = 'pwa-0.1.0';
+
+// Build que se REPORTA al servidor en cada checada y en el enrolamiento.
+// Antes se mandaba APP_VERSION, que nunca se movio: en la base TODAS las
+// checadas de la web decian "pwa-0.1.0" aunque el codigo hubiera pasado por
+// ?b=22 hasta ?b=34. Asi no habia forma de saber que build traia cada telefono
+// —justo lo que hacia falta para saber quien ya tenia un arreglo y quien no—.
+// Debe subirse JUNTO con el ?b= de index.html y la version de CACHE en sw.js.
+const BUILD = 'pwa-b34';
 
 // ---------- utilidades ----------
 const $ = (id) => document.getElementById(id);
@@ -125,6 +136,20 @@ async function leerIdentidad() {
   return null;
 }
 
+/**
+ * Deja constancia en la identidad de que ESTE telefono si quedo dado de alta.
+ *
+ * Sin esto no habia forma de distinguir "tengo llave porque me registre" de
+ * "tengo llave porque la app la crea al abrir". Un telefono recien instalado
+ * pedia reanudar en cada apertura un alta que nunca existio.
+ */
+async function marcarAlta() {
+  try {
+    const ident = await idbGet(IDENT_KEY);
+    if (ident && !ident.altaEn) await idbSet(IDENT_KEY, { ...ident, altaEn: Date.now() });
+  } catch (e) { /* si IndexedDB falla, se reanuda igual: no vale romper por esto */ }
+}
+
 /** Identidad nueva de cero: id y llave, siempre los dos, siempre juntos. */
 async function nuevaIdentidad() {
   // `false` = la PRIVADA no se puede exportar ni con acceso al codigo de la
@@ -151,7 +176,7 @@ let IDENT_NUEVA = false;
 
 async function ensureDevice() {
   let ident = await leerIdentidad();
-  if (!ident) { ident = await nuevaIdentidad(); IDENT_NUEVA = true; }
+  if (!ident) { IDENT_NUEVA = true; ident = await nuevaIdentidad(); }
   const spki = bufToB64(await crypto.subtle.exportKey('spki', ident.pair.publicKey));
   return { id: ident.id, pair: ident.pair, spki };
 }
@@ -216,6 +241,17 @@ const MARGEN_SESION_SEG = 600;
 async function reanudarSesion() {
   const ident = await leerIdentidad();
   if (!ident) return false;
+
+  // Telefono que nunca se dio de alta: no hay nada que reanudar.
+  //
+  // La llave sola no prueba nada —la app la crea al abrir, antes de que nadie
+  // teclee un codigo—. Se reanuda solo si hubo alta de verdad (altaEn) o si la
+  // identidad viene migrada del formato viejo, que por definicion ya estaba
+  // registrada. Sin este filtro, un telefono recien instalado llamaba a
+  // resume_device en cada apertura y, peor, si el servidor llegaba a contestar
+  // que si, entraba sin haberse registrado nunca.
+  if (IDENT_NUEVA) return false;
+  if (!ident.altaEn && !ident.migradaEn) return false;
   try {
     const r1 = await api('/functions/v1/resume_device',
       { body: { device_id: ident.id }, timeoutMs: 10000 });
@@ -231,15 +267,22 @@ async function reanudarSesion() {
 
     const r2 = await api('/functions/v1/resume_device', { timeoutMs: 12000, body: {
       device_id: ident.id, challenge: reto, signature: firma,
-      public_key: spki || undefined, app_version: APP_VERSION,
+      public_key: spki || undefined, app_version: BUILD,
     }});
     if (!r2.ok || !r2.data || !r2.data.access_token) return false;
+
+    // Carrera real: la reanudacion tarda hasta 12 s y en ese rato el trabajador
+    // pudo entrar con su codigo. Si ya hay sesion, la del codigo manda y esta se
+    // tira. Guardarla encima lo sacaria de su pantalla sin razon.
+    if (REGISTRANDO_CON_CODIGO || store.get('session')) return false;
+
     const d = r2.data;
     store.set('session', {
       access_token: d.access_token, refresh_token: d.refresh_token,
       expires_at: Math.floor(Date.now() / 1000) + (d.expires_in || 3600),
       employee: d.employee,
     });
+    await marcarAlta();
     return true;
   } catch (e) { return false; }
 }
@@ -292,10 +335,21 @@ async function enroll(code) {
     const cap = deviceCapabilities();
     const r = await api('/functions/v1/enroll_device', { body: {
       code, device_id: dev.id, public_key: dev.spki,
-      device_model: cap.browser + ' / ' + cap.os, os_version: cap.os, app_version: APP_VERSION,
+      device_model: cap.browser + ' / ' + cap.os, os_version: cap.os, app_version: BUILD,
     }});
     if (!r.ok || !r.data || !r.data.access_token) {
-      return { ok: false, msg: (r.data && r.data.error) || 'Código inválido o vencido. Pide otro a RH.' };
+      // Se devuelve TODO lo que dijo el servidor, no solo un texto. Con el
+      // status y el error crudo, explicarFalloRegistro() puede decirle al
+      // trabajador que hacer, y referenciaDeFallo() le da a Administracion el
+      // dato exacto para buscarlo en la base. "Código inválido" a secas fue lo
+      // que nos tuvo semanas sin saber por que no entraba la gente.
+      return {
+        ok: false,
+        status: r.status || 0,
+        error: (r.data && (r.data.error || r.data.message)) || '',
+        msg: (r.data && r.data.error) || 'Código inválido o vencido. Pide otro a RH.',
+        deviceId: dev.id,
+      };
     }
     const d = r.data;
     store.set('session', {
@@ -303,9 +357,70 @@ async function enroll(code) {
       expires_at: Math.floor(Date.now() / 1000) + (d.expires_in || 3600),
       employee: d.employee,
     });
+    await marcarAlta();
     return { ok: true };
-  } catch (e) { return { ok: false, msg: 'No se pudo registrar: ' + (e.message || e) }; }
+  } catch (e) {
+    return { ok: false, status: 0, error: String((e && e.message) || e),
+             msg: 'No se pudo registrar: ' + ((e && e.message) || e) };
+  }
   finally { busy(false); }
+}
+
+/**
+ * Traduce el rechazo del servidor a algo que el trabajador pueda ACTUAR.
+ *
+ * Regla que no se rompe: si no reconocemos el error, NO se adivina. Se dice que
+ * avise a Administracion y se le da la referencia. Inventar una causa manda a la
+ * persona a perder el tiempo en lo que no es —paso con "código inválido", que
+ * hizo que RH quemara codigos nuevos cuando el problema era otro—.
+ */
+function explicarFalloRegistro(r) {
+  const e = String((r && r.error) || '').toLowerCase();
+  const st = (r && r.status) || 0;
+
+  if (st === 0) {
+    return 'No hubo internet para registrarte. Conéctate al WiFi o prende tus datos ' +
+           'y vuelve a tocar Entrar. Tu código no se gastó.';
+  }
+  if (st === 409 || e.includes('conflict') || e.includes('already enrolled')) {
+    return 'Ya tienes un teléfono registrado a tu nombre. Avísale a Administración ' +
+           'cuál es el teléfono que vas a usar de hoy en adelante para que liberen el otro.';
+  }
+  if (st === 403 || e.includes('inactive') || e.includes('inactiv') || e.includes('baja')) {
+    return 'Tu cuenta no está activa en el sistema de asistencia. Avísale a Recursos ' +
+           'Humanos con la referencia de abajo: no es tu teléfono.';
+  }
+  if (st === 429 || e.includes('too many') || e.includes('rate limit')) {
+    return 'Se intentó demasiadas veces seguidas. Espera unos minutos y vuelve a tocar ' +
+           'Entrar. Tu código no se gastó.';
+  }
+  if (st >= 500 || e.includes('upstream') || e.includes('timeout')) {
+    return 'El servidor de asistencia no está respondiendo. No es tu teléfono. Espera ' +
+           'unos minutos y vuelve a tocar Entrar: tu código no se gastó.';
+  }
+  if (e.includes('expired') || e.includes('vencid')) {
+    return 'Ese código ya venció. Pídele uno nuevo a Recursos Humanos.';
+  }
+  if (e.includes('used') || e.includes('usado')) {
+    return 'Ese código ya se usó en otro teléfono. Pídele uno nuevo a Recursos Humanos ' +
+           'y avísale que este es el teléfono que vas a usar.';
+  }
+  if (st === 404 || e.includes('not found') || e.includes('no existe')) {
+    return 'Ese código no es válido. Revisa que sean los 6 dígitos correctos, sin espacios.';
+  }
+  return 'No se pudo registrar con ese código. Revisa que sean los 6 dígitos correctos; ' +
+         'si están bien, avísale a Administración con la referencia de abajo.';
+}
+
+/** Linea corta que el trabajador le puede leer o mandar a Administracion. */
+function referenciaDeFallo(r) {
+  if (!r) return '';
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  const dev = String((r && r.deviceId) || '');
+  const cola = dev ? ' · ' + dev.slice(-4) : '';
+  return 'Ref. ' + hh + ':' + mm + ' · ' + ((r && r.status) || 'sin red') + cola;
 }
 
 // ---------- acuerdo laboral + aviso de privacidad ----------
@@ -363,7 +478,7 @@ async function decideBiometric(decision) {
     const r = await api('/rest/v1/rpc/accept_biometric', { auth: token, body: {
       p_biometric_agreement_id: AC.biometric.id, p_decision: decision,
       p_device_id: dev.id, p_platform: cap.os + '-' + (cap.pwaInstalled ? 'PWA' : 'web'),
-      p_app_version: APP_VERSION, p_auth_method: 'code',
+      p_app_version: BUILD, p_auth_method: 'code',
       p_consent_flags: decision === 'granted' ? flags : { decision: 'declined' },
     }});
     if (!r.ok) {
@@ -422,7 +537,7 @@ async function acceptAgreement() {
     const r = await api('/rest/v1/rpc/accept_agreement', { auth: token, body: {
       p_labor_agreement_id: AC.labor.id, p_privacy_notice_id: AC.privacy.id,
       p_device_id: dev.id, p_platform: cap.os + '-' + (cap.pwaInstalled ? 'PWA' : 'web'),
-      p_app_version: APP_VERSION, p_auth_method: 'code', p_consent_flags: flags,
+      p_app_version: BUILD, p_auth_method: 'code', p_consent_flags: flags,
     }});
     if (!r.ok) { $('ac-msg').className = 'msg err'; $('ac-msg').textContent = (r.data && r.data.message) || 'No se pudo guardar. Intenta de nuevo.'; return; }
     // Tras labor+privacy, re-consultamos el estado para saber si falta ofrecer el
@@ -1439,10 +1554,24 @@ function bindUI() {
     $('enroll-btn').disabled = e.target.value.length < 6;
   });
   $('enroll-btn').addEventListener('click', async () => {
+    // A partir de aqui manda el codigo, no la reanudacion en segundo plano.
+    REGISTRANDO_CON_CODIGO = true;
+    const aviso = $('enroll-reconecta');
+    if (aviso) aviso.hidden = true;
     const r = await enroll($('code').value);
     const msg = $('enroll-msg');
-    if (r.ok) { msg.textContent = ''; gateAgreements(); }
-    else { msg.className = 'msg err'; msg.textContent = r.msg; }
+    const ref = $('enroll-ref');
+    if (r.ok) { msg.textContent = ''; if (ref) ref.hidden = true; gateAgreements(); }
+    else {
+      REGISTRANDO_CON_CODIGO = false;
+      msg.className = 'msg err';
+      msg.textContent = explicarFalloRegistro(r);
+      if (ref) {
+        const t = referenciaDeFallo(r);
+        ref.textContent = t;
+        ref.hidden = !t;
+      }
+    }
   });
   document.querySelectorAll('#ac-checks input').forEach((c) => c.addEventListener('change', () => {
     $('ac-btn').disabled = !Object.values(acChecks()).every(Boolean);
@@ -1456,7 +1585,18 @@ function bindUI() {
   document.querySelectorAll('[data-punch]').forEach((b) =>
     b.addEventListener('click', () => punch(b.dataset.punch)));
   $('result-ok').addEventListener('click', renderHome);
-  $('signout').addEventListener('click', () => { store.del('session'); location.reload(); });
+  $('signout').addEventListener('click', () => {
+    // Esto NO es "cerrar sesion": deja el telefono sin registro y obliga a pedir
+    // codigo nuevo a RH. Varios lo tocaron creyendo que solo salian de la
+    // pantalla y se quedaron fuera un dia entero. Ahora hay que confirmarlo.
+    const ok = confirm('Vas a BORRAR tu registro de este teléfono.\n\n' +
+      'Para volver a entrar vas a necesitar un código NUEVO de Recursos Humanos: ' +
+      'el que ya usaste no sirve otra vez.\n\n' +
+      'Si solo querías salir de esta pantalla, toca Cancelar.');
+    if (!ok) return;
+    store.del('session');
+    location.reload();
+  });
   $('priv-link').addEventListener('click', renderPrivacidad);
   $('priv-back').addEventListener('click', renderHome);
   $('priv-list').addEventListener('click', (e) => {
@@ -1490,6 +1630,15 @@ function bindUI() {
 // true mientras se intenta entrar con la llave del telefono. La red de
 // seguridad de abajo no debe arrebatarle la pantalla a ese intento.
 let REANUDANDO = false;
+
+// true en cuanto el trabajador toca "Entrar" con su codigo.
+//
+// La reanudacion corre en segundo plano y puede tardar hasta 12 s si la red
+// esta mala. Sin esta bandera, una reanudacion lenta que termina DESPUES de
+// que el codigo ya entro le pisa la sesion buena y lo regresa al registro.
+// Regla: el codigo tecleado manda siempre; la reanudacion solo sirve cuando
+// nadie esta escribiendo nada.
+let REGISTRANDO_CON_CODIGO = false;
 
 function boot() {
   bindUI();
@@ -1573,24 +1722,36 @@ async function arrancarIdentidad() {
 
   if (store.get('session') || !habia || !navigator.onLine) return;
 
-  // Hay llave y no hay sesion: se entra solo.
+  // Hay llave y no hay sesion: se intenta entrar solo, PERO EN SEGUNDO PLANO.
+  //
+  // Antes esto pintaba "Cargando" y se quedaba ahi hasta 12 s. En un telefono con
+  // mala senal el trabajador veia una pantalla muerta justo cuando queria teclear
+  // su codigo, y varios lo reportaron como "no me deja entrar". Ahora la pantalla
+  // de registro esta viva desde el primer segundo: quien tenga codigo lo escribe
+  // y entra, sin esperar a nadie.
   REANUDANDO = true;
-  show('loading');
-  const p = document.querySelector('#loading .muted');
-  if (p) p.textContent = 'Entrando con la llave de este teléfono…';
+  show('enroll');
+  const aviso = $('enroll-reconecta');
+  if (aviso) aviso.hidden = false;
   try {
-    if (await reanudarSesion()) { renderHome(); gateAgreements(); flushQueue(); }
+    const listo = await reanudarSesion();
+    if (aviso) aviso.hidden = true;
+
+    // Si mientras tanto el trabajador ya entro con su codigo, aqui no se toca
+    // nada: su sesion es la buena y ya esta en su pantalla.
+    if (REGISTRANDO_CON_CODIGO) return;
+
+    if (listo) { renderHome(); gateAgreements(); flushQueue(); }
     else {
-      show('enroll');
       const m = $('enroll-msg');
-      if (m) {
+      if (m && !m.textContent) {
         m.className = 'msg';
         m.textContent = 'No se pudo entrar solo. Escribe tu código.';
       }
     }
   } finally {
     REANUDANDO = false;
-    if (p) p.textContent = 'Cargando…';
+    if (aviso) aviso.hidden = true;
   }
 }
 boot();

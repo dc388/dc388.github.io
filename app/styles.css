@@ -109,3 +109,6 @@ h2{font-family:"Cormorant",Georgia,serif;font-weight:600;font-size:24px;margin:0
 .spinner{width:44px;height:44px;border:5px solid #24303a;border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spinner{animation-duration:2.2s}}
+
+/* Referencia tecnica y avisos de segundo plano: presentes, pero sin gritar. */
+.msg-ref { margin: .35rem 0 0; font-size: .8rem; line-height: 1.35; opacity: .72; }

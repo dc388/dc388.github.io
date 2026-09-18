@@ -17,7 +17,7 @@
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="icon" href="icon-192.png" />
   <link rel="stylesheet" href="../fonts/fonts.css" />
-  <link rel="stylesheet" href="styles.css?b=20" />
+  <link rel="stylesheet" href="styles.css?b=21" />
   <title>LUFT · Asistencia</title>
 </head>
 <body>
@@ -49,6 +49,10 @@
            maxlength="10" placeholder="000000" />
     <button id="enroll-btn" class="btn btn-primary" disabled>Entrar</button>
     <p id="enroll-msg" class="msg" role="alert"></p>
+    <p id="enroll-ref" class="msg-ref" hidden></p>
+    <!-- Solo un aviso. La pantalla queda VIVA: quien tenga codigo lo escribe y
+         entra sin esperar a que termine la reconexion. -->
+    <p id="enroll-reconecta" class="msg-ref" hidden>Reconectando tu registro… Si ya tienes tu código, escríbelo, no hace falta esperar.</p>
     <button id="perm-link-enroll" class="link">Ver permisos del dispositivo</button>
   </section>
 
@@ -82,7 +86,7 @@
     <div class="foot">
       <button id="priv-link" class="link">Privacidad y acuerdos</button>
       <button id="perm-link" class="link">Permisos del dispositivo</button>
-      <button id="signout" class="link danger">Salir de mi cuenta</button>
+      <button id="signout" class="link danger">Borrar mi registro de este teléfono</button>
     </div>
   </section>
 
@@ -184,6 +188,6 @@
   <!-- Diagnostico de arranque (temporal): si algo revienta app.js en el motor
        del telefono, se muestra el error EN PANTALLA para poder verlo. -->
   <script src="face.js?b=23"></script>
-  <script src="app.js?b=27"></script>
+  <script src="app.js?b=34"></script>
 </body>
 </html>

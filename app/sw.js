@@ -1,6 +1,6 @@
 /* Service worker LUFT: cachea el "app shell" para que la app abra AL INSTANTE,
    con o sin internet. Las llamadas al backend NUNCA se cachean (van a la red). */
-const CACHE = 'luft-shell-v29';
+const CACHE = 'luft-shell-v34';
 const SHELL = [
   './', './index.html', './styles.css', './app.js', './face.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png',
@@ -36,6 +36,11 @@ self.addEventListener('fetch', (e) => {
   // MB y, en iPhone, el cache.put de esa respuesta se topa con la cuota de
   // Safari. Lo unico que aportaba era una forma mas de atorar la descarga.
   if (url.pathname.endsWith('.tflite')) return;
+  // El diagnostico y el manifiesto de version SIEMPRE de la red. Un diagnostico
+  // servido del cache diria "todo bien" con datos de hace tres dias, que es peor
+  // que no tenerlo; y un luft-version.json cacheado congela el actualizador del
+  // APK en la version vieja.
+  if (url.pathname.includes('diagnostico') || url.pathname.endsWith('luft-version.json')) return;
   // App shell: STALE-WHILE-REVALIDATE. Se responde YA con lo cacheado (arranque
   // inmediato aunque la señal sea debil o nula, que es el caso de obra) y, si hay
   // red, se refresca la copia en segundo plano para que la proxima apertura traiga
