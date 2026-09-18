@@ -17,7 +17,7 @@
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="icon" href="icon-192.png" />
   <link rel="stylesheet" href="../fonts/fonts.css" />
-  <link rel="stylesheet" href="styles.css?b=19" />
+  <link rel="stylesheet" href="styles.css?b=20" />
   <title>LUFT · Asistencia</title>
 </head>
 <body>
@@ -41,9 +41,12 @@
   <section id="enroll" class="screen" hidden>
     <div class="logo" aria-hidden="true"></div>
     <h1>LUFT · Asistencia</h1>
-    <p class="muted">Escribe el código de 6 dígitos que te dio Recursos Humanos.</p>
+    <p class="muted">Escribe el código que te dio Recursos Humanos.</p>
+    <!-- maxlength 10: el de un solo uso es de 6 digitos y el reutilizable de 8.
+         Con maxlength 6 el campo se comia los dos ultimos digitos del
+         reutilizable y la app respondia "codigo invalido". -->
     <input id="code" class="input code" inputmode="numeric" autocomplete="one-time-code"
-           maxlength="6" placeholder="000000" />
+           maxlength="10" placeholder="000000" />
     <button id="enroll-btn" class="btn btn-primary" disabled>Entrar</button>
     <p id="enroll-msg" class="msg" role="alert"></p>
     <button id="perm-link-enroll" class="link">Ver permisos del dispositivo</button>
@@ -180,7 +183,7 @@
 
   <!-- Diagnostico de arranque (temporal): si algo revienta app.js en el motor
        del telefono, se muestra el error EN PANTALLA para poder verlo. -->
-  <script src="face.js?b=22"></script>
-  <script src="app.js?b=26"></script>
+  <script src="face.js?b=23"></script>
+  <script src="app.js?b=27"></script>
 </body>
 </html>

@@ -91,6 +91,22 @@
     } finally { clearTimeout(stall); }
   }
 
+  // Marca de "este telefono NO puede guardar el modelo".
+  //
+  // POR QUE IMPORTA TANTO: el modelo pesa 23 MB. Si IndexedDB no lo acepta
+  // —Safari en iPhone se topa con su cuota, y en Navegacion privada no guarda
+  // nada— el `catch` vacio que habia aqui se lo tragaba en silencio y la app
+  // volvia a bajar los 23 MB EN CADA CHECADA. Eso es lo que se veia como
+  // "Preparando el modelo" eterno: no estaba atorado, estaba bajando otra vez
+  // los mismos 23 MB con la señal de la nave.
+  //
+  // Sabiendo que no se puede guardar, la app deja de intentarlo y pasa al
+  // metodo alterno (firma del telefono + foto de evidencia), que registra la
+  // checada igual y RH la ve con foto y ubicacion. Mejor eso que no checar.
+  const CACHE_ROTO = 'luft.modeloNoSeGuarda';
+  function marcarCacheRoto() { try { localStorage.setItem(CACHE_ROTO, '1'); } catch (e) {} }
+  function cacheRoto() { try { return localStorage.getItem(CACHE_ROTO) === '1'; } catch (e) { return false; } }
+
   async function modelBytes() {
     // 1) caché local (offline). 2) red, con progreso, timeout y un reintento.
     try {
@@ -102,11 +118,21 @@
       try {
         const buf = await fetchConProgreso(MODEL_URL);
         if (buf.byteLength !== MODEL_BYTES) throw new Error('descarga incompleta (' + buf.byteLength + ' de ' + MODEL_BYTES + ')');
-        try { await mSet('facenet-' + VERSION, buf); } catch (e) {}
+        try { await mSet('facenet-' + VERSION, buf); }
+        catch (e) { marcarCacheRoto(); }
         return buf;
       } catch (e) { ultimo = e; }
     }
     throw ultimo || new Error('no se pudo descargar el modelo');
+  }
+
+  /** ¿Ya esta el modelo guardado y listo para usarse sin bajar nada? */
+  async function modeloEnCache() {
+    if (_model) return true;
+    try {
+      const c = await mGet('facenet-' + VERSION);
+      return !!(c && c.byteLength === MODEL_BYTES);
+    } catch (e) { return false; }
   }
 
   // Prepara librerías + detector + modelo. Idempotente. Devuelve true si listo.
@@ -262,7 +288,10 @@
     return { x: f.topLeft[0], y: f.topLeft[1], w: f.bottomRight[0] - f.topLeft[0], h: f.bottomRight[1] - f.topLeft[1] };
   }
 
-  global.LuftFace = { ready, embed, detectBox, supported, faltante, VERSION, FaceNotFound, cosine };
+  global.LuftFace = {
+    ready, embed, detectBox, supported, faltante, VERSION, FaceNotFound, cosine,
+    cacheRoto, modeloEnCache,
+  };
 
   function cosine(a, b) { let d = 0; for (let i = 0; i < a.length; i++) d += a[i] * b[i]; return d; }
 })(window);

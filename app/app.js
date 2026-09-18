@@ -78,25 +78,96 @@ function deviceCapabilities() {
 }
 
 // ---------- dispositivo: id + llave ECDSA ----------
+//
+// EL ERROR QUE SE ARREGLA AQUI, Y QUE ERA LA CAUSA DE CASI TODO
+//
+// Antes el `device_id` vivia en localStorage y el par de llaves en IndexedDB.
+// Son DOS almacenes distintos que el navegador puede borrar por separado, y
+// Safari de iPhone lo hace: si la app no esta en la pantalla de inicio, a los 7
+// dias sin abrirla borra el almacenamiento del sitio, y no siempre se lleva los
+// dos al mismo tiempo. Lo que pasaba entonces:
+//
+//   · Sobrevive el id y se pierde la llave -> la app generaba una llave NUEVA en
+//     silencio y seguia usando el MISMO id. El servidor tenia registrada la
+//     llave vieja, asi que cada checada llegaba con firma invalida y se
+//     rechazaba. La persona veia "no se registro" sin entender por que, y lo
+//     unico que lo arreglaba era volver a meter el codigo.
+//   · Sobrevive la llave y se pierde el id -> la app inventaba un id nuevo. Para
+//     el servidor ese telefono no existe: "dispositivo no aprobado".
+//
+// En los dos casos el sintoma era el mismo: "ya no me deja checar" y "otra vez
+// me pide el codigo". La regla ahora es una sola y se cumple en un solo lugar:
+// EL ID Y LA LLAVE NACEN JUNTOS, SE GUARDAN JUNTOS Y MUEREN JUNTOS. Si falta
+// uno, la identidad entera se considera perdida y se hace una nueva; nunca se
+// mezcla una llave nueva con un id viejo.
+//
+// Y como ahora los dos viven en IndexedDB, cuando ese almacen sobrevive se
+// conserva TODO lo que hace falta para reanudar sin codigo (ver reanudarSesion).
+const IDENT_KEY = 'identidad';
+
+/** La identidad guardada, o null. NO crea nada: solo lee. */
+async function leerIdentidad() {
+  let ident = null;
+  try { ident = await idbGet(IDENT_KEY); } catch (e) { return null; }
+  if (ident && ident.id && ident.pair) return ident;
+
+  // Formato viejo (id en localStorage, par en IndexedDB). Se migra tal cual —
+  // con el MISMO id y la MISMA llave— para que a nadie que hoy funciona se le
+  // mueva el piso: el servidor sigue reconociendo su telefono.
+  const idViejo = store.get('deviceId');
+  let parViejo = null;
+  try { parViejo = await idbGet('keypair'); } catch (e) {}
+  if (idViejo && parViejo && parViejo.privateKey) {
+    const migrada = { id: idViejo, pair: parViejo, migradaEn: Date.now() };
+    try { await idbSet(IDENT_KEY, migrada); } catch (e) {}
+    return migrada;
+  }
+  return null;
+}
+
+/** Identidad nueva de cero: id y llave, siempre los dos, siempre juntos. */
+async function nuevaIdentidad() {
+  // `true` (extractable) aplica a la PRIVADA en algunos navegadores y a ninguna
+  // en otros; lo que importa es poder exportar la PUBLICA para registrarla. La
+  // privada nunca sale de aqui: no hay una sola linea que la exporte.
+  const pair = await crypto.subtle.generateKey(
+    { name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+  const ident = { id: uuid(), pair, creadaEn: Date.now() };
+  await idbSet(IDENT_KEY, ident);
+  // Se sigue escribiendo el id en localStorage por compatibilidad con una
+  // version anterior que pudiera quedar cacheada. Ya no es la fuente de verdad.
+  store.set('deviceId', ident.id);
+  return ident;
+}
+
+// true cuando ensureDevice() tuvo que crear una identidad de cero en ESTA
+// apertura. Si ademas habia una sesion guardada, esa sesion quedo huerfana: sus
+// checadas se rechazarian por "dispositivo no aprobado", asi que boot() la
+// limpia y pide el codigo en vez de dejar que la persona choque contra un error.
+let IDENT_NUEVA = false;
+
 async function ensureDevice() {
-  let id = store.get('deviceId');
-  if (!id) { id = uuid(); store.set('deviceId', id); }
-  let pair = await idbGet('keypair');
-  if (!pair) {
-    // No exportable: la privada no sale del dispositivo.
-    pair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign', 'verify']);
-    await idbSet('keypair', pair);
-  }
-  let spki;
-  try { spki = bufToB64(await crypto.subtle.exportKey('spki', pair.publicKey)); }
-  catch (e) {
-    // Algunos navegadores exigen extractable para exportar la publica: se
-    // regenera un par extractable (la privada sigue guardada solo aqui).
-    pair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
-    await idbSet('keypair', pair);
-    spki = bufToB64(await crypto.subtle.exportKey('spki', pair.publicKey));
-  }
-  return { id, pair, spki };
+  let ident = await leerIdentidad();
+  if (!ident) { ident = await nuevaIdentidad(); IDENT_NUEVA = true; }
+  const spki = bufToB64(await crypto.subtle.exportKey('spki', ident.pair.publicKey));
+  return { id: ident.id, pair: ident.pair, spki };
+}
+
+/**
+ * Le pide al navegador que NO borre el almacenamiento de este sitio.
+ *
+ * Es lo que evita que Safari se lleve la llave del dispositivo a los 7 dias.
+ * No siempre lo concede —en iPhone practicamente exige que la app este en la
+ * pantalla de inicio— pero cuando lo concede, deja de haber caducidad.
+ */
+async function persistirAlmacenamiento() {
+  try {
+    if (navigator.storage && navigator.storage.persist) {
+      if (await navigator.storage.persisted()) return true;
+      return await navigator.storage.persist();
+    }
+  } catch (e) {}
+  return false;
 }
 async function signPayload(pair, payload) {
   const raw = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, pair.privateKey, enc.encode(payload));
@@ -122,12 +193,72 @@ async function api(path, { method = 'POST', body, auth, timeoutMs = 12000 } = {}
     return { ok: res.ok, status: res.status, data };
   } finally { clearTimeout(timer); }
 }
+// Cuanto antes de que venza se renueva el token. Eran 60 s, y 60 s no alcanzan
+// en una nave: entre la señal que va y viene y una checada que empieza con el
+// token a punto de morir, la renovacion llegaba tarde y la sesion se caia. Con
+// 10 minutos hay toda una jornada de oportunidades para renovar a tiempo.
+const MARGEN_SESION_SEG = 600;
+
+/**
+ * Reanuda la sesion SIN codigo, firmando un reto con la llave de este telefono.
+ *
+ * Es la pieza que quita la llamada a RH. El servidor guarda la llave publica de
+ * este dispositivo desde que se dio de alta; si podemos firmar un reto que el
+ * servidor acaba de emitir, somos el mismo telefono y nos devuelve sesion nueva.
+ *
+ * Solo funciona si la llave sigue viva. Si el navegador borro IndexedDB, no hay
+ * nada que firmar y toca el codigo: para eso RH entrega el codigo reutilizable
+ * de 8 digitos, que sirve siempre y no hay que volver a pedir.
+ */
+async function reanudarSesion() {
+  const ident = await leerIdentidad();
+  if (!ident) return false;
+  try {
+    const r1 = await api('/functions/v1/resume_device',
+      { body: { device_id: ident.id }, timeoutMs: 10000 });
+    const reto = r1.ok && r1.data && r1.data.challenge;
+    if (!reto) return false;
+
+    // El texto es EXACTAMENTE el que verifica el servidor. La firma sale en
+    // formato "raw" (r||s de 64 bytes), que es lo que produce WebCrypto y lo que
+    // resume_device acepta sin convertir.
+    const firma = await signPayload(ident.pair, ['reanudar.v1', ident.id, reto].join('|'));
+    let spki = null;
+    try { spki = bufToB64(await crypto.subtle.exportKey('spki', ident.pair.publicKey)); } catch (e) {}
+
+    const r2 = await api('/functions/v1/resume_device', { timeoutMs: 12000, body: {
+      device_id: ident.id, challenge: reto, signature: firma,
+      public_key: spki || undefined, app_version: APP_VERSION,
+    }});
+    if (!r2.ok || !r2.data || !r2.data.access_token) return false;
+    const d = r2.data;
+    store.set('session', {
+      access_token: d.access_token, refresh_token: d.refresh_token,
+      expires_at: Math.floor(Date.now() / 1000) + (d.expires_in || 3600),
+      employee: d.employee,
+    });
+    return true;
+  } catch (e) { return false; }
+}
+
 async function accessToken() {
-  const s = store.get('session');
-  if (!s) return null;
+  let s = store.get('session');
+
+  // Sin sesion guardada: si este telefono conserva su llave, se entra sin
+  // codigo. Antes esto devolvia null y la unica salida era la pantalla del
+  // codigo, o sea una llamada a RH por cada tropiezo.
+  if (!s) {
+    if (navigator.onLine && await reanudarSesion()) {
+      s = store.get('session');
+      return s ? s.access_token : null;
+    }
+    return null;
+  }
+
   // Solo intentamos refrescar si el token esta por vencer Y hay red. Offline o con
   // señal mala usamos el token actual sin tocar la red (arranque y checada rapidos).
-  if (s.expires_at && Date.now() / 1000 > s.expires_at - 60 && navigator.onLine) {
+  if (s.expires_at && Date.now() / 1000 > s.expires_at - MARGEN_SESION_SEG && navigator.onLine) {
+    let muerto = false;
     try {
       const r = await api('/auth/v1/token?grant_type=refresh_token', { body: { refresh_token: s.refresh_token } });
       if (r.ok && r.data && r.data.access_token) {
@@ -135,7 +266,16 @@ async function accessToken() {
           expires_at: r.data.expires_at || Math.floor(Date.now() / 1000) + (r.data.expires_in || 3600) };
         store.set('session', ns); return ns.access_token;
       }
+      // 400/401 del refresh no es señal mala: es un refresh token ya gastado o
+      // vencido de verdad. Esa era LA muerte de la sesion, la que mandaba a
+      // teclear un codigo. Ahora se reanuda con la llave del telefono.
+      if (r.status === 400 || r.status === 401) muerto = true;
     } catch { /* red mala / timeout: no lanzamos, usamos el token actual */ }
+
+    if (muerto && await reanudarSesion()) {
+      const ns = store.get('session');
+      if (ns) return ns.access_token;
+    }
     return s.access_token; // ultimo recurso
   }
   return s.access_token;
@@ -504,7 +644,11 @@ async function renderEnrolar() {
   } catch (e) { msg.className = 'msg err'; msg.textContent = 'No se pudo abrir la cámara. Actívala en Ajustes.'; return; }
   prog.textContent = 'Preparando el modelo (la 1ª vez baja 23 MB con señal)…';
   try {
-    await LuftFace.ready(
+    // Techo total. Las etapas ya tenian el suyo, pero la descarga del modelo
+    // solo abortaba tras 30 s SIN RECIBIR UN BYTE y con dos reintentos: con la
+    // señal de la nave eso puede ser varios minutos con el boton apagado y sin
+    // explicacion. Pasado el techo se dice que no se pudo y se ofrece reintentar.
+    await conTope(LuftFace.ready(
       (recibido, total) => {
         const pct = Math.min(100, Math.round((recibido / total) * 100));
         prog.textContent = 'Descargando el modelo… ' + pct + '%  (solo la 1ª vez)';
@@ -513,7 +657,7 @@ async function renderEnrolar() {
       // como "Preparando el modelo..." sin mas, aunque el modelo ni se hubiera
       // empezado a bajar.
       (txt) => { prog.textContent = txt; },
-    );
+    ), T_MOTOR_ENROLAMIENTO);
   } catch (e) {
     msg.className = 'msg err';
     // El motivo REAL, no uno inventado: si se atoró abriendo el motor, decir
@@ -660,6 +804,25 @@ async function retoAcercarse(video, msg) {
 // si cualquier fallo de lectura abriera la salida, taparse la camara seria la
 // forma de saltarse el reconocimiento.
 const SIN_MOTOR = 'sin-motor';
+// Lo maximo que una checada espera al motor facial antes de seguir por el
+// metodo alterno. 25 s es mucho para quien espera de pie, y es el techo: con el
+// modelo ya guardado esto tarda menos de un segundo.
+const T_MOTOR_CHECADA = 25000;
+// El enrolamiento se hace una sola vez y sentado, no de pie en la fila, asi que
+// aguanta mas. Pero FINITO: sin techo, el boton se quedaba apagado para siempre
+// y la persona no tenia ni que reintentar ni a quien preguntar.
+const T_MOTOR_ENROLAMIENTO = 120000;
+
+/** `p` con techo de tiempo. No cancela el trabajo de fondo, deja de esperarlo. */
+function conTope(p, ms) {
+  return new Promise((res, rej) => {
+    const t = setTimeout(() => rej(new Error('presupuesto agotado')), ms);
+    Promise.resolve(p).then(
+      (v) => { clearTimeout(t); res(v); },
+      (e) => { clearTimeout(t); rej(e); });
+  });
+}
+
 async function capturarRostroChecada() {
   const video = $('selfie-video'), msg = $('selfie-msg'), title = $('selfie-title');
   $('selfie-take').hidden = true; $('selfie-skip').hidden = true;
@@ -683,9 +846,24 @@ async function capturarRostroChecada() {
     video.srcObject = stream;
   } catch (e) { $('selfie-take').hidden = false; return null; }
   const stop = () => { try { stream.getTracks().forEach((t) => t.stop()); } catch {} };
+
+  // Este telefono ya demostro que no puede GUARDAR el modelo (cuota de Safari,
+  // Navegacion privada). Volver a intentarlo significa bajar 23 MB otra vez,
+  // delante de la puerta, para acabar en lo mismo. Se va directo al metodo
+  // alterno, que registra la checada con firma del telefono y foto de evidencia.
+  if (LuftFace.cacheRoto && LuftFace.cacheRoto()) {
+    stop(); $('selfie-take').hidden = false; return SIN_MOTOR;
+  }
+
   // El modelo no carga en este equipo (memoria, WASM sin SIMD, navegador viejo).
   // No es que no se le vea la cara: es que aqui no se puede. Metodo alterno.
-  try { await LuftFace.ready(); }
+  //
+  // El limite TOTAL es lo que faltaba. `ready()` ya tenia un tope por etapa,
+  // pero la descarga del modelo solo abortaba tras 30 s SIN RECIBIR UN BYTE, y
+  // con dos reintentos: una señal lenta pero viva podia tener a alguien parado
+  // varios minutos mirando "Preparando el modelo". Checar no puede depender de
+  // eso: pasado el presupuesto se sigue por el metodo alterno.
+  try { await conTope(LuftFace.ready(), T_MOTOR_CHECADA); }
   catch (e) { stop(); $('selfie-take').hidden = false; return SIN_MOTOR; }
 
   // Gesto de vida (anti-foto): OBLIGATORIO —una foto estatica no crece de
@@ -931,10 +1109,14 @@ async function punch(type) {
   if (FACE === null) await loadFaceStatus();
   let faceEmbedding = null, faceChallengeId = null, faceLiveness = null, facePad = null;
   let method = 'device_biometric';
+  // true si esta persona SI tiene rostro enrolado pero no se le pudo leer, y
+  // acepto seguir con el metodo alterno. Obliga la foto de evidencia.
+  let rostroFallado = false;
   if (FACE && FACE.granted && FACE.enrolled) {
     busy(false);
     const cap = await capturarRostroChecada();
     if (cap && cap !== SIN_MOTOR) {
+      store.del('fallosRostro');   // se reconocio: el contador vuelve a cero
       faceEmbedding = Array.from(cap.vec);
       faceChallengeId = cap.challengeId; // null sin señal: el servidor no lo exige en offline_sync
       faceLiveness = cap.livenessPassed;
@@ -952,9 +1134,34 @@ async function punch(type) {
       // faceEmbedding quedo vacio. RH la ve con foto y ubicacion.
       method = 'device_biometric';
     } else if (navigator.onLine) {
-      // Con señal, el rostro es obligatorio: si no se reconoció, reintentar.
-      return showResult('warn', 'Falta reconocer tu rostro',
-        'Para checar, la app necesita ver tu cara y un pequeño movimiento. Acércate, con buena luz e intenta de nuevo.');
+      // Con señal el rostro es obligatorio... pero no hasta dejar a alguien sin
+      // checar. Esto es lo que se vivio: contraluz, lente sucio, pantalla al
+      // sol, y la persona reintentando sin salida mientras se le pasaba la hora.
+      //
+      // A partir del tercer intento seguido se le OFRECE —no se hace solo— el
+      // metodo alterno. No es un permiso gratis: la checada viaja firmada con la
+      // llave de SU telefono aprobado, se aplica la misma geocerca y se le pide
+      // la foto de evidencia. Queda registrada y RH la ve con foto y ubicacion,
+      // que es exactamente lo que ya pasa con los telefonos que no pueden correr
+      // el modelo. Lo unico que cambia es que nadie se queda sin registro.
+      const fallos = (store.get('fallosRostro', 0) || 0) + 1;
+      store.set('fallosRostro', fallos);
+      if (fallos < 3) {
+        return showResult('warn', 'Falta reconocer tu rostro',
+          'Para checar, la app necesita ver tu cara y un pequeño movimiento. ' +
+          'Acércate, con buena luz e intenta de nuevo.' +
+          (fallos === 2 ? ' Si vuelve a fallar, te dejo checar con foto.' : ''));
+      }
+      const seguir = confirm(
+        'No se pudo reconocer tu rostro después de varios intentos.\n\n' +
+        '¿Quieres checar con foto? Queda registrada y Recursos Humanos la revisa.');
+      if (!seguir) {
+        return showResult('warn', 'Falta reconocer tu rostro',
+          'Acércate, con buena luz e intenta de nuevo.');
+      }
+      store.del('fallosRostro');
+      rostroFallado = true;
+      method = 'device_biometric';
     }
     // Sin señal y sin poder leer el rostro (modelo aún no cacheado): se encola por
     // el método alterno y se sincroniza al reconectar.
@@ -963,9 +1170,12 @@ async function punch(type) {
   // Selfie de auditoría: solo para quien NO checa por rostro (la cara ya es la
   // evidencia). Se sube antes, con el mismo opId como folio.
   let auditPhotoPath = null;
-  if (!faceEmbedding && POL && POL.audit_photo_enabled && navigator.onLine) {
+  if (!faceEmbedding && navigator.onLine && (( POL && POL.audit_photo_enabled ) || rostroFallado)) {
     busy(false);
-    const blob = await captureSelfie(PUNCH_LABEL[type], POL.offsite_requires_photo);
+    // Si se llego aqui porque el rostro no se pudo leer, la foto NO es opcional:
+    // es la unica evidencia de quien checo.
+    const blob = await captureSelfie(PUNCH_LABEL[type],
+      rostroFallado || (POL && POL.offsite_requires_photo));
     if (blob) { busy(true, 'Subiendo foto…'); auditPhotoPath = await uploadSelfie(blob, opId); }
   }
 
@@ -1206,8 +1416,12 @@ async function renderPrivacidad() {
 // ---------- arranque ----------
 function bindUI() {
   $('code').addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
-    $('enroll-btn').disabled = e.target.value.length !== 6;
+    // De 6 a 10 digitos. Los de un solo uso son de 6; el REUTILIZABLE que RH
+    // entrega para no volver a llamar es de 8. Cortar a 6 dejaba a la persona
+    // tecleando un codigo bueno que la app mordia a la mitad, y el error que
+    // veia era "codigo invalido".
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    $('enroll-btn').disabled = e.target.value.length < 6;
   });
   $('enroll-btn').addEventListener('click', async () => {
     const r = await enroll($('code').value);
@@ -1258,6 +1472,10 @@ function bindUI() {
   setInterval(tickClock, 15000);
 }
 
+// true mientras se intenta entrar con la llave del telefono. La red de
+// seguridad de abajo no debe arrebatarle la pantalla a ese intento.
+let REANUDANDO = false;
+
 function boot() {
   bindUI();
   if (store.get('bannerAck') !== APP_VERSION) $('banner').hidden = false;
@@ -1271,8 +1489,23 @@ function boot() {
   if (store.get('session')) { renderHome(); gateAgreements(); flushQueue(); }
   else show('enroll');
 
+  arrancarIdentidad();
+
   // Registro/actualizacion del service worker: en segundo plano, jamas bloquea.
   if ('serviceWorker' in navigator) {
+    // Cuando entra un service worker nuevo, se recarga UNA vez.
+    //
+    // Sin esto, el worker viejo sigue sirviendo el app.js viejo durante toda esa
+    // apertura y el arreglo llega hasta la siguiente vez que abran. Para un
+    // arreglo que desatora a la gente, "la proxima vez" no sirve: se recarga ya.
+    // El candado evita el ciclo de recargas que este patron provoca si se hace
+    // sin cuidado.
+    let recargando = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (recargando) return;
+      recargando = true;
+      location.reload();
+    });
     navigator.serviceWorker.register('sw.js')
       .then((reg) => { try { reg.update(); } catch {} })
       .catch(() => {});
@@ -1282,7 +1515,67 @@ function boot() {
   // forzamos una pantalla usable. Nunca se puede quedar colgada la entrada.
   setTimeout(() => {
     const l = $('loading');
-    if (l && !l.hidden) { store.get('session') ? renderHome() : show('enroll'); }
+    if (l && !l.hidden && !REANUDANDO) { store.get('session') ? renderHome() : show('enroll'); }
   }, 3000);
+}
+
+/**
+ * Lo primero que pasa al abrir, y lo que decide si hay que teclear un codigo.
+ *
+ * Tres casos:
+ *
+ *   1. Hay sesion y la identidad del telefono sigue completa -> no se hace nada,
+ *      ya se pinto Home.
+ *   2. No hay sesion pero SI hay llave -> se entra sin codigo (resume_device).
+ *      Este es el caso que antes mandaba a todo el mundo con RH.
+ *   3. No hay llave -> es un telefono nuevo, o el navegador borro todo. Ahi si
+ *      hace falta el codigo, y no hay vuelta: sin llave no hay como probar que
+ *      es el mismo equipo.
+ *
+ * Y un caso que antes pasaba en silencio: sesion guardada con identidad NUEVA.
+ * Significa que el navegador borro la llave pero dejo la sesion. Esa sesion ya
+ * no sirve para checar —el servidor no reconoce este dispositivo— asi que se
+ * limpia y se pide el codigo, en vez de dejar que la persona descubra el
+ * problema con un "no se registro" delante de la puerta de la nave.
+ */
+async function arrancarIdentidad() {
+  persistirAlmacenamiento();
+
+  const habia = await leerIdentidad();
+  await ensureDevice();
+
+  if (IDENT_NUEVA && store.get('session')) {
+    store.del('session');
+    show('enroll');
+    const m = $('enroll-msg');
+    if (m) {
+      m.className = 'msg err';
+      m.textContent = 'Este teléfono perdió su registro (el navegador borró los ' +
+        'datos guardados). Escribe tu código una vez más y no se volverá a pedir.';
+    }
+    return;
+  }
+
+  if (store.get('session') || !habia || !navigator.onLine) return;
+
+  // Hay llave y no hay sesion: se entra solo.
+  REANUDANDO = true;
+  show('loading');
+  const p = document.querySelector('#loading .muted');
+  if (p) p.textContent = 'Entrando con la llave de este teléfono…';
+  try {
+    if (await reanudarSesion()) { renderHome(); gateAgreements(); flushQueue(); }
+    else {
+      show('enroll');
+      const m = $('enroll-msg');
+      if (m) {
+        m.className = 'msg';
+        m.textContent = 'No se pudo entrar solo. Escribe tu código.';
+      }
+    }
+  } finally {
+    REANUDANDO = false;
+    if (p) p.textContent = 'Cargando…';
+  }
 }
 boot();

@@ -2,5 +2,6 @@
   "version_code": 22,
   "version_name": "0.3.2",
   "apk_url": "https://dc388.github.io/luft-checador.apk",
+  "apk_sha256": "e59e42190326853288fcd5e0acf4ba265bf36efd33cc5258049a99b412f11e01",
   "notes": "Ya se puede checar sin senal. La sesion ya no se cierra sola. Y a partir de esta version la app se actualiza sin que tengas que entrar al navegador: te avisa y la instalas con un toque."
 }
