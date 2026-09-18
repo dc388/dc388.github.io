@@ -142,16 +142,20 @@ jobs:
       - name: Contar qué falló
         if: failure()
         run: |
-          for x in $(find app/build/outputs/androidTest-results -name '*.xml' 2>/dev/null); do
-            echo "===== $x"
-            python3 - "$x" <<'FIN'
-          import sys, xml.etree.ElementTree as ET
-          for caso in ET.parse(sys.argv[1]).getroot().iter("testcase"):
-              for fallo in list(caso.iter("failure")) + list(caso.iter("error")):
-                  print(f"--- {caso.get('classname')}.{caso.get('name')}")
-                  print("\n".join((fallo.text or "").splitlines()[:160]))
+          python3 - <<'FIN'
+          import pathlib, xml.etree.ElementTree as ET
+
+          # Sin comodines del shell: la carpeta que crea el emulador lleva
+          # espacios en el nombre («TEST-emulator-5554 - 14.xml») y cualquier
+          # bucle sobre find la parte en trozos.
+          raiz = pathlib.Path("app/build/outputs/androidTest-results")
+          for x in sorted(raiz.rglob("*.xml")):
+              print(f"===== {x}")
+              for caso in ET.parse(x).getroot().iter("testcase"):
+                  for fallo in list(caso.iter("failure")) + list(caso.iter("error")):
+                      print(f"--- {caso.get('classname')}.{caso.get('name')}")
+                      print("\n".join((fallo.text or "").splitlines()[:160]))
           FIN
-          done
 
       - name: Publicar el informe
         if: always()
