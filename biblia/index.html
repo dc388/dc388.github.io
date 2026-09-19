@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biblia Griega y Hebrea</title>
+<meta name="description" content="Antiguo Testamento hebreo, Septuaginta, Nuevo Testamento griego, Padres Apostólicos y el Libro de Enoc, en sus lenguas originales.">
+<meta name="theme-color" content="#f5efe2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121319" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600&family=Noto+Serif+Hebrew:wght@400;600&display=swap" rel="stylesheet">
+<!-- AdSense. El identificador de editor es el mismo que el de AdMob: las dos
+     cuentas comparten el «pub-», así que no hace falta abrir nada nuevo. Hasta
+     que Google apruebe el sitio esto no pinta nada; dejarlo puesto es lo que
+     permite verificar la propiedad cuando se dé de alta. -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9626426230545339" crossorigin="anonymous"></script>
+<style>
+:root{
+  --papel:#f5efe2; --papel-alto:#ede4d4; --tinta:#2b2620; --tinta-suave:#6b6255;
+  --borde:#ddd2bd; --realce:#7a5c2e; --sombra:0 1px 2px rgba(0,0,0,.06);
+  --cuerpo:1.125rem; --interlineado:1.75;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-tema="claro"]){
+    --papel:#121319; --papel-alto:#1d1e26; --tinta:#e8e3d8; --tinta-suave:#9a9488;
+    --borde:#2e2f38; --realce:#d8b26a; --sombra:none;
+  }
+}
+:root[data-tema="oscuro"]{
+  --papel:#121319; --papel-alto:#1d1e26; --tinta:#e8e3d8; --tinta-suave:#9a9488;
+  --borde:#2e2f38; --realce:#d8b26a; --sombra:none;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--papel); color:var(--tinta);
+  font-family:"Noto Serif",Georgia,"Times New Roman",serif;
+  line-height:1.5;
+}
+header{
+  position:sticky; top:0; z-index:5; background:var(--papel);
+  border-bottom:1px solid var(--borde);
+  padding:env(safe-area-inset-top) 16px 0;
+}
+.barra{display:flex; align-items:center; gap:12px; min-height:56px; max-width:44rem; margin:0 auto}
+.barra h1{font-size:1.0625rem; font-weight:600; margin:0; flex:1; letter-spacing:.01em}
+button{
+  font:inherit; color:inherit; background:none; border:1px solid var(--borde);
+  border-radius:999px; padding:6px 12px; cursor:pointer; box-shadow:var(--sombra);
+}
+button:hover{border-color:var(--realce)}
+button.plano{border:none; box-shadow:none; padding:6px 8px; line-height:0}
+main{max-width:44rem; margin:0 auto; padding:20px 16px 96px}
+h2{font-size:1rem; font-weight:600; color:var(--tinta-suave); text-transform:uppercase;
+   letter-spacing:.06em; margin:28px 0 10px}
+h2:first-child{margin-top:4px}
+.rejilla{display:flex; flex-wrap:wrap; gap:8px}
+.rejilla a{
+  display:block; text-decoration:none; color:inherit; background:var(--papel-alto);
+  border:1px solid var(--borde); border-radius:10px; padding:9px 13px; box-shadow:var(--sombra);
+}
+.rejilla a:hover{border-color:var(--realce)}
+.rejilla.capitulos a{min-width:3rem; text-align:center; font-variant-numeric:tabular-nums}
+.fuente{color:var(--tinta-suave); font-size:.8125rem; margin:6px 0 0; line-height:1.5}
+.nota{
+  background:var(--papel-alto); border:1px solid var(--borde); border-left:3px solid var(--realce);
+  border-radius:8px; padding:10px 13px; color:var(--tinta-suave); font-size:.875rem; margin:0 0 18px;
+}
+.versiculo{margin:0 0 .9em; font-size:var(--cuerpo); line-height:var(--interlineado)}
+.versiculo .n{
+  color:var(--realce); font-size:.75em; font-weight:600; vertical-align:.35em;
+  margin-inline-end:.4em; font-variant-numeric:tabular-nums;
+}
+.versiculo .es{display:block; font-size:.8125em; color:var(--tinta-suave); margin-top:.25em; line-height:1.5}
+/* La Reina-Valera es española aunque el versículo de arriba sea hebreo: sin
+   esto hereda la dirección del capítulo y la puntuación salta al otro lado. */
+[dir="rtl"] .versiculo .es{direction:ltr; text-align:left}
+[dir="rtl"] .versiculo{font-family:"Noto Serif Hebrew","Noto Serif",serif}
+.corrido .versiculo{display:inline; margin:0}
+.corrido .versiculo .es{display:none}
+.pie{display:flex; gap:10px; justify-content:space-between; margin-top:32px}
+.anuncio{margin:28px auto 0; min-height:90px; text-align:center}
+.cargando{color:var(--tinta-suave); padding:24px 0}
+a.volver{text-decoration:none; color:var(--realce); font-size:.9375rem}
+footer{
+  max-width:44rem; margin:0 auto; padding:24px 16px calc(32px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--borde); color:var(--tinta-suave); font-size:.8125rem; line-height:1.6;
+}
+footer p{margin:0 0 6px}
+footer a{color:var(--realce)}
+</style>
+</head>
+<body>
+<header>
+  <div class="barra">
+    <a class="volver" href="#/" id="atras" hidden>‹ Atrás</a>
+    <h1 id="titulo">Biblia Griega y Hebrea</h1>
+    <button class="plano" id="menos" title="Letra más pequeña" hidden>A−</button>
+    <button class="plano" id="mas" title="Letra más grande" hidden>A+</button>
+    <button class="plano" id="tema" title="Tema claro u oscuro" aria-label="Cambiar entre tema claro y oscuro"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2a8 8 0 010 16z" fill="currentColor"/></svg></button>
+  </div>
+</header>
+
+<main id="vista"><p class="cargando">Cargando la biblioteca…</p></main>
+
+<footer>
+  <p>
+    Textos en dominio público o con licencia libre; cada colección dice su
+    edición y su licencia en la biblioteca.
+  </p>
+  <p>
+    <a href="../biblia-privacidad.html">Política de privacidad</a> ·
+    <a href="https://play.google.com/store/apps/details?id=com.dc388.bibliagriega">La aplicación para Android</a>
+  </p>
+</footer>
+
+<script>
+const vista = document.getElementById('vista');
+const titulo = document.getElementById('titulo');
+const atras = document.getElementById('atras');
+let indice = null;
+
+// --- preferencias -----------------------------------------------------------
+// Van en localStorage, que es del navegador de cada quien: si no está
+// disponible —navegación privada, cookies bloqueadas— la página funciona igual,
+// simplemente no recuerda nada.
+const guarda = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const lee = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (e) { return d; } };
+
+let cuerpo = parseFloat(lee('cuerpo', '1.125'));
+const aplicaCuerpo = () => document.documentElement.style.setProperty('--cuerpo', cuerpo + 'rem');
+aplicaCuerpo();
+
+const tema = lee('tema', '');
+if (tema) document.documentElement.dataset.tema = tema;
+document.getElementById('tema').onclick = () => {
+  const actual = document.documentElement.dataset.tema;
+  const siguiente = actual === 'oscuro' ? 'claro' : 'oscuro';
+  document.documentElement.dataset.tema = siguiente;
+  guarda('tema', siguiente);
+};
+document.getElementById('mas').onclick = () => { cuerpo = Math.min(1.75, cuerpo + .0625); aplicaCuerpo(); guarda('cuerpo', cuerpo); };
+document.getElementById('menos').onclick = () => { cuerpo = Math.max(.875, cuerpo - .0625); aplicaCuerpo(); guarda('cuerpo', cuerpo); };
+
+// --- datos ------------------------------------------------------------------
+const trae = async (url) => {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(url + ' → ' + r.status);
+  return r.json();
+};
+const escapa = (s) => s.replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// Los códigos de libro se repiten entre colecciones —«GEN» es Génesis en
+// hebreo y en la Septuaginta, y son textos distintos—, así que la colección
+// forma parte de la dirección y no se puede buscar solo por el código.
+function buscaLibro(coleccion, codigo) {
+  const col = indice.find((c) => c.id === coleccion);
+  if (!col) return null;
+  const libro = col.libros.find((l) => l.codigo === codigo);
+  return libro ? { col, libro } : null;
+}
+
+// --- pantallas --------------------------------------------------------------
+function biblioteca() {
+  titulo.textContent = 'Biblia Griega y Hebrea';
+  atras.hidden = true;
+  document.getElementById('mas').hidden = true;
+  document.getElementById('menos').hidden = true;
+  vista.innerHTML = indice.map((col) => `
+    <section>
+      <h2>${escapa(col.nombre)}</h2>
+      <div class="rejilla">
+        ${col.libros.map((l) => `<a href="#/${col.id}/${l.codigo}">${escapa(l.nombre)}</a>`).join('')}
+      </div>
+      <p class="fuente">${escapa(col.edicion)} · ${escapa(col.licencia)}</p>
+    </section>`).join('');
+}
+
+function capitulos(coleccion, codigo) {
+  const hallado = buscaLibro(coleccion, codigo);
+  if (!hallado) return biblioteca();
+  const { libro } = hallado;
+  titulo.textContent = libro.nombre;
+  atras.hidden = false;
+  atras.href = '#/';
+  vista.innerHTML = `
+    <h2>${escapa(libro.original)}</h2>
+    ${libro.nota ? `<p class="nota">${escapa(libro.nota)}</p>` : ''}
+    <div class="rejilla capitulos">
+      ${libro.capitulos.map((c) => `<a href="#/${coleccion}/${codigo}/${c}">${c}</a>`).join('')}
+    </div>`;
+}
+
+async function lector(coleccion, codigo, capitulo) {
+  const hallado = buscaLibro(coleccion, codigo);
+  if (!hallado) return biblioteca();
+  const { col, libro } = hallado;
+  titulo.textContent = `${libro.nombre} ${capitulo}`;
+  atras.hidden = false;
+  atras.href = `#/${coleccion}/${codigo}`;
+  document.getElementById('mas').hidden = false;
+  document.getElementById('menos').hidden = false;
+  vista.innerHTML = '<p class="cargando">Cargando…</p>';
+
+  let versiculos;
+  try {
+    versiculos = await trae(`datos/${coleccion}/${codigo}/${capitulo}.json`);
+  } catch (e) {
+    vista.innerHTML = '<p class="cargando">No se pudo cargar este capítulo. Comprueba la conexión.</p>';
+    return;
+  }
+
+  const i = libro.capitulos.indexOf(capitulo);
+  const anterior = i > 0 ? libro.capitulos[i - 1] : null;
+  const siguiente = i >= 0 && i < libro.capitulos.length - 1 ? libro.capitulos[i + 1] : null;
+
+  vista.innerHTML = `
+    <div ${col.rtl ? 'dir="rtl"' : ''}>
+      ${versiculos.map((v) => `
+        <p class="versiculo">
+          <span class="n">${v.v}${v.s || ''}</span>${escapa(v.t)}
+          ${v.es ? `<span class="es" dir="ltr" lang="es">${escapa(v.es)}</span>` : ''}
+        </p>`).join('')}
+    </div>
+    <nav class="pie">
+      ${anterior ? `<a class="volver" href="#/${coleccion}/${codigo}/${anterior}">‹ ${anterior}</a>` : '<span></span>'}
+      ${siguiente ? `<a class="volver" href="#/${coleccion}/${codigo}/${siguiente}">${siguiente} ›</a>` : '<span></span>'}
+    </nav>`;
+  window.scrollTo(0, 0);
+}
+
+// --- navegación -------------------------------------------------------------
+function ruta() {
+  if (!indice) return;
+  const partes = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  if (partes.length < 2) return biblioteca();
+  if (partes.length === 2) return capitulos(partes[0], partes[1]);
+  return lector(partes[0], partes[1], parseInt(partes[2], 10));
+}
+
+window.addEventListener('hashchange', ruta);
+
+trae('datos/indice.json').then((d) => { indice = d; ruta(); }).catch(() => {
+  vista.innerHTML = '<p class="cargando">No se pudo cargar la biblioteca.</p>';
+});
+</script>
+</body>
+</html>

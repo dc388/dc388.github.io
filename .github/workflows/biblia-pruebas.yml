@@ -1,0 +1,167 @@
+name: Pruebas — Biblia
+
+# Dos niveles:
+#
+#   - Las unitarias corren en la JVM y tardan segundos: fijan la navegación por
+#     capítulos de la Septuaginta, que no es 1..N seguidos, y la normalización
+#     de la búsqueda, que tiene que dar lo mismo que la columna text_norm que
+#     escribe build_db.py.
+#   - Las funcionales arrancan la app de verdad en un emulador y la recorren:
+#     abren un capítulo en griego y otro en hebreo, buscan una palabra y miran
+#     los ajustes. Tardan bastante más, y por eso van en un trabajo aparte.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/biblia-**"]
+    paths:
+      - "biblia-septuaginta-griega-android/**"
+      - ".github/workflows/biblia-pruebas.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  unitarias:
+    name: Pruebas unitarias
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: biblia-septuaginta-griega-android
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          # Por defecto la acción instala «tools», el paquete que Google
+          # retiró del repositorio; sdkmanager devuelve «Failed to find
+          # package 'tools'» y el trabajo se cae antes de compilar nada.
+          # Se pide solo lo que hace falta de verdad; la plataforma y las
+          # build-tools las instala el paso siguiente.
+          packages: platform-tools
+
+      - name: Instalar plataforma de Android 36
+        run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Las unitarias no tocan la base de datos, así que no hace falta
+      # construirla: basta un asset vacío para que la compilación encuentre el
+      # archivo.
+      - name: Marcador de la base de datos
+        run: |
+          mkdir -p app/src/main/assets
+          [ -f app/src/main/assets/biblia.db ] || : > app/src/main/assets/biblia.db
+
+      - name: Ejecutar
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Publicar el informe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-pruebas-unitarias
+          path: biblia-septuaginta-griega-android/app/build/reports/tests/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  funcionales:
+    name: Pruebas funcionales en emulador
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: biblia-septuaginta-griega-android
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          # Por defecto la acción instala «tools», el paquete que Google
+          # retiró del repositorio; sdkmanager devuelve «Failed to find
+          # package 'tools'» y el trabajo se cae antes de compilar nada.
+          # Se pide solo lo que hace falta de verdad; la plataforma y las
+          # build-tools las instala el paso siguiente.
+          packages: platform-tools
+
+      - name: Instalar plataforma de Android 36
+        run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Reconstruir la base de datos
+        run: python3 tools/build_db.py
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # La aceleración por hardware del emulador necesita /dev/kvm, que en los
+      # runners de GitHub hay que habilitar a mano. Sin esto tarda diez veces más.
+      - name: Habilitar KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+        working-directory: .
+
+      - name: Ejecutar en el emulador
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          ram-size: 4096M
+          disk-size: 4096M
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          working-directory: biblia-septuaginta-griega-android
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
+
+      # El informe se sube como artefacto, pero los artefactos viven en un
+      # almacenamiento que no siempre se alcanza desde fuera del runner. Cuando
+      # algo falla, lo que hace falta es el volcado del árbol de la pantalla que
+      # la prueba imprime al rendirse, así que se escribe también en el registro:
+      # ahí se lee siempre, sin descargar nada.
+      - name: Contar qué falló
+        if: failure()
+        run: |
+          python3 - <<'FIN'
+          import pathlib, xml.etree.ElementTree as ET
+
+          # Sin comodines del shell: la carpeta que crea el emulador lleva
+          # espacios en el nombre («TEST-emulator-5554 - 14.xml») y cualquier
+          # bucle sobre find la parte en trozos.
+          raiz = pathlib.Path("app/build/outputs/androidTest-results")
+          for x in sorted(raiz.rglob("*.xml")):
+              print(f"===== {x}")
+              for caso in ET.parse(x).getroot().iter("testcase"):
+                  for fallo in list(caso.iter("failure")) + list(caso.iter("error")):
+                      print(f"--- {caso.get('classname')}.{caso.get('name')}")
+                      print("\n".join((fallo.text or "").splitlines()[:160]))
+          FIN
+
+      - name: Publicar el informe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-pruebas-funcionales
+          path: biblia-septuaginta-griega-android/app/build/reports/androidTests/
+          if-no-files-found: ignore
+          retention-days: 14
