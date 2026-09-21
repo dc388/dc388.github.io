@@ -5,8 +5,10 @@ En el navegador eso no vale: son 72 MB y nadie espera a que bajen para leer un
 salmo. Aquí se parte en archivos pequeños —uno por capítulo— que el servidor
 manda sueltos y el navegador guarda en su caché.
 
-Se exporta solo lo que hace falta para leer. El interlineal, el léxico y la
-búsqueda son otra pieza y llevan su propia forma de servirse.
+Se exporta el texto y el aparato de estudio: el análisis palabra por palabra
+va en un archivo por capítulo, al lado del texto, y el léxico en cubos por
+millar de número Strong, para que al tocar una palabra el navegador baje unos
+cientos de kilobytes y no el diccionario entero.
 
     python3 tools/exportar_web.py ../biblia-web/datos
 """
@@ -69,6 +71,89 @@ def exportar(destino: Path) -> None:
     total = sum(len(c["libros"]) for c in indice)
     print(f"{len(indice)} colecciones, {total} libros")
 
+    exportar_lexico(con, destino)
+    exportar_formas(con, destino)
+    exportar_morfologia(con, destino)
+
+
+def cubo(strong: str) -> str:
+    """Cubo del léxico: la letra y el millar. G746 -> G0, G3056 -> G3."""
+    letra, numero = strong[0], strong[1:]
+    return f"{letra}{int(numero) // 1000}"
+
+
+def exportar_lexico(con: sqlite3.Connection, destino: Path) -> None:
+    """El diccionario, repartido en cubos por millar.
+
+    Un archivo por entrada serían catorce mil archivos, que hacen lenta la
+    publicación del sitio; uno solo obligaría a bajar el diccionario entero
+    para mirar una palabra. Por millar salen una veintena de archivos de unos
+    cientos de kilobytes: se baja el cubo la primera vez y ya queda en caché.
+    """
+    entradas: dict[str, dict] = {}
+    for f in con.execute(
+        "SELECT strong, lemma, translit, derivation_es, definition, kjv_usage FROM lexicon"
+    ):
+        entradas[f["strong"]] = {
+            "lema": f["lemma"],
+            "translit": f["translit"],
+            "origen": f["derivation_es"],
+            "definicion": f["definition"],
+            "usos": f["kjv_usage"],
+        }
+
+    for f in con.execute("SELECT strong, homonym, gloss_es FROM glosario"):
+        e = entradas.setdefault(f["strong"], {})
+        e.setdefault("es", {})[f["homonym"]] = f["gloss_es"]
+
+    for f in con.execute(
+        "SELECT strong, homonym, source, headword, gloss, pos, article FROM articles"
+    ):
+        e = entradas.setdefault(f["strong"], {})
+        e.setdefault("articulos", {})[f["homonym"]] = {
+            "fuente": f["source"],
+            "entrada": f["headword"],
+            "glosa": f["gloss"],
+            "categoria": f["pos"],
+            "texto": f["article"],
+        }
+
+    cubos: dict[str, dict] = {}
+    for strong, datos in entradas.items():
+        cubos.setdefault(cubo(strong), {})[strong] = datos
+    carpeta = destino / "lexico"
+    carpeta.mkdir(parents=True, exist_ok=True)
+    for nombre, datos in cubos.items():
+        escribir(carpeta / f"{nombre}.json", datos)
+    print(f"  léxico: {len(entradas)} entradas en {len(cubos)} cubos")
+
+
+def exportar_formas(con: sqlite3.Connection, destino: Path) -> None:
+    """El puente de formas del Nuevo Testamento, para el griego sin analizar.
+
+    Se reparte por la primera letra de la forma ya normalizada, que es como la
+    busca el lector.
+    """
+    cubos: dict[str, dict] = {}
+    for f in con.execute("SELECT form, strong, morph, n FROM nt_forms ORDER BY form, n DESC"):
+        inicial = f["form"][0]
+        cubos.setdefault(inicial, {}).setdefault(f["form"], []).append(
+            [f["strong"], f["morph"]]
+        )
+    carpeta = destino / "formas"
+    carpeta.mkdir(parents=True, exist_ok=True)
+    for inicial, datos in cubos.items():
+        escribir(carpeta / f"{ord(inicial)}.json", datos)
+    print(f"  formas del NT: {sum(len(d) for d in cubos.values())} en {len(cubos)} cubos")
+
+
+def exportar_morfologia(con: sqlite3.Connection, destino: Path) -> None:
+    """Los códigos morfológicos ya traducidos al español."""
+    codigos = {f["code"]: f["description"] for f in con.execute(
+        "SELECT code, description FROM morph_codes")}
+    escribir(destino / "morfologia.json", codigos)
+    print(f"  morfología: {len(codigos)} códigos")
+
 
 def exportar_libro(
     con: sqlite3.Connection,
@@ -100,6 +185,34 @@ def exportar_libro(
                 entrada["es"] = fila["espanol"]
             versiculos.append(entrada)
         escribir(carpeta / f"{numero}.json", versiculos)
+        exportar_palabras(con, carpeta, libro_id, numero)
+
+
+def exportar_palabras(
+    con: sqlite3.Connection, carpeta: Path, libro_id: int, capitulo: int
+) -> None:
+    """El análisis palabra por palabra, en su propio archivo.
+
+    Va aparte del texto para que quien solo lee no cargue con él: pesa más que
+    el texto y la mayoría de las visitas no lo abren.
+    """
+    palabras: dict[str, list] = {}
+    for f in con.execute(
+        "SELECT v.verse, v.suffix, w.position, w.surface, w.strong, w.homonym, w.morph"
+        " FROM words w JOIN verses v ON v.id = w.verse_id"
+        " WHERE v.book_id = ? AND v.chapter = ?"
+        " ORDER BY v.verse, v.suffix, w.position",
+        (libro_id, capitulo),
+    ):
+        clave = f"{f['verse']}{f['suffix']}"
+        palabras.setdefault(clave, []).append(
+            [f["surface"], f["strong"], f["homonym"], f["morph"]]
+        )
+    # Sin análisis no se escribe nada: el lector pide el archivo y, si no está,
+    # cae al puente de formas del Nuevo Testamento. Así la Septuaginta, los
+    # Padres y los pseudoepígrafos no se llenan de archivos vacíos.
+    if palabras:
+        escribir(carpeta / f"{capitulo}.palabras.json", palabras)
 
 
 def escribir(ruta: Path, datos: object) -> None:
