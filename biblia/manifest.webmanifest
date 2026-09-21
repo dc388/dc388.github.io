@@ -1,0 +1,14 @@
+{
+  "name": "Biblia Griega y Hebrea",
+  "short_name": "Biblia Griega",
+  "description": "Antiguo Testamento hebreo, Septuaginta, Nuevo Testamento griego, Padres Apostólicos y el Libro de Enoc, en sus lenguas originales.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f5efe2",
+  "theme_color": "#f5efe2",
+  "lang": "es",
+  "icons": [
+    { "src": "icono.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
