@@ -85,6 +85,31 @@ h2:first-child{margin-top:4px}
 .anuncio{margin:28px auto 0; min-height:90px; text-align:center}
 .cargando{color:var(--tinta-suave); padding:24px 0}
 a.volver{text-decoration:none; color:var(--realce); font-size:.9375rem}
+.pal{
+  font:inherit; color:inherit; background:none; border:none; box-shadow:none;
+  padding:0 .05em; margin:0; cursor:pointer; border-radius:3px;
+  border-bottom:1px dotted var(--borde);
+}
+.pal:hover,.pal:focus{background:var(--papel-alto); border-bottom-color:var(--realce); outline:none}
+.hoja{
+  position:fixed; inset:auto 0 0 0; z-index:20; max-height:78vh; overflow:auto;
+  background:var(--papel-alto); border-top:1px solid var(--borde);
+  border-radius:16px 16px 0 0; box-shadow:0 -4px 24px rgba(0,0,0,.18);
+  padding:18px 16px calc(24px + env(safe-area-inset-bottom));
+}
+.hoja[hidden]{display:none}
+.hoja .cerrar{position:absolute; top:12px; inset-inline-end:12px}
+.hoja .cuerpo{max-width:44rem; margin:0 auto}
+.hoja h3{margin:0 0 2px; font-size:1.5rem; font-weight:600}
+.hoja .lema{color:var(--tinta-suave); margin:0 0 14px; font-size:.9375rem}
+.hoja dl{display:grid; grid-template-columns:auto 1fr; gap:6px 14px; margin:0 0 14px; font-size:.9375rem}
+.hoja dt{color:var(--tinta-suave)}
+.hoja dd{margin:0}
+.hoja .apartado{border-top:1px solid var(--borde); padding-top:12px; margin-top:12px}
+.hoja .apartado h4{margin:0 0 6px; font-size:.75rem; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--tinta-suave); font-weight:600}
+.hoja .apartado p{margin:0; font-size:.9375rem; line-height:1.6}
+.hoja .aviso{font-size:.8125rem; color:var(--tinta-suave); line-height:1.5}
 footer{
   max-width:44rem; margin:0 auto; padding:24px 16px calc(32px + env(safe-area-inset-bottom));
   border-top:1px solid var(--borde); color:var(--tinta-suave); font-size:.8125rem; line-height:1.6;
@@ -105,6 +130,11 @@ footer a{color:var(--realce)}
 </header>
 
 <main id="vista"><p class="cargando">Cargando la biblioteca…</p></main>
+
+<div class="hoja" id="hoja" hidden role="dialog" aria-modal="true" aria-label="Análisis de la palabra">
+  <button class="cerrar" id="cerrarHoja" aria-label="Cerrar">✕</button>
+  <div class="cuerpo" id="cuerpoHoja"></div>
+</div>
 
 <footer>
   <p>
@@ -156,6 +186,33 @@ const escapa = (s) => s.replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'
 // Los códigos de libro se repiten entre colecciones —«GEN» es Génesis en
 // hebreo y en la Septuaginta, y son textos distintos—, así que la colección
 // forma parte de la dirección y no se puede buscar solo por el código.
+// Misma normalización que usa la base al construir el índice: minúsculas sin
+// diacríticos, sigma final unificada y sin puntuación. Sin esto, «Λόγος,» no
+// encuentra a «λογος» en el puente de formas.
+function normaliza(s) {
+  return s.normalize('NFD').toLowerCase()
+    .replace(/[\u0300-\u036f\u0591-\u05c7]/g, '')
+    .replace(/ς/g, 'σ')
+    .replace(/[^\p{L}\p{N}]/gu, '')
+    .trim();
+}
+
+const cache = new Map();
+async function traeCache(url) {
+  if (!cache.has(url)) {
+    cache.set(url, trae(url).catch(() => null));
+  }
+  return cache.get(url);
+}
+
+// El léxico va en cubos por millar de número Strong: G746 está en G0, G3056 en
+// G3. Así una consulta baja unos cientos de kilobytes en vez del diccionario
+// entero, y el segundo toque de la misma zona ya no baja nada.
+const traeLexico = (strong) =>
+  traeCache(`datos/lexico/${strong[0]}${Math.floor(parseInt(strong.slice(1), 10) / 1000)}.json`);
+const traeFormas = (forma) => traeCache(`datos/formas/${forma.codePointAt(0)}.json`);
+const traeMorfologia = () => traeCache('datos/morfologia.json');
+
 function buscaLibro(coleccion, codigo) {
   const col = indice.find((c) => c.id === coleccion);
   if (!col) return null;
@@ -213,6 +270,13 @@ async function lector(coleccion, codigo, capitulo) {
     return;
   }
 
+  // El análisis va en su propio archivo y no existe en todas las colecciones:
+  // la Septuaginta, los Padres y los pseudoepígrafos no vienen etiquetados. Si
+  // no está, sus palabras se consultan igual por su forma en el Nuevo
+  // Testamento, que es lo que hace la aplicación de Android.
+  const palabras = await traeCache(`datos/${coleccion}/${codigo}/${capitulo}.palabras.json`);
+  const griego = col.lengua === 'grc';
+
   const i = libro.capitulos.indexOf(capitulo);
   const anterior = i > 0 ? libro.capitulos[i - 1] : null;
   const siguiente = i >= 0 && i < libro.capitulos.length - 1 ? libro.capitulos[i + 1] : null;
@@ -221,7 +285,7 @@ async function lector(coleccion, codigo, capitulo) {
     <div ${col.rtl ? 'dir="rtl"' : ''}>
       ${versiculos.map((v) => `
         <p class="versiculo">
-          <span class="n">${v.v}${v.s || ''}</span>${escapa(v.t)}
+          <span class="n">${v.v}${v.s || ''}</span>${cuerpoDelVersiculo(v, palabras, griego)}
           ${v.es ? `<span class="es" dir="ltr" lang="es">${escapa(v.es)}</span>` : ''}
         </p>`).join('')}
     </div>
@@ -230,6 +294,84 @@ async function lector(coleccion, codigo, capitulo) {
       ${siguiente ? `<a class="volver" href="#/${coleccion}/${codigo}/${siguiente}">${siguiente} ›</a>` : '<span></span>'}
     </nav>`;
   window.scrollTo(0, 0);
+}
+
+/**
+ * El texto del versículo, con sus palabras tocables cuando se pueden consultar.
+ *
+ * Con análisis se usan sus palabras, que traen lema y morfología propios. Sin
+ * él, y si el texto es griego, se parte por espacios y cada trozo se consulta
+ * por su forma. En hebreo sin análisis no se ofrece nada: buscar una forma
+ * hebrea en un índice griego no daría más que ruido.
+ */
+function cuerpoDelVersiculo(v, palabras, griego) {
+  const analisis = palabras && palabras[`${v.v}${v.s || ''}`];
+  if (analisis) {
+    return analisis.map((p) =>
+      `<button class="pal" data-strong="${p[1]}" data-hom="${p[2] || ''}" data-morph="${escapa(p[3] || '')}">${escapa(p[0])}</button>`
+    ).join(' ');
+  }
+  if (!griego) return escapa(v.t);
+  return v.t.split(/\s+/).filter(Boolean).map((palabra) =>
+    `<button class="pal" data-forma="${escapa(palabra)}">${escapa(palabra)}</button>`
+  ).join(' ');
+}
+
+// --- ficha de la palabra ----------------------------------------------------
+const hoja = document.getElementById('hoja');
+const cuerpoHoja = document.getElementById('cuerpoHoja');
+const cierraHoja = () => { hoja.hidden = true; };
+document.getElementById('cerrarHoja').onclick = cierraHoja;
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cierraHoja(); });
+
+vista.addEventListener('click', (e) => {
+  const boton = e.target.closest('.pal');
+  if (boton) abreLaPalabra(boton);
+});
+
+async function abreLaPalabra(boton) {
+  const superficie = boton.textContent;
+  cuerpoHoja.innerHTML = `<h3>${escapa(superficie)}</h3><p class="lema">Consultando…</p>`;
+  hoja.hidden = false;
+
+  let strong = boton.dataset.strong;
+  let hom = boton.dataset.hom || '';
+  let morph = boton.dataset.morph || '';
+  let prestada = false;
+
+  if (!strong) {
+    // Palabra sin análisis propio: se busca su forma en el Nuevo Testamento.
+    const forma = normaliza(boton.dataset.forma || superficie);
+    const cubo = forma ? await traeFormas(forma) : null;
+    const lecturas = cubo && cubo[forma];
+    if (!lecturas || !lecturas.length) {
+      cuerpoHoja.innerHTML = `<h3>${escapa(superficie)}</h3>
+        <p class="aviso">Esta forma no aparece en el Nuevo Testamento, que es de
+        donde se toma el análisis para los textos que no vienen etiquetados.</p>`;
+      return;
+    }
+    [strong, morph] = lecturas[0];
+    prestada = true;
+  }
+
+  const [cubo, morfologia] = await Promise.all([traeLexico(strong), traeMorfologia()]);
+  const e = (cubo && cubo[strong]) || {};
+  const glosa = (e.es || {})[hom] ?? (e.es || {})[''] ?? null;
+  const articulo = (e.articulos || {})[hom] ?? (e.articulos || {})[''] ?? null;
+  const analisis = morph ? (morfologia && morfologia[morph]) || morph : null;
+
+  cuerpoHoja.innerHTML = `
+    <h3>${escapa(superficie)}</h3>
+    <p class="lema">${escapa(e.lema || '')}${e.translit ? ` · ${escapa(e.translit)}` : ''}${glosa ? ` · ${escapa(glosa)}` : ''}</p>
+    <dl>
+      ${analisis ? `<dt>Análisis</dt><dd>${escapa(analisis)}</dd>` : ''}
+      <dt>Strong</dt><dd>${escapa(strong)}</dd>
+      ${e.origen ? `<dt>Procede de</dt><dd>${escapa(e.origen)}</dd>` : ''}
+    </dl>
+    ${e.definicion ? `<div class="apartado"><h4>Diccionario Strong</h4><p>${escapa(e.definicion)}</p></div>` : ''}
+    ${articulo ? `<div class="apartado"><h4>${escapa(articulo.fuente)}</h4><p>${escapa(articulo.texto)}</p></div>` : ''}
+    ${prestada ? `<p class="aviso apartado">Este texto no viene analizado. Lo que ves es
+      lo que esa misma forma significa en el Nuevo Testamento, donde sí está etiquetada.</p>` : ''}`;
 }
 
 // --- navegación -------------------------------------------------------------
