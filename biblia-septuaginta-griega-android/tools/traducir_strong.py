@@ -534,7 +534,7 @@ PALABRAS.update({
     "hate": "odiar|inf", "love": "amar|inf", "desire": "desear|inf",
     "delight": "deleitarse|inf", "long": "anhelar|inf",
     "hear": "oír|inf", "listen": "escuchar|inf", "see": "ver|inf",
-    "look": "mirar|inf", "behold": "contemplar|inf", "watch": "vigilar|inf",
+    "look": "mirar|inf", "behold": "he aquí", "watch": "vigilar|inf",
     "touch": "tocar|inf", "seek": "buscar|inf", "find": "hallar|inf",
     "know": "conocer|inf", "think": "pensar|inf", "remember": "recordar|inf",
     "forget": "olvidar|inf", "teach": "enseñar|inf", "learn": "aprender|inf",
@@ -687,7 +687,7 @@ PALABRAS.update({
     "public": "público|adj", "official": "oficial|adj",
 
     # --- adjetivos y adverbios ---------------------------------------------
-    "good": "bueno|adj", "bad": "malo|adj", "evil": "malo|adj",
+    "good": "bueno|adj", "bad": "malo|adj", "evil": "mal|sus",
     "wicked": "malvado|adj", "righteous": "recto|adj", "just": "justo|adj",
     "holy": "santo|adj", "sacred": "sagrado|adj", "divine": "divino|adj",
     "religious": "religioso|adj", "profane": "profano|adj",
@@ -2413,6 +2413,227 @@ PALABRAS.update({
     "took": "tomó", "grandfather": "abuelo|sus", "hero": "héroe|sus",
 })
 
+PALABRAS.update({
+    # latinismos que las dos obras citan sin traducir
+    "sui": "sui", "sibi": "sibi", "vox": "vox", "verbum": "verbum",
+    "sermo": "sermo", "oratio": "oratio", "utrum": "utrum", "nefas": "nefas",
+    "sanctus": "sanctus", "sacer": "sacer", "usque": "usque", "atque": "atque",
+    "que": "que", "ita": "ita", "solitarium": "solitarium", "quaest": "quaest",
+    "sic": "sic", "homo": "homo",
+
+    "likely": "probable|adj", "partly": "en parte", "evident": "evidente|adj",
+    "due": "debido|adj", "perceived": "percibido", "dealing": "trato|sus",
+    "pleasing": "agradable|adj", "devoure": "devorar|inf", "needed": "necesitado",
+    "element": "elemento|sus", "ointment": "ungüento|sus", "scowl": "ceño|sus",
+    "manifested": "manifestado", "tilled": "labrado", "require": "requerir|inf",
+    "whose": "cuyo", "frivolity": "frivolidad|sus", "dictates": "dicta",
+    "sovereignty": "soberanía|sus", "accomplished": "cumplido",
+    "discover": "descubrir|inf", "magnify": "engrandecer|inf",
+    "partakers": "partícipes|sus", "dissolving": "disolver",
+    "animation": "animación|sus", "nostrils": "narices|sus", "roasting": "asar",
+    "variant": "variante|sus", "rebuilt": "reedificado", "mountains": "montes|sus",
+    "eldest": "el mayor", "reported": "informado", "announced": "anunciado",
+    "godly": "piadoso|adj", "laying": "poner", "compel": "obligar|inf",
+    "ascent": "subida|sus", "mad": "loco|adj", "liable": "sujeto|adj",
+    "provide": "proveer|inf", "regions": "regiones|sus", "fortunes": "fortunas|sus",
+    "treaty": "tratado|sus", "benefits": "beneficios|sus", "thyself": "ti mismo",
+    "definitely": "de modo definido", "omit": "omitir|inf", "slaves": "esclavos|sus",
+    "nomad": "nómada|sus", "laughter": "risa|sus", "accused": "acusado",
+    "finds": "halla", "inconsistent": "inconsecuente|adj",
+    "fellow-christian": "hermano en la fe|sus", "dreadful": "terrible|adj",
+    "inspire": "inspirar|inf", "individuals": "individuos|sus",
+    "confined": "confinado", "sweetly": "con dulzura", "troubles": "aflicciones|sus",
+    "response": "respuesta|sus", "congratulate": "felicitar|inf",
+    "enclosed": "encerrado", "weapons": "armas|sus", "goodness": "bondad|sus",
+    "prospered": "prosperado", "associates": "compañeros|sus", "madman": "loco|sus",
+    "praised": "alabado", "demands": "exige", "departing": "partir",
+    "subject-matter": "materia|sus", "ratio": "proporción|sus",
+    "grammatical": "gramatical|adj", "embodying": "que encarna",
+    "decrees": "decretos|sus", "forsaken": "abandonado", "needy": "necesitado|adj",
+    "conclusion": "conclusión|sus", "invoked": "invocado",
+    "invocation": "invocación|sus", "antithetical": "antitético|adj",
+    "bended": "doblado", "blesses": "bendice", "adieu": "adiós|sus",
+    "overdone": "exagerado", "adored": "adorado", "boastful": "jactancioso|adj",
+    "madly": "con locura", "meets": "encuentra", "respondent": "que responde",
+    "tunefully": "con melodía", "builder": "constructor|sus",
+    "restoring": "restaurar", "enclosure": "recinto|sus", "ritual": "rito|sus",
+    "gates": "puertas|sus", "secretary": "secretario|sus",
+    "inquiry": "indagación|sus", "districts": "distritos|sus",
+    "deities": "deidades|sus", "discernment": "discernimiento|sus",
+    "generic": "genérico|adj", "prisoners": "presos|sus",
+    "irregular": "irregular|adj", "perchance": "acaso",
+    "iterative": "iterativo|adj", "appreciate": "apreciar|inf",
+    "tense-forms": "formas verbales|sus", "rarer": "más raro",
+    "dispossessed": "desposeído", "laws": "leyes|sus", "withstand": "resistir|inf",
+    "enticed": "seducido", "situation": "situación|sus",
+    "spokesman": "portavoz|sus", "ordered": "ordenado", "newness": "novedad|sus",
+    "judged": "juzgado", "worth": "valor|sus", "feasts": "fiestas|sus",
+    "exterminated": "exterminado", "lowly": "humilde|adj",
+    "shattered": "quebrantado", "theophanic": "teofánico|adj",
+    "writer": "escritor|sus", "deserted": "abandonado", "vault": "bóveda|sus",
+    "expenses": "gastos|sus", "administration": "administración|sus",
+    "musterings": "levas|sus", "splendour": "esplendor|sus", "married": "casado",
+    "aristocrats": "aristócratas|sus", "clothed": "vestido",
+    "obtain": "obtener|inf", "skill": "destreza|sus", "emotional": "emocional|adj",
+    "muchness": "abundancia|sus", "doxologies": "doxologías|sus",
+    "firmament": "firmamento|sus", "assembled": "reunido",
+    "miserable": "miserable|adj", "constitution": "constitución|sus",
+    "quicken": "vivificar|inf", "pasturage": "pasto|sus", "chosen": "escogido",
+    "glorified": "glorificado", "enemies": "enemigos|sus", "chewed": "masticado",
+    "forgotten": "olvidado", "lost": "perdido", "needs": "necesita",
+    "citizens": "ciudadanos|sus", "rigid": "rígido|adj",
+    "vindicated": "vindicado", "worked": "trabajado", "stairway": "escalera|sus",
+    "recorded": "registrado", "disciples": "discípulos|sus",
+    "everlasting": "eterno|adj", "caught": "atrapado", "presenting": "presentar",
+    "dedicating": "dedicar", "quickened": "vivificado", "evasive": "evasivo|adj",
+    "aerial": "aéreo|adj", "prayers": "oraciones|sus", "ascribed": "atribuido",
+    "visions": "visiones|sus", "marked": "marcado", "lament": "lamento|sus",
+    "modifying": "que modifica", "vulgarism": "vulgarismo|sus",
+    "mirth": "alegría|sus", "sowing": "siembra|sus", "enclose": "encerrar|inf",
+    "miracles": "milagros|sus", "claim": "reclamar|inf",
+    "condemnation": "condenación|sus", "restrictive": "restrictivo|adj",
+    "severity": "severidad|sus", "hast": "tienes", "devotion": "devoción|sus",
+    "herds": "hatos|sus", "uninhabited": "deshabitado|adj", "towns": "pueblos|sus",
+    "beg": "rogar|inf", "frail": "frágil|adj",
+    "blood-relations": "parientes de sangre|sus", "straits": "estrecheces|sus",
+    "opulence": "opulencia|sus", "preparation": "preparación|sus",
+    "conversation": "conversación|sus", "solemn": "solemne|adj",
+    "seas": "mares|sus", "extol": "ensalzar|inf", "receiving": "recibir",
+    "content": "contento|adj", "participial": "de participio",
+    "workmanship": "obra|sus", "desires": "deseos|sus", "drunk": "ebrio|adj",
+    "possessed": "poseído", "instance": "caso|sus", "insight": "perspicacia|sus",
+    "shades": "sombras|sus", "maintained": "mantenido", "aroused": "despertado",
+    "contemptuously": "con desprecio", "humility": "humildad|sus",
+    "bondman": "siervo|sus", "resumption": "reanudación|sus",
+    "remoteness": "lejanía|sus", "shatter": "quebrantar|inf", "burned": "quemado",
+    "cultivation": "cultivo|sus", "apostolic": "apostólico|adj",
+    "ornaments": "adornos|sus", "classes": "clases|sus",
+    "veneration": "veneración|sus", "sharing": "compartir",
+    "overwhelm": "abrumar|inf", "condescending": "condescendiente|adj",
+    "lovingkindness": "misericordia|sus", "says": "dice", "entrusted": "confiado",
+    "characterizing": "que caracteriza", "paces": "pasos|sus",
+    "plighted": "empeñado", "immaterial": "inmaterial|adj", "rite": "rito|sus",
+    "register": "registro|sus", "inviolable": "inviolable|adj",
+    "shepherds": "pastores|sus", "venerate": "venerar|inf",
+    "ordinances": "ordenanzas|sus", "incur": "incurrir|inf",
+    "contentment": "contentamiento|sus", "received": "recibido",
+    "peace-offering": "ofrenda de paz|sus", "chest": "cofre|sus",
+    "moved": "movido", "pillars": "columnas|sus", "taught": "enseñado",
+    "wrought": "labrado", "bewildered": "aturdido", "divided": "dividido",
+    "honourable": "honroso|adj", "tranquility": "tranquilidad|sus",
+    "profaned": "profanado", "remains": "restos|sus", "vapour": "vapor|sus",
+    "brightness": "resplandor|sus", "prescribed": "prescrito",
+    "recall": "recordar|inf", "commemorate": "conmemorar|inf",
+    "attributes": "atributos|sus", "lasting": "duradero|adj",
+    "affecting": "que afecta", "commemorated": "conmemorado",
+    "idolatries": "idolatrías|sus", "extenuating": "atenuante|adj",
+    "commonly": "por lo común", "inheriting": "que hereda",
+    "cricket": "grillo|sus", "impoverished": "empobrecido", "virile": "viril|adj",
+    "endearment": "cariño|sus", "vigour": "vigor|sus", "bank": "ribera|sus",
+    "recurring": "recurrente|adj", "compliance": "conformidad|sus",
+    "diminution": "disminución|sus", "wady": "uadi|sus",
+    "correlative": "correlativo|adj", "plead": "alegar|inf",
+    "expelled": "expulsado", "esteemed": "estimado", "landed": "de tierra",
+    "earth's": "de la tierra", "forfeited": "perdido",
+    "terebinth": "terebinto|sus", "derivatives": "derivados|sus",
+    "exhaust": "agotar|inf", "melting": "derretir", "reports": "informes|sus",
+    "released": "soltado", "utterances": "dichos|sus",
+    "proclamations": "proclamas|sus", "haste": "prisa|sus", "chased": "perseguido",
+    "realize": "percatarse|inf", "intuition": "intuición|sus",
+    "lords": "señores|sus", "permission": "permiso|sus",
+    "demanding": "que exige", "deaconess": "diaconisa|sus", "brand": "tizón|sus",
+    "partake": "participar|inf", "chamber": "aposento|sus", "fathers": "padres|sus",
+    "blotted": "borrado", "blot": "borrar|inf", "dam": "presa|sus",
+    "writings": "escritos|sus", "families": "familias|sus", "aright": "rectamente",
+    "judgments": "juicios|sus", "directed": "dirigido", "dedicate": "dedicar|inf",
+    "divisions": "divisiones|sus", "begotten": "engendrado", "capable": "capaz|adj",
+    "great-grandson": "bisnieto|sus", "armed": "armado",
+    "timeless": "intemporal|adj", "adds": "añade", "suppose": "suponer|inf",
+    "prudent": "prudente|adj", "spoiled": "despojado", "forenoon": "mañana|sus",
+    "attendants": "servidores|sus", "commanded": "mandado",
+    "essence": "esencia|sus", "uncover": "descubrir|inf", "sack": "saco|sus",
+    "scattered": "esparcido", "grain-offering": "ofrenda de grano|sus",
+    "views": "vistas|sus", "loveable": "amable|adj", "lovers": "amantes|sus",
+    "glorify": "glorificar|inf", "annihilation": "aniquilación|sus",
+    "lain": "yacido", "connects": "conecta", "two-thirds": "dos tercios",
+    "helped": "ayudado", "liberated": "liberado", "liberate": "liberar|inf",
+    "amiss": "mal", "ungodly": "impío|adj", "majestic": "majestuoso|adj",
+    "noblest": "el más noble", "plotted": "tramado", "idealy": "de modo ideal",
+    "rebuke": "reprender|inf", "performing": "que realiza",
+    "attribute": "atributo|sus", "law-giver": "legislador|sus",
+    "opponent-at-law": "adversario en juicio|sus", "rearward": "retaguardia|sus",
+    "rearguard": "retaguardia|sus", "money-offerings": "ofrendas en dinero|sus",
+    "sarcophagus": "sarcófago|sus", "mummy-case": "sarcófago|sus",
+    "travail": "dolor de parto|sus", "touching": "que toca",
+    "adjure": "conjurar|inf", "tracing": "que traza", "leading": "que conduce",
+    "numerical": "numérico|adj", "glorifying": "que glorifica",
+    "didst": "hiciste", "dishonour": "deshonra|sus", "guardian": "guardián|sus",
+    "interpreter": "intérprete|sus", "history": "historia|sus",
+    "overthrown": "derribado", "thankful": "agradecido|adj", "sketch": "esbozo|sus",
+    "scales": "balanza|sus", "settlement": "asentamiento|sus",
+    "represented": "representado", "impelling": "que impele",
+    "counterparts": "contrapartes|sus", "theocracy": "teocracia|sus",
+    "contains": "contiene", "scripture": "escritura|sus",
+    "directions": "direcciones|sus", "healing": "sanidad|sus",
+    "debts": "deudas|sus", "officers": "oficiales|sus",
+    "unreality": "irrealidad|sus", "died": "murió", "numbered": "contado",
+    "untranslatable": "intraducible|adj", "summing": "que suma",
+    "chariots": "carros|sus", "gladden": "alegrar|inf", "counted": "contado",
+    "constitutional": "constitucional|adj", "honoured": "honrado",
+    "adornment": "adorno|sus", "deceit": "engaño|sus",
+    "identified": "identificado", "negligent": "negligente|adj",
+    "cousin": "primo|sus", "uplifted": "levantado", "carnivora": "carnívoros|sus",
+    "uprightness": "rectitud|sus", "singers": "cantores|sus", "pulled": "tirado",
+    "abolished": "abolido", "wormy": "agusanado|adj", "narrower": "más estrecho",
+    "fasting": "ayuno|sus", "jewels": "joyas|sus", "sworn": "jurado",
+    "additional": "adicional|adj", "missive": "misiva|sus",
+    "discovered": "descubierto", "disclosed": "revelado", "ford": "vado|sus",
+    "acceptance": "aceptación|sus", "diligently": "con diligencia",
+    "slaying": "matar", "bishop": "obispo|sus", "consequent": "consiguiente|adj",
+    "gourd": "calabacera|sus", "asses": "asnos|sus", "morality": "moralidad|sus",
+    "strayed": "extraviado", "hated": "odiado",
+    "disappearance": "desaparición|sus", "consent": "consentimiento|sus",
+    "potential": "potencial|adj", "dried": "secado", "trusty": "fiel|adj",
+    "shelter": "abrigo|sus", "treatment": "trato|sus", "awakening": "despertar|sus",
+    "forthwith": "en seguida", "conjectures": "conjeturas|sus",
+    "enjoy": "disfrutar|inf", "first-born": "primogénito|sus",
+    "hire": "alquilar|inf", "mindful": "atento|adj",
+    "discerning": "que discierne", "attaining": "que alcanza",
+    "beggary": "mendicidad|sus", "reliable": "fiable|adj", "conceived": "concebido",
+    "fleeing": "huir", "elements": "elementos|sus", "discreet": "discreto|adj",
+    "difference": "diferencia|sus", "pipe": "flauta|sus", "missing": "que falta",
+    "soever": "quiera que", "excited": "excitado", "innermost": "lo más íntimo",
+    "qualitative": "cualitativo|adj", "wrongdoing": "maldad|sus",
+    "aggregate": "conjunto|sus", "sinning": "pecar", "depending": "que depende",
+    "coalescing": "que se funde", "translated": "traducido",
+    "adjudge": "adjudicar|inf", "ruthless": "despiadado|adj",
+    "enterprise": "empresa|sus", "undertaking": "empresa|sus",
+    "possibly": "quizá", "honored": "honrado", "tabooed": "vedado",
+    "hallow": "santificar|inf", "hallowed": "santificado",
+    "sancturay": "santuario|sus", "study": "estudio|sus", "skirt": "falda|sus",
+    "fovour": "favor|sus", "successfully": "con éxito", "doubtful": "dudoso|adj",
+    "hurt": "dañar|inf", "depresses": "abate", "learned": "aprendido",
+    "punctiliar": "puntual|adj", "allegiance": "lealtad|sus", "lies": "yace",
+    "opened": "abierto", "breach": "brecha|sus", "consulted": "consultado",
+    "considereth": "considera", "ages": "edades|sus", "shot": "disparado",
+    "stages": "etapas|sus", "binding-house": "casa de atadura|sus",
+    "radiates": "irradia", "communicated": "comunicado",
+    "wholesale": "al por mayor", "loathsome": "repugnante|adj",
+    "required": "requerido", "characterized": "caracterizado", "sale": "venta|sus",
+    "joyful": "gozoso|adj", "salutations": "salutaciones|sus",
+    "wickedly": "con maldad", "began": "comenzó", "shone": "brilló",
+    "doorway": "puerta|sus", "bad-tempered": "de mal genio",
+    "inquired": "inquirido", "despise": "despreciar|inf", "include": "incluir|inf",
+    "pulling": "tirar", "treasurers": "tesoreros|sus", "rehearse": "referir|inf",
+    "relate": "referir|inf", "impersonal": "impersonal|adj", "rules": "reglas|sus",
+    "consummated": "consumado", "annual": "anual|adj", "gracious": "benigno|adj",
+    "involves": "implica", "shalt": "habrás de", "recounted": "referido",
+    "rehearsed": "referido", "muster-officer": "oficial de leva|sus",
+    "enumerator": "enumerador|sus", "kindly": "con bondad",
+    "buildings": "edificios|sus", "secondary": "secundario|adj",
+    "horseback": "a caballo", "driveth": "conduce",
+})
+
 # Nombres propios y gentilicios que sí cambian en español.
 NOMBRES: dict[str, str] = {
     "Israelite": "israelita", "Israelites": "israelitas",
@@ -2445,7 +2666,7 @@ NOMBRES: dict[str, str] = {
     "Levite": "levita", "Levites": "levitas", "Levi": "Leví",
     "Nethinim": "netineos", "Pharisee": "fariseo", "Pharisees": "fariseos",
     "Sadducee": "saduceo", "Sadducees": "saduceos",
-    "Abraham": "Abraham", "Isaac": "Isaac", "Jacob": "Jacob",
+    "Abraham": "Abraham", "Adam": "Adán", "Isaac": "Isaac", "Jacob": "Jacob",
     "Moses": "Moisés", "Aaron": "Aarón", "David": "David",
     "Solomon": "Salomón", "Saul": "Saúl", "Paul": "Pablo",
     "Peter": "Pedro", "John": "Juan", "James": "Santiago",
@@ -2697,6 +2918,22 @@ def _femenino(sustantivo: str) -> bool:
     return nucleo.endswith(("a", "as"))
 
 
+# Los ordinales van delante del sustantivo, al revés que los demás adjetivos,
+# y «primero» y «tercero» se apocopan: «primer hombre», no «primero hombre».
+ORDINALES = {
+    "primero": ("primer", "primera"), "segundo": ("segundo", "segunda"),
+    "tercero": ("tercer", "tercera"), "cuarto": ("cuarto", "cuarta"),
+    "quinto": ("quinto", "quinta"), "sexto": ("sexto", "sexta"),
+    "séptimo": ("séptimo", "séptima"), "octavo": ("octavo", "octava"),
+    "noveno": ("noveno", "novena"), "décimo": ("décimo", "décima"),
+    "último": ("último", "última"),
+}
+
+
+# Todas las formas, porque para entonces el ordinal ya está concordado.
+_FORMAS_ORDINALES = set(ORDINALES) | {f for par in ORDINALES.values() for f in par}
+
+
 def _plural(sustantivo: str) -> bool:
     nucleo = sustantivo.split()[0] if " " in sustantivo else sustantivo
     return (nucleo.endswith("s") and len(nucleo) > 3
@@ -2738,7 +2975,9 @@ def _ordenar(texto: str) -> str:
     # el adjetivo, detrás; la puntuación que cerraba el grupo se queda al final
     n = 0
     while n + 1 < len(piezas):
-        if _marca_de(piezas[n]) == "adj" and _marca_de(piezas[n + 1]) == "sus":
+        # el adjetivo sólo se pospone si va pegado al sustantivo: si lleva coma
+        # detrás son dos acepciones de una lista, no un sintagma
+        if piezas[n].endswith("|adj") and _marca_de(piezas[n + 1]) == "sus":
             adjetivo, sustantivo = piezas[n], piezas[n + 1]
             cola = re.search(r"[^0-9A-Za-zÀ-ÿ'-]*$", _MARCA.sub("", sustantivo)).group()
             if cola:
@@ -2750,6 +2989,16 @@ def _ordenar(texto: str) -> str:
             continue
         n += 1
 
+    # el ordinal, delante y concordado
+    for n, pieza in enumerate(piezas):
+        if _marca_de(pieza) != "sus" or not n:
+            continue
+        ordinal = _nucleo(piezas[n - 1])
+        if ordinal in ORDINALES:
+            masculino, femenino = ORDINALES[ordinal]
+            forma = femenino if _femenino(_nucleo(pieza)) else masculino
+            piezas[n - 1] = piezas[n - 1].replace(ordinal, forma, 1)
+
     # concordancia: el determinante y el adjetivo, con el sustantivo
     for n, pieza in enumerate(piezas):
         if _marca_de(pieza) != "sus":
@@ -2757,9 +3006,14 @@ def _ordenar(texto: str) -> str:
         nucleo = _nucleo(pieza)
         if not nucleo or not _femenino(nucleo):
             continue
-        if n and _nucleo(piezas[n - 1]) in DETERMINANTES and nucleo not in FEMENINOS_CON_EL:
-            anterior = _nucleo(piezas[n - 1])
-            piezas[n - 1] = piezas[n - 1].replace(anterior, DETERMINANTES[anterior], 1)
+        atras = n - 1
+        if atras > 0 and _nucleo(piezas[atras]) in _FORMAS_ORDINALES:
+            atras -= 1                   # «la tercera mujer»: el ordinal va en medio
+        if atras >= 0 and _nucleo(piezas[atras]) in DETERMINANTES and nucleo not in FEMENINOS_CON_EL:
+            anterior = _nucleo(piezas[atras])
+            piezas[atras] = piezas[atras].replace(anterior, DETERMINANTES[anterior], 1)
+        if n and _nucleo(piezas[n - 1]) in ORDINALES:
+            continue                     # el ordinal ya se resolvió antes
         if n + 1 < len(piezas) and _marca_de(piezas[n + 1]) == "adj":
             siguiente = _nucleo(piezas[n + 1])
             if siguiente.endswith("o"):

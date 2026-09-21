@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import re
 
-from traducir_strong import desconocidas, traducir
+from traducir_strong import PALABRAS, desconocidas, traducir
 
 # Abreviaturas de las dos obras. Se abren enteras: son la barrera de entrada
 # para quien no se crió leyendo léxicos ingleses.
@@ -127,6 +127,17 @@ SIGLAS.update({
     "ind.": "indicativo", "proph.": "profético", "var.": "variante",
     "vernac.": "lengua vernácula", "trop.": "en sentido figurado",
     "post-positive": "pospositivo", "phem.": "eufemismo",
+    "expl.": "explicación", "diff.": "distinto", "ordin.": "ordinal",
+    "equiv.": "equivalente", "causat.": "causativo", "correl.": "correlativo",
+    "copul.": "copulativo", "asynd.": "asíndeton", "epexeg.": "epexegético",
+    "pleonast.": "pleonástico", "topogr.": "topográfico",
+    "contemp.": "contemporáneo", "fpl.": "femenino plural",
+    "identif.": "identificado", "propr.": "propio", "trib.": "tribu",
+    "gentilic.": "gentilicio", "elsewh.": "en otro lugar", "betw.": "entre",
+    "init.": "al principio", "der.": "derivado", "aft.": "después",
+    "sthg.": "algo", "cent.": "siglo", "pp.": "págs.", "ms.": "manuscrito",
+    "bks.": "libros", "nn.": "notas", "ell.": "elipsis", "indep.": "independiente",
+    "f.": "femenino", "m.": "masculino", "art.": "artículo",
     "poet.": "poético", "exclam.": "exclamación", "onomat.": "onomatopéyico", "prob": "probablemente",
     "adj.": "adjetivo", "num.": "numeral", "ord.": "ordinal",
     "card.": "cardinal", "distrib.": "distributivo", "emph.": "enfático",
@@ -173,6 +184,9 @@ _PALABRA_ASCII = re.compile(r"[A-Za-z][A-Za-z'-]*|[^A-Za-z]+")
 _NEUTRO = re.compile(r"^[\s,;:.()\[\]'\"!?&/-]*$")
 # Los números romanos, uno por uno y no por sus letras: «did», «mix» e «ill»
 # están hechos de letras romanas y se colaban en inglés sin que nadie lo notara.
+_ROMANO_ESTRICTO = re.compile(
+    r"^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$")
+
 ROMANOS = {
     "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii",
     "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx", "xxi", "xxii",
@@ -239,7 +253,7 @@ def _piezas(linea: str) -> list[tuple[str, str]]:
             elif _PALABRA_INGLESA.match(trozo):
                 clase = "protegido" if _protegido_suelto(trozo, abre, cierra) else "prosa"
                 salida.append((clase, trozo))
-            elif _NEUTRO.match(trozo) and salida and salida[-1][0] in ("prosa", "sigla"):
+            elif _NEUTRO.match(trozo) and salida:
                 salida[-1] = (salida[-1][0], salida[-1][1] + trozo)
             else:
                 salida.append(("protegido", trozo))
@@ -299,5 +313,7 @@ def _protegido_suelto(trozo: str, abre: str, cierra: str) -> bool:
     no una palabra. Salvo el artículo «a», que sí lo es."""
     if len(trozo) == 1:
         return trozo not in "aA" or bool(abre or cierra)
+    if _ROMANO_ESTRICTO.match(trozo.upper()) and trozo.lower() not in PALABRAS:
+        return trozo != "I" and (trozo.isupper() or trozo.islower() and len(trozo) > 1)
     return trozo.lower() in ROMANOS and trozo != "I" and (
         trozo.isupper() or trozo.islower() and len(trozo) > 1)
