@@ -109,6 +109,11 @@ a.volver{text-decoration:none; color:var(--realce); font-size:.9375rem}
 .hoja .apartado h4{margin:0 0 6px; font-size:.75rem; text-transform:uppercase;
   letter-spacing:.06em; color:var(--tinta-suave); font-weight:600}
 .hoja .apartado p{margin:0; font-size:.9375rem; line-height:1.6}
+.hoja .idioma{
+  font-weight:400; letter-spacing:0; text-transform:none; color:var(--tinta-suave);
+  border:1px solid var(--borde); border-radius:999px; padding:1px 7px; margin-inline-start:6px;
+  font-size:.6875rem;
+}
 .hoja .aviso{font-size:.8125rem; color:var(--tinta-suave); line-height:1.5}
 footer{
   max-width:44rem; margin:0 auto; padding:24px 16px calc(32px + env(safe-area-inset-bottom));
@@ -329,6 +334,26 @@ vista.addEventListener('click', (e) => {
   if (boton) abreLaPalabra(boton);
 });
 
+/**
+ * La definición de Strong, en español cuando ya está traducida.
+ *
+ * Strong escribió en inglés en 1890 y su obra es la que hay en dominio
+ * público. Se va traduciendo a mano por orden de frecuencia, así que mientras
+ * a un lema no le haya tocado se enseña la inglesa, dicho claramente: es
+ * preferible a un hueco vacío, y a quien no lee inglés le avisa de por qué no
+ * lo entiende.
+ */
+function definicion(e) {
+  if (e.definicion_es) {
+    return `<div class="apartado"><h4>Diccionario Strong</h4><p>${escapa(e.definicion_es)}</p></div>`;
+  }
+  if (e.definicion) {
+    return `<div class="apartado"><h4>Diccionario Strong <span class="idioma">en inglés</span></h4>
+      <p>${escapa(e.definicion)}</p></div>`;
+  }
+  return '';
+}
+
 async function abreLaPalabra(boton) {
   const superficie = boton.textContent;
   cuerpoHoja.innerHTML = `<h3>${escapa(superficie)}</h3><p class="lema">Consultando…</p>`;
@@ -368,8 +393,8 @@ async function abreLaPalabra(boton) {
       <dt>Strong</dt><dd>${escapa(strong)}</dd>
       ${e.origen ? `<dt>Procede de</dt><dd>${escapa(e.origen)}</dd>` : ''}
     </dl>
-    ${e.definicion ? `<div class="apartado"><h4>Diccionario Strong</h4><p>${escapa(e.definicion)}</p></div>` : ''}
-    ${articulo ? `<div class="apartado"><h4>${escapa(articulo.fuente)}</h4><p>${escapa(articulo.texto)}</p></div>` : ''}
+    ${definicion(e)}
+    ${articulo ? `<div class="apartado"><h4>${escapa(articulo.fuente)} <span class="idioma">en inglés</span></h4><p>${escapa(articulo.texto)}</p></div>` : ''}
     ${prestada ? `<p class="aviso apartado">Este texto no viene analizado. Lo que ves es
       lo que esa misma forma significa en el Nuevo Testamento, donde sí está etiquetada.</p>` : ''}`;
 }

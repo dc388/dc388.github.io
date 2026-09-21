@@ -189,8 +189,12 @@ fun WordStudySheet(
             Field("Análisis", study.word.morphology ?: study.word.morphCode)
             study.article?.gloss?.let { Field("Definición", it) }
             entry?.derivationEs?.let { Field("Procede de", it) }
+            // Traducida a mano por orden de frecuencia: va aquí arriba, con lo
+            // demás que ya se lee en español.
+            entry?.definitionEs?.let { Field("Diccionario Strong", it) }
 
-            val hayObrasEnIngles = entry?.definition != null || study.article != null
+            val faltaTraducirLaDefinicion = entry?.definitionEs == null && entry?.definition != null
+            val hayObrasEnIngles = faltaTraducirLaDefinicion || study.article != null
             if (hayObrasEnIngles) {
                 HorizontalDivider(
                     modifier = Modifier.padding(top = 22.dp, bottom = 4.dp),
@@ -208,7 +212,9 @@ fun WordStudySheet(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                entry?.definition?.let { Field("Diccionario Strong (1890)", it) }
+                if (faltaTraducirLaDefinicion) {
+                    entry?.definition?.let { Field("Diccionario Strong (1890)", it) }
+                }
                 study.article?.let { Field(it.source, it.article) }
             }
 

@@ -92,13 +92,15 @@ def exportar_lexico(con: sqlite3.Connection, destino: Path) -> None:
     """
     entradas: dict[str, dict] = {}
     for f in con.execute(
-        "SELECT strong, lemma, translit, derivation_es, definition, kjv_usage FROM lexicon"
+        "SELECT strong, lemma, translit, derivation_es, definition, definition_es,"
+        " kjv_usage FROM lexicon"
     ):
         entradas[f["strong"]] = {
             "lema": f["lemma"],
             "translit": f["translit"],
             "origen": f["derivation_es"],
             "definicion": f["definition"],
+            "definicion_es": f["definition_es"],
             "usos": f["kjv_usage"],
         }
 

@@ -46,6 +46,7 @@ from clean import clean_text, count_residual  # noqa: E402
 from morphology import build_table  # noqa: E402
 from abbott_smith import build as build_abbott_smith  # noqa: E402
 from glosario import GRIEGO, HEBREO  # noqa: E402
+from definiciones import DEFINICIONES  # noqa: E402
 from etimologia import traducir as traducir_etimologia  # noqa: E402
 from traduccion import LIBROS_AT, LIBROS_NT, leer as leer_rv1909  # noqa: E402
 from bdb import build as build_bdb, resolve as resolve_bdb  # noqa: E402
@@ -225,6 +226,10 @@ CREATE TABLE lexicon (
     -- la aplicación no muestra el campo, en vez de enseñarlo en inglés.
     derivation_es TEXT,
     definition TEXT,
+    -- La definición de Strong traducida a mano por tools/definiciones.py. Nula
+    -- mientras a ese lema no le haya tocado: la aplicación enseña entonces la
+    -- inglesa, que es la que hay, en vez de dejar el hueco vacío.
+    definition_es TEXT,
     kjv_usage  TEXT
 );
 -- Artículos de léxico de referencia: Brown-Driver-Briggs para el hebreo y
@@ -731,8 +736,9 @@ def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
         entries = json.loads(raw[raw.index("{"): raw.rindex("}") + 1])
         con.executemany(
             "INSERT OR IGNORE INTO lexicon"
-            " (strong, lemma, translit, derivation, derivation_es, definition, kjv_usage)"
-            " VALUES (?,?,?,?,?,?,?)",
+            " (strong, lemma, translit, derivation, derivation_es, definition,"
+            " definition_es, kjv_usage)"
+            " VALUES (?,?,?,?,?,?,?,?)",
             [
                 (
                     strong,
@@ -742,6 +748,7 @@ def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
                     (e.get("derivation") or "").strip() or None,
                     traducir_etimologia((e.get("derivation") or "").strip() or None),
                     (e.get("strongs_def") or "").strip() or None,
+                    DEFINICIONES.get(strong),
                     (e.get("kjv_def") or "").strip() or None,
                 )
                 for strong, e in entries.items()
@@ -1124,6 +1131,15 @@ def build(sources: Path, out: Path) -> None:
     ):
         if coleccion in cobertura:
             print(f"    {nombre:30s} {cobertura[coleccion]} % de sus palabras")
+
+    total, cubiertas = con.execute(
+        "SELECT COUNT(*), COUNT(l.definition_es) FROM words w"
+        " JOIN lexicon l ON l.strong = w.strong"
+    ).fetchone()
+    print(
+        f"  definición de Strong en español  {len(DEFINICIONES):5d} lemas"
+        f"  ({cubiertas * 100 / total:.1f} % de las palabras)"
+    )
 
     print("Glosario español de la definición breve:")
     cargar_glosario(con)

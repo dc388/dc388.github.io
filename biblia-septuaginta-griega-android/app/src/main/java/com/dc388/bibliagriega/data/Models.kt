@@ -114,6 +114,11 @@ data class LexiconEntry(
     /** La etimología en español; nula cuando no se pudo traducir entera. */
     val derivationEs: String?,
     val definition: String?,
+    /**
+     * La definición de Strong en español; nula mientras a ese lema no le haya
+     * tocado en la traducción, que va por orden de frecuencia.
+     */
+    val definitionEs: String?,
     val kjvUsage: String?,
 )
 
