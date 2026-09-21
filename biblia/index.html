@@ -57,6 +57,20 @@ main{max-width:44rem; margin:0 auto; padding:20px 16px 96px}
 h2{font-size:1rem; font-weight:600; color:var(--tinta-suave); text-transform:uppercase;
    letter-spacing:.06em; margin:28px 0 10px}
 h2:first-child{margin-top:4px}
+/* Las pestañas de la biblioteca. En un teléfono tienen que caber tres y
+   poder tocarse sin apuntar: 44px de alto es el mínimo cómodo. */
+.pestanas{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 22px}
+.pestanas button{
+  font:inherit; font-size:.875rem; cursor:pointer; min-height:44px;
+  background:var(--papel-alto); color:var(--tinta-suave);
+  border:1px solid var(--borde); border-radius:999px; padding:8px 15px;
+}
+.pestanas button span{font-variant-numeric:tabular-nums; opacity:.65; margin-left:4px}
+.pestanas button:hover{border-color:var(--realce)}
+.pestanas button.activa{
+  color:var(--tinta); border-color:var(--realce); box-shadow:inset 0 0 0 1px var(--realce);
+}
+.rejilla a small{display:block; font-size:.75rem; color:var(--tinta-suave); margin-top:1px}
 .rejilla{display:flex; flex-wrap:wrap; gap:8px}
 .rejilla a{
   display:block; text-decoration:none; color:inherit; background:var(--papel-alto);
@@ -252,19 +266,113 @@ function buscaLibro(coleccion, codigo) {
 }
 
 // --- pantallas --------------------------------------------------------------
+// --- biblioteca -------------------------------------------------------------
+/**
+ * Las clases de libro, y qué se le dice de cada una a quien lee.
+ *
+ * Son 138 libros y mezclarlos en una lista sin decir cuál es cuál sería el peor
+ * servicio que se le puede hacer a quien estudia: hay que poder ver de un golpe
+ * si lo que se lee es Escritura o es literatura del mismo período. El criterio
+ * es el de las Asambleas de Dios, que reciben como canon los 66 libros del
+ * canon protestante; lo demás se ofrece para estudio y se dice.
+ *
+ * No se llama «apócrifo» a todo lo que no es canon. Los deuterocanónicos los
+ * recibe Roma y las iglesias orientales, y saberlo importa; los Padres
+ * Apostólicos nunca se presentaron como Escritura, así que llamarlos apócrifos
+ * sería sencillamente falso.
+ */
+const CLASES = {
+  canon: ['Canon', 'Los 66 libros que las Asambleas de Dios reciben como Escritura inspirada.'],
+  deuterocanonico: ['Deuterocanónicos',
+    'Recibidos como canon por la Iglesia católica y las orientales, no por las ' +
+    'Asambleas de Dios. Se ofrecen para estudio.'],
+  septuaginta: ['Otros libros de la Septuaginta',
+    'Vienen en los códices griegos y ninguna iglesia los recibe como canon.'],
+  pseudoepigrafo: ['Pseudoepígrafos',
+    'Atribuidos a un autor que no los escribió. Se citan en el Nuevo Testamento ' +
+    '—Judas 14 cita a Enoc— y por eso se estudian.'],
+  padres: ['Padres Apostólicos',
+    'Cartas y manuales cristianos del siglo I y II. No son apócrifos: nunca se ' +
+    'presentaron como Escritura.'],
+};
+
+const PESTANAS = [
+  { id: 'canon', nombre: 'Canon', clases: ['canon'] },
+  { id: 'apocrifos', nombre: 'Libros apócrifos',
+    clases: ['deuterocanonico', 'septuaginta', 'pseudoepigrafo'] },
+  { id: 'padres', nombre: 'Padres Apostólicos', clases: ['padres'] },
+];
+
+// El orden en que se enseñan los que no son canon: primero lo que alguna
+// iglesia recibe, y dentro de eso el orden de la Vulgata, que es como se citan.
+const ORDEN_APOCRIFOS = [
+  'TOB', 'JDT', 'SAB', 'SIR', 'BAR', 'CJE', '1MA', '2MA',
+  'SUS', 'SUT', 'BEL', 'BET', '1ES', '3MA', '4MA', 'ODA', 'SSA', 'ENOC',
+];
+
+let pestana = 'canon';
+
+function enlaceLibro(col, libro) {
+  const suelto = col.id === 'lxx' || col.id === 'pseudo';
+  return `<a href="#/${col.id}/${libro.codigo}">${escapa(libro.nombre)}${
+    suelto ? `<small>${escapa(col.corto)}</small>` : ''}</a>`;
+}
+
+/** Los libros de una clase, con la colección de la que salen. */
+function porClase(clase) {
+  const salida = [];
+  for (const col of indice) {
+    for (const libro of col.libros) {
+      if (libro.canon === clase) salida.push({ col, libro });
+    }
+  }
+  if (clase === 'canon') return salida;
+  salida.sort((a, b) => {
+    const pa = ORDEN_APOCRIFOS.indexOf(a.libro.codigo);
+    const pb = ORDEN_APOCRIFOS.indexOf(b.libro.codigo);
+    return (pa < 0 ? 99 : pa) - (pb < 0 ? 99 : pb);
+  });
+  return salida;
+}
+
 function biblioteca() {
   titulo.textContent = 'Biblia Griega y Hebrea';
   atras.hidden = true;
   document.getElementById('mas').hidden = true;
   document.getElementById('menos').hidden = true;
-  vista.innerHTML = indice.map((col) => `
-    <section>
-      <h2>${escapa(col.nombre)}</h2>
-      <div class="rejilla">
-        ${col.libros.map((l) => `<a href="#/${col.id}/${l.codigo}">${escapa(l.nombre)}</a>`).join('')}
-      </div>
-      <p class="fuente">${escapa(col.edicion)} · ${escapa(col.licencia)}</p>
-    </section>`).join('');
+
+  const actual = PESTANAS.find((p) => p.id === pestana) || PESTANAS[0];
+  const pestanas = `<nav class="pestanas">${PESTANAS.map((p) => {
+    const cuantos = p.clases.reduce((n, c) => n + porClase(c).length, 0);
+    return `<button data-pestana="${p.id}"${p.id === actual.id ? ' class="activa"' : ''}
+      >${escapa(p.nombre)} <span>${cuantos}</span></button>`;
+  }).join('')}</nav>`;
+
+  // El canon se enseña por colección, porque cada una es una edición distinta
+  // del mismo libro y hay que poder elegir; lo demás, por clase.
+  const secciones = actual.id === 'canon'
+    ? indice.filter((col) => col.libros.some((l) => l.canon === 'canon')).map((col) => `
+      <section>
+        <h2>${escapa(col.nombre)}</h2>
+        <div class="rejilla">
+          ${col.libros.filter((l) => l.canon === 'canon')
+            .map((l) => `<a href="#/${col.id}/${l.codigo}">${escapa(l.nombre)}</a>`).join('')}
+        </div>
+        <p class="fuente">${escapa(col.edicion)} · ${escapa(col.licencia)}</p>
+      </section>`).join('')
+    : actual.clases.filter((c) => porClase(c).length).map((clase) => `
+      <section>
+        <h2>${escapa(CLASES[clase][0])}</h2>
+        <p class="nota">${escapa(CLASES[clase][1])}</p>
+        <div class="rejilla">
+          ${porClase(clase).map(({ col, libro }) => enlaceLibro(col, libro)).join('')}
+        </div>
+      </section>`).join('');
+
+  vista.innerHTML = pestanas + secciones;
+  vista.querySelectorAll('[data-pestana]').forEach((boton) => {
+    boton.onclick = () => { pestana = boton.dataset.pestana; biblioteca(); };
+  });
 }
 
 function capitulos(coleccion, codigo) {
