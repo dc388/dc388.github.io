@@ -47,6 +47,7 @@ from morphology import build_table  # noqa: E402
 from abbott_smith import build as build_abbott_smith  # noqa: E402
 from glosario import GRIEGO, HEBREO  # noqa: E402
 from definiciones import DEFINICIONES  # noqa: E402
+from enoc_es import ENOC_ES  # noqa: E402
 from traducir_strong import traducir as traducir_definicion  # noqa: E402
 from traducir_articulo import traducir_articulo  # noqa: E402
 from etimologia import traducir as traducir_etimologia  # noqa: E402
@@ -655,6 +656,17 @@ def insert_translation(con: sqlite3.Connection, sources: Path) -> tuple[int, flo
             for (libro, capitulo, versiculo), texto in rv.items():
                 if libro == usfx:
                     filas.append((book_id, capitulo, versiculo, texto))
+
+    # Enoc no lo cubre ninguna Biblia libre en español: va traducido a mano del
+    # griego, en enoc_es.py, y entra por la misma puerta que la Reina-Valera.
+    fila = con.execute(
+        "SELECT id FROM books WHERE collection_id = 'pseudo' AND code = 'ENOC'"
+    ).fetchone()
+    if fila is not None:
+        filas.extend(
+            (fila[0], capitulo, versiculo, texto)
+            for (capitulo, versiculo), texto in ENOC_ES.items()
+        )
 
     con.executemany(
         "INSERT OR IGNORE INTO translation (book_id, chapter, verse, text)"

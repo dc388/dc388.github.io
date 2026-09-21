@@ -21,6 +21,8 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+import canonicidad
+
 BASE = Path(__file__).resolve().parent.parent / "app/src/main/assets/biblia.db"
 
 
@@ -42,6 +44,8 @@ def exportar(destino: Path) -> None:
         ):
             libros.append({
                 "codigo": libro["code"],
+                # canon o no, y según qué: la biblioteca agrupa por esto
+                "canon": canonicidad.clase(col["id"], libro["code"]),
                 "nombre": libro["name_es"],
                 "original": libro["name_orig"],
                 "alterno": libro["alt_name"],
