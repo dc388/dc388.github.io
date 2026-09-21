@@ -21,7 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import canonicidad  # noqa: E402
-from enoc_es import ENOC_ES  # noqa: E402
+from traducciones_propias import PROPIAS  # noqa: E402
 from definiciones import DEFINICIONES  # noqa: E402
 from traducir_articulo import traducir_articulo  # noqa: E402
 from traducir_strong import traducir  # noqa: E402
@@ -51,32 +51,32 @@ def rellenar(destino: Path) -> tuple[int, int, int]:
     return mano, automaticas, sin_traducir
 
 
-def traducir_enoc(destino: Path) -> tuple[int, int]:
-    """Pone en Enoc la traducción española hecha a mano del griego.
+def traducir_a_mano(destino: Path) -> tuple[int, int]:
+    """Pone las traducciones hechas a mano en los libros que no tienen otra.
 
-    Lo mismo que hace build_db.py al construir la base. Ningún otro libro de
-    esta biblioteca lo necesita: el hebreo y el Nuevo Testamento traen la
-    Reina-Valera, y el resto todavía no tiene traducción.
+    Lo mismo que hace build_db.py al construir la base. Recorre el registro de
+    traducciones_propias.py, así que un libro nuevo no necesita tocar esto.
     """
-    carpeta = destino / "pseudo" / "ENOC"
-    if not carpeta.is_dir():
-        return 0, 0
     puestos = total = 0
-    for archivo in carpeta.glob("*.json"):
-        capitulo = int(archivo.stem)
-        versiculos = json.loads(archivo.read_text(encoding="utf-8"))
-        for entrada in versiculos:
-            total += 1
-            espanol = ENOC_ES.get((capitulo, entrada["v"]))
-            if espanol:
-                entrada["es"] = espanol
-                puestos += 1
-            else:
-                entrada.pop("es", None)
-        archivo.write_text(
-            json.dumps(versiculos, ensure_ascii=False, separators=(",", ":")),
-            encoding="utf-8",
-        )
+    for (coleccion, codigo), libro in PROPIAS.items():
+        carpeta = destino / coleccion / codigo
+        if not carpeta.is_dir():
+            continue
+        for archivo in carpeta.glob("*.json"):
+            capitulo = int(archivo.stem)
+            versiculos = json.loads(archivo.read_text(encoding="utf-8"))
+            for entrada in versiculos:
+                total += 1
+                espanol = libro.get((capitulo, entrada["v"], entrada.get("s", "")))
+                if espanol:
+                    entrada["es"] = espanol
+                    puestos += 1
+                else:
+                    entrada.pop("es", None)
+            archivo.write_text(
+                json.dumps(versiculos, ensure_ascii=False, separators=(",", ":")),
+                encoding="utf-8",
+            )
     return puestos, total
 
 
@@ -103,5 +103,5 @@ if __name__ == "__main__":
     mano, automaticas, sin_traducir = rellenar(destino)
     print(f"a mano {mano}  automáticas {automaticas}  sin traducir {sin_traducir}")
     print(f"{clasificar(destino)} libros clasificados por canonicidad")
-    puestos, total = traducir_enoc(destino)
-    print(f"Enoc en español: {puestos} de {total} versículos")
+    puestos, total = traducir_a_mano(destino)
+    print(f"traducción propia: {puestos} de {total} versículos")

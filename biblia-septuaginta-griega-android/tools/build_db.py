@@ -47,7 +47,7 @@ from morphology import build_table  # noqa: E402
 from abbott_smith import build as build_abbott_smith  # noqa: E402
 from glosario import GRIEGO, HEBREO  # noqa: E402
 from definiciones import DEFINICIONES  # noqa: E402
-from enoc_es import ENOC_ES  # noqa: E402
+from traducciones_propias import PROPIAS  # noqa: E402
 from traducir_strong import traducir as traducir_definicion  # noqa: E402
 from traducir_articulo import traducir_articulo  # noqa: E402
 from etimologia import traducir as traducir_etimologia  # noqa: E402
@@ -287,8 +287,11 @@ CREATE TABLE translation (
     book_id INTEGER NOT NULL REFERENCES books(id),
     chapter INTEGER NOT NULL,
     verse   INTEGER NOT NULL,
+    -- la letra del versículo partido: Susana tiene dos «35» y tres «62», y sin
+    -- esto los tres se quedaban con la misma traducción
+    suffix  TEXT NOT NULL DEFAULT '',
     text    TEXT NOT NULL,
-    PRIMARY KEY (book_id, chapter, verse)
+    PRIMARY KEY (book_id, chapter, verse, suffix)
 );
 CREATE INDEX idx_verses_loc  ON verses(book_id, chapter, verse, suffix);
 CREATE INDEX idx_books_order ON books(collection_id, sort_order);
@@ -657,20 +660,26 @@ def insert_translation(con: sqlite3.Connection, sources: Path) -> tuple[int, flo
                 if libro == usfx:
                     filas.append((book_id, capitulo, versiculo, texto))
 
-    # Enoc no lo cubre ninguna Biblia libre en español: va traducido a mano del
-    # griego, en enoc_es.py, y entra por la misma puerta que la Reina-Valera.
-    fila = con.execute(
-        "SELECT id FROM books WHERE collection_id = 'pseudo' AND code = 'ENOC'"
-    ).fetchone()
-    if fila is not None:
+    filas = [(libro, capitulo, versiculo, "", texto)
+             for libro, capitulo, versiculo, texto in filas]
+
+    # Lo que ninguna Biblia libre en español cubre va traducido a mano del
+    # griego, y entra por la misma puerta que la Reina-Valera.
+    for (coleccion, codigo), libro in PROPIAS.items():
+        fila = con.execute(
+            "SELECT id FROM books WHERE collection_id = ? AND code = ?",
+            (coleccion, codigo),
+        ).fetchone()
+        if fila is None:
+            continue
         filas.extend(
-            (fila[0], capitulo, versiculo, texto)
-            for (capitulo, versiculo), texto in ENOC_ES.items()
+            (fila[0], capitulo, versiculo, sufijo, texto)
+            for (capitulo, versiculo, sufijo), texto in libro.items()
         )
 
     con.executemany(
-        "INSERT OR IGNORE INTO translation (book_id, chapter, verse, text)"
-        " VALUES (?,?,?,?)",
+        "INSERT OR IGNORE INTO translation"
+        " (book_id, chapter, verse, suffix, text) VALUES (?,?,?,?,?)",
         filas,
     )
     con.commit()
@@ -682,7 +691,8 @@ def insert_translation(con: sqlite3.Connection, sources: Path) -> tuple[int, flo
         "SELECT COUNT(*), COUNT(t.text) FROM verses v"
         " JOIN books b ON b.id = v.book_id"
         " LEFT JOIN translation t"
-        "   ON t.book_id = v.book_id AND t.chapter = v.chapter AND t.verse = v.verse"
+        "   ON t.book_id = v.book_id AND t.chapter = v.chapter"
+        "  AND t.verse = v.verse AND t.suffix = v.suffix"
         " WHERE b.collection_id IN ('at', 'nt')"
     ).fetchone()
     return len(filas), round(con_traduccion * 100 / total, 1) if total else 0.0
