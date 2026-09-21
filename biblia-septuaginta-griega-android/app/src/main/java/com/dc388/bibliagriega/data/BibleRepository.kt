@@ -186,7 +186,7 @@ class BibleRepository private constructor(private val appContext: Context) {
 
     suspend fun lexiconEntry(strong: String): LexiconEntry? = query(
         "SELECT strong, lemma, translit, derivation, derivation_es, definition," +
-            " kjv_usage FROM lexicon WHERE strong = ?",
+            " definition_es, kjv_usage FROM lexicon WHERE strong = ?",
         arrayOf(strong),
     ) {
         LexiconEntry(
@@ -196,7 +196,8 @@ class BibleRepository private constructor(private val appContext: Context) {
             derivation = if (it.isNull(3)) null else it.getString(3),
             derivationEs = if (it.isNull(4)) null else it.getString(4),
             definition = if (it.isNull(5)) null else it.getString(5),
-            kjvUsage = if (it.isNull(6)) null else it.getString(6),
+            definitionEs = if (it.isNull(6)) null else it.getString(6),
+            kjvUsage = if (it.isNull(7)) null else it.getString(7),
         )
     }.firstOrNull()
 
