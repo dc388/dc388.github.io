@@ -187,7 +187,8 @@ def exportar_libro(
             "SELECT v.verse, v.suffix, v.text, t.text AS espanol"
             " FROM verses v"
             " LEFT JOIN translation t"
-            "   ON t.book_id = v.book_id AND t.chapter = v.chapter AND t.verse = v.verse"
+            "   ON t.book_id = v.book_id AND t.chapter = v.chapter"
+            "  AND t.verse = v.verse AND t.suffix = v.suffix"
             " WHERE v.book_id = ? AND v.chapter = ?"
             " ORDER BY v.verse, v.suffix",
             (libro_id, numero),
