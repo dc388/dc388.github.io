@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent / "app/src/main/assets/biblia.db"
@@ -70,6 +71,13 @@ def exportar(destino: Path) -> None:
     escribir(destino / "indice.json", indice)
     total = sum(len(c["libros"]) for c in indice)
     print(f"{len(indice)} colecciones, {total} libros")
+
+    # Sello de la exportación. El navegador guarda en caché los archivos de
+    # datos —que es lo que se quiere, porque son inmutables entre versiones—,
+    # pero entonces una traducción nueva no le llega nunca. El lector lee este
+    # sello sin caché y lo cuelga de las demás direcciones, así que al cambiar
+    # la exportación cambian todas y se vuelven a pedir.
+    escribir(destino / "version.json", {"sello": datetime.now(UTC).strftime("%Y%m%d%H%M%S")})
 
     exportar_lexico(con, destino)
     exportar_formas(con, destino)

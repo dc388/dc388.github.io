@@ -109,11 +109,15 @@ a.volver{text-decoration:none; color:var(--realce); font-size:.9375rem}
 .hoja .apartado h4{margin:0 0 6px; font-size:.75rem; text-transform:uppercase;
   letter-spacing:.06em; color:var(--tinta-suave); font-weight:600}
 .hoja .apartado p{margin:0; font-size:.9375rem; line-height:1.6}
-.hoja .idioma{
-  font-weight:400; letter-spacing:0; text-transform:none; color:var(--tinta-suave);
-  border:1px solid var(--borde); border-radius:999px; padding:1px 7px; margin-inline-start:6px;
-  font-size:.6875rem;
+.hoja details.ingles summary{
+  cursor:pointer; color:var(--tinta-suave); font-size:.8125rem; list-style:none;
+  display:flex; align-items:center; gap:6px;
 }
+.hoja details.ingles summary::-webkit-details-marker{display:none}
+.hoja details.ingles summary::before{content:"›"; transition:transform .15s; font-size:1.1em}
+.hoja details.ingles[open] summary::before{transform:rotate(90deg)}
+.hoja details.ingles summary:hover{color:var(--realce)}
+.hoja details.ingles h4{margin-top:14px}
 .hoja .aviso{font-size:.8125rem; color:var(--tinta-suave); line-height:1.5}
 footer{
   max-width:44rem; margin:0 auto; padding:24px 16px calc(32px + env(safe-area-inset-bottom));
@@ -181,8 +185,21 @@ document.getElementById('mas').onclick = () => { cuerpo = Math.min(1.75, cuerpo 
 document.getElementById('menos').onclick = () => { cuerpo = Math.max(.875, cuerpo - .0625); aplicaCuerpo(); guarda('cuerpo', cuerpo); };
 
 // --- datos ------------------------------------------------------------------
+// El sello de la exportación. Los archivos de datos se guardan en la caché del
+// navegador, que es lo que se quiere porque no cambian entre versiones; pero
+// entonces una corrección nueva no llega nunca. Se lee este sello sin caché
+// —pesa unas decenas de bytes— y se cuelga de todas las demás direcciones, así
+// que al reexportar cambian todas y se vuelven a pedir.
+let sello = '';
+async function leerElSello() {
+  try {
+    const r = await fetch('datos/version.json', { cache: 'no-store' });
+    if (r.ok) sello = (await r.json()).sello || '';
+  } catch (e) { /* sin sello se sigue igual, solo que con la caché de siempre */ }
+}
+
 const trae = async (url) => {
-  const r = await fetch(url);
+  const r = await fetch(sello ? `${url}?v=${sello}` : url);
   if (!r.ok) throw new Error(url + ' → ' + r.status);
   return r.json();
 };
@@ -347,11 +364,31 @@ function definicion(e) {
   if (e.definicion_es) {
     return `<div class="apartado"><h4>Diccionario Strong</h4><p>${escapa(e.definicion_es)}</p></div>`;
   }
-  if (e.definicion) {
-    return `<div class="apartado"><h4>Diccionario Strong <span class="idioma">en inglés</span></h4>
-      <p>${escapa(e.definicion)}</p></div>`;
-  }
   return '';
+}
+
+/**
+ * Las obras de referencia, que están en inglés, plegadas.
+ *
+ * Strong, Brown-Driver-Briggs y Abbott-Smith son obras inglesas del XIX y
+ * principios del XX: son las únicas de ese nivel en dominio público, y
+ * traducirlas enteras es trabajo de años. Mientras tanto no se mezclan con lo
+ * que ya está en español, porque una ficha mitad en un idioma y mitad en otro
+ * no se lee: quien quiera el original lo abre a propósito.
+ */
+function enIngles(e, articulo) {
+  const partes = [];
+  if (!e.definicion_es && e.definicion) {
+    partes.push(`<h4>Diccionario Strong (1890)</h4><p>${escapa(e.definicion)}</p>`);
+  }
+  if (articulo) {
+    partes.push(`<h4>${escapa(articulo.fuente)}</h4><p>${escapa(articulo.texto)}</p>`);
+  }
+  if (!partes.length) return '';
+  return `<details class="apartado ingles">
+    <summary>Obras de referencia, en inglés</summary>
+    ${partes.join('')}
+  </details>`;
 }
 
 async function abreLaPalabra(boton) {
@@ -394,7 +431,7 @@ async function abreLaPalabra(boton) {
       ${e.origen ? `<dt>Procede de</dt><dd>${escapa(e.origen)}</dd>` : ''}
     </dl>
     ${definicion(e)}
-    ${articulo ? `<div class="apartado"><h4>${escapa(articulo.fuente)} <span class="idioma">en inglés</span></h4><p>${escapa(articulo.texto)}</p></div>` : ''}
+    ${enIngles(e, articulo)}
     ${prestada ? `<p class="aviso apartado">Este texto no viene analizado. Lo que ves es
       lo que esa misma forma significa en el Nuevo Testamento, donde sí está etiquetada.</p>` : ''}`;
 }
@@ -410,9 +447,12 @@ function ruta() {
 
 window.addEventListener('hashchange', ruta);
 
-trae('datos/indice.json').then((d) => { indice = d; ruta(); }).catch(() => {
-  vista.innerHTML = '<p class="cargando">No se pudo cargar la biblioteca.</p>';
-});
+leerElSello()
+  .then(() => trae('datos/indice.json'))
+  .then((d) => { indice = d; ruta(); })
+  .catch(() => {
+    vista.innerHTML = '<p class="cargando">No se pudo cargar la biblioteca.</p>';
+  });
 </script>
 </body>
 </html>
