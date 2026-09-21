@@ -47,6 +47,7 @@ from morphology import build_table  # noqa: E402
 from abbott_smith import build as build_abbott_smith  # noqa: E402
 from glosario import GRIEGO, HEBREO  # noqa: E402
 from definiciones import DEFINICIONES  # noqa: E402
+from traducir_strong import traducir as traducir_definicion  # noqa: E402
 from etimologia import traducir as traducir_etimologia  # noqa: E402
 from traduccion import LIBROS_AT, LIBROS_NT, leer as leer_rv1909  # noqa: E402
 from bdb import build as build_bdb, resolve as resolve_bdb  # noqa: E402
@@ -748,7 +749,10 @@ def insert_lexicon(con: sqlite3.Connection, sources: Path) -> int:
                     (e.get("derivation") or "").strip() or None,
                     traducir_etimologia((e.get("derivation") or "").strip() or None),
                     (e.get("strongs_def") or "").strip() or None,
-                    DEFINICIONES.get(strong),
+                    # la traducción a mano manda; donde no la hay, la
+                    # automática, que sólo habla cuando entiende la entrada entera
+                    (DEFINICIONES.get(strong)
+                     or traducir_definicion((e.get("strongs_def") or "").strip())),
                     (e.get("kjv_def") or "").strip() or None,
                 )
                 for strong, e in entries.items()
@@ -1137,8 +1141,8 @@ def build(sources: Path, out: Path) -> None:
         " JOIN lexicon l ON l.strong = w.strong"
     ).fetchone()
     print(
-        f"  definición de Strong en español  {len(DEFINICIONES):5d} lemas"
-        f"  ({cubiertas * 100 / total:.1f} % de las palabras)"
+        f"  definición de Strong en español  {len(DEFINICIONES):5d} a mano"
+        f"  ({cubiertas * 100 / total:.1f} % de las palabras del texto)"
     )
 
     print("Glosario español de la definición breve:")
