@@ -117,7 +117,8 @@ def exportar_lexico(con: sqlite3.Connection, destino: Path) -> None:
         e.setdefault("es", {})[f["homonym"]] = f["gloss_es"]
 
     for f in con.execute(
-        "SELECT strong, homonym, source, headword, gloss, pos, article FROM articles"
+        "SELECT strong, homonym, source, headword, gloss, pos, article,"
+        " article_es FROM articles"
     ):
         e = entradas.setdefault(f["strong"], {})
         e.setdefault("articulos", {})[f["homonym"]] = {
@@ -126,6 +127,7 @@ def exportar_lexico(con: sqlite3.Connection, destino: Path) -> None:
             "glosa": f["gloss"],
             "categoria": f["pos"],
             "texto": f["article"],
+            "texto_es": f["article_es"],
         }
 
     cubos: dict[str, dict] = {}

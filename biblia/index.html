@@ -109,6 +109,15 @@ a.volver{text-decoration:none; color:var(--realce); font-size:.9375rem}
 .hoja .apartado h4{margin:0 0 6px; font-size:.75rem; text-transform:uppercase;
   letter-spacing:.06em; color:var(--tinta-suave); font-weight:600}
 .hoja .apartado p{margin:0; font-size:.9375rem; line-height:1.6}
+/* El artículo del léxico viene con sus acepciones numeradas en líneas: se
+   respetan, que es la mitad de lo que hace legible una entrada de léxico. */
+.hoja .apartado > summary{margin:0 0 6px; font-size:.75rem; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--tinta-suave); font-weight:600; cursor:pointer;
+  list-style:none; display:flex; align-items:center; gap:6px}
+.hoja .apartado > summary::-webkit-details-marker{display:none}
+.hoja .apartado > summary::before{content:"\203A"; transition:transform .15s; font-size:1.3em}
+.hoja .apartado[open] > summary::before{transform:rotate(90deg)}
+.hoja p.articulo{white-space:pre-wrap}
 .hoja details.ingles summary{
   cursor:pointer; color:var(--tinta-suave); font-size:.8125rem; list-style:none;
   display:flex; align-items:center; gap:6px;
@@ -368,20 +377,37 @@ function definicion(e) {
 }
 
 /**
- * Las obras de referencia, que están en inglés, plegadas.
+ * El artículo del léxico de referencia, cuando ya se lee en español.
  *
- * Strong, Brown-Driver-Briggs y Abbott-Smith son obras inglesas del XIX y
- * principios del XX: son las únicas de ese nivel en dominio público, y
- * traducirlas enteras es trabajo de años. Mientras tanto no se mezclan con lo
- * que ya está en español, porque una ficha mitad en un idioma y mitad en otro
- * no se lee: quien quiera el original lo abre a propósito.
+ * Brown-Driver-Briggs y Abbott-Smith son las dos obras de referencia serias en
+ * dominio público, y son inglesas. Se traducen con reglas: lo que no está en
+ * ningún idioma —el lema hebreo o griego, las referencias bíblicas, los códigos
+ * de conjugación— pasa intacto, y las abreviaturas se abren, que es lo que
+ * dejaba fuera a quien no se crió leyendo léxicos ingleses. Si un artículo no
+ * sale entero, no sale: se queda abajo, en inglés, y se dice.
+ */
+function articuloEnEspanol(articulo) {
+  if (!articulo || !articulo.texto_es) return '';
+  return `<details class="apartado" open>
+    <summary>${escapa(articulo.fuente)}</summary>
+    <p class="articulo">${escapa(articulo.texto_es)}</p>
+  </details>`;
+}
+
+/**
+ * Lo que sigue en inglés, plegado.
+ *
+ * Mientras a un lema no le haya llegado el turno se enseña el original, dicho
+ * claramente: es preferible a un hueco vacío, y a quien no lee inglés le avisa
+ * de por qué no lo entiende, en vez de dejarlo pensando que falla la
+ * aplicación. Lo que ya está traducido no se repite aquí.
  */
 function enIngles(e, articulo) {
   const partes = [];
   if (!e.definicion_es && e.definicion) {
     partes.push(`<h4>Diccionario Strong (1890)</h4><p>${escapa(e.definicion)}</p>`);
   }
-  if (articulo) {
+  if (articulo && !articulo.texto_es) {
     partes.push(`<h4>${escapa(articulo.fuente)}</h4><p>${escapa(articulo.texto)}</p>`);
   }
   if (!partes.length) return '';
@@ -431,6 +457,7 @@ async function abreLaPalabra(boton) {
       ${e.origen ? `<dt>Procede de</dt><dd>${escapa(e.origen)}</dd>` : ''}
     </dl>
     ${definicion(e)}
+    ${articuloEnEspanol(articulo)}
     ${enIngles(e, articulo)}
     ${prestada ? `<p class="aviso apartado">Este texto no viene analizado. Lo que ves es
       lo que esa misma forma significa en el Nuevo Testamento, donde sí está etiquetada.</p>` : ''}`;
