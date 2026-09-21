@@ -1,4 +1,4 @@
-"""Rellena la definición en español del léxico ya exportado para la web.
+"""Rellena en español el léxico ya exportado para la web.
 
 build_db.py es quien manda: al construir la base pone definition_es con la
 traducción a mano de definiciones.py y, donde no la hay, con la de
@@ -21,6 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from definiciones import DEFINICIONES  # noqa: E402
+from traducir_articulo import traducir_articulo  # noqa: E402
 from traducir_strong import traducir  # noqa: E402
 
 
@@ -39,6 +40,8 @@ def rellenar(destino: Path) -> tuple[int, int, int]:
                 elif entrada.get("definicion"):
                     sin_traducir += 1
             entrada["definicion_es"] = espanol
+            for articulo in (entrada.get("articulos") or {}).values():
+                articulo["texto_es"] = traducir_articulo(articulo.get("texto"))
         archivo.write_text(
             json.dumps(entradas, ensure_ascii=False, separators=(",", ":")),
             encoding="utf-8",

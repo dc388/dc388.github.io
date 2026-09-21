@@ -48,6 +48,7 @@ from abbott_smith import build as build_abbott_smith  # noqa: E402
 from glosario import GRIEGO, HEBREO  # noqa: E402
 from definiciones import DEFINICIONES  # noqa: E402
 from traducir_strong import traducir as traducir_definicion  # noqa: E402
+from traducir_articulo import traducir_articulo  # noqa: E402
 from etimologia import traducir as traducir_etimologia  # noqa: E402
 from traduccion import LIBROS_AT, LIBROS_NT, leer as leer_rv1909  # noqa: E402
 from bdb import build as build_bdb, resolve as resolve_bdb  # noqa: E402
@@ -244,6 +245,7 @@ CREATE TABLE articles (
     gloss    TEXT,
     pos      TEXT,
     article  TEXT NOT NULL,
+    article_es TEXT,
     PRIMARY KEY (strong, homonym)
 );
 CREATE TABLE glosario (
@@ -605,9 +607,11 @@ def insert_articles(con: sqlite3.Connection, sources: Path) -> tuple[int, int]:
 
     con.executemany(
         "INSERT OR REPLACE INTO articles"
-        " (strong, homonym, source, headword, gloss, pos, article)"
-        " VALUES (?,?,?,?,?,?,?)",
-        rows,
+        " (strong, homonym, source, headword, gloss, pos, article, article_es)"
+        " VALUES (?,?,?,?,?,?,?,?)",
+        # el artículo en español va detrás del inglés: sólo sale cuando se
+        # entiende entero, así que el original se sigue guardando siempre
+        [fila + (traducir_articulo(fila[6]),) for fila in rows],
     )
     return hebrew_count, greek_count
 
