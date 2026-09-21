@@ -21,7 +21,9 @@ de coserlas en silencio; los corchetes del editor griego se conservan.
 
 from __future__ import annotations
 
+from baruc_es import BARUC_ES
 from bel_es import BEL_ES, BEL_TEODOCION_ES
+from carta_jeremias_es import CARTA_JEREMIAS_ES
 from enoc_es import ENOC_ES
 from susana_es import SUSANA_ES, SUSANA_TEODOCION_ES
 
@@ -45,6 +47,8 @@ PROPIAS: dict[tuple[str, str], dict[tuple[int, int, str], str]] = {
     ("lxx", "SUT"): _con_sufijo(SUSANA_TEODOCION_ES),
     ("lxx", "BEL"): _con_sufijo(BEL_ES),
     ("lxx", "BET"): _con_sufijo(BEL_TEODOCION_ES),
+    ("lxx", "CJE"): _con_sufijo(CARTA_JEREMIAS_ES),
+    ("lxx", "BAR"): _con_sufijo(BARUC_ES),
 }
 
 
