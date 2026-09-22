@@ -27,6 +27,7 @@ from carta_jeremias_es import CARTA_JEREMIAS_ES
 from tobias_es import TOBIAS_ES
 from enoc_es import ENOC_ES
 from judit_es import JUDIT_ES
+from sabiduria_es import SABIDURIA_ES
 from susana_es import SUSANA_ES, SUSANA_TEODOCION_ES
 
 def _con_sufijo(libro: dict) -> dict[tuple[int, int, str], str]:
@@ -53,6 +54,7 @@ PROPIAS: dict[tuple[str, str], dict[tuple[int, int, str], str]] = {
     ("lxx", "BAR"): _con_sufijo(BARUC_ES),
     ("lxx", "TOB"): _con_sufijo(TOBIAS_ES),
     ("lxx", "JDT"): _con_sufijo(JUDIT_ES),
+    ("lxx", "SAB"): _con_sufijo(SABIDURIA_ES),
 }
 
 
