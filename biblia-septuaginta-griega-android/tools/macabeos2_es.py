@@ -1198,4 +1198,469 @@ MACABEOS2_ES: dict[tuple[int, ...], str] = {
               "sepamos cuál es vuestro parecer.",
     (11, 38): "Que tengáis salud. Año ciento cuarenta y ocho, el quince de "
               "Xántico.»",
+
+    # Capítulo 12
+    (12, 1): "Hechos estos acuerdos, Lisias se volvió al rey, y los judíos se "
+             "dedicaron a la labranza.",
+    (12, 2): "Pero los gobernadores de aquellas regiones, Timoteo y Apolonio "
+             "hijo de Geneo, y además Jerónimo y Demofonte, y con ellos "
+             "Nicanor, el gobernador de Chipre, no los dejaban vivir en paz ni "
+             "estar tranquilos.",
+    (12, 3): "Y los de Jope cometieron esta gran impiedad: invitaron a los "
+             "judíos que vivían entre ellos a embarcarse con sus mujeres y sus "
+             "hijos en unas barcas que ellos habían dispuesto, como si no "
+             "hubiera ninguna enemistad contra ellos;",
+    (12, 4): "y siendo esto por decisión común de la ciudad, y habiéndolo ellos "
+             "aceptado, como quienes quieren la paz y no sospechan nada, los "
+             "llevaron mar adentro y los hundieron, siendo no menos de "
+             "doscientos.",
+    (12, 5): "Y cuando supo Judas la crueldad cometida contra los de su pueblo, "
+             "dio orden a los hombres que estaban con él,",
+    (12, 6): "e invocando a Dios, el juez justo, fue contra los asesinos de sus "
+             "hermanos: de noche incendió el puerto y quemó las barcas, y a los "
+             "que allí se habían refugiado los pasó a cuchillo.",
+    (12, 7): "Y como el recinto estaba cerrado, se retiró, con intención de "
+             "volver y arrancar de raíz toda la comunidad de los de Jope.",
+    (12, 8): "Y sabiendo que también los de Jamnia querían hacer lo mismo con "
+             "los judíos que vivían entre ellos,",
+    (12, 9): "cayó de noche sobre los de Jamnia e incendió el puerto con la "
+             "flota, de modo que el resplandor del fuego se veía en Jerusalén, "
+             "a doscientos cuarenta estadios de distancia.",
+    (12, 10): "Y alejados de allí nueve estadios, mientras marchaban contra "
+              "Timoteo, cayeron sobre él unos árabes, no menos de cinco mil "
+              "hombres y quinientos jinetes.",
+    (12, 11): "Y trabándose una dura batalla, y saliendo victoriosos los de "
+              "Judas por el auxilio de Dios, los nómadas, derrotados, pidieron "
+              "a Judas que les diera la mano, prometiéndole darle ganado y "
+              "ayudarle en lo demás.",
+    (12, 12): "Y Judas, comprendiendo que en verdad podían serle útiles en "
+              "muchas cosas, accedió a hacer las paces con ellos; y recibida "
+              "la mano, se retiraron a sus tiendas.",
+    (12, 13): "Y atacó también cierta ciudad de sólidas fortificaciones, "
+              "rodeada de murallas y habitada por gentes de todas las razas, "
+              "llamada Caspín.",
+    (12, 14): "Y los de dentro, confiados en la solidez de las murallas y en "
+              "sus provisiones de víveres, trataban con insolencia a los de "
+              "Judas, injuriándolos, y además blasfemando y diciendo lo que no "
+              "es lícito.",
+    (12, 15): "Pero los de Judas, invocando al gran Soberano del mundo, al que "
+              "sin arietes ni máquinas de guerra derribó a Jericó en tiempos "
+              "de Josué, se lanzaron como fieras contra la muralla;",
+    (12, 16): "y tomando la ciudad por voluntad de Dios, hicieron una matanza "
+              "indescriptible, de modo que el lago vecino, de dos estadios de "
+              "ancho, parecía desbordar lleno de sangre.",
+    (12, 17): "Y alejados de allí setecientos cincuenta estadios, llegaron a "
+              "Járaca, donde los judíos llamados tubianos.",
+    (12, 18): "Y a Timoteo no lo hallaron en aquellos lugares, pues se había "
+              "retirado de allí sin haber hecho nada, aunque había dejado en "
+              "cierto lugar una guarnición muy bien fortificada.",
+    (12, 19): "Pero Dositeo y Sosípatro, jefes de los del Macabeo, saliendo, "
+              "destruyeron a los que Timoteo había dejado en la fortaleza, más "
+              "de diez mil hombres.",
+    (12, 20): "Y el Macabeo, ordenando su ejército en compañías, los puso al "
+              "frente de las compañías; y se lanzaron contra Timoteo, que "
+              "tenía consigo ciento veinte mil infantes y nueve mil jinetes.",
+    (12, 21): "Y al saber Timoteo la llegada de Judas, envió por delante a las "
+              "mujeres y a la impedimenta al llamado Carnión; porque aquel "
+              "lugar era difícil de asediar y de acceso difícil por lo "
+              "estrecho de todos los pasos.",
+    (12, 22): "Y al aparecer la primera compañía de Judas, y sobrecogidos de "
+              "terror los enemigos, y viniendo sobre ellos el espanto por la "
+              "manifestación del que todo lo ve, echaron a huir, cada uno por "
+              "su lado, de modo que muchas veces eran heridos por los suyos y "
+              "traspasados por el filo de sus propias espadas.",
+    (12, 23): "Y Judas apretaba más la persecución, atravesando a aquellos "
+              "criminales, y destruyó hasta treinta mil hombres.",
+    (12, 24): "Y el mismo Timoteo, cayendo en manos de los de Dositeo y "
+              "Sosípatro, les rogaba con mucha astucia que lo soltaran sano y "
+              "salvo, porque tenía en su poder a los padres de muchos y a los "
+              "hermanos de otros, y les iría mal si no.",
+    (12, 25): "Y como asegurara con muchas palabras el compromiso de "
+              "devolverlos ilesos, lo soltaron por la salvación de sus "
+              "hermanos.",
+    (12, 26): "Y saliendo contra Carnión y el templo de Atargatis, degolló a "
+              "veinticinco mil personas.",
+    (12, 27): "Y después de la derrota y destrucción de éstos, marchó también "
+              "contra Efrón, ciudad fortificada, en la que había multitudes de "
+              "todas las razas; y jóvenes robustos, apostados delante de las "
+              "murallas, se defendían con vigor; y allí había gran cantidad de "
+              "máquinas y de proyectiles.",
+    (12, 28): "Pero invocando al Soberano que con su poder quebranta las "
+              "fuerzas de los enemigos, tomaron la ciudad, y tendieron por "
+              "tierra a veinticinco mil de los de dentro.",
+    (12, 29): "Y partiendo de allí, se lanzaron contra la ciudad de los "
+              "escitas, que dista de Jerusalén seiscientos estadios.",
+    (12, 30): "Pero atestiguando los judíos allí establecidos la benevolencia "
+              "que los de Escitópolis habían tenido con ellos, y el trato "
+              "humano en los tiempos de la desgracia,",
+    (12, 31): "les dieron las gracias y los exhortaron a seguir siendo "
+              "benévolos con su pueblo, y llegaron a Jerusalén, estando ya "
+              "cerca la fiesta de las semanas.",
+    (12, 32): "Y después de la llamada Pentecostés, marcharon contra Gorgias, "
+              "el gobernador de Idumea.",
+    (12, 33): "Y él salió con tres mil infantes y cuatrocientos jinetes;",
+    (12, 34): "y trabada la batalla, sucedió que cayeron unos pocos de los "
+              "judíos.",
+    (12, 35): "Y un tal Dositeo, de los de Bacenor, hombre de a caballo y "
+              "fuerte, tenía agarrado a Gorgias, y asiéndolo de la clámide lo "
+              "arrastraba con vigor; y queriendo coger vivo a aquel maldito, "
+              "uno de los jinetes tracios cayó sobre él y le cortó el hombro, "
+              "y Gorgias escapó a Marisa.",
+    (12, 36): "Y como los de Esdrías llevaran mucho tiempo peleando y "
+              "estuvieran agotados, invocó Judas al Señor para que se "
+              "manifestara como su aliado y guía en la batalla;",
+    (12, 37): "y entonando en la lengua de sus padres el grito de guerra con "
+              "himnos, y cayendo de improviso sobre los de Gorgias, los puso "
+              "en fuga.",
+    (12, 38): "Y Judas, recogiendo su ejército, llegó a la ciudad de Odolam; y "
+              "llegando el día séptimo, se purificaron según la costumbre y "
+              "guardaron allí el sábado.",
+    (12, 39): "Y al día siguiente fueron los de Judas, al tiempo en que ya era "
+              "necesario hacerlo, a recoger los cuerpos de los caídos y a "
+              "llevarlos, con sus parientes, a los sepulcros de sus padres.",
+    (12, 40): "Y hallaron bajo las túnicas de cada uno de los muertos objetos "
+              "consagrados de los ídolos de Jamnia, cosa que la ley prohíbe a "
+              "los judíos; y fue claro para todos que por esta causa habían "
+              "caído.",
+    (12, 41): "Todos, pues, bendiciendo la obra del Señor, juez justo, que hace "
+              "manifiesto lo oculto,",
+    (12, 42): "se volvieron a la súplica, pidiendo que el pecado cometido fuera "
+              "borrado del todo. Y el noble Judas exhortó a la multitud a "
+              "guardarse de pecar, viendo con sus propios ojos lo que había "
+              "sucedido por el pecado de los caídos.",
+    (12, 43): "Y haciendo una colecta entre los hombres, hasta dos mil dracmas "
+              "de plata, las envió a Jerusalén para que se ofreciera un "
+              "sacrificio por el pecado, obrando muy bien y noblemente, "
+              "pensando en la resurrección;",
+    (12, 44): "porque, si no esperara que los caídos habían de resucitar, sería "
+              "superfluo y ridículo orar por los muertos;",
+    (12, 45): "y también porque miraba la hermosísima recompensa reservada a "
+              "los que se duermen con piedad: pensamiento santo y piadoso. Por "
+              "eso hizo la expiación por los muertos, para que quedaran "
+              "libres del pecado.",
+
+    # Capítulo 13
+    (13, 1): "Y el año ciento cuarenta y nueve llegó a oídos de los de Judas "
+             "que Antíoco Eupátor venía con grandes tropas contra Judea,",
+    (13, 2): "y con él Lisias, su tutor y encargado de los asuntos, teniendo "
+             "cada uno una fuerza griega de ciento diez mil infantes y cinco "
+             "mil trescientos jinetes y veintidós elefantes y trescientos "
+             "carros falcados.",
+    (13, 3): "Y se les unió también Menelao, y exhortaba a Antíoco con mucha "
+             "hipocresía, no por la salvación de la patria, sino creyendo que "
+             "sería restablecido en el cargo.",
+    (13, 4): "Pero el Rey de los reyes despertó la ira de Antíoco contra aquel "
+             "criminal; y como Lisias le indicase que él era el causante de "
+             "todos los males, mandó que lo llevaran a Berea y lo mataran "
+             "allí, según la costumbre del lugar.",
+    (13, 5): "Porque hay en aquel lugar una torre de cincuenta codos llena de "
+             "ceniza, y tenía un artefacto giratorio que por todos lados caía "
+             "a pico sobre la ceniza.",
+    (13, 6): "Allí, al que es reo de sacrilegio o ha cometido algún otro crimen "
+             "extraordinario, todos lo empujan a la muerte.",
+    (13, 7): "De tal muerte le tocó morir al inicuo Menelao, sin alcanzar "
+             "siquiera sepultura en la tierra;",
+    (13, 8): "y con toda justicia, pues, ya que había cometido muchos pecados "
+             "contra el altar, cuyo fuego y cuya ceniza eran santos, en ceniza "
+             "recibió la muerte.",
+    (13, 9): "Y el rey venía con el ánimo embravecido, dispuesto a mostrar a "
+             "los judíos lo peor de lo que había ocurrido en tiempos de su "
+             "padre.",
+    (13, 10): "Y cuando Judas supo esto, mandó al pueblo invocar al Señor día y "
+              "noche, para que, si alguna vez lo hizo, también ahora socorriera",
+    (13, 11): "a los que estaban a punto de ser privados de la ley y de la "
+              "patria y del templo santo, y no dejara que el pueblo, que "
+              "apenas empezaba a respirar, cayera en manos de naciones "
+              "blasfemas.",
+    (13, 12): "Y habiéndolo hecho todos a una, y habiendo suplicado al Señor "
+              "misericordioso con llanto y ayunos y postración durante tres "
+              "días sin interrupción, Judas los animó y les mandó ponerse en "
+              "marcha.",
+    (13, 13): "Y a solas con los ancianos, resolvió salir y decidir la suerte "
+              "de la guerra con el auxilio de Dios antes de que el ejército "
+              "del rey entrara en Judea y se apoderara de la ciudad.",
+    (13, 14): "Y encomendando la decisión al Señor del mundo, y exhortando a "
+              "los suyos a pelear con nobleza hasta la muerte por las leyes, "
+              "por el templo, por la ciudad, por la patria, por sus "
+              "instituciones, acampó el ejército junto a Modín.",
+    (13, 15): "Y dando a los suyos por santo y seña «Victoria de Dios», con los "
+              "jóvenes más escogidos cayó de noche sobre el cuartel real, y "
+              "mató en el campamento a unos dos mil hombres, y atravesó al "
+              "principal de los elefantes con el que iba en su torre;",
+    (13, 16): "y al final llenaron el campamento de espanto y de confusión, y "
+              "se retiraron victoriosos.",
+    (13, 17): "Y esto sucedió cuando ya despuntaba el día, por el amparo del "
+              "Señor que lo asistía.",
+    (13, 18): "Y el rey, habiendo probado la audacia de los judíos, intentó "
+              "tomar aquellos lugares con estratagemas;",
+    (13, 19): "y marchó contra Betsur, plaza fuerte de los judíos: atacaba, era "
+              "rechazado, chocaba, quedaba menguado.",
+    (13, 20): "Y Judas hacía llegar a los de dentro lo necesario.",
+    (13, 21): "Pero Ródoco, de las filas judías, descubría los secretos a los "
+              "enemigos; fue buscado y apresado y encerrado.",
+    (13, 22): "Trató el rey por segunda vez con los de Betsur, dio la mano, "
+              "recibió la suya, se retiró;",
+    (13, 23): "atacó a los de Judas, fue derrotado; supo que Filipo, a quien "
+              "había dejado al frente de los asuntos en Antioquía, se había "
+              "rebelado; se turbó, llamó a los judíos, se sometió, y juró "
+              "todas las condiciones justas; se reconcilió y ofreció "
+              "sacrificio, honró el templo y el lugar, y se mostró benigno;",
+    (13, 24): "y recibió bien al Macabeo, y dejó a Hegemónides por gobernador "
+              "desde Tolemaida hasta el territorio de los gerrenos;",
+    (13, 25): "llegó a Tolemaida. Los de Tolemaida llevaban a mal el tratado, "
+              "porque se indignaban en extremo; querían anular lo pactado.",
+    (13, 26): "Subió Lisias a la tribuna, hizo la defensa como pudo, los "
+              "persuadió y los aplacó, los hizo benévolos, y volvió a "
+              "Antioquía. Así pasó lo de la expedición y la retirada del rey.",
+    # Capítulo 14
+    (14, 1): "Y al cabo de tres años llegó a oídos de los de Judas que "
+             "Demetrio hijo de Seleuco, entrando por el puerto de Trípoli con "
+             "una fuerza poderosa y una flota,",
+    (14, 2): "se había apoderado del país, después de quitar de en medio a "
+             "Antíoco y a su tutor Lisias.",
+    (14, 3): "Y un tal Alcimo, que había sido antes sumo sacerdote y se había "
+             "contaminado voluntariamente en los tiempos de la mezcla con los "
+             "gentiles, comprendiendo que de ningún modo tenía ya salvación ni "
+             "acceso al altar santo,",
+    (14, 4): "vino al rey Demetrio hacia el año ciento cincuenta y uno, "
+             "llevándole una corona de oro y una palma, y además de esto los "
+             "ramos de olivo que se acostumbra ofrecer del templo; y aquel día "
+             "se estuvo quieto.",
+    (14, 5): "Pero habiendo hallado ocasión propicia para su locura, llamado "
+             "por Demetrio al consejo y preguntado en qué disposición y "
+             "propósito estaban los judíos, respondió a esto:",
+    (14, 6): "«Los judíos llamados asideos, a cuyo frente está Judas Macabeo, "
+             "mantienen la guerra y promueven sediciones, sin dejar que el "
+             "reino alcance la tranquilidad.",
+    (14, 7): "Por eso, despojado yo de la gloria de mis antepasados —hablo del "
+             "sumo sacerdocio—, he venido aquí por segunda vez:",
+    (14, 8): "primero, mirando sinceramente por lo que toca al rey; y segundo, "
+             "mirando también por mis propios conciudadanos; porque por la "
+             "insensatez de los que he dicho, todo nuestro linaje sufre no "
+             "poco.",
+    (14, 9): "Y tú, oh rey, conocidas cada una de estas cosas, provee al país y "
+             "a nuestro linaje acosado, conforme a la humanidad accesible que "
+             "tienes con todos;",
+    (14, 10): "porque, mientras viva Judas, es imposible que los asuntos "
+              "alcancen la paz.»",
+    (14, 11): "Y dicho esto por él, en seguida los demás amigos, que estaban "
+              "mal dispuestos hacia Judas, encendieron más a Demetrio.",
+    (14, 12): "Y designando al punto a Nicanor, el que había sido jefe de los "
+              "elefantes, y nombrándolo gobernador de Judea, lo envió,",
+    (14, 13): "dándole órdenes por escrito de quitar de en medio al mismo "
+              "Judas, y dispersar a los suyos, y establecer a Alcimo como sumo "
+              "sacerdote del templo grandísimo.",
+    (14, 14): "Y los gentiles de Judea que habían huido de Judas se unían en "
+              "tropel a Nicanor, pensando que las desdichas y desgracias de "
+              "los judíos serían su propia prosperidad.",
+    (14, 15): "Y oyendo la llegada de Nicanor y el ataque de las naciones, "
+              "echándose tierra encima, suplicaban al que estableció a su "
+              "pueblo para siempre y siempre ampara con manifestaciones "
+              "visibles a su propia heredad.",
+    (14, 16): "Y por orden de su jefe, partiendo de allí al instante, trabaron "
+              "combate con ellos junto a la aldea de Lessaú.",
+    (14, 17): "Y Simón, el hermano de Judas, había chocado con Nicanor, pero "
+              "sufrió un revés por el desconcierto repentino ante los "
+              "adversarios.",
+    (14, 18): "Sin embargo, oyendo Nicanor el valor que tenían los de Judas y "
+              "su entereza en los combates por la patria, recelaba decidir la "
+              "cuestión por la sangre.",
+    (14, 19): "Por eso envió a Posidonio y a Teódoto y a Matatías a dar y "
+              "recibir la mano.",
+    (14, 20): "Y después de mucho examinar estas cosas, y de haberlas "
+              "comunicado el jefe a la tropa, y apareciendo el acuerdo "
+              "unánime, aceptaron el tratado.",
+    (14, 21): "Y fijaron el día en que se reunirían a solas en un mismo lugar; "
+              "y se adelantó un carro de cada parte, y colocaron sillas.",
+    (14, 22): "Dispuso Judas hombres armados listos en los puntos estratégicos, "
+              "no fuera que de parte de los enemigos hubiera de repente alguna "
+              "traición; y tuvieron la conversación conveniente.",
+    (14, 23): "Y Nicanor se quedó en Jerusalén, y no hacía nada fuera de lugar; "
+              "y despidió a las turbas que se habían reunido en tropel.",
+    (14, 24): "Y tenía a Judas continuamente ante sus ojos, pues se había "
+              "aficionado de corazón a aquel hombre.",
+    (14, 25): "Y lo animó a casarse y a tener hijos; y se casó, y vivió "
+              "tranquilo, y compartió la vida con él.",
+    (14, 26): "Y Alcimo, viendo la mutua amistad entre ellos, y tomando el "
+              "tratado que habían hecho, se fue a Demetrio y le dijo que "
+              "Nicanor pensaba en contra de los intereses del reino, pues "
+              "había designado sucesor a Judas, el conspirador contra su "
+              "reino.",
+    (14, 27): "Y el rey, enfurecido y exasperado por las calumnias de aquel "
+              "malvado, escribió a Nicanor diciendo que llevaba muy a mal el "
+              "tratado, y mandándole enviar cuanto antes al Macabeo preso a "
+              "Antioquía.",
+    (14, 28): "Y llegado esto a Nicanor, quedó turbado, y llevaba a mal anular "
+              "lo pactado, no habiendo hecho aquel hombre ningún agravio.",
+    (14, 29): "Pero como no era posible oponerse al rey, aguardaba una ocasión "
+              "propicia para cumplirlo con alguna estratagema.",
+    (14, 30): "Y el Macabeo, viendo que Nicanor se comportaba con él más "
+              "ásperamente y que en el trato acostumbrado se había vuelto más "
+              "rudo, comprendiendo que aquella aspereza no venía de nada "
+              "bueno, reunió a no pocos de los suyos y se escondió de Nicanor.",
+    (14, 31): "Y el otro, cuando comprendió que aquel hombre le había ganado "
+              "con nobleza la partida, fue al templo grandísimo y santo, "
+              "mientras los sacerdotes ofrecían los sacrificios prescritos, y "
+              "les mandó entregar a aquel hombre.",
+    (14, 32): "Y como ellos afirmasen con juramentos que no sabían dónde estaba "
+              "el que buscaba,",
+    (14, 33): "extendiendo la mano derecha hacia el templo, juró esto: «Si no "
+              "me entregáis a Judas preso, arrasaré hasta el suelo este "
+              "recinto de Dios, y derribaré el altar, y levantaré aquí un "
+              "templo espléndido a Dioniso.»",
+    (14, 34): "Y dicho esto, se fue. Y los sacerdotes, tendiendo las manos al "
+              "cielo, invocaban al que siempre ha sido el defensor de nuestra "
+              "nación, diciendo así:",
+    (14, 35): "«Tú, Señor, que de nada tienes necesidad, quisiste que hubiera "
+              "entre nosotros un templo de tu morada.",
+    (14, 36): "Y ahora, Santo, Señor de toda santidad, guarda para siempre sin "
+              "mancha esta casa recién purificada.»",
+    (14, 37): "Y fue denunciado a Nicanor un tal Razís, de los ancianos de "
+              "Jerusalén, hombre que amaba a sus conciudadanos y de muy buena "
+              "fama, y al que por su benevolencia llamaban padre de los "
+              "judíos.",
+    (14, 38): "Porque en los tiempos anteriores, los de la mezcla con los "
+              "gentiles, había sido acusado de judaísmo, y había expuesto "
+              "cuerpo y alma por el judaísmo con todo empeño.",
+    (14, 39): "Y queriendo Nicanor hacer patente la hostilidad que tenía contra "
+              "los judíos, envió más de quinientos soldados a prenderlo;",
+    (14, 40): "porque pensaba que, prendiéndolo a él, les causaría una "
+              "desgracia.",
+    (14, 41): "Y estando la tropa a punto de tomar la torre y forzando la "
+              "puerta del patio y mandando traer fuego y prender las puertas, "
+              "viéndose a punto de ser apresado, se echó sobre la espada,",
+    (14, 42): "queriendo morir noblemente antes que caer en manos de aquellos "
+              "criminales y ser ultrajado indignamente en su nobleza.",
+    (14, 43): "Pero, no habiendo acertado el golpe por la prisa del trance, y "
+              "entrando las turbas por las puertas, corrió con nobleza al muro "
+              "y se arrojó con ánimo varonil sobre la multitud.",
+    (14, 44): "Y retrocediendo aquéllos rápidamente, y quedando un espacio "
+              "libre, cayó en medio del vacío.",
+    (14, 45): "Y respirando todavía y encendido de ánimo, se levantó, "
+              "brotándole la sangre a chorros, y con las heridas terribles "
+              "atravesó corriendo por medio de la multitud, y puesto en pie "
+              "sobre una roca escarpada,",
+    (14, 46): "quedándose ya del todo sin sangre, se arrancó las entrañas y, "
+              "tomándolas con ambas manos, las arrojó sobre la multitud; e "
+              "invocando al que es dueño de la vida y del espíritu para que se "
+              "las devolviera otra vez, murió de esta manera.",
+
+    # Capítulo 15
+    (15, 1): "Y Nicanor, sabiendo que los de Judas estaban en la región de "
+             "Samaria, resolvió atacarlos con toda seguridad en el día del "
+             "descanso.",
+    (15, 2): "Y diciéndole los judíos que por fuerza lo acompañaban: «No los "
+             "destruyas de manera tan salvaje y bárbara; honra el día que ha "
+             "sido honrado de antemano con santidad por el que todo lo ve»,",
+    (15, 3): "aquel tres veces criminal preguntó si hay en el cielo un soberano "
+             "que haya mandado guardar el día del sábado.",
+    (15, 4): "Y declarando ellos: «El Señor viviente, él mismo, es soberano en "
+             "el cielo, y es el que mandó observar el día séptimo»,",
+    (15, 5): "el otro dijo: «Y yo soy soberano sobre la tierra, y el que manda "
+             "tomar las armas y cumplir el servicio del rey.» Sin embargo, no "
+             "logró llevar a cabo su cruel propósito.",
+    (15, 6): "Y Nicanor, engreído con toda arrogancia, había resuelto levantar "
+             "un trofeo común con los despojos de los de Judas.",
+    (15, 7): "Pero el Macabeo confiaba sin cesar, con toda esperanza, en "
+             "alcanzar socorro de parte del Señor.",
+    (15, 8): "Y exhortaba a los suyos a no temer el ataque de las naciones, "
+             "sino a tener en la mente los auxilios que antes les habían "
+             "venido del cielo, y a esperar también ahora la victoria que les "
+             "vendría del Todopoderoso.",
+    (15, 9): "Y animándolos con la ley y los profetas, y recordándoles además "
+             "los combates que ya habían llevado a término, los dejó más "
+             "animosos.",
+    (15, 10): "Y despertando su ánimo, les dio las órdenes, mostrándoles a la "
+              "vez la deslealtad de las naciones y su violación de los "
+              "juramentos.",
+    (15, 11): "Y armando a cada uno de ellos no tanto con la seguridad de los "
+              "escudos y las lanzas como con el aliento de las buenas "
+              "palabras, y contándoles además un sueño digno de crédito, los "
+              "alegró sobremanera.",
+    (15, 12): "Y la visión de aquel sueño era ésta: Onías, el que había sido "
+              "sumo sacerdote, hombre noble y bueno, respetuoso en el trato, "
+              "manso de carácter, comedido al hablar, y ejercitado desde niño "
+              "en todo lo propio de la virtud, éste, tendidas las manos, "
+              "oraba por toda la comunidad de los judíos;",
+    (15, 13): "y que luego se aparecía de igual manera un hombre que destacaba "
+              "por sus canas y por su gloria, y que había en torno a él una "
+              "eminencia admirable y llena de majestad;",
+    (15, 14): "y que Onías, tomando la palabra, decía: «Éste es el que ama a "
+              "sus hermanos, el que ora mucho por el pueblo y por la ciudad "
+              "santa: Jeremías, el profeta de Dios.»",
+    (15, 15): "Y que Jeremías, extendiendo la mano derecha, entregaba a Judas "
+              "una espada de oro, y al dársela decía estas palabras:",
+    (15, 16): "«Toma la espada santa, don de Dios, con la cual quebrantarás a "
+              "los adversarios.»",
+    (15, 17): "Y animados por las palabras de Judas, hermosísimas y capaces de "
+              "mover a la virtud y de hacer varoniles las almas de los "
+              "jóvenes, resolvieron no acampar, sino lanzarse con nobleza, y "
+              "trabando combate con todo valor decidir la cuestión, porque "
+              "estaban en peligro la ciudad y las cosas santas y el templo.",
+    (15, 18): "Porque la inquietud por las mujeres y los hijos, y además por "
+              "los hermanos y los parientes, ocupaba en ellos un lugar "
+              "secundario; el mayor y primer temor era el del templo "
+              "consagrado.",
+    (15, 19): "Y para los que habían quedado en la ciudad no era pequeña la "
+              "angustia, turbados por el ataque en campo abierto.",
+    (15, 20): "Y esperando ya todos la decisión inminente, y estando ya los "
+              "enemigos a punto de chocar y el ejército formado, y los "
+              "elefantes colocados en el lugar oportuno, y la caballería "
+              "dispuesta en las alas,",
+    (15, 21): "el Macabeo, viendo la presencia de aquellas multitudes y la "
+              "variada provisión de armas y la ferocidad de los elefantes, "
+              "levantando las manos al cielo, invocó al Señor que hace "
+              "prodigios, sabiendo que no es por las armas, sino que, según él "
+              "lo juzgue, otorga la victoria a los que son dignos.",
+    (15, 22): "Y decía invocándolo de esta manera: «Tú, Señor, enviaste tu "
+              "ángel en tiempos de Ezequías, rey de Judea, y mató del "
+              "campamento de Senaquerib a ciento ochenta y cinco mil.",
+    (15, 23): "Y ahora, Soberano de los cielos, envía un ángel bueno delante de "
+              "nosotros, para espanto y temblor;",
+    (15, 24): "por la grandeza de tu brazo sean aterrados los que con blasfemia "
+              "vienen contra tu pueblo santo.» Y con esto terminó.",
+    (15, 25): "Y los de Nicanor avanzaban con trompetas y cantos de guerra;",
+    (15, 26): "y los de Judas trabaron combate con los enemigos entre "
+              "invocaciones y oraciones.",
+    (15, 27): "Y peleando con las manos y orando a Dios con el corazón, "
+              "tendieron por tierra a no menos de treinta y cinco mil, muy "
+              "alegres por la manifiesta ayuda de Dios.",
+    (15, 28): "Y terminada la acción, y retirándose con alegría, reconocieron a "
+              "Nicanor caído con su armadura.",
+    (15, 29): "Y levantándose el clamor y el alboroto, bendecían al Soberano en "
+              "la lengua de sus padres.",
+    (15, 30): "Y el que en todo, con el cuerpo y con el alma, había sido el "
+              "primer combatiente por sus conciudadanos, el que guardó para "
+              "los de su pueblo el afecto de su juventud, mandó cortar la "
+              "cabeza de Nicanor y la mano con el brazo, y llevarlas a "
+              "Jerusalén.",
+    (15, 31): "Y llegado allí, y convocando a los de su pueblo, y poniendo a "
+              "los sacerdotes delante del altar, mandó llamar a los de la "
+              "ciudadela.",
+    (15, 32): "Y mostrándoles la cabeza del abominable Nicanor y la mano del "
+              "blasfemo, la que había extendido con jactancia contra la casa "
+              "santa del Todopoderoso,",
+    (15, 33): "y cortando la lengua del impío Nicanor, dijo que la daría en "
+              "trozos a las aves, y que el pago de su locura lo colgaran "
+              "frente al templo.",
+    (15, 34): "Y todos bendijeron hacia el cielo al Señor que se manifiesta, "
+              "diciendo: «Bendito el que ha guardado sin mancha su propio "
+              "lugar.»",
+    (15, 35): "Y colgó la cabeza de Nicanor de la ciudadela, bien visible para "
+              "todos, como señal manifiesta del auxilio del Señor.",
+    (15, 36): "Y decretaron todos por voto común no dejar en modo alguno pasar "
+              "sin marca aquel día, \u207d\u00b3\u2077\u207e sino señalar el "
+              "trece del mes duodécimo —que en la lengua de este país se llama "
+              "Adar—, el día anterior al día de Mardoqueo.",
+    (15, 37): "Habiendo, pues, sucedido así lo de Nicanor, y estando desde "
+              "aquellos tiempos la ciudad en poder de los hebreos, también yo "
+              "pondré aquí fin a mi relato.",
+    (15, 38): "Y si ha quedado bien y con acierto en la composición, eso es lo "
+              "que yo mismo quería; y si mediocre y del montón, era lo que "
+              "estaba a mi alcance.",
+    (15, 39): "Porque, así como beber vino solo es dañoso, e igualmente lo es "
+              "el agua sola, pero el vino mezclado con agua resulta ya "
+              "agradable y produce deleite, así también la composición del "
+              "relato deleita los oídos de los que dan con esta obra. Y aquí "
+              "estará el final.",
 }
