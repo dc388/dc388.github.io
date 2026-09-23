@@ -31,6 +31,7 @@ from esdras1_es import ESDRAS1_ES
 from sabiduria_es import SABIDURIA_ES
 from macabeos3_es import MACABEOS3_ES
 from macabeos4_es import MACABEOS4_ES
+from odas_es import ODAS_ES
 from salmos_salomon_es import SALMOS_SALOMON_ES
 from susana_es import SUSANA_ES, SUSANA_TEODOCION_ES
 
@@ -63,6 +64,7 @@ PROPIAS: dict[tuple[str, str], dict[tuple[int, int, str], str]] = {
     ("lxx", "SSA"): _con_sufijo(SALMOS_SALOMON_ES),
     ("lxx", "3MA"): _con_sufijo(MACABEOS3_ES),
     ("lxx", "4MA"): _con_sufijo(MACABEOS4_ES),
+    ("lxx", "ODA"): _con_sufijo(ODAS_ES),
 }
 
 
