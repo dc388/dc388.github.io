@@ -27,6 +27,7 @@ from carta_jeremias_es import CARTA_JEREMIAS_ES
 from tobias_es import TOBIAS_ES
 from enoc_es import ENOC_ES
 from judit_es import JUDIT_ES
+from eclesiastico_es import ECLESIASTICO_ES
 from esdras1_es import ESDRAS1_ES
 from sabiduria_es import SABIDURIA_ES
 from macabeos1_es import MACABEOS1_ES
@@ -62,6 +63,7 @@ PROPIAS: dict[tuple[str, str], dict[tuple[int, int, str], str]] = {
     ("lxx", "TOB"): _con_sufijo(TOBIAS_ES),
     ("lxx", "JDT"): _con_sufijo(JUDIT_ES),
     ("lxx", "SAB"): _con_sufijo(SABIDURIA_ES),
+    ("lxx", "SIR"): _con_sufijo(ECLESIASTICO_ES),
     ("lxx", "1ES"): _con_sufijo(ESDRAS1_ES),
     ("lxx", "SSA"): _con_sufijo(SALMOS_SALOMON_ES),
     ("lxx", "1MA"): _con_sufijo(MACABEOS1_ES),
