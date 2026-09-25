@@ -38,6 +38,23 @@ from odas_es import ODAS_ES
 from salmos_salomon_es import SALMOS_SALOMON_ES
 from susana_es import SUSANA_ES, SUSANA_TEODOCION_ES
 
+# Los Padres Apostólicos, una obra por módulo.
+from clemente1_es import CLEMENTE1_ES
+from clemente2_es import CLEMENTE2_ES
+from ignacio_efesios_es import IGNACIO_EFESIOS_ES
+from ignacio_magnesios_es import IGNACIO_MAGNESIOS_ES
+from ignacio_tralianos_es import IGNACIO_TRALIANOS_ES
+from ignacio_romanos_es import IGNACIO_ROMANOS_ES
+from ignacio_filadelfios_es import IGNACIO_FILADELFIOS_ES
+from ignacio_esmirniotas_es import IGNACIO_ESMIRNIOTAS_ES
+from ignacio_policarpo_es import IGNACIO_POLICARPO_ES
+from policarpo_filipenses_es import POLICARPO_FILIPENSES_ES
+from martirio_policarpo_es import MARTIRIO_POLICARPO_ES
+from didache_es import DIDACHE_ES
+from bernabe_es import BERNABE_ES
+from hermas_es import HERMAS_ES
+from diogneto_es import DIOGNETO_ES
+
 def _con_sufijo(libro: dict) -> dict[tuple[int, int, str], str]:
     """Admite claves de dos elementos y las completa con el sufijo vacío.
 
@@ -71,6 +88,21 @@ PROPIAS: dict[tuple[str, str], dict[tuple[int, int, str], str]] = {
     ("lxx", "3MA"): _con_sufijo(MACABEOS3_ES),
     ("lxx", "4MA"): _con_sufijo(MACABEOS4_ES),
     ("lxx", "ODA"): _con_sufijo(ODAS_ES),
+    ("padres", "1CLE"): _con_sufijo(CLEMENTE1_ES),
+    ("padres", "2CLE"): _con_sufijo(CLEMENTE2_ES),
+    ("padres", "IGEF"): _con_sufijo(IGNACIO_EFESIOS_ES),
+    ("padres", "IGMA"): _con_sufijo(IGNACIO_MAGNESIOS_ES),
+    ("padres", "IGTR"): _con_sufijo(IGNACIO_TRALIANOS_ES),
+    ("padres", "IGRO"): _con_sufijo(IGNACIO_ROMANOS_ES),
+    ("padres", "IGFI"): _con_sufijo(IGNACIO_FILADELFIOS_ES),
+    ("padres", "IGES"): _con_sufijo(IGNACIO_ESMIRNIOTAS_ES),
+    ("padres", "IGPO"): _con_sufijo(IGNACIO_POLICARPO_ES),
+    ("padres", "POFI"): _con_sufijo(POLICARPO_FILIPENSES_ES),
+    ("padres", "MAPO"): _con_sufijo(MARTIRIO_POLICARPO_ES),
+    ("padres", "DIDA"): _con_sufijo(DIDACHE_ES),
+    ("padres", "BERN"): _con_sufijo(BERNABE_ES),
+    ("padres", "HERM"): _con_sufijo(HERMAS_ES),
+    ("padres", "DIOG"): _con_sufijo(DIOGNETO_ES),
 }
 
 
