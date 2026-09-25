@@ -151,6 +151,10 @@ fun HomeScreen(
                         }
                     }
 
+                    if (current?.id == "padres") {
+                        item { NotaPadres() }
+                    }
+
                     items(books, key = { it.id }) { book ->
                         BookRow(book = book, onClick = { onOpenBook(book.id) })
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -215,5 +219,69 @@ private fun BookRow(book: Book, onClick: () -> Unit) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+/**
+ * Lo que más se pregunta de los Padres Apostólicos: qué son y si son
+ * «católicos», porque Ignacio habla de «la iglesia católica». Es el mismo
+ * texto que la biblioteca de la web; va plegado para no empujar la lista.
+ */
+private val PADRES_EXPLICACION = listOf(
+    "Son los escritos de los cristianos que vinieron justo después de los " +
+        "apóstoles, entre los años 90 y 150. Algunos conocieron a los apóstoles o a " +
+        "sus discípulos: según la tradición, Policarpo fue discípulo de Juan. " +
+        "Ninguna iglesia los recibe como Escritura inspirada; se leen como " +
+        "testimonio de cómo creía y vivía la iglesia primitiva.",
+    "No son católicos en el sentido de hoy: son anteriores a la separación " +
+        "entre Roma y Oriente (1054) y a la Reforma (1517), y todas las tradiciones " +
+        "los tienen por suyos. Católicos y ortodoxos subrayan en ellos los obispos, " +
+        "la sucesión de los apóstoles (1 Clemente 42-44) y la eucaristía. Los " +
+        "evangélicos subrayan la justificación por la fe —«no por nosotros " +
+        "mismos… sino por la fe» (1 Clemente 32:4)—, que obispo y presbítero " +
+        "parecen ser el mismo cargo (1 Clemente, Didaché) y que citan la Escritura " +
+        "sin cesar.",
+    "Cuando Ignacio escribe «donde está Jesucristo, allí está la iglesia " +
+        "católica» (Esmirniotas 8:2), la palabra griega katholikós significa " +
+        "«universal»: la iglesia entera frente a una congregación local, no el " +
+        "nombre de una denominación, que vino siglos después.",
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun NotaPadres() {
+    var abierta by rememberSaveable { mutableStateOf(false) }
+    Card(
+        onClick = { abierta = !abierta },
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = "Cartas y manuales cristianos del siglo I y II. No son apócrifos: " +
+                    "nunca se presentaron como Escritura.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                text = if (abierta) "▾ ¿Qué son? ¿Son católicos?" else "▸ ¿Qué son? ¿Son católicos?",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            if (abierta) {
+                PADRES_EXPLICACION.forEach { parrafo ->
+                    Text(
+                        text = parrafo,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
     }
 }

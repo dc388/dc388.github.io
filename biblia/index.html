@@ -83,6 +83,9 @@ h2:first-child{margin-top:4px}
   background:var(--papel-alto); border:1px solid var(--borde); border-left:3px solid var(--realce);
   border-radius:8px; padding:10px 13px; color:var(--tinta-suave); font-size:.875rem; margin:0 0 18px;
 }
+.detalle{margin:-8px 0 18px; font-size:.875rem; color:var(--tinta-suave); line-height:1.55}
+.detalle summary{cursor:pointer; color:var(--realce); font-weight:600; padding:4px 0}
+.detalle p{margin:.6em 0 0}
 .versiculo{margin:0 0 .9em; font-size:var(--cuerpo); line-height:var(--interlineado)}
 .versiculo .n{
   color:var(--realce); font-size:.75em; font-weight:600; vertical-align:.35em;
@@ -296,6 +299,33 @@ const CLASES = {
     'presentaron como Escritura.'],
 };
 
+/**
+ * Lo que más se pregunta de los Padres Apostólicos es si son «católicos», porque
+ * Ignacio habla de «la iglesia católica». La respuesta cabe en tres párrafos y
+ * va desplegable debajo de la nota, para quien la quiera.
+ */
+const DETALLE = {
+  padres: ['¿Qué son? ¿Son católicos?', [
+    'Son los escritos de los cristianos que vinieron justo después de los ' +
+    'apóstoles, entre los años 90 y 150. Algunos conocieron a los apóstoles o a ' +
+    'sus discípulos: según la tradición, Policarpo fue discípulo de Juan. ' +
+    'Ninguna iglesia los recibe como Escritura inspirada; se leen como ' +
+    'testimonio de cómo creía y vivía la iglesia primitiva.',
+    'No son católicos en el sentido de hoy: son anteriores a la separación ' +
+    'entre Roma y Oriente (1054) y a la Reforma (1517), y todas las tradiciones ' +
+    'los tienen por suyos. Católicos y ortodoxos subrayan en ellos los obispos, ' +
+    'la sucesión de los apóstoles (1 Clemente 42-44) y la eucaristía. Los ' +
+    'evangélicos subrayan la justificación por la fe —«no por nosotros ' +
+    'mismos… sino por la fe» (1 Clemente 32:4)—, que obispo y presbítero ' +
+    'parecen ser el mismo cargo (1 Clemente, Didaché) y que citan la Escritura ' +
+    'sin cesar.',
+    'Cuando Ignacio escribe «donde está Jesucristo, allí está la iglesia ' +
+    'católica» (Esmirniotas 8:2), la palabra griega katholikós significa ' +
+    '«universal»: la iglesia entera frente a una congregación local, no el ' +
+    'nombre de una denominación, que vino siglos después.',
+  ]],
+};
+
 const PESTANAS = [
   { id: 'canon', nombre: 'Canon', clases: ['canon'] },
   { id: 'apocrifos', nombre: 'Libros apócrifos',
@@ -364,6 +394,10 @@ function biblioteca() {
       <section>
         <h2>${escapa(CLASES[clase][0])}</h2>
         <p class="nota">${escapa(CLASES[clase][1])}</p>
+        ${DETALLE[clase] ? `<details class="detalle">
+          <summary>${escapa(DETALLE[clase][0])}</summary>
+          ${DETALLE[clase][1].map((p) => `<p>${escapa(p)}</p>`).join('')}
+        </details>` : ''}
         <div class="rejilla">
           ${porClase(clase).map(({ col, libro }) => enlaceLibro(col, libro)).join('')}
         </div>

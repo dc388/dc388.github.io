@@ -49,8 +49,8 @@ android {
         applicationId = "com.dc388.bibliagriega"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.1.0"
+        versionCode = 5
+        versionName = "1.1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // El manifiesto necesita el identificador como recurso; el código, como
