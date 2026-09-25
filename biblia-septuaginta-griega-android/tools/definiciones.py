@@ -172,4 +172,7 @@ HEBREO: dict[str, str] = {
     "H3212": "andar (literal o figuradamente); en causativo, llevar, en varios sentidos",
 }
 
-DEFINICIONES: dict[str, str] = {**GRIEGO, **HEBREO}
+from definiciones_resto import RESTO  # noqa: E402
+
+# Lo traducido aquí manda sobre el resto.
+DEFINICIONES: dict[str, str] = {**RESTO, **GRIEGO, **HEBREO}
