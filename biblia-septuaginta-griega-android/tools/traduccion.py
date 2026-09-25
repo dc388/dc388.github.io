@@ -29,6 +29,8 @@ import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from modernizar import modernizar
+
 # Código de esta aplicación -> código USFX estándar.
 LIBROS_AT = {
     "GEN": "GEN", "EXO": "EXO", "LEV": "LEV", "NUM": "NUM", "DEU": "DEU",
@@ -72,7 +74,7 @@ def leer(path: Path) -> dict[tuple[str, int, int], str]:
 
         def cerrar() -> None:
             if versiculo and piezas:
-                texto = _limpiar("".join(piezas))
+                texto = modernizar(_limpiar("".join(piezas)), code, capitulo, versiculo)
                 if texto:
                     salida[(code, capitulo, versiculo)] = texto
 

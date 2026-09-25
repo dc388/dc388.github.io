@@ -113,13 +113,31 @@ def leer(
         if d.get("subtype") == "chapter"
     ]
 
-    versiculos: list[tuple[int, int, str, str]] = []
+    # Cada versículo lleva también el orden de su capítulo en el documento, por
+    # si hay que renumerar (ver abajo).
+    leidos: list[tuple[int, int, int, str, str]] = []
+    ultimo = 0
     for indice, capitulo in enumerate(capitulos, 1):
-        # Si los capítulos no se reinician, se respeta el número de la fuente;
-        # si se repiten —Hermas— se usa el orden, que es la numeración continua.
+        # Se respeta el número de la fuente. Un capítulo sin número que no es
+        # el saludo —el epílogo alternativo del Martirio de Policarpo— va a
+        # continuación del anterior. Si los números se repiten —Hermas—, se
+        # renumera todo más abajo.
         propio = _numero(capitulo)
-        numero = propio if propio is not None else indice
+        numero = propio if propio is not None else ultimo + 1
 
+        # El saludo de las cartas («La iglesia de Dios que peregrina en Roma, a
+        # la iglesia de Dios que peregrina en Corinto…») viene como un capítulo
+        # aparte sin número, «preface» o «praef». Es el encabezamiento de la
+        # carta, así que va como versículo 0 del capítulo 1, igual que el
+        # prólogo del Eclesiástico. Antes caía en el capítulo 1 como un segundo
+        # versículo 1, y los dos no se podían distinguir.
+        if propio is None and (capitulo.get("n") or "").lower().startswith("pr"):
+            texto = " ".join(_parrafos(capitulo, solo_griego))
+            if texto.strip():
+                leidos.append((indice, 1, 0, "", texto))
+            continue
+
+        ultimo = numero
         secciones = [
             d for d in capitulo.iter(TEI + "div")
             if d.get("subtype") == "section"
@@ -127,27 +145,25 @@ def leer(
         if not secciones:
             texto = " ".join(_parrafos(capitulo, solo_griego))
             if texto.strip():
-                versiculos.append((numero, 1, "", texto))
+                leidos.append((indice, numero, 1, "", texto))
             continue
 
         for orden, seccion in enumerate(secciones, 1):
             verso = _numero(seccion) or orden
             texto = " ".join(_parrafos(seccion, solo_griego))
             if texto.strip():
-                versiculos.append((numero, verso, "", texto))
+                leidos.append((indice, numero, verso, "", texto))
 
     # Hermas repite los números de capítulo en cada una de sus tres partes, así
-    # que ahí el número de la fuente no vale como clave: se renumera de corrido.
-    claves = [(c, v) for c, v, _, _ in versiculos]
+    # que ahí el número de la fuente no vale como clave: se renumera de corrido,
+    # por el orden del capítulo en el documento. No basta con contar cada vez
+    # que cambia el número, porque varias Semejanzas seguidas tienen un solo
+    # capítulo, el 1, y así se fundían en uno: salían 101 capítulos en vez de
+    # los 114 de las ediciones modernas.
+    claves = [(c, v) for _, c, v, _, _ in leidos]
     if len(set(claves)) != len(claves):
-        renumerado: list[tuple[int, int, str, str]] = []
-        corrido = 0
-        anterior = None
-        for c, v, s, t in versiculos:
-            if c != anterior:
-                corrido += 1
-                anterior = c
-            renumerado.append((corrido, v, s, t))
-        versiculos = renumerado
+        versiculos = [(i, v, s, t) for i, _, v, s, t in leidos]
+    else:
+        versiculos = [(c, v, s, t) for _, c, v, s, t in leidos]
 
     return versiculos
