@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://dc388.github.io/sitemap.xml
+Sitemap: https://dc388.github.io/biblia/sitemap.xml
