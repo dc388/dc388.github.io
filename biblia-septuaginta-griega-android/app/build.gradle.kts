@@ -4,7 +4,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -43,14 +42,14 @@ val admobEsDePrueba = admobAppId == admobAppIdDePrueba || admobBanner == admobBa
 
 android {
     namespace = "com.dc388.bibliagriega"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.dc388.bibliagriega"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.2.0"
+        versionCode = 7
+        versionName = "1.2.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // El manifiesto necesita el identificador como recurso; el código, como
@@ -103,6 +102,9 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        // AGP 9 los trae apagados; el identificador de AdMob del manifiesto sale
+        // de un resValue de defaultConfig.
+        resValues = true
     }
 
     packaging {
