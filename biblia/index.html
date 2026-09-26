@@ -3,8 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Biblia Griega y Hebrea</title>
-<meta name="description" content="Antiguo Testamento hebreo, Septuaginta, Nuevo Testamento griego, Padres Apostólicos y el Libro de Enoc, en sus lenguas originales.">
+<title>Biblia Griega y Hebrea: Septuaginta, Nuevo Testamento griego e interlineal en español</title>
+<meta name="description" content="Biblia griega y hebrea gratis en línea: Septuaginta (LXX), Nuevo Testamento griego, Antiguo Testamento hebreo, interlineal con números Strong, diccionario en español y Reina-Valera 1909. Con los apócrifos y los Padres Apostólicos traducidos al español.">
+<meta name="keywords" content="biblia griega, biblia hebrea, septuaginta, LXX, nuevo testamento griego, biblia interlineal, interlineal griego español, strong, reina valera 1909, apócrifos, padres apostólicos, libro de enoc">
+<link rel="canonical" href="https://dc388.github.io/biblia/">
+<meta name="robots" content="index, follow">
+<!-- Lo que enseñan WhatsApp, Facebook y compañía al compartir el enlace. -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_419">
+<meta property="og:site_name" content="Biblia Griega y Hebrea">
+<meta property="og:title" content="Biblia Griega y Hebrea: Septuaginta, Nuevo Testamento griego e interlineal">
+<meta property="og:description" content="La Biblia en sus lenguas originales, gratis: hebreo, Septuaginta y Nuevo Testamento griego, con interlineal, diccionario en español y Reina-Valera.">
+<meta property="og:url" content="https://dc388.github.io/biblia/">
+<meta property="og:image" content="https://dc388.github.io/biblia/icono.png">
+<meta name="twitter:card" content="summary">
+<!-- Para que el buscador sepa que es una aplicación web y de qué va. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Biblia Griega y Hebrea",
+  "url": "https://dc388.github.io/biblia/",
+  "inLanguage": "es",
+  "applicationCategory": "ReferenceApplication",
+  "operatingSystem": "Web, Android",
+  "isAccessibleForFree": true,
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": "Septuaginta, Nuevo Testamento griego y Antiguo Testamento hebreo en sus lenguas originales, con interlineal, números Strong, diccionario en español y la Reina-Valera 1909. Incluye los libros apócrifos y los Padres Apostólicos traducidos al español.",
+  "image": "https://dc388.github.io/biblia/icono.png"
+}
+</script>
 <meta name="theme-color" content="#f5efe2" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121319" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
@@ -79,6 +107,9 @@ h2:first-child{margin-top:4px}
 .rejilla a:hover{border-color:var(--realce)}
 .rejilla.capitulos a{min-width:3rem; text-align:center; font-variant-numeric:tabular-nums}
 .fuente{color:var(--tinta-suave); font-size:.8125rem; margin:6px 0 0; line-height:1.5}
+.presentacion{line-height:1.6}
+.presentacion h2{font-size:1.25rem; margin:0 0 .6em}
+.presentacion li{margin:.3em 0}
 .nota{
   background:var(--papel-alto); border:1px solid var(--borde); border-left:3px solid var(--realce);
   border-radius:8px; padding:10px 13px; color:var(--tinta-suave); font-size:.875rem; margin:0 0 18px;
@@ -164,7 +195,31 @@ footer a{color:var(--realce)}
   </div>
 </header>
 
-<main id="vista"><p class="cargando">Cargando la biblioteca…</p></main>
+<!-- Lo de dentro de «vista» lo sustituye la biblioteca en cuanto carga. Está
+     para quien llega sin JavaScript y para los buscadores, que así ven de qué
+     va la página en vez de un «Cargando…». -->
+<main id="vista">
+  <section class="presentacion">
+    <h2>La Biblia en griego y en hebreo, gratis y en español</h2>
+    <p>Lee la <strong>Biblia griega</strong> y la <strong>Biblia hebrea</strong> en sus
+      lenguas originales, con la traducción al español debajo de cada versículo:</p>
+    <ul>
+      <li><strong>Septuaginta (LXX)</strong>, el Antiguo Testamento griego, en la edición de Swete.</li>
+      <li><strong>Nuevo Testamento griego</strong>, Texto Mayoritario de Robinson-Pierpont.</li>
+      <li><strong>Antiguo Testamento hebreo</strong>, Códice de Leningrado, con vocales y acentos.</li>
+      <li><strong>Interlineal griego-español y hebreo-español</strong>: cada palabra con su
+        transliteración, su análisis morfológico y su número Strong.</li>
+      <li><strong>Diccionario Strong en español</strong> y concordancia de cada palabra.</li>
+      <li><strong>Reina-Valera 1909</strong> con la ortografía actual.</li>
+      <li>Los <strong>libros apócrifos o deuterocanónicos</strong> (Tobías, Judit, Sabiduría,
+        Eclesiástico, Baruc, Macabeos…), el <strong>Libro de Enoc</strong> y los
+        <strong>Padres Apostólicos</strong> (Clemente, Ignacio, Policarpo, la Didaché,
+        el Pastor de Hermas), traducidos del griego al español.</li>
+    </ul>
+    <p class="cargando">Cargando la biblioteca…</p>
+    <noscript><p>Para leer los textos hay que activar JavaScript en el navegador.</p></noscript>
+  </section>
+</main>
 
 <div class="hoja" id="hoja" hidden role="dialog" aria-modal="true" aria-label="Análisis de la palabra">
   <button class="cerrar" id="cerrarHoja" aria-label="Cerrar">✕</button>
