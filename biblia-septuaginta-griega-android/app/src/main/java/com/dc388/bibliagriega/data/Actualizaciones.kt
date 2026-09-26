@@ -31,16 +31,24 @@ import kotlinx.coroutines.flow.asStateFlow
  * contesta, y esto no hace nada.
  *
  * Hay que crearla antes de que la actividad arranque, porque registra un
- * lanzador de resultados, y Android solo lo permite en ese momento.
+ * lanzador de resultados, y Android solo lo permite en ese momento. Por eso
+ * todo lo que necesita contexto se crea después, en el primer uso.
  */
 class Actualizaciones(private val actividad: ComponentActivity) {
-    private val gestor = AppUpdateManagerFactory.create(actividad)
-    private val preferencias = actividad.getSharedPreferences(ARCHIVO, Context.MODE_PRIVATE)
+    // Perezosos: esta clase se construye con la actividad, cuando todavía no
+    // tiene contexto, y pedírselo ahí la tumba al abrir. El primer uso es en
+    // comprobar(), ya desde onCreate.
+    private val gestor by lazy { AppUpdateManagerFactory.create(actividad.applicationContext) }
+    private val preferencias by lazy {
+        actividad.applicationContext.getSharedPreferences(ARCHIVO, Context.MODE_PRIVATE)
+    }
 
     private val _lista = MutableStateFlow(false)
 
     /** true cuando la versión nueva ya está descargada y solo falta reiniciar. */
     val lista: StateFlow<Boolean> = _lista.asStateFlow()
+
+    private var comprobada = false
 
     /** El código de versión que Play está ofreciendo ahora mismo. */
     private var ofrecida = 0
@@ -59,6 +67,7 @@ class Actualizaciones(private val actividad: ComponentActivity) {
 
     /** Se llama una vez, al crear la actividad. */
     fun comprobar() {
+        comprobada = true
         gestor.registerListener(oyente)
         gestor.appUpdateInfo.addOnSuccessListener { info ->
             if (info.installStatus() == InstallStatus.DOWNLOADED) {
@@ -95,7 +104,7 @@ class Actualizaciones(private val actividad: ComponentActivity) {
     }
 
     fun cerrar() {
-        gestor.unregisterListener(oyente)
+        if (comprobada) gestor.unregisterListener(oyente)
     }
 
     private fun seOfrece(info: AppUpdateInfo): Boolean =
