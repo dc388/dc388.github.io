@@ -49,8 +49,8 @@ android {
         applicationId = "com.dc388.bibliagriega"
         minSdk = 26
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.1.1"
+        versionCode = 6
+        versionName = "1.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // El manifiesto necesita el identificador como recurso; el código, como
@@ -163,6 +163,12 @@ dependencies {
     implementation(libs.play.services.ads)
     implementation(libs.user.messaging.platform)
     implementation(libs.billing.ktx)
+
+    // Avisa dentro de la app cuando Play tiene una versión nueva (modo flexible).
+    implementation(libs.play.app.update.ktx)
+    // Los anuncios traen un Fragment anterior a 1.3, y con él el lanzador de
+    // resultados de arriba no es seguro (lint lo rechaza en la de publicación).
+    implementation(libs.androidx.fragment.ktx)
 
     debugImplementation(libs.androidx.ui.tooling)
 

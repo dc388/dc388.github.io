@@ -6,8 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.dc388.bibliagriega.data.Actualizaciones
 import com.dc388.bibliagriega.data.Compras
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.prepararAnuncios
@@ -36,10 +40,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 class MainActivity : ComponentActivity() {
+    // Se crea con la actividad, antes de que arranque: registra un lanzador de
+    // resultados y Android no lo admite más tarde.
+    private val actualizaciones = Actualizaciones(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        setContent { BibliaApp() }
+        setContent {
+            val lista by actualizaciones.lista.collectAsState()
+            BibliaApp(
+                actualizacionLista = lista,
+                onReiniciar = actualizaciones::reiniciar,
+                onDespues = actualizaciones::despues,
+            )
+        }
+        actualizaciones.comprobar()
 
         lifecycleScope.launch {
             val compras = Compras.get(applicationContext)
@@ -56,11 +72,38 @@ class MainActivity : ComponentActivity() {
         // Se vuelve aquí después de comprar, de cancelar desde Play o de que
         // caduque el cobro; Play es quien sabe el estado real.
         lifecycleScope.launch { Compras.get(applicationContext).consultarEstado() }
+        actualizaciones.alVolver()
+    }
+
+    override fun onDestroy() {
+        actualizaciones.cerrar()
+        super.onDestroy()
     }
 
     private companion object {
         const val ESPERA_DE_PLAY = 3_000L
     }
+}
+
+/**
+ * La versión nueva ya se descargó mientras se leía. Se pregunta en vez de
+ * reiniciar por las buenas: quien está a media lectura decide cuándo.
+ */
+@Composable
+private fun ActualizacionLista(onReiniciar: () -> Unit, onDespues: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDespues,
+        title = { Text("Actualización lista") },
+        text = {
+            Text(
+                "Ya se descargó la versión nueva de la aplicación. Se instala al " +
+                    "reiniciarla, y con «Continuar leyendo» vuelves al capítulo " +
+                    "donde estabas.",
+            )
+        },
+        confirmButton = { TextButton(onClick = onReiniciar) { Text("Reiniciar") } },
+        dismissButton = { TextButton(onClick = onDespues) { Text("Más tarde") } },
+    )
 }
 
 object Routes {
@@ -76,10 +119,20 @@ object Routes {
 }
 
 @Composable
-fun BibliaApp(vm: BibliaViewModel = viewModel()) {
+fun BibliaApp(
+    vm: BibliaViewModel = viewModel(),
+    actualizacionLista: Boolean = false,
+    onReiniciar: () -> Unit = {},
+    onDespues: () -> Unit = {},
+) {
     val settings by vm.settings.collectAsState()
 
     BibliaGriegaTheme(themeMode = settings.theme) {
+        // Dentro del tema, para que el diálogo salga con los colores de la app y
+        // no con la paleta de fábrica de Material.
+        if (actualizacionLista) {
+            ActualizacionLista(onReiniciar = onReiniciar, onDespues = onDespues)
+        }
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
