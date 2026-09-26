@@ -60,7 +60,13 @@ jobs:
           packages: platform-tools
 
       - name: Instalar plataforma de Android 37
-        run: sdkmanager --install "platforms;android-37" "build-tools;36.0.0"
+        run: |
+          # Desde Android 16 los paquetes llevan versión menor («android-36.1»),
+          # así que el nombre exacto de la 37 se busca en vez de adivinarlo.
+          plataforma=$(sdkmanager --list 2>/dev/null | grep -o 'platforms;android-37[0-9.]*' | sort -uV | head -1)
+          echo "Plataforma: $plataforma"
+          test -n "$plataforma"
+          sdkmanager --install "$plataforma" "build-tools;36.0.0"
 
       - name: Reconstruir la base de datos
         run: python3 tools/build_db.py
