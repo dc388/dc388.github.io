@@ -4,7 +4,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -49,8 +48,8 @@ android {
         applicationId = "com.dc388.bibliagriega"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.2.0"
+        versionCode = 7
+        versionName = "1.2.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // El manifiesto necesita el identificador como recurso; el código, como
