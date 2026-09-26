@@ -1,0 +1,35 @@
+name: Versiones — Biblia (temporal)
+
+# Consulta las últimas versiones estables de las dependencias de la app en el
+# Maven de Google y en Maven Central. Es temporal: la sesión que actualiza las
+# dependencias no alcanza dl.google.com.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/biblia-**"]
+    paths: [".github/workflows/biblia-versiones.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  versiones:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          g() { curl -s "https://dl.google.com/android/maven2/$1/maven-metadata.xml"; }
+          m() { curl -s "https://repo1.maven.org/maven2/$1/maven-metadata.xml"; }
+          ultima() { grep -o '<version>[^<]*</version>' | sed 's/<[^>]*>//g' | grep -viE 'alpha|beta|rc|dev|-M[0-9]|eap' | sort -V | tail -1; }
+          for p in com/google/android/gms/play-services-ads com/google/android/ump/user-messaging-platform \
+                   com/android/billingclient/billing-ktx com/google/android/play/app-update-ktx \
+                   androidx/core/core-ktx androidx/lifecycle/lifecycle-runtime-ktx androidx/activity/activity-compose \
+                   androidx/compose/compose-bom androidx/navigation/navigation-compose \
+                   androidx/datastore/datastore-preferences androidx/fragment/fragment-ktx androidx/test/ext/junit \
+                   androidx/test/espresso/espresso-core androidx/test/uiautomator/uiautomator \
+                   com/android/tools/build/gradle; do
+            echo "VERSION $p $(g $p | ultima)"
+          done
+          for p in org/jetbrains/kotlin/kotlin-gradle-plugin junit/junit; do
+            echo "VERSION $p $(m $p | ultima)"
+          done
+          echo "VERSION gradle $(curl -s https://services.gradle.org/versions/current | grep -o '"version" *: *"[^"]*"')"
