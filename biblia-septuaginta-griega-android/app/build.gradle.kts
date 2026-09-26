@@ -102,6 +102,9 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        // AGP 9 los trae apagados; el identificador de AdMob del manifiesto sale
+        // de un resValue de defaultConfig.
+        resValues = true
     }
 
     packaging {
