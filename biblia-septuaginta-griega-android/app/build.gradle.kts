@@ -42,7 +42,7 @@ val admobEsDePrueba = admobAppId == admobAppIdDePrueba || admobBanner == admobBa
 
 android {
     namespace = "com.dc388.bibliagriega"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.dc388.bibliagriega"

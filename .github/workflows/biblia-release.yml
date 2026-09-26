@@ -59,8 +59,8 @@ jobs:
           # build-tools las instala el paso siguiente.
           packages: platform-tools
 
-      - name: Instalar plataforma de Android 36
-        run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
+      - name: Instalar plataforma de Android 37
+        run: sdkmanager --install "platforms;android-37" "build-tools;36.0.0"
 
       - name: Reconstruir la base de datos
         run: python3 tools/build_db.py
