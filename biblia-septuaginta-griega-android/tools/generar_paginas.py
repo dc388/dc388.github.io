@@ -74,6 +74,11 @@ ul.l{list-style:none;padding:0;margin:0}
 ul.l li{padding:.45rem 0;border-bottom:1px solid var(--b);font:16px/1.4 system-ui,sans-serif}
 ul.l a{text-decoration:none}
 .n{color:var(--s);font:14px/1.6 system-ui,sans-serif}
+.nt p{margin:0 0 1rem}
+.nt{font-size:.97em}
+ul.c{margin:0 0 1rem;padding-left:1.2rem}
+ul.c li{margin:0 0 .5rem}
+h3{font-size:1.05rem;margin:1.6rem 0 .2rem}
 footer{margin-top:3rem;border-top:1px solid var(--b);padding-top:1rem;
  font:13px/1.6 system-ui,sans-serif;color:var(--s)}
 """
@@ -138,6 +143,7 @@ PIE = (
 def genera(destino: pathlib.Path) -> None:
     indice = json.loads((destino / "datos" / "indice.json").read_text(encoding="utf-8"))
     propias = carga_propias()
+    comentarios = carga_comentarios()
     cuenta = {"escritos": 0, "iguales": 0}
     raiz_salida = destino / "texto"
 
@@ -179,7 +185,8 @@ def genera(destino: pathlib.Path) -> None:
 
             escribe(
                 raiz_salida / cslug / lslug / "index.html",
-                pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia),
+                pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia,
+                             comentarios.get((cid, libro["codigo"]), [])),
                 cuenta,
             )
 
@@ -192,7 +199,22 @@ def genera(destino: pathlib.Path) -> None:
         urls_por_coleccion[cslug] = urls
         libros_por_coleccion[cslug] = libros
 
-    escribe(raiz_salida / "index.html", pagina_maestra(indice, libros_por_coleccion), cuenta)
+    versiculos_propios = sum(
+        libro.get("versiculos", 0)
+        for coleccion in indice
+        if coleccion["id"] in COLECCIONES
+        for libro in coleccion["libros"]
+        if (coleccion["id"], libro["codigo"]) in propias
+    )
+    escribe(
+        raiz_salida / "traducciones-propias.html",
+        pagina_propias(indice, comentarios, libros_por_coleccion, versiculos_propios),
+        cuenta,
+    )
+    urls_indices.insert(1, f"{BASE}/texto/traducciones-propias.html")
+
+    escribe(raiz_salida / "index.html",
+            pagina_maestra(indice, libros_por_coleccion, versiculos_propios), cuenta)
     escribe_sitemaps(destino, urls_indices, urls_por_coleccion)
 
     total_urls = len(urls_indices) + sum(len(v) for v in urls_por_coleccion.values())
@@ -209,6 +231,82 @@ def carga_propias() -> set[tuple[str, str]]:
     return {
         (c, l) for c, l in re.findall(r'\(\s*"(\w+)"\s*,\s*"(\w+)"\s*\)\s*:', texto)
     }
+
+
+def carga_comentarios() -> dict[tuple[str, str], list]:
+    """Saca a la luz las notas del traductor.
+
+    Cada módulo de traducción abre con una cabecera que explica qué es el libro,
+    por qué importa y qué defectos tiene la edición griega de la que se tradujo.
+    Son varios miles de palabras escritas a mano que hasta ahora solo se leían
+    abriendo el código. Aquí se recogen para ponerlas en la página del libro,
+    que es donde sirven de algo: es lo único de este sitio que no está en
+    ninguna otra parte.
+
+    Devuelve, por libro, una lista de bloques ("p", texto) o ("ul", [puntos]).
+    """
+    carpeta = pathlib.Path(__file__).parent
+    registro = carpeta / "traducciones_propias.py"
+    if not registro.exists():
+        return {}
+    texto = registro.read_text(encoding="utf-8")
+
+    # from judit_es import JUDIT_ES        ->  JUDIT_ES pertenece a judit_es
+    modulo_de = {}
+    for modulo, constantes in re.findall(r"^from (\w+) import (.+)$", texto, re.M):
+        for c in constantes.split(","):
+            modulo_de[c.strip()] = modulo
+
+    # ("lxx", "JDT"): _con_sufijo(JUDIT_ES)  ->  ese libro usa ese módulo
+    comentarios = {}
+    cache = {}
+    for col, cod, const in re.findall(
+        r'\(\s*"(\w+)"\s*,\s*"(\w+)"\s*\)\s*:[^(]*\((\w+)\)', texto
+    ):
+        modulo = modulo_de.get(const)
+        if not modulo:
+            continue
+        if modulo not in cache:
+            archivo = carpeta / f"{modulo}.py"
+            cabecera = ""
+            if archivo.exists():
+                m = re.match(r'\s*"""(.*?)"""', archivo.read_text(encoding="utf-8"), re.S)
+                cabecera = m.group(1) if m else ""
+            cache[modulo] = bloques(cabecera)
+        if cache[modulo]:
+            comentarios[(col, cod)] = cache[modulo]
+    return comentarios
+
+
+def bloques(cabecera: str) -> list:
+    """Convierte el texto plano de una cabecera en párrafos y listas."""
+    salida = []
+    for trozo in re.split(r"\n\s*\n", cabecera.strip()):
+        lineas = [l.rstrip() for l in trozo.splitlines() if l.strip()]
+        if not lineas:
+            continue
+        if lineas[0].lstrip().startswith("- "):
+            puntos = []
+            for linea in lineas:
+                if linea.lstrip().startswith("- "):
+                    puntos.append(linea.lstrip()[2:].strip())
+                elif puntos:
+                    puntos[-1] += " " + linea.strip()
+            salida.append(("ul", puntos))
+        else:
+            salida.append(("p", " ".join(l.strip() for l in lineas)))
+    return salida
+
+
+def pinta_bloques(bs: list) -> str:
+    partes = []
+    for tipo, cuerpo in bs:
+        if tipo == "p":
+            partes.append(f"<p>{html.escape(cuerpo)}</p>\n")
+        else:
+            puntos = "".join(f"<li>{html.escape(x)}</li>" for x in cuerpo)
+            partes.append(f'<ul class="c">{puntos}</ul>\n')
+    return "".join(partes)
 
 
 def pagina_capitulo(coleccion, libro, cslug, lslug, cap, caps, pos,
@@ -277,7 +375,7 @@ def pagina_capitulo(coleccion, libro, cslug, lslug, cap, caps, pos,
     return "".join(partes)
 
 
-def pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia) -> str:
+def pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia, comentario) -> str:
     nombre = libro["nombre"]
     titulo = f"{nombre} — {clengua} y español, capítulo por capítulo"
     url = f"{BASE}/texto/{cslug}/{lslug}/"
@@ -305,13 +403,21 @@ def pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia) -> str:
         partes.append(
             '<p class="n">La traducción española de este libro se hizo directamente '
             "del griego para esta edición, porque no existe en ninguna Biblia "
-            "española de dominio público.</p>\n"
+            'española de dominio público. <a href="../../traducciones-propias.html">'
+            "Los demás libros traducidos así</a>.</p>\n"
         )
 
     partes.append("<h2>Capítulos</h2>\n<ul class=\"g\">\n")
     for cap in caps:
         partes.append(f'<li><a href="{cap}.html">{cap}</a></li>')
     partes.append("\n</ul>\n")
+
+    if comentario:
+        partes.append("<h2>Sobre este libro y sobre esta traducción</h2>\n")
+        partes.append('<div class="nt">\n')
+        partes.append(pinta_bloques(comentario))
+        partes.append("</div>\n")
+
     partes.append(PIE.format(raiz="../../"))
     return "".join(partes)
 
@@ -342,7 +448,7 @@ def pagina_coleccion(coleccion, cslug, cnombre, clengua, libros) -> str:
     return "".join(partes)
 
 
-def pagina_maestra(indice, libros_por_coleccion) -> str:
+def pagina_maestra(indice, libros_por_coleccion, versiculos_propios=0) -> str:
     total = sum(len(v) for v in libros_por_coleccion.values())
     titulo = "Biblia en griego, hebreo y español — todos los libros, capítulo por capítulo"
     url = f"{BASE}/texto/"
@@ -357,6 +463,12 @@ def pagina_maestra(indice, libros_por_coleccion) -> str:
     partes.append(
         f'<p class="sub">{total} libros en griego, hebreo y español, '
         "capítulo por capítulo.</p>\n"
+    )
+    partes.append(
+        '<a class="app" href="traducciones-propias.html">'
+        f"Los libros que no encontrarás en otra Biblia española: {versiculos_propios} "
+        "versículos traducidos del griego a mano para esta edición, porque ninguna "
+        "Biblia española de dominio público los trae</a>\n"
     )
     for coleccion in indice:
         cid = coleccion["id"]
@@ -374,6 +486,101 @@ def pagina_maestra(indice, libros_por_coleccion) -> str:
                 f"{html.escape(marca)}</span></li>\n"
             )
         partes.append("</ul>\n")
+    partes.append(PIE.format(raiz=""))
+    return "".join(partes)
+
+
+DESCARGO = "Para las Asambleas de Dios no es canon; se ofrece para estudio."
+
+
+def entradilla(comentario: list) -> str:
+    """El primer párrafo que dice algo del libro, sin la advertencia de canon.
+
+    Todas las cabeceras abren igual —el título y el descargo sobre el canon—, y
+    repetir eso en las treinta y tres entradas del índice se lee fatal y parece
+    una plantilla. Aquí se salta hasta lo que de verdad distingue al libro.
+    """
+    for tipo, cuerpo in comentario[1:]:
+        if tipo != "p":
+            continue
+        texto = cuerpo.strip()
+        if texto.startswith(DESCARGO):
+            texto = texto[len(DESCARGO):].strip()
+        if len(texto) > 40:
+            return texto
+    return ""
+
+
+def pagina_propias(indice, comentarios, libros_por_coleccion, versiculos_propios) -> str:
+    """La página que sostiene todo lo demás.
+
+    Es lo único que este sitio tiene y los grandes no: los libros que ninguna
+    Biblia española gratuita trae, traducidos del griego uno por uno. Si alguien
+    va a llegar aquí desde un buscador, será por esto.
+    """
+    slug_col = {c["id"]: COLECCIONES[c["id"]][0] for c in indice if c["id"] in COLECCIONES}
+    filas = []
+    for coleccion in indice:
+        cid = coleccion["id"]
+        if cid not in COLECCIONES:
+            continue
+        cslug, cnombre, _ = COLECCIONES[cid]
+        for lslug, libro, propia in libros_por_coleccion.get(cslug, []):
+            if propia:
+                filas.append((cslug, cnombre, lslug, libro, comentarios.get((cid, libro["codigo"]), [])))
+
+    titulo = ("Libros que no están en ninguna otra Biblia española gratis — "
+              "traducidos del griego")
+    url = f"{BASE}/texto/traducciones-propias.html"
+    desc = recorta(
+        f"{len(filas)} libros griegos traducidos al español a mano para esta edición: "
+        "Tobías, Judit, Sabiduría, Eclesiástico, los cuatro Macabeos, el Libro de Enoc, "
+        "las Odas, los Salmos de Salomón y los Padres Apostólicos. "
+        "Ninguna Biblia española de dominio público los trae."
+    )
+
+    partes = [cabecera(titulo, desc, url, "")]
+    partes.append('<nav class="m"><a href="../">Biblia griega y hebrea</a> › '
+                  '<a href="index.html">Todos los libros</a> › Traducciones propias</nav>\n')
+    partes.append("<h1>Los libros que no encontrarás en otra Biblia española</h1>\n")
+    partes.append(
+        f'<p class="sub">{len(filas)} libros · {versiculos_propios} versículos '
+        "traducidos del griego a mano para esta edición</p>\n"
+    )
+    partes.append(
+        "<p>La Reina-Valera cubre los 66 libros del canon protestante y nada más. "
+        "Lo comprobé contra las cuatro Biblias que existen en español en dominio "
+        "público —Reina-Valera 1909, Biblia en Español Sencillo, Palabra de Dios "
+        "para Ti y Versión Biblia Libre—: las cuatro traen los mismos 66 libros y "
+        "ninguno más. Así que los apócrifos, los pseudoepígrafos y los Padres "
+        "Apostólicos no tenían traducción española libre que copiar.</p>\n"
+    )
+    partes.append(
+        "<p>Están traducidos aquí, del griego que se ve al lado y no de una "
+        "traducción inglesa intermedia. Las lagunas del manuscrito van marcadas "
+        "con […] en vez de coserlas en silencio, los corchetes del editor griego "
+        "se conservan, y los defectos de cada edición —versículos mal numerados, "
+        "transposiciones, epígrafes desplazados— se explican en la página de cada "
+        "libro en vez de corregirlos a escondidas.</p>\n"
+    )
+
+    coleccion_actual = None
+    for cslug, cnombre, lslug, libro, comentario in filas:
+        if cnombre != coleccion_actual:
+            partes.append(f'<h2>{html.escape(cnombre)}</h2>\n')
+            coleccion_actual = cnombre
+        entrada = entradilla(comentario)
+        partes.append(
+            f'<h3><a href="{cslug}/{lslug}/">{html.escape(libro["nombre"])}</a></h3>\n'
+        )
+        meta = [f'{len(libro["capitulos"])} capítulos',
+                f'{libro.get("versiculos", "?")} versículos']
+        if libro.get("original"):
+            meta.insert(0, libro["original"])
+        partes.append(f'<p class="n">{html.escape(" · ".join(meta))}</p>\n')
+        if entrada:
+            partes.append(f"<p>{html.escape(recorta(entrada, 420))}</p>\n")
+
     partes.append(PIE.format(raiz=""))
     return "".join(partes)
 
