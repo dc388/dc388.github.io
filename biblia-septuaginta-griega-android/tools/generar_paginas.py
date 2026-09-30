@@ -770,15 +770,37 @@ def escribe_sitemaps(destino: pathlib.Path, urls_indices, urls_por_coleccion) ->
     for suelto in sorted(carpeta.glob("palabras*.xml")):
         hijos.append(f"{BASE}/sitemaps/{suelto.name}")
 
+    escribe(destino / "sitemap.xml", indice_sitemaps(hijos), cuenta)
+
+    # Y el de la raíz del dominio, que es el que lee Google.
+    #
+    # Aquí estaba el fallo que dejaba Search Console en «No se ha podido
+    # obtener» con cero páginas: /sitemap.xml era un índice que apuntaba a
+    # /biblia/sitemap.xml, y ese también era un índice. El protocolo de
+    # sitemaps no deja meter un índice dentro de otro —un índice solo puede
+    # listar listas de páginas—, así que el de arriba no llevaba a ninguna
+    # URL y Google no encontraba nada que rastrear.
+    #
+    # Ahora el de la raíz lista directamente las listas de páginas. El de
+    # /biblia/ se queda porque por sí solo es válido y puede haber quien lo
+    # tenga guardado, pero ya no cuelga de ningún otro índice.
+    raiz_dominio = destino.parent
+    sueltos = []
+    for otro in sorted(raiz_dominio.glob("sitemap-*.xml")):
+        sueltos.append(f"{BASE.rsplit('/', 1)[0]}/{otro.name}")
+    escribe(raiz_dominio / "sitemap.xml", indice_sitemaps(hijos + sueltos), cuenta)
+
+    print(f"sitemaps: {len(hijos)} archivos + {len(sueltos)} del resto del sitio "
+          f"+ los dos índices")
+
+
+def indice_sitemaps(hijos: list[str]) -> str:
     filas = "".join(f"<sitemap><loc>{h}</loc></sitemap>\n" for h in hijos)
-    escribe(
-        destino / "sitemap.xml",
+    return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        f"{filas}</sitemapindex>\n",
-        cuenta,
+        f"{filas}</sitemapindex>\n"
     )
-    print(f"sitemaps: {len(hijos)} archivos + el índice")
 
 
 if __name__ == "__main__":

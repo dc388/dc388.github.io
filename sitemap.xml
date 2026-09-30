@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<sitemap><loc>https://dc388.github.io/biblia/sitemap.xml</loc></sitemap>
+<sitemap><loc>https://dc388.github.io/biblia/sitemaps/indices.xml</loc></sitemap>
+<sitemap><loc>https://dc388.github.io/biblia/sitemaps/hebreo.xml</loc></sitemap>
+<sitemap><loc>https://dc388.github.io/biblia/sitemaps/septuaginta.xml</loc></sitemap>
+<sitemap><loc>https://dc388.github.io/biblia/sitemaps/nuevo-testamento.xml</loc></sitemap>
+<sitemap><loc>https://dc388.github.io/biblia/sitemaps/padres-apostolicos.xml</loc></sitemap>
+<sitemap><loc>https://dc388.github.io/biblia/sitemaps/pseudoepigrafos.xml</loc></sitemap>
+<sitemap><loc>https://dc388.github.io/biblia/sitemaps/palabras-griego.xml</loc></sitemap>
+<sitemap><loc>https://dc388.github.io/biblia/sitemaps/palabras-hebreo.xml</loc></sitemap>
+<sitemap><loc>https://dc388.github.io/biblia/sitemaps/palabras.xml</loc></sitemap>
 <sitemap><loc>https://dc388.github.io/sitemap-sitio.xml</loc></sitemap>
 </sitemapindex>
