@@ -25,6 +25,8 @@ ul.l{list-style:none;padding:0;margin:0}
 ul.l li{padding:.45rem 0;border-bottom:1px solid var(--b);font:16px/1.4 system-ui,sans-serif}
 ul.l a{text-decoration:none}
 .n{color:var(--s);font:14px/1.6 system-ui,sans-serif}
+.par{border-inline-start:3px solid var(--b);padding:.15rem 0 .15rem .9rem;margin:1.6rem 0;
+ color:var(--s);font:15px/1.6 system-ui,sans-serif}
 .nt p{margin:0 0 1rem}
 .nt{font-size:.97em}
 ul.c{margin:0 0 1rem;padding-left:1.2rem}
