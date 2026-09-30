@@ -24,6 +24,7 @@ Hifil— se quedan como están: se usan igual en español.
 from __future__ import annotations
 
 import re
+import unicodedata
 
 from traducir_strong import PALABRAS, desconocidas, traducir
 
@@ -205,6 +206,38 @@ SIGLAS.update({
     # sí misma, como el resto de abreviaturas de libro: son 88 citas de
     # Tesalonicenses y una «Th. NT», la teología del NT de Stevens.
     "Th.": "Th.",
+    # Más abreviaturas de los dos léxicos, comprobadas en su contexto.
+    "fs.": "femenino singular",
+    "ms.": "masculino singular",
+    "bet.": "entre",
+    "erron.": "erróneamente",
+    "assoc.": "asociado",
+    "superlat.": "superlativo",
+    "comparat.": "comparativo",
+    "tabern.": "tabernáculo",
+    "crasis": "crasis",
+    "law-term": "término jurídico",
+    # Códice Alejandrino-Vaticano: sigla de manuscrito, no se traduce.
+    "AB": "AB",
+    # «prop.» es «properly», no un puntal. Caía en PALABRAS["prop"], que es el
+    # sustantivo, y 96 pasajes ya traducidos decían «puntal» donde el léxico
+    # dice «propiamente». Sale 263 veces, y hasta las 11 que van sin punto son
+    # «properly» con coma («prop, a vagabond») salvo una.
+    "prop.": "propiamente",
+    # Con mayúscula cuando encabeza una acepción: «I. Prop., intrans.».
+    "Prop.": "Propiamente",
+    # «Pal.» es Palestina, no el tronco Palel. Comprobado en contexto: «on S.
+    # border of Pal.», «n.pr.font. in SW. Pal.».
+    "Pal.": "Palestina",
+    # Variantes de tronco que BDB escribe con punto y sin la marca de ayin.
+    "Hithpa.": "hitpael",
+    "Hithpe.": "hitpeel",
+    "Hithpo.": "hitpoel",
+    "hithpo.": "hitpoel",
+    "Hithpol.": "hitpolel",
+    "Hithpōl.": "hitpolel",
+    "Piel": "Piel",
+    "Pual": "Pual",
 })
 
 SIGLAS.update({
@@ -311,6 +344,30 @@ def _sigla(pieza: str) -> str | None:
 # «[a.di.ab]», «[h.da.ac]»: los identificadores con que Open Scriptures
 # numeró las entradas de BDB. Van siempre entre corchetes, así que se
 # reconocen sin confundirlos con una cadena de abreviaturas.
+# Los troncos verbales que BDB escribe con la marca de ayin (U+201B) y con
+# macrones y circunflejos: «Pō‛lēl», «Hithpō‛l», «Pe‛îl». Esa marca no es una
+# letra, así que el trozador partía «Po‛el» en «Po» y «el» y dejaba las dos
+# mitades como palabras inglesas sin resolver. Bloqueaban 53 formas distintas.
+#
+# Se cotejan por su raíz —sin diacríticos, sin la marca y en minúscula—, que es
+# la única manera de que las seis grafías de «Polel» se traten como una.
+TRONCOS_AYIN = {
+    "po": "poel", "poel": "poel", "pol": "poel",
+    "polel": "polel", "polal": "polal", "poal": "poal",
+    "pilel": "pilel", "palel": "palel", "pal": "palel",
+    "pul": "pual", "peil": "peil", "pᵉil": "peil", "pealal": "pealal",
+    "hithpo": "hitpoel", "hithpol": "hitpoel", "hithpoel": "hitpoel",
+    "hithpolel": "hitpolel", "hithpalel": "hitpalel", "ethpol": "etpoel",
+}
+
+
+def _raiz_ayin(pieza: str) -> str:
+    """La pieza sin la marca de ayin, sin diacríticos y en minúscula."""
+    limpia = pieza.strip(".,;:()[]").replace("\u201b", "").replace("\u2018", "")
+    descompuesta = unicodedata.normalize("NFD", limpia)
+    return "".join(c for c in descompuesta if not unicodedata.combining(c)).lower()
+
+
 _CITA = re.compile(r"\d+[:.]\d+")
 
 _CODIGO_BDB = re.compile(r"\[[a-z]{1,4}(?:\.[a-z]{1,4}){1,4}\][,;.]?$")
@@ -325,6 +382,13 @@ def _piezas(linea: str) -> list[tuple[str, str]]:
     salida: list[tuple[str, str]] = []
     trozos_linea = linea.split(" ")
     for n, pieza in enumerate(trozos_linea):
+        # La marca de ayin: o es un tronco verbal, o es un nombre propio
+        # transliterado («‛Anathôth», «Sē‛ir»). Los nombres pasan enteros; lo
+        # que no se hace es partirlos y traducir las mitades por separado.
+        if "\u201b" in pieza:
+            tronco = TRONCOS_AYIN.get(_raiz_ayin(pieza))
+            salida.append(("sigla", tronco) if tronco else ("protegido", pieza))
+            continue
         # «To» es Tobías cuando le sigue una cita —«To 5:2»— y la preposición
         # inglesa cuando encabeza una acepción —«2. To slander, defame»—. Es la
         # única de las tres abreviaturas que de verdad se usa en los dos
