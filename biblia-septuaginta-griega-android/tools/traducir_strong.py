@@ -2763,6 +2763,78 @@ PALABRAS.update({
     "stood": "estuvo",
 })
 
+
+# Tercera tanda del largo tail. Cuatro o cinco artículos por palabra: el
+# rendimiento ya es plano y lo que queda es trabajo de vocabulario, no de
+# estructura. Siguen fuera las ambiguas de siempre y los gerundios.
+PALABRAS.update({
+    # sustantivos
+    "jaw": "quijada|sus", "groaning": "gemido|sus", "counsellor": "consejero|sus",
+    "provision": "provisión|sus", "rows": "hileras|sus", "dove": "paloma|sus",
+    "fatness": "gordura|sus", "haughtiness": "altivez|sus",
+    "humiliation": "humillación|sus", "usury": "usura|sus",
+    "preciousness": "preciosidad|sus", "cold": "frío|sus", "quaking": "temblor|sus",
+    "snow": "nieve|sus", "fugitive": "fugitivo|sus", "bands": "bandas|sus",
+    "palms": "palmas|sus", "pleasantness": "amenidad|sus", "loathing": "hastío|sus",
+    "murderers": "asesinos|sus", "carcass": "cadáver|sus", "heaps": "montones|sus",
+    "wine-press": "lagar|sus", "prophetess": "profetisa|sus", "musing": "meditación|sus",
+    "wailing": "lamento|sus", "breast-piece": "pectoral|sus",
+    "hiding-place": "escondite|sus", "foundations": "cimientos|sus",
+    "cherubim": "querubines|sus", "measurement": "medida|sus", "boughs": "ramas|sus",
+    "doorkeeper": "portero|sus", "counsels": "consejos|sus", "cakes": "tortas|sus",
+    "impression": "impresión|sus", "exactness": "exactitud|sus",
+    "sincerity": "sinceridad|sus", "victims": "víctimas|sus", "vulture": "buitre|sus",
+    "foreskin": "prepucio|sus", "proconsul": "procónsul|sus",
+    "defection": "defección|sus", "founder": "fundador|sus",
+    "foolishness": "necedad|sus", "freedman": "liberto|sus",
+    "injustice": "injusticia|sus", "unrighteousness": "injusticia|sus",
+    "foam": "espuma|sus", "architect": "arquitecto|sus", "daylight": "luz del día|sus",
+    "torment": "tormento|sus", "abomination": "abominación|sus",
+    "passages": "pasajes|sus", "storehouse": "almacén|sus",
+    "dedication": "dedicación|sus", "debtor": "deudor|sus",
+    "forbearance": "paciencia|sus", "chamberlain": "camarero|sus",
+    "bush": "zarza|sus", "theft": "hurto|sus", "rust": "herrumbre|sus",
+    "nourishment": "alimento|sus", "prominence": "prominencia|sus",
+    "heifer": "novilla|sus", "approval": "aprobación|sus", "byssus": "biso|sus",
+    "gifts": "dones|sus", "cluster": "racimo|sus", "winnowing": "aventamiento|sus",
+    "gentleness": "mansedumbre|sus", "lamps": "lámparas|sus",
+    "watcher": "vigilante|sus", "mocker": "burlador|sus", "weariness": "cansancio|sus",
+    "husbandman": "labrador|sus", "dragon": "dragón|sus", "assault": "asalto|sus",
+    "cost": "costo|sus", "attire": "atavío|sus", "port": "puerto|sus",
+    "inn": "posada|sus", "sea-monster": "monstruo marino|sus", "excuse": "excusa|sus",
+    "railing": "injuria|sus", "parallels": "paralelos|sus", "twin": "gemelo|sus",
+    "haunt": "guarida|sus", "triumph": "triunfo|sus", "lord": "señor|sus",
+    "discharge": "flujo|sus", "misspelling": "error de grafía|sus",
+    "spelling": "grafía|sus", "polish": "pulimento|sus",
+    # adjetivos y participios
+    "refined": "refinado|adj", "plaited": "trenzado|adj", "shaken": "sacudido|adj",
+    "bowed": "encorvado|adj", "collected": "recogido|adj",
+    "surpassing": "sobresaliente|adj", "vigorous": "vigoroso|adj",
+    "contemptible": "despreciable|adj", "scorched": "abrasado|adj",
+    "surrounding": "circundante|adj", "shrewd": "sagaz|adj", "molten": "fundido|adj",
+    "scoured": "restregado|adj", "interwoven": "entretejido|adj",
+    "unmixed": "puro|adj", "watchful": "vigilante|adj",
+    "unprofitable": "inútil|adj", "speechless": "mudo|adj", "cruel": "cruel|adj",
+    "senseless": "insensato|adj", "slanderous": "calumnioso|adj",
+    "tried": "probado|adj", "crafty": "astuto|adj",
+    "unrighteous": "injusto|adj", "fragrant": "fragante|adj",
+    "detestable": "detestable|adj", "asleep": "dormido|adj", "strict": "estricto|adj",
+    "washed": "lavado|adj", "noted": "señalado|adj", "unripe": "verde|adj",
+    "uttered": "proferido|adj", "wanting": "falto|adj", "seemly": "decoroso|adj",
+    "excessive": "excesivo|adj", "merciful": "misericordioso|adj",
+    "outward": "externo|adj", "brief": "breve|adj", "innate": "innato|adj",
+    "modest": "modesto|adj", "fruitful": "fecundo|adj", "associated": "asociado|adj",
+    "amazed": "asombrado|adj", "referred": "referido|adj",
+    "symbolically": "simbólicamente",
+    # verbos
+    "choke": "ahogar|inf", "sew": "coser|inf", "threaten": "amenazar|inf",
+    "lighten": "alumbrar|inf", "reflect": "reflejar|inf", "crucify": "crucificar|inf",
+    "reconcile": "reconciliar|inf", "beseech": "rogar|inf", "bite": "morder|inf",
+    "amaze": "asombrar|inf", "manage": "administrar|inf", "scour": "restregar|inf",
+    "describes": "describe", "surrounds": "rodea", "weighed": "pesado|adj",
+    "removing": "remoción|sus", "greedily": "con avidez",
+})
+
 # Nombres propios y gentilicios que sí cambian en español.
 NOMBRES: dict[str, str] = {
     "Israelite": "israelita", "Israelites": "israelitas",

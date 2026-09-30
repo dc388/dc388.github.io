@@ -238,6 +238,13 @@ SIGLAS.update({
     "Hithpōl.": "hitpolel",
     "Piel": "Piel",
     "Pual": "Pual",
+    "symb.": "simbólicamente",
+    "hyperb.": "hipérbole",
+    "interpr.": "interpretación",
+    "conjunct.": "conjuntivo",
+    "quadril.": "cuadrilítero",
+    "aorist": "aoristo",
+    "tit.": "título",
 })
 
 SIGLAS.update({
@@ -370,7 +377,7 @@ def _raiz_ayin(pieza: str) -> str:
 
 _CITA = re.compile(r"\d+[:.]\d+")
 
-_CODIGO_BDB = re.compile(r"\[[a-z]{1,4}(?:\.[a-z]{1,4}){1,4}\][,;.]?$")
+_CODIGO_BDB = re.compile(r"\[[a-z]{1,4}(?:\.[a-z]{1,4}){1,4}\][^\w\s]*$")
 
 
 def _piezas(linea: str) -> list[tuple[str, str]]:
@@ -441,6 +448,36 @@ def _piezas(linea: str) -> list[tuple[str, str]]:
     return salida
 
 
+# Guion blando (U+00AD). Es invisible y no significa nada: lo dejó la
+# digitalización donde el original partía la palabra a final de renglón. Pero
+# para el trozador «con­taining» son dos palabras inglesas que no existen, y
+# tumbaba el artículo entero. Bloqueaba 43.
+_BLANDO = "\u00ad"
+
+# El identificador de BDB puede venir pegado a lo que sigue —«[c.cd.ab];—only»—,
+# y entonces no basta con reconocer la pieza entera: hay que sacarlo de en medio
+# para que el resto se traduzca. Se sustituye por un carácter de uso privado,
+# que no lleva letras y por tanto pasa protegido, y se devuelve al final.
+_CUALQUIER_CODIGO = re.compile(r"\[[a-z]{1,4}(?:\.[a-z]{1,4}){1,4}\]")
+_MARCA_CODIGO = "\ue001"
+
+
+def _apartar_codigos(texto: str) -> tuple[str, list[str]]:
+    guardados: list[str] = []
+
+    def cambia(m):
+        guardados.append(m.group(0))
+        return _MARCA_CODIGO
+
+    return _CUALQUIER_CODIGO.sub(cambia, texto), guardados
+
+
+def _devolver_codigos(texto: str, guardados: list[str]) -> str:
+    for codigo in guardados:
+        texto = texto.replace(_MARCA_CODIGO, codigo, 1)
+    return texto
+
+
 def _recorrer(texto: str, traduce):
     """Recorre el artículo llamando a «traduce» con cada tramo de prosa inglesa.
 
@@ -478,16 +515,20 @@ def traducir_articulo(texto: str | None) -> str | None:
     """El artículo en español, o None si hay una sola palabra que no se entiende."""
     if not texto or not texto.strip():
         return None
+    texto = texto.replace(_BLANDO, "")
+    texto, codigos = _apartar_codigos(texto)
     lineas = _recorrer(texto, traducir)
     if lineas is None:
         return None
-    return _REPETIDA.sub(r"\1", "\n".join(lineas))
+    return _devolver_codigos(_REPETIDA.sub(r"\1", "\n".join(lineas)), codigos)
 
 
 def desconocidas_articulo(texto: str | None) -> list[str]:
     """Las palabras que impiden traducir este artículo. Para afinar las tablas."""
     if not texto or not texto.strip():
         return []
+    texto = texto.replace(_BLANDO, "")
+    texto, _ = _apartar_codigos(texto)
     faltan: list[str] = []
 
     def mirar(tramo: str) -> str:
