@@ -186,7 +186,8 @@ def genera(destino: pathlib.Path) -> None:
             escribe(
                 raiz_salida / cslug / lslug / "index.html",
                 pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia,
-                             comentarios.get((cid, libro["codigo"]), [])),
+                             comentarios.get((cid, libro["codigo"]), []),
+                             primeros_versiculos(destino, cid, libro, caps, atributo)),
                 cuenta,
             )
 
@@ -275,6 +276,16 @@ def carga_comentarios() -> dict[tuple[str, str], list]:
             cache[modulo] = bloques(cabecera)
         if cache[modulo]:
             comentarios[(col, cod)] = cache[modulo]
+
+    # Los 104 libros que no tienen traducción propia y por tanto no tienen
+    # cabecera que sacar: su introducción se escribió aparte. Sin esto, su
+    # página son cuarenta palabras de navegación y nada que leer.
+    try:
+        from introducciones import INTRODUCCIONES
+    except ImportError:
+        return comentarios
+    for clave, texto in INTRODUCCIONES.items():
+        comentarios.setdefault(clave, bloques(texto))
     return comentarios
 
 
@@ -375,7 +386,37 @@ def pagina_capitulo(coleccion, libro, cslug, lslug, cap, caps, pos,
     return "".join(partes)
 
 
-def pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia, comentario) -> str:
+class Muestra(list):
+    """Los primeros versículos de un libro, con el atributo de lengua a cuestas.
+
+    Se lleva el atributo pegado porque el hebreo hay que marcarlo de derecha a
+    izquierda y la página de libro no tiene de dónde sacarlo si no.
+    """
+
+    def __init__(self, versiculos, atributo):
+        super().__init__(versiculos)
+        self.atributo = atributo
+
+
+def primeros_versiculos(destino, cid, libro, caps, atributo, cuantos=3):
+    """Una muestra del texto, para que se vea qué hay antes de entrar.
+
+    La página de libro era hasta ahora una rejilla de números: no enseñaba ni
+    una línea de lo que el lector viene a leer. Tres versículos bastan para
+    saber si es esto lo que buscaba.
+    """
+    if not caps:
+        return Muestra([], atributo)
+    ruta = destino / "datos" / cid / libro["codigo"] / f"{caps[0]}.json"
+    if not ruta.exists():
+        return Muestra([], atributo)
+    return Muestra(
+        json.loads(ruta.read_text(encoding="utf-8"))[:cuantos], atributo
+    )
+
+
+def pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia, comentario,
+                 muestra=()) -> str:
     nombre = libro["nombre"]
     titulo = f"{nombre} — {clengua} y español, capítulo por capítulo"
     url = f"{BASE}/texto/{cslug}/{lslug}/"
@@ -412,8 +453,26 @@ def pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia, comentario
         partes.append(f'<li><a href="{cap}.html">{cap}</a></li>')
     partes.append("\n</ul>\n")
 
+    if muestra:
+        primero = caps[0]
+        partes.append(f"<h2>Así empieza</h2>\n")
+        for v in muestra:
+            numero = f"{v['v']}{v.get('s', '')}"
+            partes.append(
+                f'<p class="v"><b>{numero}</b>'
+                f'<span class="o" {muestra.atributo}>{html.escape(v.get("t", ""))}</span>'
+                f'<span class="e">{html.escape(v.get("es", ""))}</span></p>\n'
+            )
+        partes.append(
+            f'<p class="n"><a href="{primero}.html">Seguir leyendo '
+            f'{html.escape(libro["nombre"])} {primero}</a></p>\n'
+        )
+
     if comentario:
-        partes.append("<h2>Sobre este libro y sobre esta traducción</h2>\n")
+        partes.append(
+            "<h2>Sobre este libro"
+            f"{' y sobre esta traducción' if propia else ''}</h2>\n"
+        )
         partes.append('<div class="nt">\n')
         partes.append(pinta_bloques(comentario))
         partes.append("</div>\n")
