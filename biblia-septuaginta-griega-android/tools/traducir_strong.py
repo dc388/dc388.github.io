@@ -2634,6 +2634,70 @@ PALABRAS.update({
     "horseback": "a caballo", "driveth": "conduce",
 })
 
+
+# Las palabras que más artículos de BDB y Abbott-Smith estaban tumbando.
+#
+# La regla del traductor es que una sola palabra sin resolver deja el artículo
+# entero en inglés, así que una palabra corriente que falte cuesta cientos de
+# artículos. Estas salieron de contar, sobre los 7031 artículos pendientes, a
+# cuántos abriría el paso cada palabra que falta.
+#
+# Se quedan fuera a propósito las ambiguas: «sore» es llaga y también
+# intensificador («sore displeased»), «carrying» y «crushing» son gerundio o
+# sustantivo según la frase. Prefiero que sigan bloqueando a que salga una
+# traducción confiada y falsa.
+PALABRAS.update({
+    # sustantivos
+    "ark": "arca|sus", "chiefs": "jefes|sus", "compound": "compuesto|sus",
+    "text": "texto|sus", "trembling": "temblor|sus", "likeness": "semejanza|sus",
+    "contention": "contienda|sus", "cleft": "hendidura|sus", "spice": "especia|sus",
+    "store": "depósito|sus", "stumbling": "tropiezo|sus", "dung": "estiércol|sus",
+    "interpretation": "interpretación|sus", "genealogy": "genealogía|sus",
+    "surname": "sobrenombre|sus", "raiment": "vestidura|sus", "dainty": "manjar|sus",
+    "lowlands": "tierras bajas|sus", "stronghold": "fortaleza|sus", "robe": "manto|sus",
+    "warriors": "guerreros|sus", "miles": "millas|sus", "corruption": "corrupción|sus",
+    "barley": "cebada|sus", "abuse": "abuso|sus", "shadow": "sombra|sus",
+    "corn": "grano|sus", "wantonness": "lascivia|sus", "board": "tabla|sus",
+    "example": "ejemplo|sus", "pavement": "pavimento|sus", "quietness": "quietud|sus",
+    "porter": "portero|sus", "arts": "artes|sus", "divination": "adivinación|sus",
+    "porch": "pórtico|sus", "perfection": "perfección|sus", "artificer": "artífice|sus",
+    "list": "lista|sus", "dismay": "consternación|sus", "heads": "cabezas|sus",
+    "fortune": "fortuna|sus", "princes": "príncipes|sus", "horror": "horror|sus",
+    "robbery": "robo|sus", "sufficiency": "suficiencia|sus",
+    "defilement": "contaminación|sus", "accusation": "acusación|sus",
+    "despair": "desesperación|sus", "expense": "gasto|sus", "sounds": "sonidos|sus",
+    "circles": "círculos|sus", "washing": "lavado|sus", "ease": "holgura|sus",
+    "vernacular": "lengua vernácula|sus", "birthplace": "lugar de nacimiento|sus",
+    "wall-builder": "constructor de muralla|sus", "loan-word": "préstamo|sus",
+    "thanksgiving": "acción de gracias|sus", "sport": "juego|sus",
+    # Glosas de topónimos que BDB compone con guion, y que valen tal cual.
+    "dance-meadow": "prado de la danza|sus",
+    "vineyard-meadow": "prado de viñas|sus",
+    "acacia-meadow": "prado de acacias|sus",
+    # adjetivos y participios
+    "mixed": "mezclado|adj", "weary": "cansado|adj", "loving": "amoroso|adj",
+    "loved": "amado|adj", "crooked": "torcido|adj", "ripe": "maduro|adj",
+    "dubious": "dudoso|adj", "careful": "cuidadoso|adj", "equal": "igual|adj",
+    "festal": "festivo|adj", "skilled": "diestro|adj", "sealed": "sellado|adj",
+    "parched": "reseco|adj", "wandering": "errante|adj", "terrified": "aterrado|adj",
+    "drunken": "ebrio|adj", "hired": "asalariado|adj", "maritime": "marítimo|adj",
+    "kindled": "encendido|adj", "tall": "alto|adj", "fierce": "feroz|adj",
+    "terrible": "terrible|adj", "condemned": "condenado|adj", "wanton": "lascivo|adj",
+    "proud": "soberbio|adj", "insignificant": "insignificante|adj",
+    "tottering": "tambaleante|adj", "befitting": "conveniente|adj",
+    "comely": "hermoso|adj", "nautical": "náutico|adj", "sufficient": "suficiente|adj",
+    "unseen": "invisible|adj", "troubled": "turbado|adj",
+    # verbos
+    "agree": "concordar|inf", "mock": "burlar|inf", "assign": "asignar|inf",
+    "quake": "temblar|inf", "grind": "moler|inf", "interpret": "interpretar|inf",
+    "exhort": "exhortar|inf", "abhor": "aborrecer|inf", "constrain": "constreñir|inf",
+    "accept": "aceptar|inf",
+    # adverbios y formas sueltas
+    "secretly": "en secreto", "falsely": "falsamente", "rightly": "rectamente",
+    "formerly": "antiguamente", "abundantly": "abundantemente",
+    "yourselves": "vosotros mismos", "went": "fue", "thine": "tu", "dost": "haces",
+})
+
 # Nombres propios y gentilicios que sí cambian en español.
 NOMBRES: dict[str, str] = {
     "Israelite": "israelita", "Israelites": "israelitas",
