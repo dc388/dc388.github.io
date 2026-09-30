@@ -150,7 +150,8 @@ def migas(raiz: str, piezas: list[tuple[str, str | None]]) -> str:
 PIE = (
     '<footer>Texto original y traducción al español. '
     '<a href="{raiz}../">Lector interactivo</a> · '
-    '<a href="{raiz}index.html">Todos los libros</a></footer>\n'
+    '<a href="{raiz}index.html">Todos los libros</a> · '
+    '<a href="{raiz}../palabras/">Las palabras</a></footer>\n'
     "</div>\n</body>\n</html>\n"
 )
 
@@ -615,6 +616,12 @@ def pagina_maestra(indice, libros_por_coleccion, versiculos_propios=0) -> str:
         "versículos traducidos del griego a mano para esta edición, porque ninguna "
         "Biblia española de dominio público los trae</a>\n"
     )
+    partes.append(
+        '<a class="app" href="../palabras/">'
+        "El diccionario: cada palabra del griego y del hebreo bíblicos con su "
+        "significado en español, el artículo del léxico traducido y la lista de "
+        "dónde sale de verdad en el texto</a>\n"
+    )
     for coleccion in indice:
         cid = coleccion["id"]
         if cid not in COLECCIONES:
@@ -756,6 +763,12 @@ def escribe_sitemaps(destino: pathlib.Path, urls_indices, urls_por_coleccion) ->
             continue
         escribe(carpeta / f"{cslug}.xml", urlset(urls, "0.7"), cuenta)
         hijos.append(f"{BASE}/sitemaps/{cslug}.xml")
+
+    # Las páginas de palabra las escribe generar_palabras.py, que va por su
+    # cuenta. Se recogen aquí si están, para que el índice de sitemaps no
+    # dependa de en qué orden se hayan corrido los dos programas.
+    for suelto in sorted(carpeta.glob("palabras*.xml")):
+        hijos.append(f"{BASE}/sitemaps/{suelto.name}")
 
     filas = "".join(f"<sitemap><loc>{h}</loc></sitemap>\n" for h in hijos)
     escribe(
