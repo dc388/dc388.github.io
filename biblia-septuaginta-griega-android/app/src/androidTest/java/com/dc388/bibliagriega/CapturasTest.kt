@@ -14,7 +14,6 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToString
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import org.junit.Rule
@@ -42,6 +41,35 @@ class CapturasTest {
 
     private val dispositivo: UiDevice
         get() = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+    /**
+     * Cierra el teclado antes de la foto.
+     *
+     * Aquí estaba antes Espresso.closeSoftKeyboard(), y tumbaba la prueba una
+     * vez de cada dos en el emulador de integración continua:
+     *
+     *     RootViewWithoutFocusException: Waited for the root of the view
+     *     hierarchy to have window focus ... has-window-focus=false
+     *
+     * Espresso exige que la raíz de la jerarquía de VISTAS tenga foco de
+     * ventana, y esta aplicación es Compose entera: en el emulador ese foco
+     * tarda en llegar o no llega, y diez segundos después la prueba muere. No
+     * era un fallo de la aplicación ni del cambio que se estuviera probando.
+     *
+     * UiAutomator no necesita ese foco. Se pregunta al gestor de métodos de
+     * entrada si el teclado está de verdad en pantalla y solo entonces se
+     * pulsa atrás; sin la comprobación, atrás nos sacaría de la pantalla que
+     * queremos fotografiar.
+     */
+    private fun cerrarTeclado() {
+        val estado = runCatching {
+            dispositivo.executeShellCommand("dumpsys input_method")
+        }.getOrDefault("")
+        if (estado.contains("mInputShown=true")) {
+            dispositivo.pressBack()
+            dispositivo.waitForIdle()
+        }
+    }
 
     /**
      * Dónde se guardan las imágenes: una carpeta del almacenamiento compartido,
@@ -220,7 +248,7 @@ class CapturasTest {
         // Al escribir se abre el teclado y tapa media pantalla. Se cierra antes
         // de la foto: lo que hay que enseñar son los resultados, no el teclado
         // del emulador.
-        Espresso.closeSoftKeyboard()
+        cerrarTeclado()
         regla.waitForIdle()
         capturar("busqueda")
 
