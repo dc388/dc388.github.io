@@ -668,6 +668,8 @@ def genera(destino: pathlib.Path) -> None:
 
     escribe(raiz / "index.html", pagina_portada(totales, fuera), cuenta)
 
+    escribe_raras(destino, elegidas, veces_de, sitios_de, cuenta)
+
     todas = [f"{BASE}/{CARPETA}/"]
     for lslug, urls in urls_por_lengua.items():
         escribe(destino / "sitemaps" / f"palabras-{lslug}.xml",
@@ -697,6 +699,57 @@ def mayuscula_base(c: str) -> str:
     base = unicodedata.normalize("NFD", c)
     base = "".join(x for x in base if not unicodedata.combining(x))
     return base.lower() or c
+
+
+
+# Cuántas palabras raras se apuntan por capítulo. Diez caben en un vistazo;
+# más ya es una lista que nadie lee.
+RARAS_POR_CAPITULO = 10
+
+# A partir de cuántas apariciones una palabra deja de ser rara. Cincuenta es
+# donde empieza el vocabulario corriente: por debajo, encontrártela es motivo
+# para ir a mirar qué es.
+TOPE_RARA = 50
+
+
+def escribe_raras(destino, elegidas, veces_de, sitios_de, cuenta) -> None:
+    """Qué palabras poco corrientes tiene cada capítulo.
+
+    Lo escribe aquí porque aquí están la concordancia y la lista de las
+    palabras que sí tienen página; generar_paginas.py lo lee luego para poner
+    en cada capítulo un puñado de enlaces al diccionario. Si este archivo no
+    existe, aquel sigue funcionando y no pone nada: los dos programas van por
+    su cuenta y da igual el orden en que se corran.
+
+    Solo sale de los capítulos que llevan análisis palabra por palabra, que
+    son el Antiguo Testamento hebreo y el Nuevo Testamento griego.
+    """
+    ficha = {}
+    for inicial, lista in elegidas.items():
+        lslug = LENGUAS[inicial][0]
+        for archivo, strong, lema, translit, glosa, veces in lista:
+            if veces and veces <= TOPE_RARA:
+                ficha[strong] = (lslug, archivo, lema, glosa, veces)
+
+    por_capitulo: dict[str, dict] = {}
+    for strong, datos in ficha.items():
+        for cid, libro, cap, vers, forma in sitios_de.get(strong, []):
+            clave = f"{cid}/{libro}/{cap}"
+            por_capitulo.setdefault(clave, {})[strong] = datos
+
+    salida = {}
+    for clave, palabras in por_capitulo.items():
+        # De menos apariciones a más: primero lo que de verdad extraña.
+        mejores = sorted(palabras.items(), key=lambda x: (x[1][4], x[1][2]))
+        salida[clave] = [
+            {"l": lslug, "a": archivo, "p": lema, "g": glosa, "n": veces}
+            for _, (lslug, archivo, lema, glosa, veces)
+            in mejores[:RARAS_POR_CAPITULO]
+        ]
+
+    escribe(destino / "datos" / "palabras-raras.json",
+            json.dumps(salida, ensure_ascii=False, separators=(",", ":")), cuenta)
+    print(f"capítulos con palabras raras apuntadas: {len(salida)}")
 
 
 if __name__ == "__main__":

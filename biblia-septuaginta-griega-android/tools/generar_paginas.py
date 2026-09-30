@@ -92,6 +92,11 @@ footer{margin-top:3rem;border-top:1px solid var(--b);padding-top:1rem;
 # mismo. Sirve para mandar al lector adonde sí hay español.
 PARALELO_HEBREO: dict[str, tuple[str, str, list]] = {}
 
+# Las palabras poco corrientes de cada capítulo, que escribe generar_palabras.py
+# junto con las páginas del diccionario. Si no está, no se pone nada: los dos
+# programas van por su cuenta y da igual en qué orden se corran.
+RARAS: dict[str, list] = {}
+
 # Libros donde la Septuaginta y el texto hebreo no numeran igual. En los Salmos
 # la Septuaginta junta el 9 y el 10 y a partir de ahí va una unidad por detrás;
 # en Jeremías el orden de los oráculos contra las naciones es otro. Se avisa en
@@ -162,6 +167,11 @@ def genera(destino: pathlib.Path) -> None:
     comentarios = carga_comentarios()
     cuenta = {"escritos": 0, "iguales": 0}
     raiz_salida = destino / "texto"
+
+    RARAS.clear()
+    ficha_raras = destino / "datos" / "palabras-raras.json"
+    if ficha_raras.exists():
+        RARAS.update(json.loads(ficha_raras.read_text(encoding="utf-8")))
 
     PARALELO_HEBREO.clear()
     for coleccion in indice:
@@ -434,6 +444,25 @@ def pagina_capitulo(coleccion, libro, cslug, lslug, cap, caps, pos,
             f'<span class="o" {atributo}>{original}</span>'
             f'<span class="e">{espanol}</span></p>\n'
         )
+
+    raras = RARAS.get(f'{coleccion["id"]}/{libro["codigo"]}/{cap}') or []
+    if raras:
+        partes.append("<h2>Palabras poco corrientes de este capítulo</h2>\n")
+        partes.append(
+            '<p class="n">De las que salen pocas veces en toda la Biblia. '
+            "Encontrarse una es motivo para ir a mirar qué es.</p>\n"
+        )
+        partes.append('<ul class="l">\n')
+        for r in raras:
+            veces = r["n"]
+            cuantas = "solo aquí" if veces == 1 else f"{veces} veces en total"
+            glosa = f' — {html.escape(r["g"])}' if r.get("g") else ""
+            partes.append(
+                f'<li><a href="../../../palabras/{r["l"]}/{r["a"]}">'
+                f'<span {atributo}>{html.escape(r["p"])}</span></a>{glosa} '
+                f'<span class="n">({cuantas})</span></li>\n'
+            )
+        partes.append("</ul>\n")
 
     partes.append(
         f'<a class="app" href="../../../#/{coleccion["id"]}/{libro["codigo"]}/{cap}">'
