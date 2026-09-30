@@ -74,6 +74,8 @@ ul.l{list-style:none;padding:0;margin:0}
 ul.l li{padding:.45rem 0;border-bottom:1px solid var(--b);font:16px/1.4 system-ui,sans-serif}
 ul.l a{text-decoration:none}
 .n{color:var(--s);font:14px/1.6 system-ui,sans-serif}
+.par{border-inline-start:3px solid var(--b);padding:.15rem 0 .15rem .9rem;margin:1.6rem 0;
+ color:var(--s);font:15px/1.6 system-ui,sans-serif}
 .nt p{margin:0 0 1rem}
 .nt{font-size:.97em}
 ul.c{margin:0 0 1rem;padding-left:1.2rem}
@@ -82,6 +84,19 @@ h3{font-size:1.05rem;margin:1.6rem 0 .2rem}
 footer{margin-top:3rem;border-top:1px solid var(--b);padding-top:1rem;
  font:13px/1.6 system-ui,sans-serif;color:var(--s)}
 """
+
+
+# Libro de la Septuaginta -> (slug, nombre, capítulos) del mismo libro en el
+# Antiguo Testamento hebreo. Se llena en genera() leyendo el índice, porque los
+# códigos de libro son los mismos en las dos colecciones cuando el libro es el
+# mismo. Sirve para mandar al lector adonde sí hay español.
+PARALELO_HEBREO: dict[str, tuple[str, str, list]] = {}
+
+# Libros donde la Septuaginta y el texto hebreo no numeran igual. En los Salmos
+# la Septuaginta junta el 9 y el 10 y a partir de ahí va una unidad por detrás;
+# en Jeremías el orden de los oráculos contra las naciones es otro. Se avisa en
+# vez de callarlo, porque el enlace puede caer en un capítulo que no es.
+NUMERACION_DISTINTA = {"SAL", "JER"}
 
 
 def slug(s: str) -> str:
@@ -146,6 +161,14 @@ def genera(destino: pathlib.Path) -> None:
     comentarios = carga_comentarios()
     cuenta = {"escritos": 0, "iguales": 0}
     raiz_salida = destino / "texto"
+
+    PARALELO_HEBREO.clear()
+    for coleccion in indice:
+        if coleccion["id"] != "at":
+            continue
+        for libro in coleccion["libros"]:
+            PARALELO_HEBREO[libro["codigo"]] = (
+                slug(libro["nombre"]), libro["nombre"], libro["capitulos"])
 
     escribe(raiz_salida / "e.css", CSS, cuenta)
 
@@ -323,10 +346,26 @@ def pinta_bloques(bs: list) -> str:
 def pagina_capitulo(coleccion, libro, cslug, lslug, cap, caps, pos,
                     versiculos, atributo, clengua, cnombre, propia) -> str:
     nombre = libro["nombre"]
-    titulo = f"{nombre} {cap} — {clengua} y español interlineal"
     url = f"{BASE}/texto/{cslug}/{lslug}/{cap}.html"
-    primeros = " ".join(v.get("es", "") for v in versiculos[:3])
-    desc = recorta(f"{nombre} {cap} en {clengua} y español, versículo por versículo. {primeros}")
+
+    # Casi mil capítulos de la Septuaginta todavía no tienen traducción propia:
+    # son los que también están en el canon hebreo, donde el español ya se lee
+    # en la otra colección. Esas páginas decían en el título «griego y español
+    # interlineal» y abajo solo había griego. Prometer lo que no se da es lo
+    # peor que se puede hacer con un buscador y con un lector, así que el
+    # título dice lo que hay: texto en griego, y nada más.
+    hay_es = any((v.get("es") or "").strip() for v in versiculos)
+    if hay_es:
+        titulo = f"{nombre} {cap} — {clengua} y español interlineal"
+        primeros = " ".join(v.get("es", "") for v in versiculos[:3])
+        desc = recorta(
+            f"{nombre} {cap} en {clengua} y español, versículo por versículo. {primeros}")
+    else:
+        titulo = f"{nombre} {cap} — texto en {clengua}"
+        primeros = " ".join(v.get("t", "") for v in versiculos[:2])
+        desc = recorta(
+            f"{nombre} {cap} en {clengua}, versículo por versículo, con análisis "
+            f"palabra por palabra en el lector. {primeros}")
 
     anterior = caps[pos - 1] if pos > 0 else None
     siguiente = caps[pos + 1] if pos + 1 < len(caps) else None
@@ -352,10 +391,38 @@ def pagina_capitulo(coleccion, libro, cslug, lslug, cap, caps, pos,
     partes.append(migas("../../", [(cnombre, "../"), (nombre, "./"), (str(cap), None)]))
     partes.append(f"<h1>{html.escape(nombre)} {cap}</h1>\n")
 
-    sub = f"{cnombre} · texto en {clengua} y traducción al español"
-    if propia:
-        sub += " · traducción hecha directamente del griego para esta edición"
+    if hay_es:
+        sub = f"{cnombre} · texto en {clengua} y traducción al español"
+        if propia:
+            sub += " · traducción hecha directamente del griego para esta edición"
+    else:
+        sub = f"{cnombre} · texto en {clengua}"
     partes.append(f'<p class="sub">{html.escape(sub)}</p>\n')
+
+    # Sin español aquí, pero el mismo libro está en el Antiguo Testamento
+    # hebreo y allí sí lo hay: se dice y se enlaza, que para eso está.
+    paralelo = None if hay_es else PARALELO_HEBREO.get(libro["codigo"])
+    if paralelo:
+        pslug, pnombre, pcaps = paralelo
+        destino_cap = cap if cap in pcaps else None
+        aviso = ""
+        if libro["codigo"] in NUMERACION_DISTINTA:
+            aviso = (" La Septuaginta y el hebreo no numeran igual los capítulos, "
+                     "así que puede no caer en el mismo sitio.")
+        if destino_cap is not None:
+            partes.append(
+                f'<p class="par">Este capítulo todavía no tiene traducción propia al '
+                f'español. El mismo libro está en el Antiguo Testamento hebreo, y allí '
+                f'sí: <a href="../../hebreo/{pslug}/{destino_cap}.html">'
+                f'{html.escape(pnombre)} {destino_cap} en hebreo y español</a>.{aviso}</p>\n'
+            )
+        else:
+            partes.append(
+                f'<p class="par">Este capítulo todavía no tiene traducción propia al '
+                f'español. El mismo libro está en el Antiguo Testamento hebreo, y allí '
+                f'sí: <a href="../../hebreo/{pslug}/">'
+                f'{html.escape(pnombre)} en hebreo y español</a>.{aviso}</p>\n'
+            )
 
     for v in versiculos:
         numero = f"{v['v']}{v.get('s', '')}"
@@ -418,9 +485,18 @@ def primeros_versiculos(destino, cid, libro, caps, atributo, cuantos=3):
 def pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia, comentario,
                  muestra=()) -> str:
     nombre = libro["nombre"]
-    titulo = f"{nombre} — {clengua} y español, capítulo por capítulo"
     url = f"{BASE}/texto/{cslug}/{lslug}/"
-    trozos = [f"{nombre} completo en {clengua} y español, los {len(caps)} capítulos."]
+
+    # Lo mismo que en la página de capítulo: si el libro no lleva español, el
+    # título no lo promete. Se mira la muestra, que sale del primer capítulo.
+    hay_es = any((v.get("es") or "").strip() for v in muestra)
+    if hay_es:
+        titulo = f"{nombre} — {clengua} y español, capítulo por capítulo"
+        trozos = [f"{nombre} completo en {clengua} y español, los {len(caps)} capítulos."]
+    else:
+        titulo = f"{nombre} — texto en {clengua}, capítulo por capítulo"
+        trozos = [f"{nombre} completo en {clengua}, los {len(caps)} capítulos, "
+                  f"con análisis palabra por palabra en el lector."]
     if libro.get("nota"):
         trozos.append(libro["nota"])
     desc = recorta(" ".join(trozos))
@@ -452,6 +528,16 @@ def pagina_libro(libro, cslug, lslug, caps, cnombre, clengua, propia, comentario
     for cap in caps:
         partes.append(f'<li><a href="{cap}.html">{cap}</a></li>')
     partes.append("\n</ul>\n")
+
+    paralelo = None if hay_es else PARALELO_HEBREO.get(libro["codigo"])
+    if paralelo and cslug != "hebreo":
+        pslug, pnombre, _ = paralelo
+        partes.append(
+            f'<p class="par">Este libro todavía no tiene traducción propia al español. '
+            f'El mismo libro está en el Antiguo Testamento hebreo, y allí sí: '
+            f'<a href="../../hebreo/{pslug}/">{html.escape(pnombre)} en hebreo y '
+            f'español</a>.</p>\n'
+        )
 
     if muestra:
         primero = caps[0]
