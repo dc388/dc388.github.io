@@ -2698,6 +2698,71 @@ PALABRAS.update({
     "yourselves": "vosotros mismos", "went": "fue", "thine": "tu", "dost": "haces",
 })
 
+
+# Segunda tanda del largo tail de los artículos. Cada una abría el paso a cinco
+# o seis artículos; ya no hay palabras que valgan cientos, así que a partir de
+# aquí el rendimiento baja y hay que ir en grupo.
+#
+# Siguen fuera las ambiguas: «rent» es renta y también rasgado, «craft» es
+# oficio y también astucia, «scale» es escama y también balanza, y los gerundios
+# que en inglés hacen de sustantivo o de adjetivo según la frase.
+PALABRAS.update({
+    # sustantivos
+    "drunkenness": "embriaguez|sus", "forgiveness": "perdón|sus",
+    "religion": "religión|sus", "treasury": "tesoro|sus",
+    "assistance": "ayuda|sus", "provisions": "provisiones|sus",
+    "mockery": "burla|sus", "rivers": "ríos|sus", "curtain": "cortina|sus",
+    "priesthood": "sacerdocio|sus", "potter": "alfarero|sus", "outcry": "clamor|sus",
+    "crying": "clamor|sus", "blame": "culpa|sus", "stage": "etapa|sus",
+    "famine": "hambruna|sus", "outline": "esbozo|sus", "builders": "constructores|sus",
+    "odour": "olor|sus", "seer": "vidente|sus", "thigh": "muslo|sus",
+    "shaking": "sacudida|sus", "images": "imágenes|sus", "chronicler": "cronista|sus",
+    "maid": "criada|sus", "lioness": "leona|sus", "scab": "sarna|sus",
+    "resting-place": "lugar de reposo|sus", "cargo": "cargamento|sus",
+    "pattern": "modelo|sus", "courtier": "cortesano|sus", "rites": "ritos|sus",
+    "quarters": "aposentos|sus", "creation": "creación|sus", "fruits": "frutos|sus",
+    "ships": "naves|sus", "testing": "prueba|sus", "underworld": "inframundo|sus",
+    "shekel": "siclo|sus", "titles": "títulos|sus", "hireling": "jornalero|sus",
+    "bait": "cebo|sus", "bridle": "freno|sus", "summons": "citación|sus",
+    "umpire": "árbitro|sus", "trace": "rastro|sus", "gloom": "tiniebla|sus",
+    "jasper": "jaspe|sus", "tunic": "túnica|sus", "torch": "antorcha|sus",
+    "defect": "defecto|sus", "mourners": "plañideros|sus", "sufferer": "doliente|sus",
+    "proclamation": "proclamación|sus", "mysteries": "misterios|sus",
+    "vines": "vides|sus", "rejoicing": "regocijo|sus", "summer": "verano|sus",
+    "tomb": "sepulcro|sus", "proverb": "proverbio|sus", "trespass": "transgresión|sus",
+    "madness": "locura|sus", "nobles": "nobles|sus", "hills": "colinas|sus",
+    "stripe": "azote|sus", "ward": "custodia|sus", "mocking": "burla|sus",
+    "quivering": "estremecimiento|sus", "sojourning": "peregrinación|sus",
+    "bruise": "magulladura|sus",
+    # adjetivos y participios
+    "assumed": "supuesto|adj", "earlier": "anterior|adj",
+    "pre-eminent": "preeminente|adj", "poetic": "poético|adj",
+    "raging": "furioso|adj", "hewn": "labrado|adj", "hungry": "hambriento|adj",
+    "variegated": "abigarrado|adj", "grasped": "asido|adj",
+    "founded": "fundado|adj", "conquered": "conquistado|adj",
+    "despised": "despreciado|adj", "prominent": "prominente|adj",
+    "parallel": "paralelo|adj", "ideal": "ideal|adj",
+    "restrained": "refrenado|adj", "unintelligible": "ininteligible|adj",
+    "reckless": "temerario|adj", "devoted": "consagrado|adj",
+    "inferior": "inferior|adj", "marvellous": "maravilloso|adj",
+    "barren": "estéril|adj", "sluggish": "perezoso|adj",
+    "childless": "sin hijos|adj", "medical": "médico|adj",
+    "distressed": "angustiado|adj", "rejected": "rechazado|adj",
+    "fallen": "caído|adj", "dispersed": "disperso|adj", "zealous": "celoso|adj",
+    "rooted": "arraigado|adj", "worshipped": "adorado|adj",
+    "addressed": "dirigido|adj", "searched": "escudriñado|adj",
+    "clothes": "vestidos|sus",
+    # verbos
+    "nourish": "nutrir|inf", "fatten": "engordar|inf", "attach": "unir|inf",
+    "laud": "loar|inf", "wipe": "enjugar|inf", "please": "agradar|inf",
+    "persuade": "persuadir|inf", "succour": "socorrer|inf", "steal": "hurtar|inf",
+    "astonish": "asombrar|inf", "transgress": "transgredir|inf",
+    "suggest": "sugerir|inf", "suggests": "sugiere",
+    # adverbios y formas sueltas
+    "maliciously": "con malicia", "wrongly": "erróneamente", "alas": "ay",
+    "stood": "estuvo",
+})
+
 # Nombres propios y gentilicios que sí cambian en español.
 NOMBRES: dict[str, str] = {
     "Israelite": "israelita", "Israelites": "israelitas",
