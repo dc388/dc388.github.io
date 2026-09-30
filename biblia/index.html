@@ -107,6 +107,37 @@ h2:first-child{margin-top:4px}
 .rejilla a:hover{border-color:var(--realce)}
 .rejilla.capitulos a{min-width:3rem; text-align:center; font-variant-numeric:tabular-nums}
 .fuente{color:var(--tinta-suave); font-size:.8125rem; margin:6px 0 0; line-height:1.5}
+/* La portada: por dónde se empieza. */
+.ir{margin:2px 0 14px}
+.ir input{
+  width:100%; box-sizing:border-box; padding:13px 15px; font:inherit; font-size:1rem;
+  color:var(--tinta); background:var(--papel-alto); border:1px solid var(--borde);
+  border-radius:11px; -webkit-appearance:none}
+.ir input::placeholder{color:var(--tinta-suave); opacity:.85}
+.ir input:focus{outline:none; border-color:var(--realce)}
+.hallazgos{margin:-6px 0 16px; display:flex; flex-direction:column; gap:2px}
+.hallazgos a{
+  display:flex; justify-content:space-between; gap:12px; align-items:baseline;
+  padding:10px 14px; border:1px solid var(--borde); border-radius:9px;
+  background:var(--papel-alto); text-decoration:none; color:var(--tinta)}
+.hallazgos a:hover,.hallazgos a:focus{border-color:var(--realce); outline:none}
+.hallazgos small{color:var(--tinta-suave); font-size:.8125rem; text-align:right}
+.hallazgos .vacio{padding:10px 2px; color:var(--tinta-suave); font-size:.9rem}
+.seguir{
+  display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  padding:12px 15px; margin:0 0 16px; border:1px solid var(--realce); border-radius:11px;
+  text-decoration:none; color:var(--tinta); background:var(--papel-alto)}
+.seguir b{font-weight:600}
+.seguir small{color:var(--tinta-suave); font-size:.8125rem}
+.saludo{margin:0 0 14px; line-height:1.6; color:var(--tinta-suave); font-size:.9375rem}
+.saludo b{color:var(--tinta); font-weight:600}
+.propias{
+  display:block; padding:13px 15px; margin:0 0 20px; border:1px solid var(--borde);
+  border-radius:11px; background:var(--papel-alto); text-decoration:none; color:var(--tinta);
+  line-height:1.55; font-size:.9375rem}
+.propias:hover{border-color:var(--realce)}
+.propias b{display:block; font-weight:600; margin-bottom:2px}
+.propias small{color:var(--tinta-suave); font-size:.8125rem}
 .presentacion{line-height:1.6}
 .presentacion h2{font-size:1.25rem; margin:0 0 .6em}
 .presentacion li{margin:.3em 0}
@@ -216,6 +247,9 @@ footer a{color:var(--realce)}
         <strong>Padres Apostólicos</strong> (Clemente, Ignacio, Policarpo, la Didaché,
         el Pastor de Hermas), traducidos del griego al español.</li>
     </ul>
+    <p><a href="texto/">Ver todos los libros capítulo por capítulo</a>: los 138 libros
+      en páginas de lectura, con el texto original y el español, para leer sin
+      JavaScript y para que los encuentren los buscadores.</p>
     <p class="cargando">Cargando la biblioteca…</p>
     <noscript><p>Para leer los textos hay que activar JavaScript en el navegador.</p></noscript>
   </section>
@@ -232,6 +266,7 @@ footer a{color:var(--realce)}
     edición y su licencia en la biblioteca.
   </p>
   <p>
+    <a href="texto/">Todos los libros, capítulo por capítulo</a> ·
     <a href="../biblia-privacidad.html">Política de privacidad</a> ·
     <a href="https://play.google.com/store/apps/details?id=com.dc388.bibliagriega">La aplicación para Android</a>
   </p>
@@ -395,6 +430,114 @@ const ORDEN_APOCRIFOS = [
   'SUS', 'SUT', 'BEL', 'BET', '1ES', '3MA', '4MA', 'ODA', 'SSA', 'ENOC',
 ];
 
+/**
+ * Cómo se escribe cada libro cuando uno lo escribe deprisa.
+ *
+ * Quien busca un pasaje no teclea «Génesis»: teclea «gn», «gen» o «génesis». El
+ * prefijo cubre los dos últimos casos solo, pero no las abreviaturas que todo el
+ * mundo usa y que no empiezan igual que el nombre. Esta tabla las cubre. No
+ * pretende ser exhaustiva: son las que se usan al citar en español.
+ */
+const ABREVIATURAS = {
+  gn: 'GEN', gen: 'GEN', ex: 'EXO', exo: 'EXO', lv: 'LEV', lev: 'LEV',
+  nm: 'NUM', num: 'NUM', dt: 'DEU', deu: 'DEU', jos: 'JOS', jue: 'JUE', jc: 'JUE',
+  rt: 'RUT', '1s': '1SA', '2s': '2SA', '1sa': '1SA', '2sa': '2SA',
+  '1r': '1RY', '2r': '2RY', '1re': '1RY', '2re': '2RY',
+  '1cr': '1CR', '2cr': '2CR', esd: 'ESD', neh: 'NEH',
+  est: 'EST', sal: 'SAL', pr: 'PRO', prov: 'PRO', ecl: 'ECL', ct: 'CNT', cnt: 'CNT',
+  is: 'ISA', isa: 'ISA', jr: 'JER', jer: 'JER', lm: 'LAM', lam: 'LAM',
+  ez: 'EZE', eze: 'EZE', dn: 'DAN', dan: 'DAN', os: 'OSE', jl: 'JOE', am: 'AMO',
+  abd: 'ABD', jon: 'JON', mi: 'MIQ', miq: 'MIQ', nah: 'NAH', hab: 'HAB',
+  sof: 'SOF', ag: 'AGE', zac: 'ZAC', mal: 'MAL',
+  mt: 'MAT', mat: 'MAT', mc: 'MAR', mr: 'MAR', mar: 'MAR',
+  lc: 'LUC', luc: 'LUC', jn: 'JUA', jua: 'JUA', hch: 'HEC', hec: 'HEC',
+  rm: 'ROM', ro: 'ROM', rom: 'ROM', '1co': '1CO', '2co': '2CO',
+  ga: 'GAL', gal: 'GAL', ef: 'EFE', efe: 'EFE', flp: 'FIL', fil: 'FIL',
+  col: 'COL', '1ts': '1TE', '2ts': '2TE', '1tm': '1TI', '2tm': '2TI',
+  tit: 'TIT', flm: 'FLM', heb: 'HEB', stg: 'SAN', san: 'SAN',
+  '1p': '1PE', '2p': '2PE', '1jn': '1JN', '2jn': '2JN', '3jn': '3JN',
+  jud: 'JUD', ap: 'APO', apo: 'APO',
+  // Los que no están en la Reina-Valera y que aquí sí se pueden leer.
+  tb: 'TOB', tob: 'TOB', jdt: 'JDT', sab: 'SAB', sir: 'SIR', eclo: 'SIR',
+  bar: 'BAR', '1mac': '1MA', '2mac': '2MA', '3mac': '3MA', '4mac': '4MA',
+  '1m': '1MA', '2m': '2MA', '3m': '3MA', '4m': '4MA',
+  did: 'DIDA', herm: 'HERM', bern: 'BERN', diog: 'DIOG',
+};
+
+/**
+ * Lo que hay que teclear para llegar a cada libro.
+ *
+ * Se arma una vez, con el índice ya cargado: por cada libro, su nombre, su
+ * nombre alterno, su código y las abreviaturas que apunten a él. Cada clave va
+ * normalizada, así que «josé», «Jose» y «JOSE» son la misma.
+ */
+let atajos = null;
+function preparaAtajos() {
+  if (atajos) return atajos;
+  atajos = [];
+  for (const col of indice) {
+    for (const libro of col.libros) {
+      const claves = new Set([normaliza(libro.nombre), normaliza(libro.codigo)]);
+      if (libro.alterno) {
+        for (const parte of libro.alterno.split(',')) claves.add(normaliza(parte));
+      }
+      for (const [corta, codigo] of Object.entries(ABREVIATURAS)) {
+        if (codigo === libro.codigo) claves.add(corta);
+      }
+      claves.delete('');
+      atajos.push({ col, libro, claves: [...claves] });
+    }
+  }
+  return atajos;
+}
+
+// El canon primero: quien escribe «Génesis» casi siempre quiere el hebreo, no
+// la versión de la Septuaginta, aunque las dos estén aquí.
+const PESO_COLECCION = { at: 0, nt: 0, lxx: 1, padres: 2, pseudo: 2 };
+
+/**
+ * Busca un pasaje escrito a mano: «Juan 3:16», «Gn 1», «2 Macabeos 7».
+ *
+ * Devuelve los libros que casan, con el capítulo si se pidió uno. No adivina
+ * entre varios: si «Génesis» está en el hebreo y en la Septuaginta, salen los
+ * dos y elige quien lee, que para eso están las dos ediciones.
+ */
+function buscaPasaje(texto) {
+  const crudo = (texto || '').trim();
+  if (!crudo) return [];
+  // El número final es el capítulo; el segundo, el versículo. Los libros que
+  // empiezan por número («1 Samuel») no se confunden porque el patrón exige
+  // que quede algo delante.
+  const partido = crudo.match(/^(.+?)\s*(\d+)(?:\s*[:.,\s]\s*(\d+))?\s*$/);
+  const nombre = normaliza(partido ? partido[1] : crudo);
+  const capitulo = partido ? parseInt(partido[2], 10) : null;
+  const versiculo = partido && partido[3] ? parseInt(partido[3], 10) : null;
+  if (!nombre) return [];
+
+  const salida = [];
+  for (const { col, libro, claves } of preparaAtajos()) {
+    let rango = 9;
+    for (const clave of claves) {
+      if (clave === nombre) rango = Math.min(rango, 0);
+      else if (clave.startsWith(nombre)) rango = Math.min(rango, 1);
+      else if (nombre.length >= 4 && clave.includes(nombre)) rango = Math.min(rango, 2);
+    }
+    if (rango === 9) continue;
+    // Un capítulo que ese libro no tiene: se ofrece el libro, no un enlace roto.
+    const tiene = capitulo !== null && libro.capitulos.includes(capitulo);
+    salida.push({
+      col, libro, rango, versiculo,
+      capitulo: tiene ? capitulo : null,
+      fuera: capitulo !== null && !tiene ? capitulo : null,
+    });
+  }
+  salida.sort((a, b) =>
+    a.rango - b.rango
+    || (PESO_COLECCION[a.col.id] ?? 3) - (PESO_COLECCION[b.col.id] ?? 3)
+    || a.libro.nombre.localeCompare(b.libro.nombre, 'es'));
+  return salida.slice(0, 8);
+}
+
 let pestana = 'canon';
 
 function enlaceLibro(col, libro) {
@@ -418,6 +561,83 @@ function porClase(clase) {
     return (pa < 0 ? 99 : pa) - (pb < 0 ? 99 : pb);
   });
   return salida;
+}
+
+/**
+ * Lo que se pone encima de los ciento cinco botones.
+ *
+ * Quien llega por primera vez caía en una rejilla de libros sin una línea que
+ * dijera qué es esto ni por dónde se empieza. Arriba van ahora, por este orden:
+ * dónde escribir el pasaje, por dónde se iba leyendo, qué es esta biblioteca, y
+ * lo único que tiene y no hay en otra parte.
+ */
+function cabeceraPortada() {
+  const partes = [];
+
+  partes.push(`<form class="ir" id="ir" role="search">
+    <input id="qIr" type="search" autocomplete="off" spellcheck="false"
+      aria-label="Ir a un pasaje"
+      placeholder="Ir a un pasaje: Juan 3:16, Gn 1, 2 Macabeos 7">
+  </form>
+  <div class="hallazgos" id="hallazgos"></div>`);
+
+  const ultimo = ultimaLectura();
+  if (ultimo) {
+    partes.push(`<a class="seguir" href="#/${ultimo.col}/${ultimo.cod}/${ultimo.cap}">
+      <span><b>Seguir leyendo</b> · ${escapa(ultimo.titulo)}</span>
+      <small>donde lo dejaste</small>
+    </a>`);
+  }
+
+  partes.push(`<p class="saludo">La Biblia en sus lenguas originales, con el español
+    debajo de cada versículo: <b>Septuaginta</b>, <b>Nuevo Testamento griego</b> y
+    <b>Antiguo Testamento hebreo</b>. Toca cualquier palabra para ver su análisis y
+    su entrada del diccionario.</p>`);
+
+  if (pestana !== 'apocrifos') {
+    partes.push(`<a class="propias" href="#/">
+      <b>Los libros que no encontrarás en otra Biblia española</b>
+      Tobías, Judit, Sabiduría, Eclesiástico, los cuatro Macabeos, el Libro de Enoc,
+      las Odas y los Padres Apostólicos.
+      <small>33 libros traducidos del griego a mano para esta edición, porque ninguna
+      Biblia española de dominio público los trae.</small>
+    </a>`);
+  }
+  return partes.join('');
+}
+
+/** El último capítulo que se abrió, si el navegador lo recuerda. */
+function ultimaLectura() {
+  try {
+    const guardado = JSON.parse(lee('ultimo', 'null'));
+    if (!guardado || !buscaLibro(guardado.col, guardado.cod)) return null;
+    return guardado;
+  } catch (e) { return null; }
+}
+
+/** Pinta lo que casa con lo que se va escribiendo en la caja del pasaje. */
+function pintaHallazgos(texto) {
+  const caja = document.getElementById('hallazgos');
+  if (!caja) return;
+  if (!texto.trim()) { caja.innerHTML = ''; return; }
+  const hallados = buscaPasaje(texto);
+  if (!hallados.length) {
+    caja.innerHTML = '<p class="vacio">No encuentro ningún libro con ese nombre.</p>';
+    return;
+  }
+  caja.innerHTML = hallados.map(({ col, libro, capitulo, versiculo, fuera }) => {
+    const destino = capitulo
+      ? `#/${col.id}/${libro.codigo}/${capitulo}${versiculo ? `?v=${versiculo}` : ''}`
+      : `#/${col.id}/${libro.codigo}`;
+    const rotulo = capitulo
+      ? `${libro.nombre} ${capitulo}${versiculo ? `:${versiculo}` : ''}`
+      : libro.nombre;
+    const aparte = fuera
+      ? `${col.corto} · no tiene capítulo ${fuera}`
+      : `${col.corto} · ${libro.capitulos.length} cap.`;
+    return `<a href="${destino}">
+      <span>${escapa(rotulo)}</span><small>${escapa(aparte)}</small></a>`;
+  }).join('');
 }
 
 function biblioteca() {
@@ -458,10 +678,26 @@ function biblioteca() {
         </div>
       </section>`).join('');
 
-  vista.innerHTML = pestanas + secciones;
+  vista.innerHTML = cabeceraPortada() + pestanas + secciones;
   vista.querySelectorAll('[data-pestana]').forEach((boton) => {
     boton.onclick = () => { pestana = boton.dataset.pestana; biblioteca(); };
   });
+
+  const tarjeta = vista.querySelector('.propias');
+  if (tarjeta) {
+    tarjeta.onclick = (e) => { e.preventDefault(); pestana = 'apocrifos'; biblioteca(); };
+  }
+
+  const caja = document.getElementById('qIr');
+  if (caja) {
+    caja.oninput = () => pintaHallazgos(caja.value);
+    // Enter va al primero, que es lo que uno espera al escribir «Juan 3».
+    document.getElementById('ir').onsubmit = (e) => {
+      e.preventDefault();
+      const primero = vista.querySelector('.hallazgos a');
+      if (primero) location.hash = primero.getAttribute('href').slice(1);
+    };
+  }
 }
 
 function capitulos(coleccion, codigo) {
@@ -479,11 +715,16 @@ function capitulos(coleccion, codigo) {
     </div>`;
 }
 
-async function lector(coleccion, codigo, capitulo) {
+async function lector(coleccion, codigo, capitulo, versiculo) {
   const hallado = buscaLibro(coleccion, codigo);
   if (!hallado) return biblioteca();
   const { col, libro } = hallado;
   titulo.textContent = `${libro.nombre} ${capitulo}`;
+  // Para el «seguir leyendo» de la portada. Va en el navegador de cada quien.
+  guarda('ultimo', JSON.stringify({
+    col: coleccion, cod: codigo, cap: capitulo,
+    titulo: `${libro.nombre} ${capitulo}`,
+  }));
   atras.hidden = false;
   atras.href = `#/${coleccion}/${codigo}`;
   document.getElementById('mas').hidden = false;
@@ -512,7 +753,7 @@ async function lector(coleccion, codigo, capitulo) {
   vista.innerHTML = `
     <div ${col.rtl ? 'dir="rtl"' : ''}>
       ${versiculos.map((v) => `
-        <p class="versiculo">
+        <p class="versiculo" id="v${v.v}">
           <span class="n">${v.v}${v.s || ''}</span>${cuerpoDelVersiculo(v, palabras, griego)}
           ${v.es ? `<span class="es" dir="ltr" lang="es">${escapa(v.es)}</span>` : ''}
         </p>`).join('')}
@@ -521,7 +762,9 @@ async function lector(coleccion, codigo, capitulo) {
       ${anterior ? `<a class="volver" href="#/${coleccion}/${codigo}/${anterior}">‹ ${anterior}</a>` : '<span></span>'}
       ${siguiente ? `<a class="volver" href="#/${coleccion}/${codigo}/${siguiente}">${siguiente} ›</a>` : '<span></span>'}
     </nav>`;
-  window.scrollTo(0, 0);
+  const buscado = versiculo && vista.querySelector(`#v${versiculo}`);
+  if (buscado) buscado.scrollIntoView({ block: 'center' });
+  else window.scrollTo(0, 0);
 }
 
 /**
@@ -666,7 +909,11 @@ function ruta() {
   const partes = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   if (partes.length < 2) return biblioteca();
   if (partes.length === 2) return capitulos(partes[0], partes[1]);
-  return lector(partes[0], partes[1], parseInt(partes[2], 10));
+  // El buscador de pasajes añade «?v=16» cuando se pidió un versículo suelto.
+  const [cap, cola] = partes[2].split('?');
+  const pedido = (cola || '').match(/v=(\d+)/);
+  return lector(partes[0], partes[1], parseInt(cap, 10),
+                pedido ? parseInt(pedido[1], 10) : null);
 }
 
 window.addEventListener('hashchange', ruta);

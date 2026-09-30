@@ -151,6 +151,80 @@ SIGLAS.update({
     "EV": "versiones inglesas", "RV": "RV", "WH": "WH", "MT": "texto masorético",
 })
 
+
+# Los troncos verbales hebreos en la forma corta de Abbott-Smith.
+#
+# BDB los escribe largos y con mayúscula —«Niph.», «Hiph.»— y ya estaban. Pero
+# Abbott-Smith, cuando cita la Septuaginta, los abrevia en minúscula detrás de
+# la raíz hebrea: «[in LXX for צדק hi.]», «[for גָּלָה ni., pi.]». Como la
+# búsqueda respeta las mayúsculas a propósito —sin eso «Mt», el evangelio, se
+# leía como «MT», el texto masorético—, esas formas cortas no casaban con nada
+# y bloqueaban el artículo entero. Solo «hi.», «pi.» y «ni.» cerraban el paso a
+# 572 artículos.
+SIGLAS.update({
+    "qal": "qal",
+    "ni.": "nifal",
+    "niph.": "nifal",
+    "pi.": "piel",
+    "pu.": "pual",
+    "hi.": "hifil",
+    "hiph.": "hifil",
+    "ho.": "hofal",
+    "hoph.": "hofal",
+    "hith.": "hitpael",
+    "hithp.": "hitpael",
+    "po.": "poel",
+    "Po.": "Poel",
+    "pil.": "pilel",
+    "pilp.": "pilpel",
+})
+
+# Otras abreviaturas de los dos léxicos, comprobadas una a una en su contexto.
+# Abreviaturas de libro que son además palabras inglesas corrientes. Las demás
+# —Mk, Lk, Ro, Ga, Phl…— pasan intactas solas, porque no significan nada en
+# inglés; éstas no, y se traducían. «He 11:21», la carta a los Hebreos, salía
+# «él 11:21»: 593 veces en 416 artículos. «Is 40:4», Isaías, salía «es 40:4».
+#
+# Se mapean a sí mismas, que es lo que hace el resto de abreviaturas de libro en
+# esta obra. Comprobado antes de tocarlas: de las 1353 apariciones de «He» y las
+# 667 de «Is» en los dos léxicos, ni una sola es la palabra inglesa; hasta los
+# «Westc., He., 297» son el comentario de Westcott a Hebreos.
+SIGLAS.update({
+    "He": "He",
+    "Is": "Is",
+    # «St. Paul» se leía como el sufijo ordinal inglés de «1st» y salía
+    # «º Pablo». Como sigla se reconoce antes de llegar a esa regla.
+    "St.": "S.",
+    # «sing.» caía en PALABRAS["sing"] y salía «cantar»: «3rd pers. sing.» daba
+    # «3º de la persona cantar». Son 27 pasajes.
+    "sing.": "singular",
+    # BDB escribe «3rd ps. sing.», donde «ps.» es «persona». Sin el punto, «ps»
+    # es la sigla de los Salmos, así que salía «3º Sal singular».
+    "ps.": "persona",
+    # «Th.» con punto caía en el sufijo ordinal de «4th» y salía «º». Se mapea a
+    # sí misma, como el resto de abreviaturas de libro: son 88 citas de
+    # Tesalonicenses y una «Th. NT», la teología del NT de Stevens.
+    "Th.": "Th.",
+})
+
+SIGLAS.update({
+    "post-ex.": "postexílico",
+    "post-exil.": "postexílico",
+    "post-exilic": "postexílico",
+    "pret.": "pretérito",
+    "mpl.": "masculino plural",
+    "fpl.": "femenino plural",
+    "mod.": "moderno",
+    # Latín de aparato crítico, que las dos obras usan sin traducir.
+    "vel": "o",
+    "aliter": "de otro modo",
+    "foreg.": "anterior",
+    "deriv.": "derivación",
+    "prol.": "prólogo",
+    "dim.": "diminutivo",
+    "qu.": "pregunta",
+})
+
 # Lo que no está en ningún idioma y pasa tal cual: hebreo, griego, cifras,
 # referencias bíblicas y las siglas de los críticos (WH, MM, Cremer).
 
@@ -172,10 +246,27 @@ def _desnudar(pieza: str) -> tuple[str, str, str]:
     return abre, pieza, cierra
 
 
+# Siglas cuya forma sin punto es una palabra inglesa corriente y no una
+# abreviatura. Solo «As» lo es de verdad: BDB escribe «As.», con punto, cuando
+# quiere decir asirio, y un «As» suelto a principio de frase es la conjunción
+# inglesa. Sin esta excepción, «As opposed to a woman» salía «asirio opuesto a
+# una mujer», y «As a demonstrative pronoun» —en ὁ, la palabra más frecuente
+# del Nuevo Testamento— salía «asirio demostrativo pronombre». Eran 70 pasajes
+# en 53 entradas.
+#
+# Las otras quince siglas que chocan («adj», «pron», «gen», «part»…) se quedan
+# como están: en un artículo de léxico esas formas son abreviaturas, no
+# sustantivos, y la lectura de sigla es la correcta.
+_NUNCA_SIN_PUNTO = {"As"}
+
 # Las mismas siglas sin el punto final: las dos obras lo ponen o no según les
 # viene («pl.» y «pl»). La búsqueda respeta las mayúsculas a propósito: sin eso,
 # «Mt» —el evangelio— se leía como «MT», el texto masorético.
-_SIN_PUNTO = {k.rstrip("."): v for k, v in SIGLAS.items()}
+_SIN_PUNTO = {
+    k.rstrip("."): v
+    for k, v in SIGLAS.items()
+    if k.rstrip(".") not in _NUNCA_SIN_PUNTO
+}
 
 _ABRE = "([{«\u201c"
 _CIERRA = ")]}»\u201d,;:.!?"
@@ -217,6 +308,14 @@ def _sigla(pieza: str) -> str | None:
     return hallada
 
 
+# «[a.di.ab]», «[h.da.ac]»: los identificadores con que Open Scriptures
+# numeró las entradas de BDB. Van siempre entre corchetes, así que se
+# reconocen sin confundirlos con una cadena de abreviaturas.
+_CITA = re.compile(r"\d+[:.]\d+")
+
+_CODIGO_BDB = re.compile(r"\[[a-z]{1,4}(?:\.[a-z]{1,4}){1,4}\][,;.]?$")
+
+
 def _piezas(linea: str) -> list[tuple[str, str]]:
     """Parte una línea en piezas etiquetadas: sigla, protegido o prosa.
 
@@ -224,7 +323,25 @@ def _piezas(linea: str) -> list[tuple[str, str]]:
     el informe de lo que falta vean exactamente lo mismo.
     """
     salida: list[tuple[str, str]] = []
-    for pieza in linea.split(" "):
+    trozos_linea = linea.split(" ")
+    for n, pieza in enumerate(trozos_linea):
+        # «To» es Tobías cuando le sigue una cita —«To 5:2»— y la preposición
+        # inglesa cuando encabeza una acepción —«2. To slander, defame»—. Es la
+        # única de las tres abreviaturas que de verdad se usa en los dos
+        # sentidos: 93 veces libro, 12 veces preposición. Aquí se mira lo que
+        # viene detrás, que es lo único que las distingue.
+        if (pieza.strip("([{«").rstrip(")]}»,;") == "To"
+                and n + 1 < len(trozos_linea)
+                and _CITA.match(trozos_linea[n + 1].lstrip("([{«"))):
+            salida.append(("protegido", pieza))
+            continue
+        # Identificador interno de la digitalización de BDB: «[a.di.ab]». No es
+        # prosa del léxico ni significa nada para quien lee, pero al partirse en
+        # «a», «di» y «ab» dejaba esas sílabas como palabras inglesas sin
+        # resolver y tumbaba el artículo entero. Bloqueaba 179.
+        if _CODIGO_BDB.match(pieza):
+            salida.append(("protegido", pieza))
+            continue
         # primero la pieza tal cual, con su punto: «Interrog.» sólo se reconoce
         # como sigla mientras lo lleve, porque «Ex» sin punto es el Éxodo
         espanol = _sigla(pieza)
@@ -286,12 +403,21 @@ def _recorrer(texto: str, traduce):
     return lineas
 
 
+# Preposición repetida, otra vez. traducir() ya la colapsa dentro de cada
+# tramo, pero las siglas se desarrollan después de eso, al montar la línea:
+# «in cl.» da «en» y luego «en griego clásico», y el doblete aparece ya fuera
+# del alcance de aquella limpieza. Aquí se repasa el artículo entero.
+_REPETIDA = re.compile(r"\b(a|de|en|con) \1\b")
+
+
 def traducir_articulo(texto: str | None) -> str | None:
     """El artículo en español, o None si hay una sola palabra que no se entiende."""
     if not texto or not texto.strip():
         return None
     lineas = _recorrer(texto, traducir)
-    return None if lineas is None else "\n".join(lineas)
+    if lineas is None:
+        return None
+    return _REPETIDA.sub(r"\1", "\n".join(lineas))
 
 
 def desconocidas_articulo(texto: str | None) -> list[str]:
