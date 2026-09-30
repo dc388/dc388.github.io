@@ -172,10 +172,27 @@ def _desnudar(pieza: str) -> tuple[str, str, str]:
     return abre, pieza, cierra
 
 
+# Siglas cuya forma sin punto es una palabra inglesa corriente y no una
+# abreviatura. Solo «As» lo es de verdad: BDB escribe «As.», con punto, cuando
+# quiere decir asirio, y un «As» suelto a principio de frase es la conjunción
+# inglesa. Sin esta excepción, «As opposed to a woman» salía «asirio opuesto a
+# una mujer», y «As a demonstrative pronoun» —en ὁ, la palabra más frecuente
+# del Nuevo Testamento— salía «asirio demostrativo pronombre». Eran 70 pasajes
+# en 53 entradas.
+#
+# Las otras quince siglas que chocan («adj», «pron», «gen», «part»…) se quedan
+# como están: en un artículo de léxico esas formas son abreviaturas, no
+# sustantivos, y la lectura de sigla es la correcta.
+_NUNCA_SIN_PUNTO = {"As"}
+
 # Las mismas siglas sin el punto final: las dos obras lo ponen o no según les
 # viene («pl.» y «pl»). La búsqueda respeta las mayúsculas a propósito: sin eso,
 # «Mt» —el evangelio— se leía como «MT», el texto masorético.
-_SIN_PUNTO = {k.rstrip("."): v for k, v in SIGLAS.items()}
+_SIN_PUNTO = {
+    k.rstrip("."): v
+    for k, v in SIGLAS.items()
+    if k.rstrip(".") not in _NUNCA_SIN_PUNTO
+}
 
 _ABRE = "([{«\u201c"
 _CIERRA = ")]}»\u201d,;:.!?"
@@ -286,12 +303,21 @@ def _recorrer(texto: str, traduce):
     return lineas
 
 
+# Preposición repetida, otra vez. traducir() ya la colapsa dentro de cada
+# tramo, pero las siglas se desarrollan después de eso, al montar la línea:
+# «in cl.» da «en» y luego «en griego clásico», y el doblete aparece ya fuera
+# del alcance de aquella limpieza. Aquí se repasa el artículo entero.
+_REPETIDA = re.compile(r"\b(a|de|en|con) \1\b")
+
+
 def traducir_articulo(texto: str | None) -> str | None:
     """El artículo en español, o None si hay una sola palabra que no se entiende."""
     if not texto or not texto.strip():
         return None
     lineas = _recorrer(texto, traducir)
-    return None if lineas is None else "\n".join(lineas)
+    if lineas is None:
+        return None
+    return _REPETIDA.sub(r"\1", "\n".join(lineas))
 
 
 def desconocidas_articulo(texto: str | None) -> list[str]:

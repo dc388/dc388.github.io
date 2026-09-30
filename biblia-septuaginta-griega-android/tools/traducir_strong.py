@@ -2846,6 +2846,12 @@ def _limpiar(texto: str) -> str:
     texto = re.sub(r"\( *\)", "", texto)
     texto = re.sub(r" +", " ", texto)
     texto = re.sub(r"(^|[;,] *)(?:un|el) +(?=[;,]|$)", r"\1", texto)
+    # Preposición repetida. Sale cuando el inglés ya traía la preposición y la
+    # sigla que viene detrás la trae dentro de su desarrollo: «in cl.» da «en»
+    # más «en griego clásico», y queda «en en griego clásico». En español no
+    # existe ningún caso en que estas cuatro se repitan seguidas, así que
+    # colapsarlas es seguro. Eran 201 pasajes del léxico.
+    texto = re.sub(r"\b(a|de|en|con) \1\b", r"\1", texto)
     # las contracciones, que en español son obligatorias
     texto = re.sub(r"\bde el\b", "del", texto)
     texto = re.sub(r"\ba el\b", "al", texto)
