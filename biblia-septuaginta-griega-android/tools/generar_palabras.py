@@ -619,7 +619,7 @@ def genera(destino: pathlib.Path) -> None:
         archivo = f"{slug(translit) or slug(lema)}-{strong.lower()}.html"
         elegidas[inicial].append(
             (archivo, strong, lema, translit,
-             (entrada.get("definicion_es") or "").strip(), veces))
+             repara_glosa((entrada.get("definicion_es") or "").strip()), veces))
 
     urls_por_lengua: dict[str, list[str]] = {}
     totales: dict[str, int] = {}
