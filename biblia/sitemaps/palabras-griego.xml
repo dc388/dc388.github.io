@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://dc388.github.io/biblia/palabras/griego/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/aigyptios-g124.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/aineas-g132.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ainon-g137.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/aigyptos-g125.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/augoustos-g828.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -117,11 +118,13 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/krispos-g2921.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kyrene-g2957.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kyrenios-g2958.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/kyria-g2959.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kyrenaios-g2956.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kosam-g2973.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/korinthos-g2882.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kyprios-g2953.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kypros-g2954.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/kos-g2972.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/lazaros-g2976.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/lamech-g2984.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/linos-g3044.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -210,6 +213,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ourbanos-g3773.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/parthos-g3934.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/patara-g3959.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/patmos-g3963.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/paphos-g3974.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pergamos-g4010.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/perge-g4011.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -227,7 +231,11 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/priska-g4251.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/priskilla-g4252.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/prochoros-g4402.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/ptolemais-g4424.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/pontios-g4194.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/poplios-g4196.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/porkios-g4201.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/samos-g4544.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sardeis-g4554.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sarepta-g4558.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/saron-g4565.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -248,6 +256,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/samareia-g4540.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/samareites-g4541.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/samareitis-g4542.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/samothraike-g4543.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/samouel-g4545.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sampson-g4546.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/saoul-g4549.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -264,6 +273,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sina-g4614.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sion-g4622.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/skeuas-g4630.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/smyrna-g4667.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/solomon-g4672.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/spania-g4681.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/stachys-g4720.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -274,6 +284,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/syntyche-g4941.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/syrakousai-g4946.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/syria-g4947.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/syrophoinissa-g4949.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sychar-g4965.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sychem-g4966.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sosipatros-g4989.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -297,9 +308,11 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/troas-g5174.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/trogyllion-g5175.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/trophimos-g5161.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/tryphaina-g5170.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/tychikos-g5190.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/tyrannos-g5181.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/tyrios-g5183.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/tyros-g5184.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phalek-g5317.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phares-g5329.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/philetos-g5372.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -314,11 +327,14 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/philologos-g5378.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phlegon-g5393.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phoibe-g5402.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/phoinike-g5403.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phortounatos-g5415.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/phoinix-g5405.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phrygia-g5435.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phygellos-g5436.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phelix-g5344.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phestos-g5347.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/chios-g5508.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/chaldaios-g5466.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/chanaan-g5477.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/chanaanaios-g5478.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -647,6 +663,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/dikaiosyne-g1343.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/dikaioo-g1344.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/diodeuo-g1353.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/diopetes-g1356.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/diploo-g1363.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/dischilioi-g1367.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/dipsao-g1372.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -805,6 +822,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/zelos-g2205.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/zoon-g2226.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thalassa-g2281.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/thalpo-g2282.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thanatos-g2288.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thapto-g2290.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/tharsos-g2294.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -813,6 +831,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thelo-g2309.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/therme-g2329.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/theros-g2330.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/theke-g2336.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thambeo-g2284.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thanasimos-g2286.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thanatoo-g2289.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -867,6 +886,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thymiama-g2368.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thymiao-g2370.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thymos-g2372.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/thymoo-g2373.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thyris-g2376.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thysia-g2378.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/thysiasterion-g2379.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -905,6 +925,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kathiemi-g2524.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kathistemi-g2525.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kathairesis-g2506.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/kathairo-g2508.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kathaireo-g2507.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/katharizo-g2511.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/katharismos-g2512.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -927,6 +948,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kakos-g2556.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kakoo-g2559.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kakos-g2560.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/kalame-g2562.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kaleo-g2564.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kallion-g2566.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kallielaios-g2565.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1048,6 +1070,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/katoiketerion-g2732.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/katorthoma-g2735.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/katoteros-g2737.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/kaumatizo-g2739.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kausoo-g2741.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kauchaomai-g2744.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kauchema-g2745.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1058,6 +1081,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kenos-g2756.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kenoo-g2758.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kenos-g2761.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/keraia-g2762.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kerameus-g2763.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/keramikos-g2764.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kerdaino-g2770.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1088,6 +1112,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kletos-g2822.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/klinidion-g2826.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/klope-g2829.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/klydonizomai-g2831.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kleros-g2819.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/klesis-g2821.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/koilia-g2836.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1128,6 +1153,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kreitton-g2909.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kremannymi-g2910.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/kreisson-g2908.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/kremnos-g2911.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/krithe-g2915.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/krites-g2923.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/krouo-g2925.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1266,6 +1292,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/meter-g3384.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/meti-g3385.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/metra-g3388.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/mignymi-g3396.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/misthios-g3407.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/misthoma-g3410.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/mainomai-g3105.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1365,6 +1392,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/monoo-g3443.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/morphoo-g3445.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/moschopoieo-g3447.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/myelos-g3452.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/mylikos-g3457.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/myrias-g3461.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/mysterion-g3466.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1398,6 +1426,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/neaniskos-g3495.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/nekros-g3498.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/nephele-g3507.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/neoterikos-g3512.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/neotes-g3503.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/nepiazo-g3515.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/nesion-g3519.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1583,6 +1612,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pareisphero-g3923.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/parektos-g3924.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/parembole-g3925.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/parepidemos-g3927.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/paregoria-g3931.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/parthenos-g3933.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/paroichomai-g3944.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1601,6 +1631,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/patraloias-g3964.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/patriarches-g3966.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/patroios-g3971.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/pachyno-g3975.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pauo-g3973.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pais-g3816.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/parrhesia-g3954.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1609,6 +1640,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pedinos-g3977.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pezeuo-g3978.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pezei-g3979.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/peitharcheo-g3980.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/peinao-g3983.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/peirazo-g3985.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/peirao-g3987.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1796,6 +1828,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/proorizo-g4309.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/propascho-g4310.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/propempo-g4311.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/propetes-g4312.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/proporeuomai-g4313.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/prosabbaton-g4315.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/prosago-g4317.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1843,6 +1876,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/prospsauo-g4379.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/prosopolepteo-g4380.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/prosopolepsia-g4382.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/protrepomai-g4389.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/protrecho-g4390.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/prophero-g4393.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/prophetes-g4396.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1883,8 +1917,10 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pterna-g4418.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pteryx-g4420.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ptaio-g4417.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/ptenon-g4421.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ptoeo-g4422.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ptocheia-g4432.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/ptocheuo-g4433.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ptochos-g4434.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ptysma-g4427.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ptysso-g4428.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1898,6 +1934,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pyresso-g4445.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pyretos-g4446.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pyroo-g4448.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/pyrrhazo-g4449.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/poleo-g4453.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/poroo-g4456.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pothen-g4159.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1914,6 +1951,8 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/porrho-g4206.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/porrhothen-g4207.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pyle-g4439.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/pyrgos-g4444.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/pyrinos-g4447.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/popote-g4455.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pas-g3956.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pyr-g4442.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1939,6 +1978,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sbennymi-g4570.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/seio-g4579.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/seautou-g4572.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/seira-g4577.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/seismos-g4578.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/selene-g4582.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/semaino-g4591.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1949,6 +1989,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sige-g4602.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sidereos-g4603.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sindon-g4616.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/siteutos-g4618.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/sitometron-g4620.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/siopao-g4623.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/skandalon-g4625.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -1969,6 +2010,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/skotia-g4653.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/skotizo-g4654.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/skoteinos-g4652.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/skotoo-g4656.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/skotos-g4655.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/skybalon-g4657.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/skenos-g4636.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -2028,6 +2070,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/syngenes-g4773.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkathemai-g4775.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkampto-g4781.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/synkathizo-g4776.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkakoucheo-g4778.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkaleo-g4779.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkalypto-g4780.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -2037,8 +2080,10 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkineo-g4787.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkleio-g4788.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkoinoneo-g4790.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/synkoinonos-g4791.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkomizo-g4792.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synkyria-g4795.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/synkypto-g4794.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/syncheo-g4797.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synchairo-g4796.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/synchraomai-g4798.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -2283,6 +2328,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/huiothesia-g5206.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/huios-g5207.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phago-g5315.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/pharmakos-g5333.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phasis-g5334.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phero-g5342.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/pheme-g5345.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -2300,12 +2346,14 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phthengomai-g5350.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phthartos-g5349.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phtheiro-g5351.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/phthinoporinos-g5352.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phthoneo-g5354.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phthora-g5356.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phthongos-g5353.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phthonos-g5355.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phiale-g5357.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/philagathos-g5358.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/philadelphos-g5361.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phileo-g5368.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/philedonos-g5369.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/philia-g5373.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -2349,6 +2397,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phobos-g5401.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phonos-g5408.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phoros-g5411.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/phylax-g5441.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phyllon-g5444.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/phyrama-g5445.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/physis-g5449.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -2559,6 +2608,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/anagnorizomai-g319.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/anadidomi-g325.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/anadeiknymi-g322.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/anazeteo-g327.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/anazonnymi-g328.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/anathallo-g330.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/anatheoreo-g333.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -2636,6 +2686,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/antiparerchomai-g492.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/antistrateuomai-g497.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/antitassomai-g498.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/antophthalmeo-g503.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/anypokritos-g505.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/anoterikos-g510.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/anoetos-g453.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -2744,6 +2795,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/arete-g703.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/aren-g704.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/argos-g692.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/argyreos-g693.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/argyrion-g694.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/areskeia-g699.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/arestos-g701.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -2917,6 +2969,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/akylas-g207.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/alexandros-g223.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/alexandreus-g221.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/alexandrinos-g222.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/alphaios-g256.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/aminadab-g284.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/amplias-g291.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -3349,6 +3402,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/heteroglossos-g2084.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hetoimos-g2093.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hetoimazo-g2090.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/ea-g1436.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/enklema-g1462.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/enkyos-g1471.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/edaphos-g1475.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -3430,9 +3484,11 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/emmor-g1697.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/enos-g1800.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/enoch-g1802.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/epainetos-g1866.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/epaphras-g1889.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/epikoureios-g1946.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/esli-g2069.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/esrom-g2074.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ephesios-g2180.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ephraim-g2187.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hebrais-g1446.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -3503,6 +3559,8 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hikanos-g2425.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hikanotes-g2426.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hikanoo-g2427.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/hikmas-g2429.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/hilaros-g2431.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hilarotes-g2432.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/himation-g2440.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/himatizo-g2439.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -3577,6 +3635,7 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/odous-g3599.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/odyrmos-g3602.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/odyne-g3601.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/othone-g3607.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/othonion-g3608.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/oktaemeros-g3637.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/okto-g3638.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -3606,11 +3665,13 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/orysso-g3736.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/osme-g3744.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/osteon-g3747.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/ostrakinos-g3749.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/osphys-g3751.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/opheilo-g3784.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/opheiletes-g3781.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/opheile-g3782.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ophthalmos-g3788.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/ochleo-g3791.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ochlopoieo-g3792.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/ochyroma-g3794.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/opsarion-g3795.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -3622,8 +3683,10 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hodoiporeo-g3596.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hodoiporia-g3597.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hodos-g3598.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/holokautoma-g3646.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/holokleria-g3647.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/holokleros-g3648.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/homileo-g3656.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/homilia-g3657.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/homoioma-g3667.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/homoios-g3668.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -3704,9 +3767,11 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hyper-g5228.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hyperakmos-g5230.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hypecho-g5254.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/hypekoos-g5255.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hypakoe-g5218.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hypakouo-g5219.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hypantao-g5221.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/hypeiko-g5226.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hypenantios-g5227.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hyperano-g5231.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hyperekeina-g5238.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -3751,9 +3816,11 @@
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hysterema-g5303.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hysteresis-g5304.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hystereo-g5302.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/hyphantos-g5307.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hypselos-g5308.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hypsoo-g5312.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hydor-g5204.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://dc388.github.io/biblia/palabras/griego/hymnos-g5215.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hypandros-g5220.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hypnos-g5258.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 <url><loc>https://dc388.github.io/biblia/palabras/griego/hysteron-g5305.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>

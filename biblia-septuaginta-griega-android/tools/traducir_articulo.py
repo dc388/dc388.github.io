@@ -65,6 +65,33 @@ SIGLAS: dict[str, str] = {
     "dimin.": "diminutivo", "onomatop.": "onomatopéyico",
     "SYN.:": "SINÓNIMOS:", "Metaph.,": "Metafóricamente,",
     "rei,": "de la cosa,", "rei": "de la cosa",
+
+    # Latín editorial de las dos obras. Cada una se ha mirado en todas sus
+    # apariciones antes de ponerla aquí, y en las diez son lo mismo.
+    #
+    # «ut» va siempre en «ut supr.» y «ut infr.», y como «supr.» ya dice
+    # «arriba» e «infr.» dice «abajo», con poner «como» la fórmula queda
+    # entera: «como arriba».
+    # Va junta y suelta: «interr.adv. Where?» es una sola sigla, y partida
+    # salía «interrogativo. adverbio.», con el orden del inglés.
+    "interr.adv.": "adverbio interrogativo",
+    "interr.": "interrogativo",
+    "ut": "como",
+    # «v. sub ענה» = véase bajo esa raíz. Cinco veces, siempre igual.
+    "sub": "bajo",
+    # «si vera l.» = si vera lectio, «si la lectura es correcta». Es una
+    # fórmula que el filólogo reconoce de un vistazo y que traducida pierde
+    # más de lo que gana, así que se deja en latín: las dos palabras se
+    # devuelven a sí mismas para que no tumben el artículo.
+    "si": "si", "vera": "vera",
+    # Siglas de bibliografía: «DB, ext., 367» es el volumen suplementario del
+    # Dictionary of the Bible, y «WH, br.» son los corchetes de Westcott-Hort.
+    # No se traducen, se dejan: son el nombre de la obra.
+    "ext.": "ext.", "br.": "br.",
+    # En minúscula es «mount», el accidente geográfico, no el evangelio. Las
+    # diecisiete veces. «Mt» con mayúscula sigue siendo Mateo, que para eso
+    # esta tabla distingue mayúsculas.
+    "mt.": "monte", "mont.": "monte",
 }
 
 # Más abreviaturas, las que faltaban al medir: las dos obras las usan a cientos.
@@ -311,6 +338,23 @@ _SIN_PUNTO = {
 _ABRE = "([{«\u201c"
 _CIERRA = ")]}»\u201d,;:.!?"
 _PALABRA_ASCII = re.compile(r"[A-Za-z][A-Za-z'-]*|[^A-Za-z]+")
+
+# Una palabra con letra latina que no es ASCII: «Kühner», «Ægean», «poët.»,
+# «Pō», «Ēl», «Hithpō», «quæst.», «Nabû».
+#
+# El trozador de arriba solo ve A-Za-z, así que partía estas palabras en la
+# letra rara y dejaba los cachos sueltos como si fueran inglés: «Kühner» salía
+# «K» + «ü» + «hner», y «hner» tumbaba el artículo entero. Nueve artículos por
+# Kühner, seis por Ægean, y 230 en total.
+#
+# Se protegen enteras en vez de intentar traducirlas, porque en estas dos obras
+# una palabra con macrón, diéresis, circunflejo o ligadura es casi siempre una
+# de tres cosas, y ninguna se traduce: una transliteración del hebreo (Pō, Ēl,
+# Hithpō, ‛Anathôth), el apellido de un filólogo alemán (Kühner, Köhler,
+# Schürer) o una abreviatura latina (quæst., poët.). Y quitarles el acento
+# tampoco vale: el macrón de Pō y de Ēl distingue la vocal larga de la breve,
+# que es justo el dato que la transliteración viene a dar.
+_PALABRA_ACENTUADA = re.compile(r"[A-Za-z\u00C0-\u024F]*[\u00C0-\u024F][A-Za-z\u00C0-\u024F]*")
 # Puntuación que no rompe la prosa: la traduce el mismo motor de palabras.
 _NEUTRO = re.compile(r"^[\s,;:.()\[\]'\"!?&/-]*$")
 # Los números romanos, uno por uno y no por sus letras: «did», «mix» e «ill»
@@ -419,9 +463,26 @@ def _piezas(linea: str) -> list[tuple[str, str]]:
         abre = cierra = ""
         if espanol is None:
             abre, desnuda, cierra = _desnudar(pieza)
+            # «(c)» es la tercera acepción, no la abreviatura latina «c.».
+            #
+            # Esta segunda consulta mira la pieza ya sin paréntesis, y ahí «c»
+            # cae en la tabla de siglas sin punto y sale «con»: 48 veces, en 43
+            # artículos, ya publicados. Lo mismo con «(f)», que salía
+            # «(femenino)».
+            #
+            # Lo que las distingue es el punto, que es lo que marca que algo
+            # está abreviado: «(v. MM)» lleva punto y es «véase», «(c)» no lo
+            # lleva y es una letra de enumeración. Con el punto puesto, la
+            # consulta de más arriba —sobre la pieza entera— ya las coge.
+            if (abre or cierra) and len(desnuda) == 1 and desnuda.isalpha():
+                salida.append(("protegido", pieza))
+                continue
             espanol = _sigla(desnuda)
         if espanol is not None:
             salida.append(("sigla", abre + espanol + cierra))
+            continue
+        if _PALABRA_ACENTUADA.search(pieza):
+            salida.append(("protegido", pieza))
             continue
         trozos = _PALABRA_ASCII.findall(pieza)
         if trozos and all(

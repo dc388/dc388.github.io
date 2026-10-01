@@ -31,6 +31,44 @@ import unicodedata
 # ---------------------------------------------------------------------------
 
 FRASES: dict[str, str] = {
+    # --- compuestos del culto y del templo ----------------------------------
+    # Van aquí y no como palabras sueltas porque palabra a palabra salían al
+    # revés o sin sentido: «high priest» daba «sacerdote alto» en vez de «sumo
+    # sacerdote», y «sin offering» daba «pecado ofrenda».
+    "high priests": "sumos sacerdotes",
+    "high priest": "sumo sacerdote",
+    "chief priests": "principales sacerdotes",
+    "chief priest": "principal de los sacerdotes",
+    "burnt offerings": "holocaustos",
+    "burnt offering": "holocausto",
+    "sin offering": "sacrificio por el pecado",
+    "guilt offering": "sacrificio por la culpa",
+    "peace offerings": "sacrificios de paz",
+    "peace offering": "sacrificio de paz",
+    "drink offering": "libación",
+    "meal offering": "ofrenda de cereal",
+    "meat offering": "ofrenda de cereal",
+    "wave offering": "ofrenda mecida",
+    "heave offering": "ofrenda elevada",
+    "most holy place": "lugar santísimo",
+    "most holy": "santísimo",
+    "most high": "altísimo",
+    "holy of holies": "santo de los santos",
+    "proper names": "nombres propios",
+    "proper name": "nombre propio",
+
+    # --- «most» cuando de verdad es «la mayoría» ----------------------------
+    # La palabra suelta pasa a ser «más», que es lo que es setenta de las
+    # noventa y cinco veces («most freq.», «most excellent», «most readily»).
+    # Las que quedan son estas: en el aparato crítico, «so most» y «according
+    # to most» quieren decir «la mayoría de los comentaristas».
+    "so most": "así la mayoría",
+    "according to most": "según la mayoría",
+    "acc. to most": "según la mayoría",
+    "most writers": "la mayoría de los escritores",
+    "most moderns": "la mayoría de los modernos",
+    "most commentators": "la mayoría de los comentaristas",
+
     # --- plantillas de nombres propios -------------------------------------
     "an Israelite": "un israelita",
     "an Israelitess": "una israelita",
@@ -467,7 +505,7 @@ PALABRAS: dict[str, str] = {
     "second": "segundo", "third": "tercero", "fourth": "cuarto",
     "fifth": "quinto", "sixth": "sexto", "seventh": "séptimo",
     "several": "varios", "many": "muchos", "few": "pocos", "much": "mucho",
-    "more": "más", "most": "la mayoría", "less": "menos", "least": "lo menos",
+    "more": "más", "most": "más", "less": "menos", "least": "lo menos",
     "each": "cada", "every": "cada", "single": "solo",
 }
 
@@ -3180,21 +3218,37 @@ def _ordenar(texto: str) -> str:
     piezas = sin_a
 
     # el adjetivo, detrás; la puntuación que cerraba el grupo se queda al final
+    #
+    # Se mueve la tira entera de adjetivos, no sólo el que toca al sustantivo.
+    # Antes sólo se movía ese, y «a technical nautical term» salía «un técnico
+    # término náutico»: el bucle daba la vuelta a «nautical term» y dejaba
+    # «technical» plantado delante.
+    #
+    # Y se invierte el orden al pasarlos atrás. En las dos lenguas el adjetivo
+    # más pegado al sustantivo es el que más lo define, pero el sitio donde se
+    # pega es el contrario: el inglés lo pone justo delante y el español justo
+    # detrás. «technical nautical term» es un término náutico que además es
+    # técnico, o sea «término náutico técnico».
     n = 0
-    while n + 1 < len(piezas):
+    while n < len(piezas):
+        fin = n
+        while fin < len(piezas) and piezas[fin].endswith("|adj"):
+            fin += 1
         # el adjetivo sólo se pospone si va pegado al sustantivo: si lleva coma
         # detrás son dos acepciones de una lista, no un sintagma
-        if piezas[n].endswith("|adj") and _marca_de(piezas[n + 1]) == "sus":
-            adjetivo, sustantivo = piezas[n], piezas[n + 1]
-            cola = re.search(r"[^0-9A-Za-zÀ-ÿ'-]*$", _MARCA.sub("", sustantivo)).group()
-            if cola:
-                sustantivo = sustantivo[: len(sustantivo) - len(cola)]
-            if _plural(_nucleo(sustantivo)):
-                adjetivo = _pluralizar(adjetivo)
-            piezas[n], piezas[n + 1] = sustantivo, adjetivo + cola
-            n += 2
+        if fin == n or fin >= len(piezas) or _marca_de(piezas[fin]) != "sus":
+            n += 1
             continue
-        n += 1
+        adjetivos = piezas[n:fin][::-1]
+        sustantivo = piezas[fin]
+        cola = re.search(r"[^0-9A-Za-zÀ-ÿ'-]*$", _MARCA.sub("", sustantivo)).group()
+        if cola:
+            sustantivo = sustantivo[: len(sustantivo) - len(cola)]
+        if _plural(_nucleo(sustantivo)):
+            adjetivos = [_pluralizar(a) for a in adjetivos]
+        adjetivos[-1] = adjetivos[-1] + cola
+        piezas[n:fin + 1] = [sustantivo] + adjetivos
+        n = fin + 1
 
     # el ordinal, delante y concordado
     for n, pieza in enumerate(piezas):
@@ -3221,10 +3275,16 @@ def _ordenar(texto: str) -> str:
             piezas[atras] = piezas[atras].replace(anterior, DETERMINANTES[anterior], 1)
         if n and _nucleo(piezas[n - 1]) in ORDINALES:
             continue                     # el ordinal ya se resolvió antes
-        if n + 1 < len(piezas) and _marca_de(piezas[n + 1]) == "adj":
-            siguiente = _nucleo(piezas[n + 1])
+        # Todos los adjetivos que quedaron detrás, no sólo el primero: desde
+        # que se mueve la tira entera, «a small round vessel» deja dos, y
+        # mirando sólo uno salía «una vasija redonda pequeño».
+        siguiente_n = n + 1
+        while siguiente_n < len(piezas) and _marca_de(piezas[siguiente_n]) == "adj":
+            siguiente = _nucleo(piezas[siguiente_n])
             if siguiente.endswith("o"):
-                piezas[n + 1] = piezas[n + 1].replace(siguiente, siguiente[:-1] + "a", 1)
+                piezas[siguiente_n] = piezas[siguiente_n].replace(
+                    siguiente, siguiente[:-1] + "a", 1)
+            siguiente_n += 1
 
     return _MARCA.sub("", " ".join(piezas))
 
@@ -3241,3 +3301,206 @@ def desconocidas(texto: str) -> list[str]:
                 and not _es_nombre_propio(palabra)):
             faltan.append(_clave(palabra))
     return faltan
+
+
+# ---------------------------------------------------------------------------
+# Tanda de octubre. Sale de medir qué palabras impedían traducir los artículos
+# que seguían en inglés, y de mirar cada una en TODOS sus contextos antes de
+# ponerla. El rendimiento ya es plano —ninguna bloquea más de ocho artículos—,
+# así que lo que decide no es la frecuencia sino si la palabra da una sola
+# traducción buena en todos los sitios donde sale.
+#
+# Cuatro se quedan fuera a propósito, y conviene dejar escrito por qué, para
+# que nadie las añada luego creyendo que es un olvido. En las cuatro el léxico
+# las usa en los dos sentidos, mitad y mitad:
+#
+#   «sore»   cinco veces es la llaga y dos el adverbio «sore troubled».
+#   «rent»   cuatro veces es la rasgadura y una el alquiler.
+#   «craft»  tres veces es la astucia y tres el oficio.
+#   «scale»  tres veces es la escama del pez y tres el platillo de la balanza.
+#
+# Poner cualquiera de las dos acepciones acierta la mitad de las veces y falla
+# la otra mitad sin avisar, que es peor que dejar el artículo en inglés: el
+# lector no tiene forma de saber cuál le ha tocado.
+# ---------------------------------------------------------------------------
+
+PALABRAS.update({
+    # --- sustantivos verbales en -ing ---------------------------------------
+    # Van como sustantivo, que es la convención de la tabla («gathering» ya era
+    # «recolección|sus»), y solo los que son sustantivo en todos sus contextos.
+    # «spreading», «working», «rolling», «serving» y «uttering» se quedan
+    # fuera: en unos sitios son sustantivo y en otros participio.
+    "crushing": "trituración|sus",
+    "digging": "excavación|sus",
+    "sending": "envío|sus",
+    "feeding": "alimentación|sus",
+    "bursting": "estallido|sus",
+    "pruning": "poda|sus",
+    "pounding": "machacado|sus",
+    "partaking": "participación|sus",
+    "searching": "búsqueda|sus",
+    "carrying": "transporte|sus",
+    "creeping": "reptante|adj",      # «a creeping thing» -> «una cosa reptante»
+
+    # --- el cuerpo y sus males ----------------------------------------------
+    "intestines": "intestinos|sus",
+    "marrow": "médula|sus",
+    "incision": "incisión|sus",
+    "stature": "estatura|sus",
+    "lump": "grumo|sus",
+    "moisture": "humedad|sus",
+    "inflame": "inflamar|inf",
+    "scorch": "chamuscar|inf",
+    "thicken": "espesar|inf",
+
+    # --- oficios y cargos ---------------------------------------------------
+    "steward": "mayordomo|sus",
+    "procurator": "procurador|sus",
+    "labourer": "jornalero|sus",
+    "singer": "cantor|sus",
+    "beggar": "mendigo|sus",
+    "deliverer": "libertador|sus",
+    "leaders": "jefes|sus",
+    "brethren": "hermanos|sus",
+    "consort": "consorte|sus",       # la esposa; el verbo va como frase
+
+    # --- el campo y los animales --------------------------------------------
+    "stubble": "rastrojo|sus",
+    "viper": "víbora|sus",
+    "leopard": "leopardo|sus",
+    "autumn": "otoño|sus",
+    "yarn": "hilo|sus",
+    "slope": "pendiente|sus",
+    "steep": "escarpado|adj",
+    "corners": "esquinas|sus",
+
+    # --- culto y objetos ----------------------------------------------------
+    "censer": "incensario|sus",
+    "sheath": "vaina|sus",
+    "scarlet": "escarlata|sus",
+    "boiled": "cocido",
+    "impress": "impronta|sus",       # el sello; el verbo va como frase
+
+    # --- abstractos y adjetivos ---------------------------------------------
+    "contribution": "contribución|sus",
+    "plenty": "abundancia|sus",
+    "fate": "destino|sus",
+    "proverbs": "proverbios|sus",
+    "solitary": "solitario|adj",
+    "joyous": "gozoso|adj",
+    "wroth": "airado|adj",
+    "tossed": "sacudido",
+    "newly": "recién",
+
+    # --- verbos -------------------------------------------------------------
+    "overtake": "alcanzar|inf",
+    "mingle": "mezclar|inf",
+    "vex": "molestar|inf",
+    "distinguishes": "distingue",
+
+    # --- dos que no son palabras inglesas corrientes -------------------------
+    # «I am» traduciendo ἐγώ εἰμι, y la interjección «ah! ha!».
+    "am": "soy",
+    "ah": "ah", "ha": "ja",
+})
+
+FRASES.update({
+    # Las acepciones que la palabra suelta no puede dar, porque en estos sitios
+    # significa otra cosa que en los demás.
+    "to impress into public service": "reclutar para el servicio público",
+    "consort with": "juntarse con",
+    # Con marca de sustantivo, que las frases también la admiten: sin ella
+    # «a carrying away» salía «un deportación».
+    "carrying away": "deportación|sus",
+    "letting down": "descenso|sus",
+    "letting go": "liberación|sus",
+    "letting loose": "suelta|sus",
+})
+
+
+# Segunda tanda de octubre. Mismo criterio: mirada a todos los contextos, y
+# fuera las que el léxico usa en dos sentidos. Esta vez se quedan fuera «hit»
+# (tres veces golpear y dos acertar), «devouring» (sustantivo y participio),
+# «lives» (dos veces el verbo y dos el sustantivo «las vidas») y «doth», que es
+# el auxiliar arcaico de las glosas de nombres propios —«(God doth ascend?)»—
+# y en español no tiene a qué corresponder.
+
+PALABRAS.update({
+    # --- personas -----------------------------------------------------------
+    "lady": "señora|sus",
+    "keeper": "guardián|sus",
+    "sorcerer": "hechicero|sus",
+    "sojourner": "forastero|sus",
+    "adulteress": "adúltera|sus",
+    "great-grandfather": "bisabuelo|sus",
+    "master-workman": "maestro de obra|sus",
+
+    # --- el campo, la casa, los oficios -------------------------------------
+    "crops": "cosechas|sus",
+    "worm": "gusano|sus",
+    "bunch": "racimo|sus",
+    "watch-tower": "atalaya|sus",
+    "fan": "aventador|sus",        # el bieldo de aventar, no el abanico
+    "potsherd": "tiesto|sus",
+    "dough": "masa|sus",
+    "loom": "telar|sus",
+    "vessels": "vasijas|sus",
+    "lowland": "llanura|sus",
+    "loin": "lomo|sus",
+    "manna": "maná|sus",
+
+    # --- culto --------------------------------------------------------------
+    "drink-offering": "libación|sus",
+    "chastening": "disciplina|sus",
+
+    # --- abstractos ---------------------------------------------------------
+    "misfortune": "desgracia|sus",
+    "allowance": "concesión|sus",
+    "stubbornness": "obstinación|sus",
+    "insolence": "insolencia|sus",
+    "suggestion": "sugerencia|sus",
+    "jest": "burla|sus",
+    "breed": "cría|sus",
+    "terrors": "terrores|sus",
+
+    # --- adjetivos ----------------------------------------------------------
+    "sour": "agrio|adj",
+    "withered": "seco|adj",
+    "obedient": "obediente|adj",
+    "younger": "más joven|adj",
+    "youthful": "juvenil|adj",
+    "winged": "alado|adj",
+    "fiery": "ígneo|adj",
+    "fattened": "cebado|adj",
+    "stubborn": "obstinado|adj",
+    "glowing": "incandescente|adj",
+    "filthy": "sucio|adj",
+    "moist": "húmedo|adj",
+    "stout": "robusto|adj",
+    "rushing": "impetuoso|adj",
+    "roaring": "rugiente|adj",
+
+    # --- participios --------------------------------------------------------
+    "woven": "tejido",
+    "graven": "grabado",
+    "girded": "ceñido",
+    "sharpened": "afilado",
+    "buried": "sepultado",
+    "darkened": "oscurecido",
+    "sung": "cantado",
+
+    # --- verbos -------------------------------------------------------------
+    "weaken": "debilitar|inf",
+    "confuse": "confundir|inf",
+    "darken": "oscurecer|inf",
+    "besiege": "sitiar|inf",
+    "submit": "someterse|inf",
+
+    # --- adverbios ----------------------------------------------------------
+    "forwards": "adelante",
+})
+
+FRASES.update({
+    # «lock» sola vale cerrojo y mechón; con el complemento ya no hay duda.
+    "lock of hair": "mechón de cabello|sus",
+})
