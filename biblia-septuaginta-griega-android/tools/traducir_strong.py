@@ -3838,3 +3838,86 @@ FRASES.update({
     "springing water": "agua que brota|sus",
     "shaped like": "con forma de",
 })
+
+
+# Sexta tanda de octubre. 140 palabras. «waiting» entra por fin: sola valía
+# espera en tres sitios y servicio de mesa en el cuarto, y con ese cuarto
+# puesto como frase ya no hay duda.
+
+PALABRAS.update({
+    # --- cosas ----------------------------------------------------------------
+    "sandals": "sandalias|sus", "cinnamon": "canela|sus", "nest": "nido|sus",
+    "stocks": "cepo|sus", "mill-stone": "piedra de molino|sus",
+    "frankincense": "incienso|sus", "kidneys": "riñones|sus",
+    "ink": "tinta|sus", "javelin": "jabalina|sus", "shovel": "pala|sus",
+    "stake": "estaca|sus", "booth": "cabaña|sus", "tackle": "aparejo|sus",
+    "sapphire": "zafiro|sus", "onyx": "ónice|sus", "disc": "disco|sus",
+    "rushes": "juncos|sus", "silk": "seda|sus", "sieve": "criba|sus",
+    "victuals": "víveres|sus", "dainties": "golosinas|sus",
+    "orchard": "huerto|sus", "park": "parque|sus", "mina": "mina|sus",
+    "semen": "semen|sus",
+
+    # --- personas -------------------------------------------------------------
+    "workman": "obrero|sus", "whisperer": "susurrador|sus", "tutor": "ayo|sus",
+    "mother-in-law": "suegra|sus", "daughter-in-law": "nuera|sus",
+    "diviner": "adivino|sus", "watchman": "vigía|sus",
+    "collector": "recaudador|sus", "trumpeter": "trompetero|sus",
+    "wanderer": "vagabundo|sus", "spies": "espías|sus",
+    "strangers": "extranjeros|sus", "troop": "tropa|sus",
+    "wolf": "lobo|sus", "bee": "abeja|sus", "bees": "abejas|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "boldness": "denuedo|sus", "craftiness": "astucia|sus",
+    "abiding": "permanencia|sus", "deviation": "desviación|sus",
+    "semblance": "apariencia|sus", "outrage": "ultraje|sus",
+    "encouragement": "aliento|sus", "repentance": "arrepentimiento|sus",
+    "movement": "movimiento|sus", "hardness": "dureza|sus",
+    "access": "acceso|sus", "supporting": "sostén|sus",
+    "steadfastness": "constancia|sus", "recklessness": "temeridad|sus",
+    "conspiracy": "conspiración|sus", "earthquake": "terremoto|sus",
+    "diligence": "diligencia|sus", "intimacy": "intimidad|sus",
+    "tossing": "sacudida|sus", "stoning": "lapidación|sus",
+    "swing": "impulso|sus", "noon": "mediodía|sus", "brow": "ceja|sus",
+    "offices": "cargos|sus", "parables": "parábolas|sus",
+    "prophecies": "profecías|sus", "dancing": "baile|sus",
+    "waiting": "espera|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "eloquent": "elocuente|adj", "portable": "portátil|adj",
+    "passionate": "iracundo|adj", "ripened": "maduro|adj",
+    "profitable": "provechoso|adj", "neighbouring": "vecino|adj",
+    "diligent": "diligente|adj", "manifold": "múltiple|adj",
+    "flying": "volador|adj", "sullen": "hosco|adj", "slight": "leve|adj",
+    "reverential": "reverencial|adj", "shrinking": "remiso|adj",
+    "conative": "conativo|adj",
+
+    # --- participios ----------------------------------------------------------
+    "stirred": "removido", "cooked": "cocinado", "roasted": "asado",
+    "furnished": "provisto", "suffered": "padecido", "acted": "actuado",
+    "conformed": "conformado", "purified": "purificado",
+    "circumcised": "circuncidado", "shortened": "acortado",
+    "encamped": "acampado", "estranged": "alejado", "clad": "vestido",
+    "grows": "crece",
+
+    # --- verbos ---------------------------------------------------------------
+    "pelt": "apedrear|inf", "peel": "pelar|inf", "quench": "apagar|inf",
+    "annoy": "importunar|inf", "calculate": "calcular|inf",
+    "besmear": "embadurnar|inf", "interpose": "interponerse|inf",
+    "imagine": "imaginar|inf", "prolong": "prolongar|inf",
+    "overlook": "pasar por alto|inf", "meditate": "meditar|inf",
+    "conspire": "conspirar|inf", "propose": "proponer|inf",
+    "represent": "representar|inf", "invent": "inventar|inf",
+    "sift": "cribar|inf", "sprinkle": "rociar|inf",
+    "besprinkle": "asperjar|inf",
+
+    # --- adverbios ------------------------------------------------------------
+    "thereof": "de ello", "favourably": "favorablemente",
+    "bitterly": "amargamente", "prudently": "prudentemente",
+})
+
+FRASES.update({
+    # El cuarto sentido de «waiting», y los dos que piden complemento.
+    "waiting at table": "servicio de mesa|sus",
+    "for confining the feet": "para sujetar los pies",
+    "closing the eyes": "que cierra los ojos",
+})

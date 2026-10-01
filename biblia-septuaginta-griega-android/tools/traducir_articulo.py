@@ -78,6 +78,8 @@ SIGLAS: dict[str, str] = {
     # «shining one, epith. of king of Babylon» y «v. conject. in Di».
     "epith.": "epíteto", "conject.": "conjetura",
     "appell.": "apelativo", "orthogr.": "ortografía",
+    # «by metapl. for τὰ ὁρκωμόσια»: metaplasmo, el cambio de declinación.
+    "metapl.": "metaplasmo",
     "Trans.": "transitivo", "Intrans.": "intransitivo", "Neut.": "neutro",
     # «n.pr.flum.» es flumen, el río: la misma sigla que n.pr.fl. pero entera.
     "n.pr.flum.": "nombre propio de río",
