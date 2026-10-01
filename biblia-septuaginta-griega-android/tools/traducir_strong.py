@@ -3674,3 +3674,84 @@ PALABRAS.update({
     "gentile": "gentil|adj",
     "gentiles": "gentiles|sus",
 })
+
+
+# Cuarta tanda de octubre. 110 palabras, todas con un solo sentido en el
+# léxico. Las de dos sentidos van abajo, como frase con su complemento.
+
+PALABRAS.update({
+    # --- sustantivos: cosas ---------------------------------------------------
+    "purse": "bolsa|sus", "bucket": "cubo|sus", "paper": "papel|sus",
+    "drain": "desagüe|sus", "threshold": "umbral|sus", "strings": "cuerdas|sus",
+    "reeds": "cañas|sus", "instruments": "instrumentos|sus",
+    "dial": "reloj de sol|sus", "war-cry": "grito de guerra|sus",
+    "boundaries": "límites|sus", "sunset": "ocaso|sus",
+
+    # --- sustantivos: personas ------------------------------------------------
+    "fisherman": "pescador|sus", "herdsman": "pastor|sus",
+    "publican": "publicano|sus", "administrator": "administrador|sus",
+    "impostor": "impostor|sus", "extortioner": "extorsionador|sus",
+    "maker": "hacedor|sus", "thief": "ladrón|sus", "ally": "aliado|sus",
+
+    # --- sustantivos: abstractos ----------------------------------------------
+    "brotherhood": "hermandad|sus", "sobriety": "sobriedad|sus",
+    "indulgence": "indulgencia|sus", "guarantee": "garantía|sus",
+    "perplexity": "perplejidad|sus", "deficiency": "carencia|sus",
+    "dissension": "disensión|sus", "enmity": "enemistad|sus",
+    "temptation": "tentación|sus", "blindness": "ceguera|sus",
+    "rumour": "rumor|sus", "etymology": "etimología|sus",
+    "dialect": "dialecto|sus", "investigation": "investigación|sus",
+    "execution": "ejecución|sus", "oversight": "supervisión|sus",
+    "ministration": "ministerio|sus", "abstinence": "abstinencia|sus",
+    "respite": "tregua|sus", "sedition": "sedición|sus",
+    "seizing": "apresamiento|sus", "proving": "prueba|sus",
+    "wills": "testamentos|sus", "wit": "ingenio|sus",
+    "manners": "modales|sus", "bonds": "lazos|sus",
+    "operations": "operaciones|sus", "difficulties": "dificultades|sus",
+    "fourteen": "catorce",
+
+    # --- adjetivos ------------------------------------------------------------
+    "accursed": "maldito|adj", "sincere": "sincero|adj",
+    "grievous": "grave|adj", "elegant": "elegante|adj",
+    "lawless": "sin ley|adj", "lawful": "lícito|adj",
+    "unfavourable": "desfavorable|adj", "improper": "impropio|adj",
+    "savage": "salvaje|adj", "unsettled": "inestable|adj",
+    "unstable": "inestable|adj", "barbarous": "bárbaro|adj",
+    "abominable": "abominable|adj", "elementary": "elemental|adj",
+    "impure": "impuro|adj", "impossible": "imposible|adj",
+    "unable": "incapaz|adj", "shameful": "vergonzoso|adj",
+    "contentious": "pendenciero|adj", "comprehensive": "amplio|adj",
+    "generous": "generoso|adj", "wakeful": "desvelado|adj",
+    "ministerial": "ministerial|adj", "comic": "cómico|adj",
+    "departed": "difunto|adj",
+
+    # --- participios ----------------------------------------------------------
+    "desired": "deseado", "satisfied": "satisfecho", "reserved": "reservado",
+    "withdrawn": "retirado", "combined": "combinado", "permitted": "permitido",
+    "proved": "probado", "traced": "rastreado", "marching": "que marcha",
+
+    # --- verbos ---------------------------------------------------------------
+    "renew": "renovar|inf", "behave": "comportarse|inf",
+    "thresh": "trillar|inf", "adorn": "adornar|inf", "bathe": "bañarse|inf",
+    "undertake": "emprender|inf", "intervene": "intervenir|inf",
+    "reprove": "reprender|inf", "squander": "derrochar|inf",
+    "narrate": "narrar|inf", "snort": "bufar|inf", "tempt": "tentar|inf",
+    "unloose": "desatar|inf", "blight": "marchitar|inf",
+    "results": "resulta", "knows": "sabe",
+
+    # --- adverbios ------------------------------------------------------------
+    "upwards": "hacia arriba", "nowhere": "en ninguna parte",
+    "patiently": "pacientemente", "voluntarily": "voluntariamente",
+    "fervently": "fervientemente", "anxiously": "ansiosamente",
+
+    # --- latín de las citas ---------------------------------------------------
+    # «cf. Lat. si ita res se habet»: el reflexivo latino se escribe igual.
+    "se": "se",
+})
+
+FRASES.update({
+    # Con complemento no hay duda; sueltas la tendrían.
+    "bill of divorce": "carta de divorcio|sus",
+    "make a bold venture": "atreverse",
+    "one another's": "de unos y otros",
+})

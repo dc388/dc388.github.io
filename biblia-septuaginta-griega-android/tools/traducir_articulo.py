@@ -77,7 +77,7 @@ SIGLAS: dict[str, str] = {
     "interr.adv.": "adverbio interrogativo",
     # «shining one, epith. of king of Babylon» y «v. conject. in Di».
     "epith.": "epíteto", "conject.": "conjetura",
-    "appell.": "apelativo",
+    "appell.": "apelativo", "orthogr.": "ortografía",
     "Trans.": "transitivo", "Intrans.": "intransitivo", "Neut.": "neutro",
     # «n.pr.flum.» es flumen, el río: la misma sigla que n.pr.fl. pero entera.
     "n.pr.flum.": "nombre propio de río",
