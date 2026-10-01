@@ -3755,3 +3755,86 @@ FRASES.update({
     "make a bold venture": "atreverse",
     "one another's": "de unos y otros",
 })
+
+
+# Quinta tanda de octubre. Siguen fuera, por los dos sentidos, «coat» (la
+# corteza del papiro y la prenda de vestir), «philos.», «trag.» y «lang.»:
+# estas tres son abreviaturas que piden adjetivo —«philos. writers»,
+# «Rabbinic lang.»— y la tabla de siglas no lleva marca de adjetivo, así que
+# sustituirlas dejaría el orden del inglés.
+
+PALABRAS.update({
+    # --- cosas ----------------------------------------------------------------
+    "sickle": "hoz|sus", "swords": "espadas|sus", "chair": "silla|sus",
+    "jug": "jarro|sus", "tile": "teja|sus", "honeycomb": "panal|sus",
+    "brimstone": "azufre|sus", "frost": "escarcha|sus",
+    "crystal": "cristal|sus", "skull": "calavera|sus",
+    "apparel": "vestimenta|sus", "offal": "desperdicios|sus",
+    "sweat": "sudor|sus", "lake": "lago|sus", "gulf": "golfo|sus",
+    "expanse": "extensión|sus", "slang": "jerga|sus",
+
+    # --- personas -------------------------------------------------------------
+    "suppliant": "suplicante|sus", "slanderer": "calumniador|sus",
+    "robber": "salteador|sus",      # λῃστής, el que roba con violencia
+    "horseman": "jinete|sus", "partner": "socio|sus",
+    "monster": "monstruo|sus", "reptile": "reptil|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "fancy": "fantasía|sus", "fame": "fama|sus", "detail": "detalle|sus",
+    "irrigation": "riego|sus", "wedlock": "matrimonio|sus",
+    "gladness": "alegría|sus", "fairness": "equidad|sus",
+    "abortion": "aborto|sus", "emendation": "enmienda|sus",
+    "acquaintance": "conocimiento|sus", "forgetfulness": "olvido|sus",
+    "crucifixion": "crucifixión|sus", "murmuring": "murmuración|sus",
+    "dispersion": "dispersión|sus", "ambush": "emboscada|sus",
+    "consummation": "consumación|sus", "propitiation": "propiciación|sus",
+    "glorying": "jactancia|sus", "conceit": "presunción|sus",
+    "readiness": "disposición|sus", "cleanness": "limpieza|sus",
+    "steadiness": "firmeza|sus", "checking": "contención|sus",
+    "reclining": "reclinación|sus", "wonders": "maravillas|sus",
+    "clamour": "clamor|sus", "accounts": "cuentas|sus",
+    "hearts": "corazones|sus", "cries": "gritos|sus", "pair": "par|sus",
+    "harm": "daño|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "untimely": "prematuro|adj", "important": "importante|adj",
+    "deceitful": "engañoso|adj", "epic": "épico|adj", "timid": "tímido|adj",
+    "mythical": "mítico|adj", "timely": "oportuno|adj",
+    "seasonable": "oportuno|adj", "devout": "devoto|adj",
+    "spacious": "espacioso|adj", "reverend": "venerable|adj",
+    "straightforward": "recto|adj", "expressive": "expresivo|adj",
+    "merry": "alegre|adj", "downcast": "abatido|adj",
+    "daring": "atrevido|adj", "hateful": "odioso|adj",
+    "scorching": "abrasador|adj", "varying": "variable|adj",
+    "lowest": "más bajo|adj", "vast": "vasto|adj",
+
+    # --- participios ----------------------------------------------------------
+    "entangled": "enredado", "accustomed": "acostumbrado",
+    "contracted": "contraído", "acquired": "adquirido", "prized": "apreciado",
+    "risen": "resucitado", "emphasized": "enfatizado", "closed": "cerrado",
+    "fed": "alimentado",
+
+    # --- verbos ---------------------------------------------------------------
+    "gnash": "rechinar|inf", "overshadow": "cubrir con sombra|inf",
+    "profess": "profesar|inf", "embark": "embarcar|inf",
+    "discuss": "discutir|inf", "hesitate": "vacilar|inf",
+    "confound": "confundir|inf", "abate": "amainar|inf",
+    "inform": "informar|inf", "damage": "dañar|inf",
+    "shorten": "acortar|inf", "inhabit": "habitar|inf",
+    "abrogate": "abrogar|inf", "bury": "sepultar|inf", "kick": "patear|inf",
+    "itch": "picar|inf", "win": "ganar|inf", "check": "refrenar|inf",
+    "award": "adjudicar|inf", "cement": "cementar|inf",
+    "matters": "importa",
+
+    # --- adverbios ------------------------------------------------------------
+    "solemnly": "solemnemente", "openly": "abiertamente",
+
+    # --- latín ----------------------------------------------------------------
+    "habere": "habere",
+})
+
+FRASES.update({
+    "trading place": "lugar de comercio|sus",
+    "springing water": "agua que brota|sus",
+    "shaped like": "con forma de",
+})
