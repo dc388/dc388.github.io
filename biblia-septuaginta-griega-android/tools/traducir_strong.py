@@ -4000,3 +4000,95 @@ PALABRAS.update({
     "stealthily": "furtivamente", "hotly": "ardientemente",
     "rebelliously": "rebeldemente",
 })
+
+
+# Octava tanda de octubre. 150 palabras.
+#
+# Entran las formas verbales arcaicas de las glosas de nombres propios de
+# Brown-Driver-Briggs: «(י׳ knoweth)», «(Ēl sees)», «(י׳ raiseth up)». Son
+# tercera persona del singular del inglés del XIX y pasan al español sin más.
+#
+# «doth» sigue fuera, y ahora con la prueba hecha: es un auxiliar, y el
+# traductor no conjuga, así que «(God doth ascend?)» sale «(Dios subir?)». Por
+# cuatro artículos no vale la pena publicar eso.
+
+PALABRAS.update({
+    # --- formas arcaicas de tercera persona -----------------------------------
+    "sees": "ve", "knoweth": "conoce", "strengtheneth": "fortalece",
+    "appointeth": "designa", "raiseth": "levanta", "contendeth": "contiende",
+    "maketh": "hace", "canst": "puedes",
+
+    # --- cosas ----------------------------------------------------------------
+    "clarion": "clarín|sus", "stylus": "punzón|sus", "razor": "navaja|sus",
+    "rattle": "sonaja|sus", "pegs": "clavijas|sus", "rug": "alfombra|sus",
+    "coverlet": "colcha|sus", "lattice-work": "celosía|sus",
+    "curtains": "cortinas|sus", "brick": "ladrillo|sus",
+    "conduit": "acueducto|sus", "plantation": "plantación|sus",
+    "cassia": "casia|sus", "barb": "púa|sus", "lure": "señuelo|sus",
+    "eggs": "huevos|sus", "blossoms": "flores|sus", "hoofs": "pezuñas|sus",
+    "locks": "guedejas|sus", "beams": "rayos|sus", "cubits": "codos|sus",
+    "courtyard": "patio|sus", "first-fruits": "primicias|sus",
+    "shewbread": "pan de la proposición|sus", "envelope": "funda|sus",
+    "hiding": "escondite|sus",
+
+    # --- personas -------------------------------------------------------------
+    "trader": "comerciante|sus", "creditor": "acreedor|sus",
+    "deputy": "delegado|sus", "adjutant": "ayudante|sus",
+    "soothsayer": "agorero|sus", "perfumer": "perfumista|sus",
+    "porters": "porteros|sus", "contemporaries": "contemporáneos|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "profaneness": "profanidad|sus", "straightness": "rectitud|sus",
+    "heaviness": "pesadez|sus", "ignominy": "ignominia|sus",
+    "crookedness": "torcedura|sus", "barrenness": "esterilidad|sus",
+    "shattering": "quebrantamiento|sus", "shuddering": "estremecimiento|sus",
+    "bereavement": "duelo|sus", "wasting": "consunción|sus",
+    "hissing": "siseo|sus", "howling": "aullido|sus",
+    "reeling": "tambaleo|sus", "whirling": "giro|sus",
+    "writhing": "retorcimiento|sus", "clasping": "entrelazado|sus",
+    "rubbing": "frotamiento|sus", "head-place": "cabecera|sus",
+    "offshoot": "vástago|sus", "ploughing": "arada|sus",
+    "immersion": "inmersión|sus", "stride": "zancada|sus",
+    "goodliness": "hermosura|sus", "loosing": "desatadura|sus",
+    "apostleship": "apostolado|sus", "impatience": "impaciencia|sus",
+    "immortality": "inmortalidad|sus", "antithesis": "antítesis|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "slimy": "viscoso|adj", "slippery": "resbaladizo|adj",
+    "desirable": "deseable|adj", "delightful": "deleitoso|adj",
+    "eastern": "oriental|adj", "helpless": "impotente|adj",
+    "awe-inspiring": "imponente|adj", "derisive": "burlón|adj",
+    "chequered": "cuadriculado|adj", "recreant": "desleal|adj",
+    "delicate": "delicado|adj", "exquisite": "exquisito|adj",
+    "venomous": "venenoso|adj", "thirsty": "sediento|adj",
+    "paschal": "pascual|adj", "literary": "literario|adj",
+    "avaricious": "avaro|adj", "invisible": "invisible|adj",
+    "unseasonable": "inoportuno|adj", "unpunished": "impune|adj",
+    "fatherless": "huérfano de padre|adj",
+
+    # --- participios ----------------------------------------------------------
+    "pitied": "compadecido", "hurled": "arrojado", "hurried": "apresurado",
+    "slaughtered": "degollado", "ploughed": "arado", "hid": "escondió",
+    "desolated": "desolado", "watered": "regado", "explained": "explicado",
+    "humiliated": "humillado", "humbled": "rebajado",
+    "engraved": "esculpido", "perverted": "pervertido",
+    "befouled": "ensuciado", "loosened": "soltado", "repulsed": "rechazado",
+    "advanced": "avanzado", "summoned": "convocado", "appalled": "espantado",
+    "mollified": "ablandado", "wronged": "agraviado", "parted": "separado",
+    "incited": "incitó", "felt": "palpó",
+    "fabricating": "que fabrica", "displacing": "que desplaza",
+
+    # --- verbos ---------------------------------------------------------------
+    "charm": "encantar|inf", "beautify": "embellecer|inf",
+    "whet": "afilar|inf", "slide": "resbalar|inf", "clap": "aplaudir|inf",
+    "trail": "arrastrar|inf", "backslide": "apostatar|inf",
+    "pant": "jadear|inf", "roast": "asar|inf", "swerve": "desviarse|inf",
+    "whitewash": "encalar|inf",
+
+    # --- adverbios ------------------------------------------------------------
+    "insultingly": "insultantemente",
+})
+
+FRASES.update({
+    "avoiding danger": "evitar el peligro",
+})

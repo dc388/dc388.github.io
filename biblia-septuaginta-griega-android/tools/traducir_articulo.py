@@ -87,6 +87,7 @@ SIGLAS: dict[str, str] = {
     "kg.": "rey",                 # «honour, majesty, of kg.»
     "odorif.": "odorífero",       # «odorif. tree, aloe»
     "tr.": "traducido",           # «AV, tr. as = ῥυπάω»
+    "improb.": "improbable", "sacrif.": "sacrificó",
     "Trans.": "transitivo", "Intrans.": "intransitivo", "Neut.": "neutro",
     # «n.pr.flum.» es flumen, el río: la misma sigla que n.pr.fl. pero entera.
     "n.pr.flum.": "nombre propio de río",
