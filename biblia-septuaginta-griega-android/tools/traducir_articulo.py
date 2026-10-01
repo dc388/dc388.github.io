@@ -75,6 +75,15 @@ SIGLAS: dict[str, str] = {
     # Va junta y suelta: «interr.adv. Where?» es una sola sigla, y partida
     # salía «interrogativo. adverbio.», con el orden del inglés.
     "interr.adv.": "adverbio interrogativo",
+    # «shining one, epith. of king of Babylon» y «v. conject. in Di».
+    "epith.": "epíteto", "conject.": "conjetura",
+    "appell.": "apelativo",
+    "Trans.": "transitivo", "Intrans.": "intransitivo", "Neut.": "neutro",
+    # «n.pr.flum.» es flumen, el río: la misma sigla que n.pr.fl. pero entera.
+    "n.pr.flum.": "nombre propio de río",
+    # «van d. H» es van der Hooght, el editor. En minúscula no lo coge la regla
+    # de los nombres propios, que mira la mayúscula inicial.
+    "van": "van",
     "interr.": "interrogativo",
     "ut": "como",
     # «v. sub ענה» = véase bajo esa raíz. Cinco veces, siempre igual.

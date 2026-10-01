@@ -3504,3 +3504,173 @@ FRASES.update({
     # «lock» sola vale cerrojo y mechón; con el complemento ya no hay duda.
     "lock of hair": "mechón de cabello|sus",
 })
+
+
+# Tercera tanda de octubre. Igual que las otras: contexto mirado, y fuera lo
+# que el léxico usa en dos sentidos. Aquí se quedan fuera «stopped» («we are
+# stopped up» no es lo mismo que «detenido») y «growling», que sale una vez de
+# sustantivo y otra de participio.
+
+PALABRAS.update({
+    # --- el cuerpo y sus males ----------------------------------------------
+    "eruption": "erupción|sus",
+    "bowels": "entrañas|sus",
+    "baldness": "calvicie|sus",
+    "span": "palmo|sus",
+    "maimed": "mutilado",
+    "mutilate": "mutilar|inf",
+    "hoary": "cano|adj",
+
+    # --- el campo y los animales --------------------------------------------
+    "balsam-tree": "árbol de bálsamo|sus",
+    "olives": "aceitunas|sus",
+    "flint": "pedernal|sus",
+    "mire": "cieno|sus",
+    "fox": "zorra|sus",
+    "cock": "gallo|sus",
+    "fields": "campos|sus",
+    "paths": "sendas|sus",
+    "highway": "calzada|sus",
+    "storm-wind": "viento de tormenta|sus",
+    "dryness": "sequedad|sus",
+
+    # --- objetos ------------------------------------------------------------
+    "necklace": "collar|sus",
+    "signet-ring": "anillo de sello|sus",
+    "wrapper": "envoltura|sus",
+    "network": "enrejado|sus",
+    "temples": "templos|sus",
+    "tribune": "tribuna|sus",
+
+    # --- personas -----------------------------------------------------------
+    "giant": "gigante|sus",
+    "princess": "princesa|sus",
+    "great-great-grandson": "tataranieto|sus",
+    "choirs": "coros|sus",
+
+    # --- guerra y derecho ---------------------------------------------------
+    "spoils": "despojos|sus",
+    "treasures": "tesoros|sus",
+    "statutes": "estatutos|sus",
+    "expedition": "expedición|sus",
+    "uprising": "levantamiento|sus",
+    "purchase-price": "precio de compra|sus",
+    "plundered": "saqueado",
+    "devastated": "devastado",
+    "ransomed": "rescatado",
+    "snatched": "arrebatado",
+    "pledged": "empeñado",
+    "annihilate": "aniquilar|inf",
+
+    # --- abstractos ---------------------------------------------------------
+    "holiness": "santidad|sus",
+    "thickness": "espesor|sus",
+    "hindrance": "estorbo|sus",
+    "success": "éxito|sus",
+    "vexation": "irritación|sus",
+    "dismissal": "despido|sus",
+    "stripping": "despojo|sus",
+    "choosing": "elección|sus",
+    "din": "estruendo|sus",
+
+    # --- adjetivos y participios --------------------------------------------
+    "astounded": "atónito|adj",
+    "vexed": "irritado|adj",
+    "ringing": "resonante|adj",
+    "guileless": "sin doblez|adj",
+    "unworthy": "indigno|adj",
+    "unleavened": "sin levadura|adj",
+    "disobedient": "desobediente|adj",
+    "dishonoured": "deshonrado",
+    "leavened": "leudado",
+    "sated": "saciado",
+
+    # --- verbos -------------------------------------------------------------
+    "growl": "gruñir|inf",
+    "disguise": "disfrazar|inf",
+    "trickle": "gotear|inf",
+    "unsettle": "perturbar|inf",
+    "subvert": "subvertir|inf",
+    "stink": "heder|inf",
+
+    # --- adverbios ----------------------------------------------------------
+    "treacherously": "traicioneramente",
+
+    # --- formas arcaicas de las glosas de nombres propios --------------------
+    # «(Yahweh heareth)», «(Ēl causeth to build)». Es el inglés del siglo XIX
+    # de Brown-Driver-Briggs, no una palabra rara.
+    "heareth": "oye",
+    "causeth": "hace",
+})
+
+
+# ---------------------------------------------------------------------------
+# Nombres propios bíblicos que el español escribe de otra manera.
+#
+# Al mirar qué palabras con mayúscula se estaban publicando sin tocar, salieron
+# 5 242 apariciones. La mayoría están bien así: los troncos hebreos (Peal,
+# Hifil, Nifal, Piel, Pual, Hitpael, Hofal) se llaman igual en español, y los
+# filólogos que cita el léxico —Cremer, Deissmann, Swete, Dalman, Thayer,
+# Westcott, Hort, Milligan, Thackeray— se llaman como se llaman.
+#
+# Pero entre medias estaban Aser escrito «Asher», Isacar «Issachar», Esdras
+# «Ezra», Zabulón «Zebulun», Rubén «Reuben», Asuero «Ahasuerus» y Acab «Ahab».
+# Eso en una página en español no se sostiene, y son los nombres que el lector
+# conoce de haberlos leído mil veces en su Biblia.
+# ---------------------------------------------------------------------------
+
+NOMBRES.update({
+    # --- las tribus ---------------------------------------------------------
+    "Asher": "Aser", "Simeon": "Simeón", "Issachar": "Isacar",
+    "Naphtali": "Neftalí", "Zebulun": "Zabulón", "Reuben": "Rubén",
+    "Benjamin": "Benjamín", "Manasseh": "Manasés", "Ephraim": "Efraín",
+    "Levi": "Leví",
+
+    # --- patriarcas, jueces, profetas ---------------------------------------
+    "Esau": "Esaú", "Noah": "Noé", "Cain": "Caín", "Seth": "Set",
+    "Nahor": "Nacor", "Japhet": "Jafet", "Joktan": "Joctán",
+    "Hezron": "Hezrón", "Jesse": "Isaí", "Boaz": "Booz", "Leah": "Lea",
+    "Rachel": "Raquel", "Tamar": "Tamar", "Ruth": "Rut",
+    "Joshua": "Josué", "Gideon": "Gedeón", "Samson": "Sansón",
+    "Ishmael": "Ismael", "Eleazar": "Eleazar", "Korah": "Coré",
+    "Balaam": "Balaam", "Merari": "Merari", "Asaph": "Asaf",
+    "Heman": "Hemán", "Zadok": "Sadoc", "Jehoiada": "Joiada",
+    "Elijah": "Elías", "Elisha": "Eliseo", "Jonah": "Jonás",
+    "Hosea": "Oseas", "Jeremiah": "Jeremías", "Nehemiah": "Nehemías",
+    "Ezra": "Esdras", "Zerubbabel": "Zorobabel", "Daniel": "Daniel",
+    "Samuel": "Samuel", "Caleb": "Caleb",
+
+    # --- reyes --------------------------------------------------------------
+    "Ahab": "Acab", "Omri": "Omrí", "Joram": "Joram", "Joash": "Joás",
+    "Amon": "Amón", "Ahaz": "Acaz", "Hezekiah": "Ezequías",
+    "Josiah": "Josías", "Jehoiakim": "Joacim", "Zedekiah": "Sedequías",
+    "Rehoboam": "Roboam", "Jehoshaphat": "Josafat", "Azariah": "Azarías",
+    "Hadad": "Hadad", "Ahasuerus": "Asuero", "Darius": "Darío",
+    "Haman": "Amán", "Herod": "Herodes", "Agrippa": "Agripa",
+
+    # --- lugares ------------------------------------------------------------
+    "Damascus": "Damasco", "Hebron": "Hebrón", "Bethel": "Betel",
+    "Shechem": "Siquem", "Gibeon": "Gabaón", "Hermon": "Hermón",
+    "Hamath": "Hamat", "Seir": "Seír", "Elam": "Elam", "Midian": "Madián",
+    "Nineveh": "Nínive", "Sodom": "Sodoma", "Tyre": "Tiro", "Sidon": "Sidón",
+    "Philistia": "Filistea", "Athens": "Atenas", "Corinth": "Corinto",
+    "Ephesus": "Éfeso", "Crete": "Creta", "Lydia": "Lidia",
+    # La Sefela y el Néguev: el léxico los nombra en hebreo transliterado al
+    # inglés, y el español tiene su forma de siempre.
+    "Shephelah": "Sefela", "Negeb": "Néguev",
+})
+
+PALABRAS.update({
+    # Gentilicios y adjetivos de escuela que salían con mayúscula y en inglés.
+    "attic": "ático|adj",
+    "levitical": "levítico|adj",
+    "hellenistic": "helenístico|adj",
+    "semitic": "semítico|adj",
+    "syriac": "siríaco|adj",
+    "canaanitish": "cananeo|adj",
+    "aramaean": "arameo|adj",
+    "aramaeans": "arameos|sus",
+    "messianic": "mesiánico|adj",
+    "gentile": "gentil|adj",
+    "gentiles": "gentiles|sus",
+})
