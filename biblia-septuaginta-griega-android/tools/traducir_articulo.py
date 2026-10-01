@@ -65,6 +65,55 @@ SIGLAS: dict[str, str] = {
     "dimin.": "diminutivo", "onomatop.": "onomatopéyico",
     "SYN.:": "SINÓNIMOS:", "Metaph.,": "Metafóricamente,",
     "rei,": "de la cosa,", "rei": "de la cosa",
+
+    # Latín editorial de las dos obras. Cada una se ha mirado en todas sus
+    # apariciones antes de ponerla aquí, y en las diez son lo mismo.
+    #
+    # «ut» va siempre en «ut supr.» y «ut infr.», y como «supr.» ya dice
+    # «arriba» e «infr.» dice «abajo», con poner «como» la fórmula queda
+    # entera: «como arriba».
+    # Va junta y suelta: «interr.adv. Where?» es una sola sigla, y partida
+    # salía «interrogativo. adverbio.», con el orden del inglés.
+    "interr.adv.": "adverbio interrogativo",
+    # «shining one, epith. of king of Babylon» y «v. conject. in Di».
+    "epith.": "epíteto", "conject.": "conjetura",
+    "appell.": "apelativo", "orthogr.": "ortografía",
+    # «by metapl. for τὰ ὁρκωμόσια»: metaplasmo, el cambio de declinación.
+    "metapl.": "metaplasmo",
+    # Más abreviaturas de Brown-Driver-Briggs.
+    "app.": "aparentemente",      # «app. a descendant of Judah»
+    "del.": "suprímase",          # «but del. 𝔊 Co»: bórrese, según esos testigos
+    "theoph.": "teofanía",        # «quake of earth at theoph.»
+    "kg.": "rey",                 # «honour, majesty, of kg.»
+    "odorif.": "odorífero",       # «odorif. tree, aloe»
+    "tr.": "traducido",           # «AV, tr. as = ῥυπάω»
+    "improb.": "improbable", "sacrif.": "sacrificó",
+    "cop.": "copulativo", "subjunc.": "subjuntivo",
+    "elsew.": "en otros lugares", "ap.": "apud",
+    "dei": "de dios",            # «as design. dei»: designación de la deidad
+    "Trans.": "transitivo", "Intrans.": "intransitivo", "Neut.": "neutro",
+    # «n.pr.flum.» es flumen, el río: la misma sigla que n.pr.fl. pero entera.
+    "n.pr.flum.": "nombre propio de río",
+    # «van d. H» es van der Hooght, el editor. En minúscula no lo coge la regla
+    # de los nombres propios, que mira la mayúscula inicial.
+    "van": "van",
+    "interr.": "interrogativo",
+    "ut": "como",
+    # «v. sub ענה» = véase bajo esa raíz. Cinco veces, siempre igual.
+    "sub": "bajo",
+    # «si vera l.» = si vera lectio, «si la lectura es correcta». Es una
+    # fórmula que el filólogo reconoce de un vistazo y que traducida pierde
+    # más de lo que gana, así que se deja en latín: las dos palabras se
+    # devuelven a sí mismas para que no tumben el artículo.
+    "si": "si", "vera": "vera",
+    # Siglas de bibliografía: «DB, ext., 367» es el volumen suplementario del
+    # Dictionary of the Bible, y «WH, br.» son los corchetes de Westcott-Hort.
+    # No se traducen, se dejan: son el nombre de la obra.
+    "ext.": "ext.", "br.": "br.",
+    # En minúscula es «mount», el accidente geográfico, no el evangelio. Las
+    # diecisiete veces. «Mt» con mayúscula sigue siendo Mateo, que para eso
+    # esta tabla distingue mayúsculas.
+    "mt.": "monte", "mont.": "monte",
 }
 
 # Más abreviaturas, las que faltaban al medir: las dos obras las usan a cientos.
@@ -193,6 +242,86 @@ SIGLAS.update({
 SIGLAS.update({
     "He": "He",
     "Is": "Is",
+    # Dos más del mismo tipo, y las dos las rompí yo en este mismo trabajo al
+    # meter «am» («I am», traduciendo ἐγώ εἰμι) y «de» (el latín de «Plut., de
+    # Puer. Educ.») en la tabla de palabras, que no distingue mayúsculas.
+    #
+    # «Am 5:2», Amós, salía «soy 5:2». «De 25:4», Deuteronomio, salía «de
+    # 25:4». Comprobadas igual que «He» e «Is» antes de ponerlas aquí: de las
+    # 70 apariciones de «Am» y las 188 de «De» en los dos léxicos, ninguna es
+    # la palabra inglesa ni la preposición latina. Son Amós y Deuteronomio en
+    # las citas, y Delitzsch y Driver en las referencias de Brown-Driver-Briggs
+    # —«Driver, De., 98 f.», «Thes MV De»—.
+    #
+    # En minúscula siguen traduciéndose, que para eso esta tabla distingue
+    # mayúsculas: «I am» es «soy» y «de Puer. Educ.» se queda en latín.
+    "Am": "Am",
+    "De": "De",
+
+    # Nombres de autor y de obra que son además palabras inglesas corrientes,
+    # y que por eso se estaban traduciendo. Comprobadas todas sus apariciones:
+    #
+    #   «Field, Notes, 134» es F. Field y sus «Notes on the Translation of the
+    #   New Testament». 186 veces «Field», que salía «campo», y 284 «Notes»,
+    #   que salía «notas». Las 284 son el título de esa obra.
+    #
+    #   «Dalman, Words, 21» es «The Words of Jesus», de Gustaf Dalman. 83
+    #   veces, todas el título.
+    "Field": "Field",
+    "Notes": "Notes",
+    "Words": "Words",
+
+    # Las mismas abreviaturas gramaticales que ya están en minúscula, pero a
+    # principio de frase. «Pass. struck back» salía «pasar struck back» —el
+    # verbo inglés— en vez de «en pasiva», 88 veces; «Fig., of Christians»
+    # salía «higo, de cristianos», 15 veces. Y «Compar., ἀκριβέστερον» es el
+    # comparativo, no «compárese».
+    "Pass.": "en pasiva",
+    "Fig.": "figuradamente",
+    "Compar.": "comparativo",
+    "compar.": "comparativo",
+
+    # Y las demás del mismo tipo, buscadas de una vez en lugar de ir
+    # tropezando con ellas: abreviaturas gramaticales que ya estaban en
+    # minúscula y que a principio de frase se quedaban en inglés.
+    "Act.": "en activa",      # «Act., to destroy utterly» — y además caía en
+                              # PALABRAS["act"] y salía «acto»
+    "Mid.": "en media",       # 84 veces, la voz media
+    "Pt.": "participio",      # 63
+    "Cf.": "compárese",       # 25
+    "V.": "véase",            # 24
+    "Impf.": "imperfecto",    # 38
+    "Inf.": "infinitivo",     # 26
+    "Pf.": "perfecto",        # 23
+    "Imv.": "imperativo",     # 5
+    "Superl.": "superlativo", # 4
+    "Esp.": "sobre todo",     # 9
+    "C.": "con",              # «C. acc. rei», «C. dat. pers.»: 75 de las 76
+                              # llevan detrás un caso o un modo
+
+    # Y aquí, al comprobar la lista anterior, salió otra cosa: _sigla tiene una
+    # tercera regla —si la pieza lleva mayúscula y punto, se reintenta en
+    # minúscula, para que «Interrog.» valga lo mismo que «interrog.»— y esa
+    # regla se come también las que NO son abreviaturas gramaticales.
+    #
+    # Son nombres de obra, y en las dos obras no significan otra cosa:
+    #
+    #   «Pr.»  son las Prolegomena de Moulton: «M, Pr., 46».
+    #   «Tr.»  es el Synonyms of the NT de Trench: «Tr., Syn., §xxv».
+    #   «Syn.» es esa misma obra: «Tr., Syn.».
+    #   «App.» es el apéndice de Westcott-Hort: «WH, App., 145».
+    #   «Al.»  es Áquila, la versión griega: «[in Al.: Ps 48 (49):9]».
+    #   «Cl.»  es la Classical Review: «v. Cl. Rev., i, 7».
+    #   «Ap.»  es el comentario de Swete al Apocalipsis: «Swete, Ap., 5».
+    #   «Fr.»  es una inicial, no la preposición.
+    #
+    # Casi siempre se salvaban por la coma que llevan detrás —«Pr.,» no es
+    # «Pr.»— y por eso sólo había nueve artículos mal; pero salvarse por la
+    # puntuación no es salvarse. Van en _NUNCA_EN_MINUSCULA, más abajo.
+    #
+    # «Mt.», «Intr.», «Pl.» y «Eccl.» se quedan como están: salen en los dos
+    # sentidos, mitad y mitad, y protegerlas dejaría en inglés tantas como
+    # arregla.
     # «St. Paul» se leía como el sufijo ordinal inglés de «1st» y salía
     # «º Pablo». Como sigla se reconoce antes de llegar a esa regla.
     "St.": "S.",
@@ -297,7 +426,14 @@ def _desnudar(pieza: str) -> tuple[str, str, str]:
 # Las otras quince siglas que chocan («adj», «pron», «gen», «part»…) se quedan
 # como están: en un artículo de léxico esas formas son abreviaturas, no
 # sustantivos, y la lectura de sigla es la correcta.
-_NUNCA_SIN_PUNTO = {"As"}
+# Siglas que sólo valen con el punto puesto. «As» sin punto es la palabra
+# inglesa, no «asirio».
+#
+# «C» y «V» se añaden aquí porque al meter «C.» («C. acc. rei» = cum) y «V.»
+# («V. Milligan» = see) quedaron reconocidas también sin punto, y entonces
+# «B.C. 681-668» —que el trozador parte en «B», «.», «C», «.»— salía «B. con.
+# 681-668». La fecha de Esarhadón no lleva preposición.
+_NUNCA_SIN_PUNTO = {"As", "C", "V"}
 
 # Las mismas siglas sin el punto final: las dos obras lo ponen o no según les
 # viene («pl.» y «pl»). La búsqueda respeta las mayúsculas a propósito: sin eso,
@@ -311,6 +447,23 @@ _SIN_PUNTO = {
 _ABRE = "([{«\u201c"
 _CIERRA = ")]}»\u201d,;:.!?"
 _PALABRA_ASCII = re.compile(r"[A-Za-z][A-Za-z'-]*|[^A-Za-z]+")
+
+# Una palabra con letra latina que no es ASCII: «Kühner», «Ægean», «poët.»,
+# «Pō», «Ēl», «Hithpō», «quæst.», «Nabû».
+#
+# El trozador de arriba solo ve A-Za-z, así que partía estas palabras en la
+# letra rara y dejaba los cachos sueltos como si fueran inglés: «Kühner» salía
+# «K» + «ü» + «hner», y «hner» tumbaba el artículo entero. Nueve artículos por
+# Kühner, seis por Ægean, y 230 en total.
+#
+# Se protegen enteras en vez de intentar traducirlas, porque en estas dos obras
+# una palabra con macrón, diéresis, circunflejo o ligadura es casi siempre una
+# de tres cosas, y ninguna se traduce: una transliteración del hebreo (Pō, Ēl,
+# Hithpō, ‛Anathôth), el apellido de un filólogo alemán (Kühner, Köhler,
+# Schürer) o una abreviatura latina (quæst., poët.). Y quitarles el acento
+# tampoco vale: el macrón de Pō y de Ēl distingue la vocal larga de la breve,
+# que es justo el dato que la transliteración viene a dar.
+_PALABRA_ACENTUADA = re.compile(r"[A-Za-z\u00C0-\u024F]*[\u00C0-\u024F][A-Za-z\u00C0-\u024F]*")
 # Puntuación que no rompe la prosa: la traduce el mismo motor de palabras.
 _NEUTRO = re.compile(r"^[\s,;:.()\[\]'\"!?&/-]*$")
 # Los números romanos, uno por uno y no por sus letras: «did», «mix» e «ill»
@@ -339,9 +492,15 @@ def _desnudar(pieza: str) -> tuple[str, str, str]:
     return abre, pieza, cierra
 
 
+# Siglas con mayúscula que NO valen lo mismo que su forma en minúscula, porque
+# con mayúscula son el nombre de una obra. Ver la explicación larga arriba.
+_NUNCA_EN_MINUSCULA = {"Pr.", "Tr.", "Syn.", "App.", "Al.", "Cl.", "Ap.", "Fr."}
+
+
 def _sigla(pieza: str) -> str | None:
     hallada = SIGLAS.get(pieza) or _SIN_PUNTO.get(pieza.rstrip("."))
-    if hallada is None and pieza.endswith(".") and pieza[:1].isupper():
+    if (hallada is None and pieza.endswith(".") and pieza[:1].isupper()
+            and pieza not in _NUNCA_EN_MINUSCULA):
         # «Interrog.» al principio de una acepción es la misma sigla que
         # «interrog.»; sólo vale si lleva punto, para no confundir «Mt» con «MT».
         hallada = _SIN_PUNTO.get(pieza[:1].lower() + pieza[1:].rstrip("."))
@@ -406,6 +565,23 @@ def _piezas(linea: str) -> list[tuple[str, str]]:
                 and _CITA.match(trozos_linea[n + 1].lstrip("([{«"))):
             salida.append(("protegido", pieza))
             continue
+        # «f.» detrás de un número es «y siguiente», no «femenino».
+        #
+        # «Cremer, 611 f.» quiere decir la página 611 y la que sigue, igual que
+        # «ff.» quiere decir «y siguientes». Pero «f.» también es la
+        # abreviatura de femenino —«n.pr.m. & f.»—, y la tabla de siglas, que
+        # no mira el contexto, las daba todas por femenino: 650 apariciones, de
+        # las cuales 442 van justo detrás de un número.
+        #
+        # Se mira lo que viene delante, que es lo único que las separa. Quedan
+        # mal las dos o tres de las enumeraciones tipo «I, 2, f., g.», donde
+        # delante hay un número pero «f.» es una letra de orden; a cambio se
+        # arreglan más de cuatrocientas.
+        if (pieza.rstrip(")]},;:") == "f." and n
+                and trozos_linea[n - 1].rstrip(")]},;:").rstrip(",")[-1:].isdigit()):
+            cola = pieza[len("f."):]
+            salida.append(("sigla", "y siguiente" + cola))
+            continue
         # Identificador interno de la digitalización de BDB: «[a.di.ab]». No es
         # prosa del léxico ni significa nada para quien lee, pero al partirse en
         # «a», «di» y «ab» dejaba esas sílabas como palabras inglesas sin
@@ -419,9 +595,26 @@ def _piezas(linea: str) -> list[tuple[str, str]]:
         abre = cierra = ""
         if espanol is None:
             abre, desnuda, cierra = _desnudar(pieza)
+            # «(c)» es la tercera acepción, no la abreviatura latina «c.».
+            #
+            # Esta segunda consulta mira la pieza ya sin paréntesis, y ahí «c»
+            # cae en la tabla de siglas sin punto y sale «con»: 48 veces, en 43
+            # artículos, ya publicados. Lo mismo con «(f)», que salía
+            # «(femenino)».
+            #
+            # Lo que las distingue es el punto, que es lo que marca que algo
+            # está abreviado: «(v. MM)» lleva punto y es «véase», «(c)» no lo
+            # lleva y es una letra de enumeración. Con el punto puesto, la
+            # consulta de más arriba —sobre la pieza entera— ya las coge.
+            if (abre or cierra) and len(desnuda) == 1 and desnuda.isalpha():
+                salida.append(("protegido", pieza))
+                continue
             espanol = _sigla(desnuda)
         if espanol is not None:
             salida.append(("sigla", abre + espanol + cierra))
+            continue
+        if _PALABRA_ACENTUADA.search(pieza):
+            salida.append(("protegido", pieza))
             continue
         trozos = _PALABRA_ASCII.findall(pieza)
         if trozos and all(

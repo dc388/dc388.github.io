@@ -31,6 +31,44 @@ import unicodedata
 # ---------------------------------------------------------------------------
 
 FRASES: dict[str, str] = {
+    # --- compuestos del culto y del templo ----------------------------------
+    # Van aquí y no como palabras sueltas porque palabra a palabra salían al
+    # revés o sin sentido: «high priest» daba «sacerdote alto» en vez de «sumo
+    # sacerdote», y «sin offering» daba «pecado ofrenda».
+    "high priests": "sumos sacerdotes",
+    "high priest": "sumo sacerdote",
+    "chief priests": "principales sacerdotes",
+    "chief priest": "principal de los sacerdotes",
+    "burnt offerings": "holocaustos",
+    "burnt offering": "holocausto",
+    "sin offering": "sacrificio por el pecado",
+    "guilt offering": "sacrificio por la culpa",
+    "peace offerings": "sacrificios de paz",
+    "peace offering": "sacrificio de paz",
+    "drink offering": "libación",
+    "meal offering": "ofrenda de cereal",
+    "meat offering": "ofrenda de cereal",
+    "wave offering": "ofrenda mecida",
+    "heave offering": "ofrenda elevada",
+    "most holy place": "lugar santísimo",
+    "most holy": "santísimo",
+    "most high": "altísimo",
+    "holy of holies": "santo de los santos",
+    "proper names": "nombres propios",
+    "proper name": "nombre propio",
+
+    # --- «most» cuando de verdad es «la mayoría» ----------------------------
+    # La palabra suelta pasa a ser «más», que es lo que es setenta de las
+    # noventa y cinco veces («most freq.», «most excellent», «most readily»).
+    # Las que quedan son estas: en el aparato crítico, «so most» y «according
+    # to most» quieren decir «la mayoría de los comentaristas».
+    "so most": "así la mayoría",
+    "according to most": "según la mayoría",
+    "acc. to most": "según la mayoría",
+    "most writers": "la mayoría de los escritores",
+    "most moderns": "la mayoría de los modernos",
+    "most commentators": "la mayoría de los comentaristas",
+
     # --- plantillas de nombres propios -------------------------------------
     "an Israelite": "un israelita",
     "an Israelitess": "una israelita",
@@ -467,7 +505,7 @@ PALABRAS: dict[str, str] = {
     "second": "segundo", "third": "tercero", "fourth": "cuarto",
     "fifth": "quinto", "sixth": "sexto", "seventh": "séptimo",
     "several": "varios", "many": "muchos", "few": "pocos", "much": "mucho",
-    "more": "más", "most": "la mayoría", "less": "menos", "least": "lo menos",
+    "more": "más", "most": "más", "less": "menos", "least": "lo menos",
     "each": "cada", "every": "cada", "single": "solo",
 }
 
@@ -3180,21 +3218,37 @@ def _ordenar(texto: str) -> str:
     piezas = sin_a
 
     # el adjetivo, detrás; la puntuación que cerraba el grupo se queda al final
+    #
+    # Se mueve la tira entera de adjetivos, no sólo el que toca al sustantivo.
+    # Antes sólo se movía ese, y «a technical nautical term» salía «un técnico
+    # término náutico»: el bucle daba la vuelta a «nautical term» y dejaba
+    # «technical» plantado delante.
+    #
+    # Y se invierte el orden al pasarlos atrás. En las dos lenguas el adjetivo
+    # más pegado al sustantivo es el que más lo define, pero el sitio donde se
+    # pega es el contrario: el inglés lo pone justo delante y el español justo
+    # detrás. «technical nautical term» es un término náutico que además es
+    # técnico, o sea «término náutico técnico».
     n = 0
-    while n + 1 < len(piezas):
+    while n < len(piezas):
+        fin = n
+        while fin < len(piezas) and piezas[fin].endswith("|adj"):
+            fin += 1
         # el adjetivo sólo se pospone si va pegado al sustantivo: si lleva coma
         # detrás son dos acepciones de una lista, no un sintagma
-        if piezas[n].endswith("|adj") and _marca_de(piezas[n + 1]) == "sus":
-            adjetivo, sustantivo = piezas[n], piezas[n + 1]
-            cola = re.search(r"[^0-9A-Za-zÀ-ÿ'-]*$", _MARCA.sub("", sustantivo)).group()
-            if cola:
-                sustantivo = sustantivo[: len(sustantivo) - len(cola)]
-            if _plural(_nucleo(sustantivo)):
-                adjetivo = _pluralizar(adjetivo)
-            piezas[n], piezas[n + 1] = sustantivo, adjetivo + cola
-            n += 2
+        if fin == n or fin >= len(piezas) or _marca_de(piezas[fin]) != "sus":
+            n += 1
             continue
-        n += 1
+        adjetivos = piezas[n:fin][::-1]
+        sustantivo = piezas[fin]
+        cola = re.search(r"[^0-9A-Za-zÀ-ÿ'-]*$", _MARCA.sub("", sustantivo)).group()
+        if cola:
+            sustantivo = sustantivo[: len(sustantivo) - len(cola)]
+        if _plural(_nucleo(sustantivo)):
+            adjetivos = [_pluralizar(a) for a in adjetivos]
+        adjetivos[-1] = adjetivos[-1] + cola
+        piezas[n:fin + 1] = [sustantivo] + adjetivos
+        n = fin + 1
 
     # el ordinal, delante y concordado
     for n, pieza in enumerate(piezas):
@@ -3221,10 +3275,16 @@ def _ordenar(texto: str) -> str:
             piezas[atras] = piezas[atras].replace(anterior, DETERMINANTES[anterior], 1)
         if n and _nucleo(piezas[n - 1]) in ORDINALES:
             continue                     # el ordinal ya se resolvió antes
-        if n + 1 < len(piezas) and _marca_de(piezas[n + 1]) == "adj":
-            siguiente = _nucleo(piezas[n + 1])
+        # Todos los adjetivos que quedaron detrás, no sólo el primero: desde
+        # que se mueve la tira entera, «a small round vessel» deja dos, y
+        # mirando sólo uno salía «una vasija redonda pequeño».
+        siguiente_n = n + 1
+        while siguiente_n < len(piezas) and _marca_de(piezas[siguiente_n]) == "adj":
+            siguiente = _nucleo(piezas[siguiente_n])
             if siguiente.endswith("o"):
-                piezas[n + 1] = piezas[n + 1].replace(siguiente, siguiente[:-1] + "a", 1)
+                piezas[siguiente_n] = piezas[siguiente_n].replace(
+                    siguiente, siguiente[:-1] + "a", 1)
+            siguiente_n += 1
 
     return _MARCA.sub("", " ".join(piezas))
 
@@ -3241,3 +3301,902 @@ def desconocidas(texto: str) -> list[str]:
                 and not _es_nombre_propio(palabra)):
             faltan.append(_clave(palabra))
     return faltan
+
+
+# ---------------------------------------------------------------------------
+# Tanda de octubre. Sale de medir qué palabras impedían traducir los artículos
+# que seguían en inglés, y de mirar cada una en TODOS sus contextos antes de
+# ponerla. El rendimiento ya es plano —ninguna bloquea más de ocho artículos—,
+# así que lo que decide no es la frecuencia sino si la palabra da una sola
+# traducción buena en todos los sitios donde sale.
+#
+# Cuatro se quedan fuera a propósito, y conviene dejar escrito por qué, para
+# que nadie las añada luego creyendo que es un olvido. En las cuatro el léxico
+# las usa en los dos sentidos, mitad y mitad:
+#
+#   «sore»   cinco veces es la llaga y dos el adverbio «sore troubled».
+#   «rent»   cuatro veces es la rasgadura y una el alquiler.
+#   «craft»  tres veces es la astucia y tres el oficio.
+#   «scale»  tres veces es la escama del pez y tres el platillo de la balanza.
+#
+# Poner cualquiera de las dos acepciones acierta la mitad de las veces y falla
+# la otra mitad sin avisar, que es peor que dejar el artículo en inglés: el
+# lector no tiene forma de saber cuál le ha tocado.
+# ---------------------------------------------------------------------------
+
+PALABRAS.update({
+    # --- sustantivos verbales en -ing ---------------------------------------
+    # Van como sustantivo, que es la convención de la tabla («gathering» ya era
+    # «recolección|sus»), y solo los que son sustantivo en todos sus contextos.
+    # «spreading», «working», «rolling», «serving» y «uttering» se quedan
+    # fuera: en unos sitios son sustantivo y en otros participio.
+    "crushing": "trituración|sus",
+    "digging": "excavación|sus",
+    "sending": "envío|sus",
+    "feeding": "alimentación|sus",
+    "bursting": "estallido|sus",
+    "pruning": "poda|sus",
+    "pounding": "machacado|sus",
+    "partaking": "participación|sus",
+    "searching": "búsqueda|sus",
+    "carrying": "transporte|sus",
+    "creeping": "reptante|adj",      # «a creeping thing» -> «una cosa reptante»
+
+    # --- el cuerpo y sus males ----------------------------------------------
+    "intestines": "intestinos|sus",
+    "marrow": "médula|sus",
+    "incision": "incisión|sus",
+    "stature": "estatura|sus",
+    "lump": "grumo|sus",
+    "moisture": "humedad|sus",
+    "inflame": "inflamar|inf",
+    "scorch": "chamuscar|inf",
+    "thicken": "espesar|inf",
+
+    # --- oficios y cargos ---------------------------------------------------
+    "steward": "mayordomo|sus",
+    "procurator": "procurador|sus",
+    "labourer": "jornalero|sus",
+    "singer": "cantor|sus",
+    "beggar": "mendigo|sus",
+    "deliverer": "libertador|sus",
+    "leaders": "jefes|sus",
+    "brethren": "hermanos|sus",
+    "consort": "consorte|sus",       # la esposa; el verbo va como frase
+
+    # --- el campo y los animales --------------------------------------------
+    "stubble": "rastrojo|sus",
+    "viper": "víbora|sus",
+    "leopard": "leopardo|sus",
+    "autumn": "otoño|sus",
+    "yarn": "hilo|sus",
+    "slope": "pendiente|sus",
+    "steep": "escarpado|adj",
+    "corners": "esquinas|sus",
+
+    # --- culto y objetos ----------------------------------------------------
+    "censer": "incensario|sus",
+    "sheath": "vaina|sus",
+    "scarlet": "escarlata|sus",
+    "boiled": "cocido",
+    "impress": "impronta|sus",       # el sello; el verbo va como frase
+
+    # --- abstractos y adjetivos ---------------------------------------------
+    "contribution": "contribución|sus",
+    "plenty": "abundancia|sus",
+    "fate": "destino|sus",
+    "proverbs": "proverbios|sus",
+    "solitary": "solitario|adj",
+    "joyous": "gozoso|adj",
+    "wroth": "airado|adj",
+    "tossed": "sacudido",
+    "newly": "recién",
+
+    # --- verbos -------------------------------------------------------------
+    "overtake": "alcanzar|inf",
+    "mingle": "mezclar|inf",
+    "vex": "molestar|inf",
+    "distinguishes": "distingue",
+
+    # --- dos que no son palabras inglesas corrientes -------------------------
+    # «I am» traduciendo ἐγώ εἰμι, y la interjección «ah! ha!».
+    "am": "soy",
+    "ah": "ah", "ha": "ja",
+})
+
+FRASES.update({
+    # Las acepciones que la palabra suelta no puede dar, porque en estos sitios
+    # significa otra cosa que en los demás.
+    "to impress into public service": "reclutar para el servicio público",
+    "consort with": "juntarse con",
+    # Con marca de sustantivo, que las frases también la admiten: sin ella
+    # «a carrying away» salía «un deportación».
+    "carrying away": "deportación|sus",
+    "letting down": "descenso|sus",
+    "letting go": "liberación|sus",
+    "letting loose": "suelta|sus",
+})
+
+
+# Segunda tanda de octubre. Mismo criterio: mirada a todos los contextos, y
+# fuera las que el léxico usa en dos sentidos. Esta vez se quedan fuera «hit»
+# (tres veces golpear y dos acertar), «devouring» (sustantivo y participio),
+# «lives» (dos veces el verbo y dos el sustantivo «las vidas») y «doth», que es
+# el auxiliar arcaico de las glosas de nombres propios —«(God doth ascend?)»—
+# y en español no tiene a qué corresponder.
+
+PALABRAS.update({
+    # --- personas -----------------------------------------------------------
+    "lady": "señora|sus",
+    "keeper": "guardián|sus",
+    "sorcerer": "hechicero|sus",
+    "sojourner": "forastero|sus",
+    "adulteress": "adúltera|sus",
+    "great-grandfather": "bisabuelo|sus",
+    "master-workman": "maestro de obra|sus",
+
+    # --- el campo, la casa, los oficios -------------------------------------
+    "crops": "cosechas|sus",
+    "worm": "gusano|sus",
+    "bunch": "racimo|sus",
+    "watch-tower": "atalaya|sus",
+    "fan": "aventador|sus",        # el bieldo de aventar, no el abanico
+    "potsherd": "tiesto|sus",
+    "dough": "masa|sus",
+    "loom": "telar|sus",
+    "vessels": "vasijas|sus",
+    "lowland": "llanura|sus",
+    "loin": "lomo|sus",
+    "manna": "maná|sus",
+
+    # --- culto --------------------------------------------------------------
+    "drink-offering": "libación|sus",
+    "chastening": "disciplina|sus",
+
+    # --- abstractos ---------------------------------------------------------
+    "misfortune": "desgracia|sus",
+    "allowance": "concesión|sus",
+    "stubbornness": "obstinación|sus",
+    "insolence": "insolencia|sus",
+    "suggestion": "sugerencia|sus",
+    "jest": "burla|sus",
+    "breed": "cría|sus",
+    "terrors": "terrores|sus",
+
+    # --- adjetivos ----------------------------------------------------------
+    "sour": "agrio|adj",
+    "withered": "seco|adj",
+    "obedient": "obediente|adj",
+    "younger": "más joven|adj",
+    "youthful": "juvenil|adj",
+    "winged": "alado|adj",
+    "fiery": "ígneo|adj",
+    "fattened": "cebado|adj",
+    "stubborn": "obstinado|adj",
+    "glowing": "incandescente|adj",
+    "filthy": "sucio|adj",
+    "moist": "húmedo|adj",
+    "stout": "robusto|adj",
+    "rushing": "impetuoso|adj",
+    "roaring": "rugiente|adj",
+
+    # --- participios --------------------------------------------------------
+    "woven": "tejido",
+    "graven": "grabado",
+    "girded": "ceñido",
+    "sharpened": "afilado",
+    "buried": "sepultado",
+    "darkened": "oscurecido",
+    "sung": "cantado",
+
+    # --- verbos -------------------------------------------------------------
+    "weaken": "debilitar|inf",
+    "confuse": "confundir|inf",
+    "darken": "oscurecer|inf",
+    "besiege": "sitiar|inf",
+    "submit": "someterse|inf",
+
+    # --- adverbios ----------------------------------------------------------
+    "forwards": "adelante",
+})
+
+FRASES.update({
+    # «lock» sola vale cerrojo y mechón; con el complemento ya no hay duda.
+    "lock of hair": "mechón de cabello|sus",
+})
+
+
+# Tercera tanda de octubre. Igual que las otras: contexto mirado, y fuera lo
+# que el léxico usa en dos sentidos. Aquí se quedan fuera «stopped» («we are
+# stopped up» no es lo mismo que «detenido») y «growling», que sale una vez de
+# sustantivo y otra de participio.
+
+PALABRAS.update({
+    # --- el cuerpo y sus males ----------------------------------------------
+    "eruption": "erupción|sus",
+    "bowels": "entrañas|sus",
+    "baldness": "calvicie|sus",
+    "span": "palmo|sus",
+    "maimed": "mutilado",
+    "mutilate": "mutilar|inf",
+    "hoary": "cano|adj",
+
+    # --- el campo y los animales --------------------------------------------
+    "balsam-tree": "árbol de bálsamo|sus",
+    "olives": "aceitunas|sus",
+    "flint": "pedernal|sus",
+    "mire": "cieno|sus",
+    "fox": "zorra|sus",
+    "cock": "gallo|sus",
+    "fields": "campos|sus",
+    "paths": "sendas|sus",
+    "highway": "calzada|sus",
+    "storm-wind": "viento de tormenta|sus",
+    "dryness": "sequedad|sus",
+
+    # --- objetos ------------------------------------------------------------
+    "necklace": "collar|sus",
+    "signet-ring": "anillo de sello|sus",
+    "wrapper": "envoltura|sus",
+    "network": "enrejado|sus",
+    "temples": "templos|sus",
+    "tribune": "tribuna|sus",
+
+    # --- personas -----------------------------------------------------------
+    "giant": "gigante|sus",
+    "princess": "princesa|sus",
+    "great-great-grandson": "tataranieto|sus",
+    "choirs": "coros|sus",
+
+    # --- guerra y derecho ---------------------------------------------------
+    "spoils": "despojos|sus",
+    "treasures": "tesoros|sus",
+    "statutes": "estatutos|sus",
+    "expedition": "expedición|sus",
+    "uprising": "levantamiento|sus",
+    "purchase-price": "precio de compra|sus",
+    "plundered": "saqueado",
+    "devastated": "devastado",
+    "ransomed": "rescatado",
+    "snatched": "arrebatado",
+    "pledged": "empeñado",
+    "annihilate": "aniquilar|inf",
+
+    # --- abstractos ---------------------------------------------------------
+    "holiness": "santidad|sus",
+    "thickness": "espesor|sus",
+    "hindrance": "estorbo|sus",
+    "success": "éxito|sus",
+    "vexation": "irritación|sus",
+    "dismissal": "despido|sus",
+    "stripping": "despojo|sus",
+    "choosing": "elección|sus",
+    "din": "estruendo|sus",
+
+    # --- adjetivos y participios --------------------------------------------
+    "astounded": "atónito|adj",
+    "vexed": "irritado|adj",
+    "ringing": "resonante|adj",
+    "guileless": "sin doblez|adj",
+    "unworthy": "indigno|adj",
+    "unleavened": "sin levadura|adj",
+    "disobedient": "desobediente|adj",
+    "dishonoured": "deshonrado",
+    "leavened": "leudado",
+    "sated": "saciado",
+
+    # --- verbos -------------------------------------------------------------
+    "growl": "gruñir|inf",
+    "disguise": "disfrazar|inf",
+    "trickle": "gotear|inf",
+    "unsettle": "perturbar|inf",
+    "subvert": "subvertir|inf",
+    "stink": "heder|inf",
+
+    # --- adverbios ----------------------------------------------------------
+    "treacherously": "traicioneramente",
+
+    # --- formas arcaicas de las glosas de nombres propios --------------------
+    # «(Yahweh heareth)», «(Ēl causeth to build)». Es el inglés del siglo XIX
+    # de Brown-Driver-Briggs, no una palabra rara.
+    "heareth": "oye",
+    "causeth": "hace",
+})
+
+
+# ---------------------------------------------------------------------------
+# Nombres propios bíblicos que el español escribe de otra manera.
+#
+# Al mirar qué palabras con mayúscula se estaban publicando sin tocar, salieron
+# 5 242 apariciones. La mayoría están bien así: los troncos hebreos (Peal,
+# Hifil, Nifal, Piel, Pual, Hitpael, Hofal) se llaman igual en español, y los
+# filólogos que cita el léxico —Cremer, Deissmann, Swete, Dalman, Thayer,
+# Westcott, Hort, Milligan, Thackeray— se llaman como se llaman.
+#
+# Pero entre medias estaban Aser escrito «Asher», Isacar «Issachar», Esdras
+# «Ezra», Zabulón «Zebulun», Rubén «Reuben», Asuero «Ahasuerus» y Acab «Ahab».
+# Eso en una página en español no se sostiene, y son los nombres que el lector
+# conoce de haberlos leído mil veces en su Biblia.
+# ---------------------------------------------------------------------------
+
+NOMBRES.update({
+    # --- las tribus ---------------------------------------------------------
+    "Asher": "Aser", "Simeon": "Simeón", "Issachar": "Isacar",
+    "Naphtali": "Neftalí", "Zebulun": "Zabulón", "Reuben": "Rubén",
+    "Benjamin": "Benjamín", "Manasseh": "Manasés", "Ephraim": "Efraín",
+    "Levi": "Leví",
+
+    # --- patriarcas, jueces, profetas ---------------------------------------
+    "Esau": "Esaú", "Noah": "Noé", "Cain": "Caín", "Seth": "Set",
+    "Nahor": "Nacor", "Japhet": "Jafet", "Joktan": "Joctán",
+    "Hezron": "Hezrón", "Jesse": "Isaí", "Boaz": "Booz", "Leah": "Lea",
+    "Rachel": "Raquel", "Tamar": "Tamar", "Ruth": "Rut",
+    "Joshua": "Josué", "Gideon": "Gedeón", "Samson": "Sansón",
+    "Ishmael": "Ismael", "Eleazar": "Eleazar", "Korah": "Coré",
+    "Balaam": "Balaam", "Merari": "Merari", "Asaph": "Asaf",
+    "Heman": "Hemán", "Zadok": "Sadoc", "Jehoiada": "Joiada",
+    "Elijah": "Elías", "Elisha": "Eliseo", "Jonah": "Jonás",
+    "Hosea": "Oseas", "Jeremiah": "Jeremías", "Nehemiah": "Nehemías",
+    "Ezra": "Esdras", "Zerubbabel": "Zorobabel", "Daniel": "Daniel",
+    "Samuel": "Samuel", "Caleb": "Caleb",
+
+    # --- reyes --------------------------------------------------------------
+    "Ahab": "Acab", "Omri": "Omrí", "Joram": "Joram", "Joash": "Joás",
+    "Amon": "Amón", "Ahaz": "Acaz", "Hezekiah": "Ezequías",
+    "Josiah": "Josías", "Jehoiakim": "Joacim", "Zedekiah": "Sedequías",
+    "Rehoboam": "Roboam", "Jehoshaphat": "Josafat", "Azariah": "Azarías",
+    "Hadad": "Hadad", "Ahasuerus": "Asuero", "Darius": "Darío",
+    "Haman": "Amán", "Herod": "Herodes", "Agrippa": "Agripa",
+
+    # --- lugares ------------------------------------------------------------
+    "Damascus": "Damasco", "Hebron": "Hebrón", "Bethel": "Betel",
+    "Shechem": "Siquem", "Gibeon": "Gabaón", "Hermon": "Hermón",
+    "Hamath": "Hamat", "Seir": "Seír", "Elam": "Elam", "Midian": "Madián",
+    "Nineveh": "Nínive", "Sodom": "Sodoma", "Tyre": "Tiro", "Sidon": "Sidón",
+    "Philistia": "Filistea", "Athens": "Atenas", "Corinth": "Corinto",
+    "Ephesus": "Éfeso", "Crete": "Creta", "Lydia": "Lidia",
+    # La Sefela y el Néguev: el léxico los nombra en hebreo transliterado al
+    # inglés, y el español tiene su forma de siempre.
+    "Shephelah": "Sefela", "Negeb": "Néguev",
+})
+
+PALABRAS.update({
+    # Gentilicios y adjetivos de escuela que salían con mayúscula y en inglés.
+    "attic": "ático|adj",
+    "levitical": "levítico|adj",
+    "hellenistic": "helenístico|adj",
+    "semitic": "semítico|adj",
+    "syriac": "siríaco|adj",
+    "canaanitish": "cananeo|adj",
+    "aramaean": "arameo|adj",
+    "aramaeans": "arameos|sus",
+    "messianic": "mesiánico|adj",
+    "gentile": "gentil|adj",
+    "gentiles": "gentiles|sus",
+})
+
+
+# Cuarta tanda de octubre. 110 palabras, todas con un solo sentido en el
+# léxico. Las de dos sentidos van abajo, como frase con su complemento.
+
+PALABRAS.update({
+    # --- sustantivos: cosas ---------------------------------------------------
+    "purse": "bolsa|sus", "bucket": "cubo|sus", "paper": "papel|sus",
+    "drain": "desagüe|sus", "threshold": "umbral|sus", "strings": "cuerdas|sus",
+    "reeds": "cañas|sus", "instruments": "instrumentos|sus",
+    "dial": "reloj de sol|sus", "war-cry": "grito de guerra|sus",
+    "boundaries": "límites|sus", "sunset": "ocaso|sus",
+
+    # --- sustantivos: personas ------------------------------------------------
+    "fisherman": "pescador|sus", "herdsman": "pastor|sus",
+    "publican": "publicano|sus", "administrator": "administrador|sus",
+    "impostor": "impostor|sus", "extortioner": "extorsionador|sus",
+    "maker": "hacedor|sus", "thief": "ladrón|sus", "ally": "aliado|sus",
+
+    # --- sustantivos: abstractos ----------------------------------------------
+    "brotherhood": "hermandad|sus", "sobriety": "sobriedad|sus",
+    "indulgence": "indulgencia|sus", "guarantee": "garantía|sus",
+    "perplexity": "perplejidad|sus", "deficiency": "carencia|sus",
+    "dissension": "disensión|sus", "enmity": "enemistad|sus",
+    "temptation": "tentación|sus", "blindness": "ceguera|sus",
+    "rumour": "rumor|sus", "etymology": "etimología|sus",
+    "dialect": "dialecto|sus", "investigation": "investigación|sus",
+    "execution": "ejecución|sus", "oversight": "supervisión|sus",
+    "ministration": "ministerio|sus", "abstinence": "abstinencia|sus",
+    "respite": "tregua|sus", "sedition": "sedición|sus",
+    "seizing": "apresamiento|sus", "proving": "prueba|sus",
+    "wills": "testamentos|sus", "wit": "ingenio|sus",
+    "manners": "modales|sus", "bonds": "lazos|sus",
+    "operations": "operaciones|sus", "difficulties": "dificultades|sus",
+    "fourteen": "catorce",
+
+    # --- adjetivos ------------------------------------------------------------
+    "accursed": "maldito|adj", "sincere": "sincero|adj",
+    "grievous": "grave|adj", "elegant": "elegante|adj",
+    "lawless": "sin ley|adj", "lawful": "lícito|adj",
+    "unfavourable": "desfavorable|adj", "improper": "impropio|adj",
+    "savage": "salvaje|adj", "unsettled": "inestable|adj",
+    "unstable": "inestable|adj", "barbarous": "bárbaro|adj",
+    "abominable": "abominable|adj", "elementary": "elemental|adj",
+    "impure": "impuro|adj", "impossible": "imposible|adj",
+    "unable": "incapaz|adj", "shameful": "vergonzoso|adj",
+    "contentious": "pendenciero|adj", "comprehensive": "amplio|adj",
+    "generous": "generoso|adj", "wakeful": "desvelado|adj",
+    "ministerial": "ministerial|adj", "comic": "cómico|adj",
+    "departed": "difunto|adj",
+
+    # --- participios ----------------------------------------------------------
+    "desired": "deseado", "satisfied": "satisfecho", "reserved": "reservado",
+    "withdrawn": "retirado", "combined": "combinado", "permitted": "permitido",
+    "proved": "probado", "traced": "rastreado", "marching": "que marcha",
+
+    # --- verbos ---------------------------------------------------------------
+    "renew": "renovar|inf", "behave": "comportarse|inf",
+    "thresh": "trillar|inf", "adorn": "adornar|inf", "bathe": "bañarse|inf",
+    "undertake": "emprender|inf", "intervene": "intervenir|inf",
+    "reprove": "reprender|inf", "squander": "derrochar|inf",
+    "narrate": "narrar|inf", "snort": "bufar|inf", "tempt": "tentar|inf",
+    "unloose": "desatar|inf", "blight": "marchitar|inf",
+    "results": "resulta", "knows": "sabe",
+
+    # --- adverbios ------------------------------------------------------------
+    "upwards": "hacia arriba", "nowhere": "en ninguna parte",
+    "patiently": "pacientemente", "voluntarily": "voluntariamente",
+    "fervently": "fervientemente", "anxiously": "ansiosamente",
+
+    # --- latín de las citas ---------------------------------------------------
+    # «cf. Lat. si ita res se habet»: el reflexivo latino se escribe igual.
+    "se": "se",
+})
+
+FRASES.update({
+    # Con complemento no hay duda; sueltas la tendrían.
+    "bill of divorce": "carta de divorcio|sus",
+    "make a bold venture": "atreverse",
+    "one another's": "de unos y otros",
+})
+
+
+# Quinta tanda de octubre. Siguen fuera, por los dos sentidos, «coat» (la
+# corteza del papiro y la prenda de vestir), «philos.», «trag.» y «lang.»:
+# estas tres son abreviaturas que piden adjetivo —«philos. writers»,
+# «Rabbinic lang.»— y la tabla de siglas no lleva marca de adjetivo, así que
+# sustituirlas dejaría el orden del inglés.
+
+PALABRAS.update({
+    # --- cosas ----------------------------------------------------------------
+    "sickle": "hoz|sus", "swords": "espadas|sus", "chair": "silla|sus",
+    "jug": "jarro|sus", "tile": "teja|sus", "honeycomb": "panal|sus",
+    "brimstone": "azufre|sus", "frost": "escarcha|sus",
+    "crystal": "cristal|sus", "skull": "calavera|sus",
+    "apparel": "vestimenta|sus", "offal": "desperdicios|sus",
+    "sweat": "sudor|sus", "lake": "lago|sus", "gulf": "golfo|sus",
+    "expanse": "extensión|sus", "slang": "jerga|sus",
+
+    # --- personas -------------------------------------------------------------
+    "suppliant": "suplicante|sus", "slanderer": "calumniador|sus",
+    "robber": "salteador|sus",      # λῃστής, el que roba con violencia
+    "horseman": "jinete|sus", "partner": "socio|sus",
+    "monster": "monstruo|sus", "reptile": "reptil|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "fancy": "fantasía|sus", "fame": "fama|sus", "detail": "detalle|sus",
+    "irrigation": "riego|sus", "wedlock": "matrimonio|sus",
+    "gladness": "alegría|sus", "fairness": "equidad|sus",
+    "abortion": "aborto|sus", "emendation": "enmienda|sus",
+    "acquaintance": "conocimiento|sus", "forgetfulness": "olvido|sus",
+    "crucifixion": "crucifixión|sus", "murmuring": "murmuración|sus",
+    "dispersion": "dispersión|sus", "ambush": "emboscada|sus",
+    "consummation": "consumación|sus", "propitiation": "propiciación|sus",
+    "glorying": "jactancia|sus", "conceit": "presunción|sus",
+    "readiness": "disposición|sus", "cleanness": "limpieza|sus",
+    "steadiness": "firmeza|sus", "checking": "contención|sus",
+    "reclining": "reclinación|sus", "wonders": "maravillas|sus",
+    "clamour": "clamor|sus", "accounts": "cuentas|sus",
+    "hearts": "corazones|sus", "cries": "gritos|sus", "pair": "par|sus",
+    "harm": "daño|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "untimely": "prematuro|adj", "important": "importante|adj",
+    "deceitful": "engañoso|adj", "epic": "épico|adj", "timid": "tímido|adj",
+    "mythical": "mítico|adj", "timely": "oportuno|adj",
+    "seasonable": "oportuno|adj", "devout": "devoto|adj",
+    "spacious": "espacioso|adj", "reverend": "venerable|adj",
+    "straightforward": "recto|adj", "expressive": "expresivo|adj",
+    "merry": "alegre|adj", "downcast": "abatido|adj",
+    "daring": "atrevido|adj", "hateful": "odioso|adj",
+    "scorching": "abrasador|adj", "varying": "variable|adj",
+    "lowest": "más bajo|adj", "vast": "vasto|adj",
+
+    # --- participios ----------------------------------------------------------
+    "entangled": "enredado", "accustomed": "acostumbrado",
+    "contracted": "contraído", "acquired": "adquirido", "prized": "apreciado",
+    "risen": "resucitado", "emphasized": "enfatizado", "closed": "cerrado",
+    "fed": "alimentado",
+
+    # --- verbos ---------------------------------------------------------------
+    "gnash": "rechinar|inf", "overshadow": "cubrir con sombra|inf",
+    "profess": "profesar|inf", "embark": "embarcar|inf",
+    "discuss": "discutir|inf", "hesitate": "vacilar|inf",
+    "confound": "confundir|inf", "abate": "amainar|inf",
+    "inform": "informar|inf", "damage": "dañar|inf",
+    "shorten": "acortar|inf", "inhabit": "habitar|inf",
+    "abrogate": "abrogar|inf", "bury": "sepultar|inf", "kick": "patear|inf",
+    "itch": "picar|inf", "win": "ganar|inf", "check": "refrenar|inf",
+    "award": "adjudicar|inf", "cement": "cementar|inf",
+    "matters": "importa",
+
+    # --- adverbios ------------------------------------------------------------
+    "solemnly": "solemnemente", "openly": "abiertamente",
+
+    # --- latín ----------------------------------------------------------------
+    "habere": "habere",
+})
+
+FRASES.update({
+    "trading place": "lugar de comercio|sus",
+    "springing water": "agua que brota|sus",
+    "shaped like": "con forma de",
+})
+
+
+# Sexta tanda de octubre. 140 palabras. «waiting» entra por fin: sola valía
+# espera en tres sitios y servicio de mesa en el cuarto, y con ese cuarto
+# puesto como frase ya no hay duda.
+
+PALABRAS.update({
+    # --- cosas ----------------------------------------------------------------
+    "sandals": "sandalias|sus", "cinnamon": "canela|sus", "nest": "nido|sus",
+    "stocks": "cepo|sus", "mill-stone": "piedra de molino|sus",
+    "frankincense": "incienso|sus", "kidneys": "riñones|sus",
+    "ink": "tinta|sus", "javelin": "jabalina|sus", "shovel": "pala|sus",
+    "stake": "estaca|sus", "booth": "cabaña|sus", "tackle": "aparejo|sus",
+    "sapphire": "zafiro|sus", "onyx": "ónice|sus", "disc": "disco|sus",
+    "rushes": "juncos|sus", "silk": "seda|sus", "sieve": "criba|sus",
+    "victuals": "víveres|sus", "dainties": "golosinas|sus",
+    "orchard": "huerto|sus", "park": "parque|sus", "mina": "mina|sus",
+    "semen": "semen|sus",
+
+    # --- personas -------------------------------------------------------------
+    "workman": "obrero|sus", "whisperer": "susurrador|sus", "tutor": "ayo|sus",
+    "mother-in-law": "suegra|sus", "daughter-in-law": "nuera|sus",
+    "diviner": "adivino|sus", "watchman": "vigía|sus",
+    "collector": "recaudador|sus", "trumpeter": "trompetero|sus",
+    "wanderer": "vagabundo|sus", "spies": "espías|sus",
+    "strangers": "extranjeros|sus", "troop": "tropa|sus",
+    "wolf": "lobo|sus", "bee": "abeja|sus", "bees": "abejas|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "boldness": "denuedo|sus", "craftiness": "astucia|sus",
+    "abiding": "permanencia|sus", "deviation": "desviación|sus",
+    "semblance": "apariencia|sus", "outrage": "ultraje|sus",
+    "encouragement": "aliento|sus", "repentance": "arrepentimiento|sus",
+    "movement": "movimiento|sus", "hardness": "dureza|sus",
+    "access": "acceso|sus", "supporting": "sostén|sus",
+    "steadfastness": "constancia|sus", "recklessness": "temeridad|sus",
+    "conspiracy": "conspiración|sus", "earthquake": "terremoto|sus",
+    "diligence": "diligencia|sus", "intimacy": "intimidad|sus",
+    "tossing": "sacudida|sus", "stoning": "lapidación|sus",
+    "swing": "impulso|sus", "noon": "mediodía|sus", "brow": "ceja|sus",
+    "offices": "cargos|sus", "parables": "parábolas|sus",
+    "prophecies": "profecías|sus", "dancing": "baile|sus",
+    "waiting": "espera|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "eloquent": "elocuente|adj", "portable": "portátil|adj",
+    "passionate": "iracundo|adj", "ripened": "maduro|adj",
+    "profitable": "provechoso|adj", "neighbouring": "vecino|adj",
+    "diligent": "diligente|adj", "manifold": "múltiple|adj",
+    "flying": "volador|adj", "sullen": "hosco|adj", "slight": "leve|adj",
+    "reverential": "reverencial|adj", "shrinking": "remiso|adj",
+    "conative": "conativo|adj",
+
+    # --- participios ----------------------------------------------------------
+    "stirred": "removido", "cooked": "cocinado", "roasted": "asado",
+    "furnished": "provisto", "suffered": "padecido", "acted": "actuado",
+    "conformed": "conformado", "purified": "purificado",
+    "circumcised": "circuncidado", "shortened": "acortado",
+    "encamped": "acampado", "estranged": "alejado", "clad": "vestido",
+    "grows": "crece",
+
+    # --- verbos ---------------------------------------------------------------
+    "pelt": "apedrear|inf", "peel": "pelar|inf", "quench": "apagar|inf",
+    "annoy": "importunar|inf", "calculate": "calcular|inf",
+    "besmear": "embadurnar|inf", "interpose": "interponerse|inf",
+    "imagine": "imaginar|inf", "prolong": "prolongar|inf",
+    "overlook": "pasar por alto|inf", "meditate": "meditar|inf",
+    "conspire": "conspirar|inf", "propose": "proponer|inf",
+    "represent": "representar|inf", "invent": "inventar|inf",
+    "sift": "cribar|inf", "sprinkle": "rociar|inf",
+    "besprinkle": "asperjar|inf",
+
+    # --- adverbios ------------------------------------------------------------
+    "thereof": "de ello", "favourably": "favorablemente",
+    "bitterly": "amargamente", "prudently": "prudentemente",
+})
+
+FRASES.update({
+    # El cuarto sentido de «waiting», y los dos que piden complemento.
+    "waiting at table": "servicio de mesa|sus",
+    "for confining the feet": "para sujetar los pies",
+    "closing the eyes": "que cierra los ojos",
+})
+
+
+# Séptima tanda de octubre. Aquí ya se entra de lleno en Brown-Driver-Briggs,
+# que es el que más artículos tiene pendientes, y el vocabulario cambia: menos
+# gramática griega y más cosas del campo, del taller y del templo.
+
+PALABRAS.update({
+    # --- animales -------------------------------------------------------------
+    "dogs": "perros|sus", "swine": "cerdo|sus", "lions": "leones|sus",
+    "hawk": "gavilán|sus", "falcon": "halcón|sus", "kite": "milano|sus",
+    "partridge": "perdiz|sus", "dromedary": "dromedario|sus",
+
+    # --- el campo -------------------------------------------------------------
+    "brushwood": "maleza|sus", "bramble": "zarza|sus", "briers": "zarzas|sus",
+    "thistles": "cardos|sus", "myrtle": "mirto|sus", "bud": "brote|sus",
+    "furrow": "surco|sus", "ploughshare": "reja de arado|sus",
+    "frontier": "frontera|sus", "mts": "montes|sus",
+
+    # --- el taller y la casa --------------------------------------------------
+    "smith": "herrero|sus", "hearth": "hogar|sus",
+    "altar-hearth": "hogar del altar|sus", "fire-pot": "brasero|sus",
+    "skin-bottle": "odre|sus", "manger": "pesebre|sus",
+    "footstool": "escabel|sus", "rafter": "viga|sus", "bases": "basas|sus",
+    "glass": "vidrio|sus", "alkali": "álcali|sus", "dross": "escoria|sus",
+    "spark": "chispa|sus", "ball": "bola|sus", "stump": "muñón|sus",
+    "roof-chamber": "aposento alto|sus", "sheathing": "revestimiento|sus",
+    "condiment": "condimento|sus", "delicacy": "manjar|sus",
+    "morsel": "bocado|sus", "gall": "hiel|sus", "hyssop": "hisopo|sus",
+    "stench": "hedor|sus", "toll": "peaje|sus", "fillet": "cinta|sus",
+
+    # --- personas -------------------------------------------------------------
+    "liar": "mentiroso|sus", "tetrarch": "tetrarca|sus",
+    "conqueror": "vencedor|sus", "handmaid": "sierva|sus",
+    "mourner": "doliente|sus", "gatherer": "recolector|sus",
+    "necromancer": "nigromante|sus", "binder": "atador|sus",
+    "scribes": "escribas|sus", "doorkeepers": "porteros|sus",
+    "musicians": "músicos|sus", "moderns": "modernos|sus",
+    "wayfarer": "caminante|sus", "riders": "jinetes|sus",
+    "runners": "corredores|sus", "substitute": "sustituto|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "whispering": "susurro|sus", "sorcery": "hechicería|sus",
+    "development": "desarrollo|sus", "worthlessness": "nulidad|sus",
+    "widowhood": "viudez|sus", "lying-in-wait": "acecho|sus",
+    "settlements": "asentamientos|sus", "trampling": "pisoteo|sus",
+    "loftiness": "altivez|sus", "faintness": "desfallecimiento|sus",
+    "contrariness": "contrariedad|sus", "innocence": "inocencia|sus",
+    "melody": "melodía|sus", "purifying": "purificación|sus",
+    "psalms": "salmos|sus", "months": "meses|sus", "marks": "marcas|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "healthy": "sano|adj", "extraordinary": "extraordinario|adj",
+    "speedy": "presto|adj", "lame": "cojo|adj", "brazen": "de bronce|adj",
+    "disquieting": "inquietante|adj", "stringed": "de cuerda|adj",
+    "steady": "constante|adj", "indeterminate": "indeterminado|adj",
+    "stinking": "hediondo|adj", "despicable": "despreciable|adj",
+    "luxuriant": "exuberante|adj", "contrite": "contrito|adj",
+    "cleaving": "adherido|adj",
+
+    # --- participios ----------------------------------------------------------
+    "grieved": "afligido", "overlaid": "recubierto", "silenced": "silenciado",
+    "arranged": "dispuesto", "laden": "cargado", "constructed": "construido",
+    "isolated": "aislado", "dismayed": "consternado", "gained": "ganado",
+    "disturbed": "perturbado", "pulverized": "pulverizado",
+    "extinguished": "extinguido", "justified": "justificado",
+    "burnt": "quemado", "murmured": "murmurado", "tarried": "permaneció",
+    "trusting": "que confía", "inhabiting": "que habita", "fills": "llena",
+
+    # --- verbos ---------------------------------------------------------------
+    "beguile": "engatusar|inf", "overreach": "defraudar|inf",
+    "grope": "palpar|inf", "bristle": "erizarse|inf",
+    "conjecture": "conjeturar|inf", "linger": "demorarse|inf",
+    "diminish": "disminuir|inf",
+
+    # --- adverbios ------------------------------------------------------------
+    "northward": "hacia el norte", "tightly": "fuertemente",
+    "stealthily": "furtivamente", "hotly": "ardientemente",
+    "rebelliously": "rebeldemente",
+})
+
+
+# Octava tanda de octubre. 150 palabras.
+#
+# Entran las formas verbales arcaicas de las glosas de nombres propios de
+# Brown-Driver-Briggs: «(י׳ knoweth)», «(Ēl sees)», «(י׳ raiseth up)». Son
+# tercera persona del singular del inglés del XIX y pasan al español sin más.
+#
+# «doth» sigue fuera, y ahora con la prueba hecha: es un auxiliar, y el
+# traductor no conjuga, así que «(God doth ascend?)» sale «(Dios subir?)». Por
+# cuatro artículos no vale la pena publicar eso.
+
+PALABRAS.update({
+    # --- formas arcaicas de tercera persona -----------------------------------
+    "sees": "ve", "knoweth": "conoce", "strengtheneth": "fortalece",
+    "appointeth": "designa", "raiseth": "levanta", "contendeth": "contiende",
+    "maketh": "hace", "canst": "puedes",
+
+    # --- cosas ----------------------------------------------------------------
+    "clarion": "clarín|sus", "stylus": "punzón|sus", "razor": "navaja|sus",
+    "rattle": "sonaja|sus", "pegs": "clavijas|sus", "rug": "alfombra|sus",
+    "coverlet": "colcha|sus", "lattice-work": "celosía|sus",
+    "curtains": "cortinas|sus", "brick": "ladrillo|sus",
+    "conduit": "acueducto|sus", "plantation": "plantación|sus",
+    "cassia": "casia|sus", "barb": "púa|sus", "lure": "señuelo|sus",
+    "eggs": "huevos|sus", "blossoms": "flores|sus", "hoofs": "pezuñas|sus",
+    "locks": "guedejas|sus", "beams": "rayos|sus", "cubits": "codos|sus",
+    "courtyard": "patio|sus", "first-fruits": "primicias|sus",
+    "shewbread": "pan de la proposición|sus", "envelope": "funda|sus",
+    "hiding": "escondite|sus",
+
+    # --- personas -------------------------------------------------------------
+    "trader": "comerciante|sus", "creditor": "acreedor|sus",
+    "deputy": "delegado|sus", "adjutant": "ayudante|sus",
+    "soothsayer": "agorero|sus", "perfumer": "perfumista|sus",
+    "porters": "porteros|sus", "contemporaries": "contemporáneos|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "profaneness": "profanidad|sus", "straightness": "rectitud|sus",
+    "heaviness": "pesadez|sus", "ignominy": "ignominia|sus",
+    "crookedness": "torcedura|sus", "barrenness": "esterilidad|sus",
+    "shattering": "quebrantamiento|sus", "shuddering": "estremecimiento|sus",
+    "bereavement": "duelo|sus", "wasting": "consunción|sus",
+    "hissing": "siseo|sus", "howling": "aullido|sus",
+    "reeling": "tambaleo|sus", "whirling": "giro|sus",
+    "writhing": "retorcimiento|sus", "clasping": "entrelazado|sus",
+    "rubbing": "frotamiento|sus", "head-place": "cabecera|sus",
+    "offshoot": "vástago|sus", "ploughing": "arada|sus",
+    "immersion": "inmersión|sus", "stride": "zancada|sus",
+    "goodliness": "hermosura|sus", "loosing": "desatadura|sus",
+    "apostleship": "apostolado|sus", "impatience": "impaciencia|sus",
+    "immortality": "inmortalidad|sus", "antithesis": "antítesis|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "slimy": "viscoso|adj", "slippery": "resbaladizo|adj",
+    "desirable": "deseable|adj", "delightful": "deleitoso|adj",
+    "eastern": "oriental|adj", "helpless": "impotente|adj",
+    "awe-inspiring": "imponente|adj", "derisive": "burlón|adj",
+    "chequered": "cuadriculado|adj", "recreant": "desleal|adj",
+    "delicate": "delicado|adj", "exquisite": "exquisito|adj",
+    "venomous": "venenoso|adj", "thirsty": "sediento|adj",
+    "paschal": "pascual|adj", "literary": "literario|adj",
+    "avaricious": "avaro|adj", "invisible": "invisible|adj",
+    "unseasonable": "inoportuno|adj", "unpunished": "impune|adj",
+    "fatherless": "huérfano de padre|adj",
+
+    # --- participios ----------------------------------------------------------
+    "pitied": "compadecido", "hurled": "arrojado", "hurried": "apresurado",
+    "slaughtered": "degollado", "ploughed": "arado", "hid": "escondió",
+    "desolated": "desolado", "watered": "regado", "explained": "explicado",
+    "humiliated": "humillado", "humbled": "rebajado",
+    "engraved": "esculpido", "perverted": "pervertido",
+    "befouled": "ensuciado", "loosened": "soltado", "repulsed": "rechazado",
+    "advanced": "avanzado", "summoned": "convocado", "appalled": "espantado",
+    "mollified": "ablandado", "wronged": "agraviado", "parted": "separado",
+    "incited": "incitó", "felt": "palpó",
+    "fabricating": "que fabrica", "displacing": "que desplaza",
+
+    # --- verbos ---------------------------------------------------------------
+    "charm": "encantar|inf", "beautify": "embellecer|inf",
+    "whet": "afilar|inf", "slide": "resbalar|inf", "clap": "aplaudir|inf",
+    "trail": "arrastrar|inf", "backslide": "apostatar|inf",
+    "pant": "jadear|inf", "roast": "asar|inf", "swerve": "desviarse|inf",
+    "whitewash": "encalar|inf",
+
+    # --- adverbios ------------------------------------------------------------
+    "insultingly": "insultantemente",
+})
+
+FRASES.update({
+    "avoiding danger": "evitar el peligro",
+})
+
+
+# Novena tanda de octubre. 165 palabras. Ya se nota la cola: ninguna bloquea
+# más de cuatro artículos y la mayoría dos. Aquí lo que rinde no es acertar la
+# frecuente, es cubrir muchas.
+#
+# «wilt» se queda fuera por lo mismo que «doth»: «thou wilt dash in pieces» es
+# un auxiliar de futuro y el traductor no conjuga.
+
+PALABRAS.update({
+    # --- hablar: bien y mal ---------------------------------------------------
+    "blaspheme": "blasfemar|inf", "blasphemy": "blasfemia|sus",
+    "rail": "injuriar|inf", "evil-speaking": "maledicencia|sus",
+    "abusive": "injurioso|adj", "praises": "alabanzas|sus",
+    "signification": "significación|sus", "connotation": "connotación|sus",
+    "pleonasm": "pleonasmo|sus", "demonstration": "demostración|sus",
+    "profanely": "profanamente", "ironically": "irónicamente",
+    "harshly": "ásperamente", "inarticulately": "inarticuladamente",
+
+    # --- virtudes y vicios ----------------------------------------------------
+    "undefiled": "incontaminado|adj", "faultless": "irreprensible|adj",
+    "chaste": "casto|adj", "guiltless": "inocente|adj",
+    "thankless": "ingrato|adj", "faithless": "infiel|adj",
+    "unfaithful": "pérfido|adj", "godless": "impío|adj",
+    "blameworthy": "culpable|adj", "courteous": "cortés|adj",
+    "brotherly": "fraternal|adj", "profligacy": "libertinaje|sus",
+    "prodigality": "prodigalidad|sus", "extravagance": "despilfarro|sus",
+    "unseemliness": "indecencia|sus", "misdeed": "fechoría|sus",
+    "disgust": "asco|sus", "sanity": "cordura|sus",
+    "sanctification": "santificación|sus", "discipleship": "discipulado|sus",
+    "eagerness": "afán|sus", "vigilance": "vigilancia|sus",
+    "alertness": "vigilancia|sus", "sleeplessness": "insomnio|sus",
+
+    # --- cosas y oficios ------------------------------------------------------
+    "amanuensis": "amanuense|sus", "silversmith": "platero|sus",
+    "fish-hook": "anzuelo|sus", "coals": "brasas|sus", "aloe": "áloe|sus",
+    "amaranth": "amaranto|sus", "flies": "moscas|sus",
+    "beryl": "berilo|sus", "farthing": "cuadrante|sus",
+    "furlongs": "estadios|sus", "privy": "letrina|sus",
+    "market-place": "plaza|sus", "forum": "foro|sus",
+    "seaport": "puerto de mar|sus", "tables": "mesas|sus",
+    "couches": "divanes|sus", "churches": "iglesias|sus",
+    "documents": "documentos|sus", "festivals": "fiestas|sus",
+    "school": "escuela|sus", "opinions": "opiniones|sus",
+    "culture": "cultura|sus", "commerce": "comercio|sus",
+    "dragon-spring": "fuente del dragón|sus",
+    "partridge-spring": "fuente de la perdiz|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "feature": "rasgo|sus", "training": "formación|sus",
+    "drowning": "ahogamiento|sus", "relaxation": "relajación|sus",
+    "shedding": "derramamiento|sus", "deprivation": "privación|sus",
+    "faults": "faltas|sus", "encumbrance": "impedimento|sus",
+    "commission": "encargo|sus", "ministrations": "ministerios|sus",
+    "debility": "debilidad|sus", "radiance": "resplandor|sus",
+    "validity": "validez|sus", "wrestling": "lucha|sus",
+    "variance": "discordia|sus", "pregnancy": "embarazo|sus",
+    "helps": "ayudas|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "unlearned": "indocto|adj", "illiterate": "analfabeto|adj",
+    "lexical": "léxico|adj", "philosophical": "filosófico|adj",
+    "irrational": "irracional|adj", "incredible": "increíble|adj",
+    "unsearchable": "inescrutable|adj", "unfruitful": "infructuoso|adj",
+    "unfading": "inmarcesible|adj", "incessant": "incesante|adj",
+    "sickly": "enfermizo|adj", "impotent": "impotente|adj",
+    "powerless": "sin poder|adj", "homeless": "sin hogar|adj",
+    "vagabond": "vagabundo|adj", "unborn": "no nacido|adj",
+    "swarthy": "atezado|adj", "strained": "tenso|adj",
+    "perplexed": "perplejo|adj", "precise": "preciso|adj",
+    "obvious": "obvio|adj", "brutal": "brutal|adj",
+    "barbarian": "bárbaro|sus", "conformable": "conforme|adj",
+    "high-priestly": "del sumo sacerdote|adj",
+
+    # --- participios ----------------------------------------------------------
+    "sustained": "sostenido", "accepted": "aceptado", "bereft": "privado",
+    "disheartened": "desalentado", "suggested": "sugerido",
+    "influenced": "influido", "abandoned": "abandonado",
+    "professing": "que profesa", "helping": "que ayuda",
+    "slighting": "que desprecia",
+
+    # --- verbos ---------------------------------------------------------------
+    "adopt": "adoptar|inf", "employ": "emplear|inf", "quit": "abandonar|inf",
+    "disfigure": "desfigurar|inf", "wrestle": "luchar|inf",
+    "suffice": "bastar|inf", "dine": "cenar|inf",
+    "breakfast": "desayunar|inf", "behead": "decapitar|inf",
+    "rejects": "rechaza", "chooses": "elige", "agrees": "concuerda",
+    "reads": "lee", "renders": "rinde",
+
+    # --- adverbios y números --------------------------------------------------
+    "sincerely": "sinceramente", "purely": "puramente",
+    "undeservedly": "inmerecidamente", "disorderly": "desordenadamente",
+    "perfectly": "perfectamente", "internally": "internamente",
+    "overboard": "por la borda", "apiece": "cada uno",
+    "to-morrow": "mañana", "fifteen": "quince",
+
+    # --- latín de las notas ---------------------------------------------------
+    # «vita quâ vivimus», «si ita res se habet», «Plut., de Puer. Educ.»
+    "res": "res", "vita": "vita", "quam": "quam", "vivimus": "vivimus",
+    "de": "de",
+})
+
+FRASES.update({
+    "raising the dead": "resucitar a los muertos",
+    # ἐγώ εἰμι. «I» suelta no estaba en la tabla y salía sin traducir: «I soy».
+    "I am": "yo soy",
+    "completing contracts": "cumplir contratos",
+})
