@@ -280,6 +280,48 @@ SIGLAS.update({
     "Fig.": "figuradamente",
     "Compar.": "comparativo",
     "compar.": "comparativo",
+
+    # Y las demás del mismo tipo, buscadas de una vez en lugar de ir
+    # tropezando con ellas: abreviaturas gramaticales que ya estaban en
+    # minúscula y que a principio de frase se quedaban en inglés.
+    "Act.": "en activa",      # «Act., to destroy utterly» — y además caía en
+                              # PALABRAS["act"] y salía «acto»
+    "Mid.": "en media",       # 84 veces, la voz media
+    "Pt.": "participio",      # 63
+    "Cf.": "compárese",       # 25
+    "V.": "véase",            # 24
+    "Impf.": "imperfecto",    # 38
+    "Inf.": "infinitivo",     # 26
+    "Pf.": "perfecto",        # 23
+    "Imv.": "imperativo",     # 5
+    "Superl.": "superlativo", # 4
+    "Esp.": "sobre todo",     # 9
+    "C.": "con",              # «C. acc. rei», «C. dat. pers.»: 75 de las 76
+                              # llevan detrás un caso o un modo
+
+    # Y aquí, al comprobar la lista anterior, salió otra cosa: _sigla tiene una
+    # tercera regla —si la pieza lleva mayúscula y punto, se reintenta en
+    # minúscula, para que «Interrog.» valga lo mismo que «interrog.»— y esa
+    # regla se come también las que NO son abreviaturas gramaticales.
+    #
+    # Son nombres de obra, y en las dos obras no significan otra cosa:
+    #
+    #   «Pr.»  son las Prolegomena de Moulton: «M, Pr., 46».
+    #   «Tr.»  es el Synonyms of the NT de Trench: «Tr., Syn., §xxv».
+    #   «Syn.» es esa misma obra: «Tr., Syn.».
+    #   «App.» es el apéndice de Westcott-Hort: «WH, App., 145».
+    #   «Al.»  es Áquila, la versión griega: «[in Al.: Ps 48 (49):9]».
+    #   «Cl.»  es la Classical Review: «v. Cl. Rev., i, 7».
+    #   «Ap.»  es el comentario de Swete al Apocalipsis: «Swete, Ap., 5».
+    #   «Fr.»  es una inicial, no la preposición.
+    #
+    # Casi siempre se salvaban por la coma que llevan detrás —«Pr.,» no es
+    # «Pr.»— y por eso sólo había nueve artículos mal; pero salvarse por la
+    # puntuación no es salvarse. Van en _NUNCA_EN_MINUSCULA, más abajo.
+    #
+    # «Mt.», «Intr.», «Pl.» y «Eccl.» se quedan como están: salen en los dos
+    # sentidos, mitad y mitad, y protegerlas dejaría en inglés tantas como
+    # arregla.
     # «St. Paul» se leía como el sufijo ordinal inglés de «1st» y salía
     # «º Pablo». Como sigla se reconoce antes de llegar a esa regla.
     "St.": "S.",
@@ -384,7 +426,14 @@ def _desnudar(pieza: str) -> tuple[str, str, str]:
 # Las otras quince siglas que chocan («adj», «pron», «gen», «part»…) se quedan
 # como están: en un artículo de léxico esas formas son abreviaturas, no
 # sustantivos, y la lectura de sigla es la correcta.
-_NUNCA_SIN_PUNTO = {"As"}
+# Siglas que sólo valen con el punto puesto. «As» sin punto es la palabra
+# inglesa, no «asirio».
+#
+# «C» y «V» se añaden aquí porque al meter «C.» («C. acc. rei» = cum) y «V.»
+# («V. Milligan» = see) quedaron reconocidas también sin punto, y entonces
+# «B.C. 681-668» —que el trozador parte en «B», «.», «C», «.»— salía «B. con.
+# 681-668». La fecha de Esarhadón no lleva preposición.
+_NUNCA_SIN_PUNTO = {"As", "C", "V"}
 
 # Las mismas siglas sin el punto final: las dos obras lo ponen o no según les
 # viene («pl.» y «pl»). La búsqueda respeta las mayúsculas a propósito: sin eso,
@@ -443,9 +492,15 @@ def _desnudar(pieza: str) -> tuple[str, str, str]:
     return abre, pieza, cierra
 
 
+# Siglas con mayúscula que NO valen lo mismo que su forma en minúscula, porque
+# con mayúscula son el nombre de una obra. Ver la explicación larga arriba.
+_NUNCA_EN_MINUSCULA = {"Pr.", "Tr.", "Syn.", "App.", "Al.", "Cl.", "Ap.", "Fr."}
+
+
 def _sigla(pieza: str) -> str | None:
     hallada = SIGLAS.get(pieza) or _SIN_PUNTO.get(pieza.rstrip("."))
-    if hallada is None and pieza.endswith(".") and pieza[:1].isupper():
+    if (hallada is None and pieza.endswith(".") and pieza[:1].isupper()
+            and pieza not in _NUNCA_EN_MINUSCULA):
         # «Interrog.» al principio de una acepción es la misma sigla que
         # «interrog.»; sólo vale si lleva punto, para no confundir «Mt» con «MT».
         hallada = _SIN_PUNTO.get(pieza[:1].lower() + pieza[1:].rstrip("."))
