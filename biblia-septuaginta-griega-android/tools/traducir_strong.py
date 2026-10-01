@@ -3921,3 +3921,82 @@ FRASES.update({
     "for confining the feet": "para sujetar los pies",
     "closing the eyes": "que cierra los ojos",
 })
+
+
+# Séptima tanda de octubre. Aquí ya se entra de lleno en Brown-Driver-Briggs,
+# que es el que más artículos tiene pendientes, y el vocabulario cambia: menos
+# gramática griega y más cosas del campo, del taller y del templo.
+
+PALABRAS.update({
+    # --- animales -------------------------------------------------------------
+    "dogs": "perros|sus", "swine": "cerdo|sus", "lions": "leones|sus",
+    "hawk": "gavilán|sus", "falcon": "halcón|sus", "kite": "milano|sus",
+    "partridge": "perdiz|sus", "dromedary": "dromedario|sus",
+
+    # --- el campo -------------------------------------------------------------
+    "brushwood": "maleza|sus", "bramble": "zarza|sus", "briers": "zarzas|sus",
+    "thistles": "cardos|sus", "myrtle": "mirto|sus", "bud": "brote|sus",
+    "furrow": "surco|sus", "ploughshare": "reja de arado|sus",
+    "frontier": "frontera|sus", "mts": "montes|sus",
+
+    # --- el taller y la casa --------------------------------------------------
+    "smith": "herrero|sus", "hearth": "hogar|sus",
+    "altar-hearth": "hogar del altar|sus", "fire-pot": "brasero|sus",
+    "skin-bottle": "odre|sus", "manger": "pesebre|sus",
+    "footstool": "escabel|sus", "rafter": "viga|sus", "bases": "basas|sus",
+    "glass": "vidrio|sus", "alkali": "álcali|sus", "dross": "escoria|sus",
+    "spark": "chispa|sus", "ball": "bola|sus", "stump": "muñón|sus",
+    "roof-chamber": "aposento alto|sus", "sheathing": "revestimiento|sus",
+    "condiment": "condimento|sus", "delicacy": "manjar|sus",
+    "morsel": "bocado|sus", "gall": "hiel|sus", "hyssop": "hisopo|sus",
+    "stench": "hedor|sus", "toll": "peaje|sus", "fillet": "cinta|sus",
+
+    # --- personas -------------------------------------------------------------
+    "liar": "mentiroso|sus", "tetrarch": "tetrarca|sus",
+    "conqueror": "vencedor|sus", "handmaid": "sierva|sus",
+    "mourner": "doliente|sus", "gatherer": "recolector|sus",
+    "necromancer": "nigromante|sus", "binder": "atador|sus",
+    "scribes": "escribas|sus", "doorkeepers": "porteros|sus",
+    "musicians": "músicos|sus", "moderns": "modernos|sus",
+    "wayfarer": "caminante|sus", "riders": "jinetes|sus",
+    "runners": "corredores|sus", "substitute": "sustituto|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "whispering": "susurro|sus", "sorcery": "hechicería|sus",
+    "development": "desarrollo|sus", "worthlessness": "nulidad|sus",
+    "widowhood": "viudez|sus", "lying-in-wait": "acecho|sus",
+    "settlements": "asentamientos|sus", "trampling": "pisoteo|sus",
+    "loftiness": "altivez|sus", "faintness": "desfallecimiento|sus",
+    "contrariness": "contrariedad|sus", "innocence": "inocencia|sus",
+    "melody": "melodía|sus", "purifying": "purificación|sus",
+    "psalms": "salmos|sus", "months": "meses|sus", "marks": "marcas|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "healthy": "sano|adj", "extraordinary": "extraordinario|adj",
+    "speedy": "presto|adj", "lame": "cojo|adj", "brazen": "de bronce|adj",
+    "disquieting": "inquietante|adj", "stringed": "de cuerda|adj",
+    "steady": "constante|adj", "indeterminate": "indeterminado|adj",
+    "stinking": "hediondo|adj", "despicable": "despreciable|adj",
+    "luxuriant": "exuberante|adj", "contrite": "contrito|adj",
+    "cleaving": "adherido|adj",
+
+    # --- participios ----------------------------------------------------------
+    "grieved": "afligido", "overlaid": "recubierto", "silenced": "silenciado",
+    "arranged": "dispuesto", "laden": "cargado", "constructed": "construido",
+    "isolated": "aislado", "dismayed": "consternado", "gained": "ganado",
+    "disturbed": "perturbado", "pulverized": "pulverizado",
+    "extinguished": "extinguido", "justified": "justificado",
+    "burnt": "quemado", "murmured": "murmurado", "tarried": "permaneció",
+    "trusting": "que confía", "inhabiting": "que habita", "fills": "llena",
+
+    # --- verbos ---------------------------------------------------------------
+    "beguile": "engatusar|inf", "overreach": "defraudar|inf",
+    "grope": "palpar|inf", "bristle": "erizarse|inf",
+    "conjecture": "conjeturar|inf", "linger": "demorarse|inf",
+    "diminish": "disminuir|inf",
+
+    # --- adverbios ------------------------------------------------------------
+    "northward": "hacia el norte", "tightly": "fuertemente",
+    "stealthily": "furtivamente", "hotly": "ardientemente",
+    "rebelliously": "rebeldemente",
+})

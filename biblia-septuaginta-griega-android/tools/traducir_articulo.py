@@ -80,6 +80,13 @@ SIGLAS: dict[str, str] = {
     "appell.": "apelativo", "orthogr.": "ortografía",
     # «by metapl. for τὰ ὁρκωμόσια»: metaplasmo, el cambio de declinación.
     "metapl.": "metaplasmo",
+    # Más abreviaturas de Brown-Driver-Briggs.
+    "app.": "aparentemente",      # «app. a descendant of Judah»
+    "del.": "suprímase",          # «but del. 𝔊 Co»: bórrese, según esos testigos
+    "theoph.": "teofanía",        # «quake of earth at theoph.»
+    "kg.": "rey",                 # «honour, majesty, of kg.»
+    "odorif.": "odorífero",       # «odorif. tree, aloe»
+    "tr.": "traducido",           # «AV, tr. as = ῥυπάω»
     "Trans.": "transitivo", "Intrans.": "intransitivo", "Neut.": "neutro",
     # «n.pr.flum.» es flumen, el río: la misma sigla que n.pr.fl. pero entera.
     "n.pr.flum.": "nombre propio de río",
