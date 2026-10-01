@@ -88,6 +88,9 @@ SIGLAS: dict[str, str] = {
     "odorif.": "odorífero",       # «odorif. tree, aloe»
     "tr.": "traducido",           # «AV, tr. as = ῥυπάω»
     "improb.": "improbable", "sacrif.": "sacrificó",
+    "cop.": "copulativo", "subjunc.": "subjuntivo",
+    "elsew.": "en otros lugares", "ap.": "apud",
+    "dei": "de dios",            # «as design. dei»: designación de la deidad
     "Trans.": "transitivo", "Intrans.": "intransitivo", "Neut.": "neutro",
     # «n.pr.flum.» es flumen, el río: la misma sigla que n.pr.fl. pero entera.
     "n.pr.flum.": "nombre propio de río",
@@ -239,6 +242,44 @@ SIGLAS.update({
 SIGLAS.update({
     "He": "He",
     "Is": "Is",
+    # Dos más del mismo tipo, y las dos las rompí yo en este mismo trabajo al
+    # meter «am» («I am», traduciendo ἐγώ εἰμι) y «de» (el latín de «Plut., de
+    # Puer. Educ.») en la tabla de palabras, que no distingue mayúsculas.
+    #
+    # «Am 5:2», Amós, salía «soy 5:2». «De 25:4», Deuteronomio, salía «de
+    # 25:4». Comprobadas igual que «He» e «Is» antes de ponerlas aquí: de las
+    # 70 apariciones de «Am» y las 188 de «De» en los dos léxicos, ninguna es
+    # la palabra inglesa ni la preposición latina. Son Amós y Deuteronomio en
+    # las citas, y Delitzsch y Driver en las referencias de Brown-Driver-Briggs
+    # —«Driver, De., 98 f.», «Thes MV De»—.
+    #
+    # En minúscula siguen traduciéndose, que para eso esta tabla distingue
+    # mayúsculas: «I am» es «soy» y «de Puer. Educ.» se queda en latín.
+    "Am": "Am",
+    "De": "De",
+
+    # Nombres de autor y de obra que son además palabras inglesas corrientes,
+    # y que por eso se estaban traduciendo. Comprobadas todas sus apariciones:
+    #
+    #   «Field, Notes, 134» es F. Field y sus «Notes on the Translation of the
+    #   New Testament». 186 veces «Field», que salía «campo», y 284 «Notes»,
+    #   que salía «notas». Las 284 son el título de esa obra.
+    #
+    #   «Dalman, Words, 21» es «The Words of Jesus», de Gustaf Dalman. 83
+    #   veces, todas el título.
+    "Field": "Field",
+    "Notes": "Notes",
+    "Words": "Words",
+
+    # Las mismas abreviaturas gramaticales que ya están en minúscula, pero a
+    # principio de frase. «Pass. struck back» salía «pasar struck back» —el
+    # verbo inglés— en vez de «en pasiva», 88 veces; «Fig., of Christians»
+    # salía «higo, de cristianos», 15 veces. Y «Compar., ἀκριβέστερον» es el
+    # comparativo, no «compárese».
+    "Pass.": "en pasiva",
+    "Fig.": "figuradamente",
+    "Compar.": "comparativo",
+    "compar.": "comparativo",
     # «St. Paul» se leía como el sufijo ordinal inglés de «1st» y salía
     # «º Pablo». Como sigla se reconoce antes de llegar a esa regla.
     "St.": "S.",
@@ -468,6 +509,23 @@ def _piezas(linea: str) -> list[tuple[str, str]]:
                 and n + 1 < len(trozos_linea)
                 and _CITA.match(trozos_linea[n + 1].lstrip("([{«"))):
             salida.append(("protegido", pieza))
+            continue
+        # «f.» detrás de un número es «y siguiente», no «femenino».
+        #
+        # «Cremer, 611 f.» quiere decir la página 611 y la que sigue, igual que
+        # «ff.» quiere decir «y siguientes». Pero «f.» también es la
+        # abreviatura de femenino —«n.pr.m. & f.»—, y la tabla de siglas, que
+        # no mira el contexto, las daba todas por femenino: 650 apariciones, de
+        # las cuales 442 van justo detrás de un número.
+        #
+        # Se mira lo que viene delante, que es lo único que las separa. Quedan
+        # mal las dos o tres de las enumeraciones tipo «I, 2, f., g.», donde
+        # delante hay un número pero «f.» es una letra de orden; a cambio se
+        # arreglan más de cuatrocientas.
+        if (pieza.rstrip(")]},;:") == "f." and n
+                and trozos_linea[n - 1].rstrip(")]},;:").rstrip(",")[-1:].isdigit()):
+            cola = pieza[len("f."):]
+            salida.append(("sigla", "y siguiente" + cola))
             continue
         # Identificador interno de la digitalización de BDB: «[a.di.ab]». No es
         # prosa del léxico ni significa nada para quien lee, pero al partirse en

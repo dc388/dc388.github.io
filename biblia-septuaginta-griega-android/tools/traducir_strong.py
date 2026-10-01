@@ -4092,3 +4092,111 @@ PALABRAS.update({
 FRASES.update({
     "avoiding danger": "evitar el peligro",
 })
+
+
+# Novena tanda de octubre. 165 palabras. Ya se nota la cola: ninguna bloquea
+# más de cuatro artículos y la mayoría dos. Aquí lo que rinde no es acertar la
+# frecuente, es cubrir muchas.
+#
+# «wilt» se queda fuera por lo mismo que «doth»: «thou wilt dash in pieces» es
+# un auxiliar de futuro y el traductor no conjuga.
+
+PALABRAS.update({
+    # --- hablar: bien y mal ---------------------------------------------------
+    "blaspheme": "blasfemar|inf", "blasphemy": "blasfemia|sus",
+    "rail": "injuriar|inf", "evil-speaking": "maledicencia|sus",
+    "abusive": "injurioso|adj", "praises": "alabanzas|sus",
+    "signification": "significación|sus", "connotation": "connotación|sus",
+    "pleonasm": "pleonasmo|sus", "demonstration": "demostración|sus",
+    "profanely": "profanamente", "ironically": "irónicamente",
+    "harshly": "ásperamente", "inarticulately": "inarticuladamente",
+
+    # --- virtudes y vicios ----------------------------------------------------
+    "undefiled": "incontaminado|adj", "faultless": "irreprensible|adj",
+    "chaste": "casto|adj", "guiltless": "inocente|adj",
+    "thankless": "ingrato|adj", "faithless": "infiel|adj",
+    "unfaithful": "pérfido|adj", "godless": "impío|adj",
+    "blameworthy": "culpable|adj", "courteous": "cortés|adj",
+    "brotherly": "fraternal|adj", "profligacy": "libertinaje|sus",
+    "prodigality": "prodigalidad|sus", "extravagance": "despilfarro|sus",
+    "unseemliness": "indecencia|sus", "misdeed": "fechoría|sus",
+    "disgust": "asco|sus", "sanity": "cordura|sus",
+    "sanctification": "santificación|sus", "discipleship": "discipulado|sus",
+    "eagerness": "afán|sus", "vigilance": "vigilancia|sus",
+    "alertness": "vigilancia|sus", "sleeplessness": "insomnio|sus",
+
+    # --- cosas y oficios ------------------------------------------------------
+    "amanuensis": "amanuense|sus", "silversmith": "platero|sus",
+    "fish-hook": "anzuelo|sus", "coals": "brasas|sus", "aloe": "áloe|sus",
+    "amaranth": "amaranto|sus", "flies": "moscas|sus",
+    "beryl": "berilo|sus", "farthing": "cuadrante|sus",
+    "furlongs": "estadios|sus", "privy": "letrina|sus",
+    "market-place": "plaza|sus", "forum": "foro|sus",
+    "seaport": "puerto de mar|sus", "tables": "mesas|sus",
+    "couches": "divanes|sus", "churches": "iglesias|sus",
+    "documents": "documentos|sus", "festivals": "fiestas|sus",
+    "school": "escuela|sus", "opinions": "opiniones|sus",
+    "culture": "cultura|sus", "commerce": "comercio|sus",
+    "dragon-spring": "fuente del dragón|sus",
+    "partridge-spring": "fuente de la perdiz|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "feature": "rasgo|sus", "training": "formación|sus",
+    "drowning": "ahogamiento|sus", "relaxation": "relajación|sus",
+    "shedding": "derramamiento|sus", "deprivation": "privación|sus",
+    "faults": "faltas|sus", "encumbrance": "impedimento|sus",
+    "commission": "encargo|sus", "ministrations": "ministerios|sus",
+    "debility": "debilidad|sus", "radiance": "resplandor|sus",
+    "validity": "validez|sus", "wrestling": "lucha|sus",
+    "variance": "discordia|sus", "pregnancy": "embarazo|sus",
+    "helps": "ayudas|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "unlearned": "indocto|adj", "illiterate": "analfabeto|adj",
+    "lexical": "léxico|adj", "philosophical": "filosófico|adj",
+    "irrational": "irracional|adj", "incredible": "increíble|adj",
+    "unsearchable": "inescrutable|adj", "unfruitful": "infructuoso|adj",
+    "unfading": "inmarcesible|adj", "incessant": "incesante|adj",
+    "sickly": "enfermizo|adj", "impotent": "impotente|adj",
+    "powerless": "sin poder|adj", "homeless": "sin hogar|adj",
+    "vagabond": "vagabundo|adj", "unborn": "no nacido|adj",
+    "swarthy": "atezado|adj", "strained": "tenso|adj",
+    "perplexed": "perplejo|adj", "precise": "preciso|adj",
+    "obvious": "obvio|adj", "brutal": "brutal|adj",
+    "barbarian": "bárbaro|sus", "conformable": "conforme|adj",
+    "high-priestly": "del sumo sacerdote|adj",
+
+    # --- participios ----------------------------------------------------------
+    "sustained": "sostenido", "accepted": "aceptado", "bereft": "privado",
+    "disheartened": "desalentado", "suggested": "sugerido",
+    "influenced": "influido", "abandoned": "abandonado",
+    "professing": "que profesa", "helping": "que ayuda",
+    "slighting": "que desprecia",
+
+    # --- verbos ---------------------------------------------------------------
+    "adopt": "adoptar|inf", "employ": "emplear|inf", "quit": "abandonar|inf",
+    "disfigure": "desfigurar|inf", "wrestle": "luchar|inf",
+    "suffice": "bastar|inf", "dine": "cenar|inf",
+    "breakfast": "desayunar|inf", "behead": "decapitar|inf",
+    "rejects": "rechaza", "chooses": "elige", "agrees": "concuerda",
+    "reads": "lee", "renders": "rinde",
+
+    # --- adverbios y números --------------------------------------------------
+    "sincerely": "sinceramente", "purely": "puramente",
+    "undeservedly": "inmerecidamente", "disorderly": "desordenadamente",
+    "perfectly": "perfectamente", "internally": "internamente",
+    "overboard": "por la borda", "apiece": "cada uno",
+    "to-morrow": "mañana", "fifteen": "quince",
+
+    # --- latín de las notas ---------------------------------------------------
+    # «vita quâ vivimus», «si ita res se habet», «Plut., de Puer. Educ.»
+    "res": "res", "vita": "vita", "quam": "quam", "vivimus": "vivimus",
+    "de": "de",
+})
+
+FRASES.update({
+    "raising the dead": "resucitar a los muertos",
+    # ἐγώ εἰμι. «I» suelta no estaba en la tabla y salía sin traducir: «I soy».
+    "I am": "yo soy",
+    "completing contracts": "cumplir contratos",
+})
