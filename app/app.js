@@ -27,7 +27,7 @@ const APP_VERSION = 'pwa-0.1.0';
 // ?b=22 hasta ?b=34. Asi no habia forma de saber que build traia cada telefono
 // —justo lo que hacia falta para saber quien ya tenia un arreglo y quien no—.
 // Debe subirse JUNTO con el ?b= de index.html y la version de CACHE en sw.js.
-const BUILD = 'pwa-b35';
+const BUILD = 'pwa-b36';
 
 // ---------- utilidades ----------
 const $ = (id) => document.getElementById(id);
@@ -75,6 +75,21 @@ addEventListener('unhandledrejection', (ev) => fallaInesperada(ev.reason));
 // Solo errores de JavaScript: `error` tambien se dispara cuando no carga una
 // imagen, y eso NO debe sacar al trabajador de su pantalla.
 addEventListener('error', (ev) => { if (ev.error) fallaInesperada(ev.error); });
+
+/**
+ * Candado contra el doble toque.
+ *
+ * El 21 de septiembre a las 07:52 entraron DIECISEIS checadas de la misma
+ * persona, del mismo tipo, en el mismo minuto, con la ubicacion moviendose
+ * treinta metros entre una y otra. No fueron dieciseis intentos: fue una
+ * persona picando el boton porque la pantalla no respondia.
+ *
+ * El client_operation_id no frena esto: cada toque genera uno nuevo, asi que
+ * para el servidor son checadas distintas y las guarda todas. El resultado es
+ * un expediente con dieciseis rechazos donde hubo un solo intento, y eso se
+ * lee como si alguien estuviera insistiendo en checar fuera de la obra.
+ */
+let CHECANDO = false;
 
 // ---------- almacenamiento ----------
 const store = {
@@ -1615,7 +1630,13 @@ function bindUI() {
   $('bio-btn').addEventListener('click', () => decideBiometric('granted'));
   $('bio-alt').addEventListener('click', () => decideBiometric('declined'));
   document.querySelectorAll('[data-punch]').forEach((b) =>
-    b.addEventListener('click', () => { punch(b.dataset.punch).catch(fallaInesperada); }));
+    b.addEventListener('click', () => {
+      if (CHECANDO) return;
+      CHECANDO = true;
+      punch(b.dataset.punch)
+        .catch(fallaInesperada)
+        .finally(() => { CHECANDO = false; });
+    }));
   $('result-ok').addEventListener('click', renderHome);
   $('signout').addEventListener('click', () => {
     // Esto NO es "cerrar sesion": deja el telefono sin registro y obliga a pedir
