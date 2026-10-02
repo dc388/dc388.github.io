@@ -1,0 +1,36 @@
+:root{--f:#fff;--t:#17181a;--s:#5c6066;--b:#e3e5e8;--a:#0b5c9e;--o:#f4f6f8}
+@media(prefers-color-scheme:dark){:root{--f:#111315;--t:#e8eaed;--s:#9aa0a6;--b:#2a2d31;--a:#7fb4e6;--o:#1a1d20}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--f);color:var(--t);font:17px/1.65 Georgia,"Times New Roman",serif;
+ -webkit-text-size-adjust:100%}
+.w{max-width:44rem;margin:0 auto;padding:1.5rem 1rem 4rem}
+a{color:var(--a)}
+nav.m{font:14px/1.5 system-ui,sans-serif;color:var(--s);margin-bottom:1.5rem}
+nav.m a{text-decoration:none}nav.m a:hover{text-decoration:underline}
+h1{font-size:1.65rem;line-height:1.25;margin:.2rem 0 .35rem}
+h2{font-size:1.15rem;margin:2.2rem 0 .6rem}
+.sub{color:var(--s);font:14px/1.5 system-ui,sans-serif;margin:0 0 1.4rem}
+.o{display:block;margin:0 0 .2rem;font-size:1.06em}
+.e{display:block;margin:0}
+p.v{margin:0 0 1.15rem}
+p.v>b{color:var(--s);font:600 12px/1 system-ui,sans-serif;vertical-align:.35em;margin-inline-end:.35rem}
+.app{display:block;background:var(--o);border:1px solid var(--b);border-radius:.5rem;
+ padding:.8rem 1rem;margin:1.6rem 0;font:15px/1.5 system-ui,sans-serif;text-decoration:none}
+.pn{display:flex;justify-content:space-between;gap:1rem;margin:2.5rem 0 0;
+ border-top:1px solid var(--b);padding-top:1rem;font:15px/1.5 system-ui,sans-serif}
+ul.g{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.4rem}
+ul.g a{display:block;min-width:2.6rem;text-align:center;padding:.45rem .5rem;border:1px solid var(--b);
+ border-radius:.35rem;text-decoration:none;font:15px/1 system-ui,sans-serif}
+ul.l{list-style:none;padding:0;margin:0}
+ul.l li{padding:.45rem 0;border-bottom:1px solid var(--b);font:16px/1.4 system-ui,sans-serif}
+ul.l a{text-decoration:none}
+.n{color:var(--s);font:14px/1.6 system-ui,sans-serif}
+.par{border-inline-start:3px solid var(--b);padding:.15rem 0 .15rem .9rem;margin:1.6rem 0;
+ color:var(--s);font:15px/1.6 system-ui,sans-serif}
+.nt p{margin:0 0 1rem}
+.nt{font-size:.97em}
+ul.c{margin:0 0 1rem;padding-left:1.2rem}
+ul.c li{margin:0 0 .5rem}
+h3{font-size:1.05rem;margin:1.6rem 0 .2rem}
+footer{margin-top:3rem;border-top:1px solid var(--b);padding-top:1rem;
+ font:13px/1.6 system-ui,sans-serif;color:var(--s)}

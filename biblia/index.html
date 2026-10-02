@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biblia Griega y Hebrea: Septuaginta, Nuevo Testamento griego e interlineal en español</title>
+<meta name="description" content="Biblia griega y hebrea gratis en línea: Septuaginta (LXX), Nuevo Testamento griego, Antiguo Testamento hebreo, interlineal con números Strong, diccionario en español y Reina-Valera 1909. Con los apócrifos y los Padres Apostólicos traducidos al español.">
+<meta name="keywords" content="biblia griega, biblia hebrea, septuaginta, LXX, nuevo testamento griego, biblia interlineal, interlineal griego español, strong, reina valera 1909, apócrifos, padres apostólicos, libro de enoc">
+<link rel="canonical" href="https://dc388.github.io/biblia/">
+<meta name="robots" content="index, follow">
+<!-- Lo que enseñan WhatsApp, Facebook y compañía al compartir el enlace. -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_419">
+<meta property="og:site_name" content="Biblia Griega y Hebrea">
+<meta property="og:title" content="Biblia Griega y Hebrea: Septuaginta, Nuevo Testamento griego e interlineal">
+<meta property="og:description" content="La Biblia en sus lenguas originales, gratis: hebreo, Septuaginta y Nuevo Testamento griego, con interlineal, diccionario en español y Reina-Valera.">
+<meta property="og:url" content="https://dc388.github.io/biblia/">
+<meta property="og:image" content="https://dc388.github.io/biblia/icono.png">
+<meta name="twitter:card" content="summary">
+<!-- Para que el buscador sepa que es una aplicación web y de qué va. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Biblia Griega y Hebrea",
+  "url": "https://dc388.github.io/biblia/",
+  "inLanguage": "es",
+  "applicationCategory": "ReferenceApplication",
+  "operatingSystem": "Web, Android",
+  "isAccessibleForFree": true,
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": "Septuaginta, Nuevo Testamento griego y Antiguo Testamento hebreo en sus lenguas originales, con interlineal, números Strong, diccionario en español y la Reina-Valera 1909. Incluye los libros apócrifos y los Padres Apostólicos traducidos al español.",
+  "image": "https://dc388.github.io/biblia/icono.png"
+}
+</script>
+<meta name="theme-color" content="#f5efe2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121319" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600&family=Noto+Serif+Hebrew:wght@400;600&display=swap" rel="stylesheet">
+<!-- AdSense. El identificador de editor es el mismo que el de AdMob: las dos
+     cuentas comparten el «pub-», así que no hace falta abrir nada nuevo. Hasta
+     que Google apruebe el sitio esto no pinta nada; dejarlo puesto es lo que
+     permite verificar la propiedad cuando se dé de alta. -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9626426230545339" crossorigin="anonymous"></script>
+<style>
+:root{
+  --papel:#f5efe2; --papel-alto:#ede4d4; --tinta:#2b2620; --tinta-suave:#6b6255;
+  --borde:#ddd2bd; --realce:#7a5c2e; --sombra:0 1px 2px rgba(0,0,0,.06);
+  --cuerpo:1.125rem; --interlineado:1.75;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-tema="claro"]){
+    --papel:#121319; --papel-alto:#1d1e26; --tinta:#e8e3d8; --tinta-suave:#9a9488;
+    --borde:#2e2f38; --realce:#d8b26a; --sombra:none;
+  }
+}
+:root[data-tema="oscuro"]{
+  --papel:#121319; --papel-alto:#1d1e26; --tinta:#e8e3d8; --tinta-suave:#9a9488;
+  --borde:#2e2f38; --realce:#d8b26a; --sombra:none;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--papel); color:var(--tinta);
+  font-family:"Noto Serif",Georgia,"Times New Roman",serif;
+  line-height:1.5;
+}
+header{
+  position:sticky; top:0; z-index:5; background:var(--papel);
+  border-bottom:1px solid var(--borde);
+  padding:env(safe-area-inset-top) 16px 0;
+}
+.barra{display:flex; align-items:center; gap:12px; min-height:56px; max-width:44rem; margin:0 auto}
+.barra h1{font-size:1.0625rem; font-weight:600; margin:0; flex:1; letter-spacing:.01em}
+button{
+  font:inherit; color:inherit; background:none; border:1px solid var(--borde);
+  border-radius:999px; padding:6px 12px; cursor:pointer; box-shadow:var(--sombra);
+}
+button:hover{border-color:var(--realce)}
+button.plano{border:none; box-shadow:none; padding:6px 8px; line-height:0}
+main{max-width:44rem; margin:0 auto; padding:20px 16px 96px}
+h2{font-size:1rem; font-weight:600; color:var(--tinta-suave); text-transform:uppercase;
+   letter-spacing:.06em; margin:28px 0 10px}
+h2:first-child{margin-top:4px}
+/* Las pestañas de la biblioteca. En un teléfono tienen que caber tres y
+   poder tocarse sin apuntar: 44px de alto es el mínimo cómodo. */
+.pestanas{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 22px}
+.pestanas button{
+  font:inherit; font-size:.875rem; cursor:pointer; min-height:44px;
+  background:var(--papel-alto); color:var(--tinta-suave);
+  border:1px solid var(--borde); border-radius:999px; padding:8px 15px;
+}
+.pestanas button span{font-variant-numeric:tabular-nums; opacity:.65; margin-left:4px}
+.pestanas button:hover{border-color:var(--realce)}
+.pestanas button.activa{
+  color:var(--tinta); border-color:var(--realce); box-shadow:inset 0 0 0 1px var(--realce);
+}
+.rejilla a small{display:block; font-size:.75rem; color:var(--tinta-suave); margin-top:1px}
+.rejilla{display:flex; flex-wrap:wrap; gap:8px}
+.rejilla a{
+  display:block; text-decoration:none; color:inherit; background:var(--papel-alto);
+  border:1px solid var(--borde); border-radius:10px; padding:9px 13px; box-shadow:var(--sombra);
+}
+.rejilla a:hover{border-color:var(--realce)}
+.rejilla.capitulos a{min-width:3rem; text-align:center; font-variant-numeric:tabular-nums}
+.fuente{color:var(--tinta-suave); font-size:.8125rem; margin:6px 0 0; line-height:1.5}
+/* La portada: por dónde se empieza. */
+.ir{margin:2px 0 14px}
+.ir input{
+  width:100%; box-sizing:border-box; padding:13px 15px; font:inherit; font-size:1rem;
+  color:var(--tinta); background:var(--papel-alto); border:1px solid var(--borde);
+  border-radius:11px; -webkit-appearance:none}
+.ir input::placeholder{color:var(--tinta-suave); opacity:.85}
+.ir input:focus{outline:none; border-color:var(--realce)}
+.hallazgos{margin:-6px 0 16px; display:flex; flex-direction:column; gap:2px}
+.hallazgos a{
+  display:flex; justify-content:space-between; gap:12px; align-items:baseline;
+  padding:10px 14px; border:1px solid var(--borde); border-radius:9px;
+  background:var(--papel-alto); text-decoration:none; color:var(--tinta)}
+.hallazgos a:hover,.hallazgos a:focus{border-color:var(--realce); outline:none}
+.hallazgos small{color:var(--tinta-suave); font-size:.8125rem; text-align:right}
+.hallazgos .vacio{padding:10px 2px; color:var(--tinta-suave); font-size:.9rem}
+.seguir{
+  display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  padding:12px 15px; margin:0 0 16px; border:1px solid var(--realce); border-radius:11px;
+  text-decoration:none; color:var(--tinta); background:var(--papel-alto)}
+.seguir b{font-weight:600}
+.seguir small{color:var(--tinta-suave); font-size:.8125rem}
+.saludo{margin:0 0 14px; line-height:1.6; color:var(--tinta-suave); font-size:.9375rem}
+.saludo b{color:var(--tinta); font-weight:600}
+.propias{
+  display:block; padding:13px 15px; margin:0 0 20px; border:1px solid var(--borde);
+  border-radius:11px; background:var(--papel-alto); text-decoration:none; color:var(--tinta);
+  line-height:1.55; font-size:.9375rem}
+.propias:hover{border-color:var(--realce)}
+.propias b{display:block; font-weight:600; margin-bottom:2px}
+.propias small{color:var(--tinta-suave); font-size:.8125rem}
+.presentacion{line-height:1.6}
+.presentacion h2{font-size:1.25rem; margin:0 0 .6em}
+.presentacion li{margin:.3em 0}
+.nota{
+  background:var(--papel-alto); border:1px solid var(--borde); border-left:3px solid var(--realce);
+  border-radius:8px; padding:10px 13px; color:var(--tinta-suave); font-size:.875rem; margin:0 0 18px;
+}
+.detalle{margin:-8px 0 18px; font-size:.875rem; color:var(--tinta-suave); line-height:1.55}
+.detalle summary{cursor:pointer; color:var(--realce); font-weight:600; padding:4px 0}
+.detalle p{margin:.6em 0 0}
+.versiculo{margin:0 0 .9em; font-size:var(--cuerpo); line-height:var(--interlineado)}
+.versiculo .n{
+  color:var(--realce); font-size:.75em; font-weight:600; vertical-align:.35em;
+  margin-inline-end:.4em; font-variant-numeric:tabular-nums;
+}
+.versiculo .es{display:block; font-size:.8125em; color:var(--tinta-suave); margin-top:.25em; line-height:1.5}
+/* La Reina-Valera es española aunque el versículo de arriba sea hebreo: sin
+   esto hereda la dirección del capítulo y la puntuación salta al otro lado. */
+[dir="rtl"] .versiculo .es{direction:ltr; text-align:left}
+[dir="rtl"] .versiculo{font-family:"Noto Serif Hebrew","Noto Serif",serif}
+.corrido .versiculo{display:inline; margin:0}
+.corrido .versiculo .es{display:none}
+.pie{display:flex; gap:10px; justify-content:space-between; margin-top:32px}
+.anuncio{margin:28px auto 0; min-height:90px; text-align:center}
+.cargando{color:var(--tinta-suave); padding:24px 0}
+a.volver{text-decoration:none; color:var(--realce); font-size:.9375rem}
+.pal{
+  font:inherit; color:inherit; background:none; border:none; box-shadow:none;
+  padding:0 .05em; margin:0; cursor:pointer; border-radius:3px;
+  border-bottom:1px dotted var(--borde);
+}
+.pal:hover,.pal:focus{background:var(--papel-alto); border-bottom-color:var(--realce); outline:none}
+.hoja{
+  position:fixed; inset:auto 0 0 0; z-index:20; max-height:78vh; overflow:auto;
+  background:var(--papel-alto); border-top:1px solid var(--borde);
+  border-radius:16px 16px 0 0; box-shadow:0 -4px 24px rgba(0,0,0,.18);
+  padding:18px 16px calc(24px + env(safe-area-inset-bottom));
+}
+.hoja[hidden]{display:none}
+.hoja .cerrar{position:absolute; top:12px; inset-inline-end:12px}
+.hoja .cuerpo{max-width:44rem; margin:0 auto}
+.hoja h3{margin:0 0 2px; font-size:1.5rem; font-weight:600}
+.hoja .lema{color:var(--tinta-suave); margin:0 0 14px; font-size:.9375rem}
+.hoja dl{display:grid; grid-template-columns:auto 1fr; gap:6px 14px; margin:0 0 14px; font-size:.9375rem}
+.hoja dt{color:var(--tinta-suave)}
+.hoja dd{margin:0}
+.hoja .apartado{border-top:1px solid var(--borde); padding-top:12px; margin-top:12px}
+.hoja .apartado h4{margin:0 0 6px; font-size:.75rem; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--tinta-suave); font-weight:600}
+.hoja .apartado p{margin:0; font-size:.9375rem; line-height:1.6}
+/* El artículo del léxico viene con sus acepciones numeradas en líneas: se
+   respetan, que es la mitad de lo que hace legible una entrada de léxico. */
+.hoja .apartado > summary{margin:0 0 6px; font-size:.75rem; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--tinta-suave); font-weight:600; cursor:pointer;
+  list-style:none; display:flex; align-items:center; gap:6px}
+.hoja .apartado > summary::-webkit-details-marker{display:none}
+.hoja .apartado > summary::before{content:"\203A"; transition:transform .15s; font-size:1.3em}
+.hoja .apartado[open] > summary::before{transform:rotate(90deg)}
+.hoja p.articulo{white-space:pre-wrap}
+.hoja details.ingles summary{
+  cursor:pointer; color:var(--tinta-suave); font-size:.8125rem; list-style:none;
+  display:flex; align-items:center; gap:6px;
+}
+.hoja details.ingles summary::-webkit-details-marker{display:none}
+.hoja details.ingles summary::before{content:"›"; transition:transform .15s; font-size:1.1em}
+.hoja details.ingles[open] summary::before{transform:rotate(90deg)}
+.hoja details.ingles summary:hover{color:var(--realce)}
+.hoja details.ingles h4{margin-top:14px}
+.hoja .aviso{font-size:.8125rem; color:var(--tinta-suave); line-height:1.5}
+footer{
+  max-width:44rem; margin:0 auto; padding:24px 16px calc(32px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--borde); color:var(--tinta-suave); font-size:.8125rem; line-height:1.6;
+}
+footer p{margin:0 0 6px}
+footer a{color:var(--realce)}
+</style>
+</head>
+<body>
+<header>
+  <div class="barra">
+    <a class="volver" href="#/" id="atras" hidden>‹ Atrás</a>
+    <h1 id="titulo">Biblia Griega y Hebrea</h1>
+    <button class="plano" id="menos" title="Letra más pequeña" hidden>A−</button>
+    <button class="plano" id="mas" title="Letra más grande" hidden>A+</button>
+    <button class="plano" id="tema" title="Tema claro u oscuro" aria-label="Cambiar entre tema claro y oscuro"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2a8 8 0 010 16z" fill="currentColor"/></svg></button>
+  </div>
+</header>
+
+<!-- Lo de dentro de «vista» lo sustituye la biblioteca en cuanto carga. Está
+     para quien llega sin JavaScript y para los buscadores, que así ven de qué
+     va la página en vez de un «Cargando…». -->
+<main id="vista">
+  <section class="presentacion">
+    <h2>La Biblia en griego y en hebreo, gratis y en español</h2>
+    <p>Lee la <strong>Biblia griega</strong> y la <strong>Biblia hebrea</strong> en sus
+      lenguas originales, con la traducción al español debajo de cada versículo:</p>
+    <ul>
+      <li><strong>Septuaginta (LXX)</strong>, el Antiguo Testamento griego, en la edición de Swete.</li>
+      <li><strong>Nuevo Testamento griego</strong>, Texto Mayoritario de Robinson-Pierpont.</li>
+      <li><strong>Antiguo Testamento hebreo</strong>, Códice de Leningrado, con vocales y acentos.</li>
+      <li><strong>Interlineal griego-español y hebreo-español</strong>: cada palabra con su
+        transliteración, su análisis morfológico y su número Strong.</li>
+      <li><strong>Diccionario Strong en español</strong> y concordancia de cada palabra.</li>
+      <li><strong>Reina-Valera 1909</strong> con la ortografía actual.</li>
+      <li>Los <strong>libros apócrifos o deuterocanónicos</strong> (Tobías, Judit, Sabiduría,
+        Eclesiástico, Baruc, Macabeos…), el <strong>Libro de Enoc</strong> y los
+        <strong>Padres Apostólicos</strong> (Clemente, Ignacio, Policarpo, la Didaché,
+        el Pastor de Hermas), traducidos del griego al español.</li>
+    </ul>
+    <p><a href="texto/">Ver todos los libros capítulo por capítulo</a>: los 138 libros
+      en páginas de lectura, con el texto original y el español, para leer sin
+      JavaScript y para que los encuentren los buscadores.</p>
+    <p><a href="palabras/">El diccionario, palabra por palabra</a>: más de diez mil
+      palabras del griego y del hebreo bíblicos con su significado en español, el
+      artículo del léxico traducido y la lista de los sitios donde sale cada una
+      en el texto.</p>
+    <p class="cargando">Cargando la biblioteca…</p>
+    <noscript><p>Para leer los textos hay que activar JavaScript en el navegador.</p></noscript>
+  </section>
+</main>
+
+<div class="hoja" id="hoja" hidden role="dialog" aria-modal="true" aria-label="Análisis de la palabra">
+  <button class="cerrar" id="cerrarHoja" aria-label="Cerrar">✕</button>
+  <div class="cuerpo" id="cuerpoHoja"></div>
+</div>
+
+<footer>
+  <p>
+    Textos en dominio público o con licencia libre; cada colección dice su
+    edición y su licencia en la biblioteca.
+  </p>
+  <p>
+    <a href="texto/">Todos los libros, capítulo por capítulo</a> ·
+    <a href="palabras/">El diccionario de griego y hebreo</a> ·
+    <a href="../biblia-privacidad.html">Política de privacidad</a> ·
+    <a href="https://play.google.com/store/apps/details?id=com.dc388.bibliagriega">La aplicación para Android</a>
+  </p>
+</footer>
+
+<script>
+const vista = document.getElementById('vista');
+const titulo = document.getElementById('titulo');
+const atras = document.getElementById('atras');
+let indice = null;
+
+// --- preferencias -----------------------------------------------------------
+// Van en localStorage, que es del navegador de cada quien: si no está
+// disponible —navegación privada, cookies bloqueadas— la página funciona igual,
+// simplemente no recuerda nada.
+const guarda = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const lee = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (e) { return d; } };
+
+let cuerpo = parseFloat(lee('cuerpo', '1.125'));
+const aplicaCuerpo = () => document.documentElement.style.setProperty('--cuerpo', cuerpo + 'rem');
+aplicaCuerpo();
+
+const tema = lee('tema', '');
+if (tema) document.documentElement.dataset.tema = tema;
+document.getElementById('tema').onclick = () => {
+  const actual = document.documentElement.dataset.tema;
+  const siguiente = actual === 'oscuro' ? 'claro' : 'oscuro';
+  document.documentElement.dataset.tema = siguiente;
+  guarda('tema', siguiente);
+};
+document.getElementById('mas').onclick = () => { cuerpo = Math.min(1.75, cuerpo + .0625); aplicaCuerpo(); guarda('cuerpo', cuerpo); };
+document.getElementById('menos').onclick = () => { cuerpo = Math.max(.875, cuerpo - .0625); aplicaCuerpo(); guarda('cuerpo', cuerpo); };
+
+// --- datos ------------------------------------------------------------------
+// El sello de la exportación. Los archivos de datos se guardan en la caché del
+// navegador, que es lo que se quiere porque no cambian entre versiones; pero
+// entonces una corrección nueva no llega nunca. Se lee este sello sin caché
+// —pesa unas decenas de bytes— y se cuelga de todas las demás direcciones, así
+// que al reexportar cambian todas y se vuelven a pedir.
+let sello = '';
+async function leerElSello() {
+  try {
+    const r = await fetch('datos/version.json', { cache: 'no-store' });
+    if (r.ok) sello = (await r.json()).sello || '';
+  } catch (e) { /* sin sello se sigue igual, solo que con la caché de siempre */ }
+}
+
+const trae = async (url) => {
+  const r = await fetch(sello ? `${url}?v=${sello}` : url);
+  if (!r.ok) throw new Error(url + ' → ' + r.status);
+  return r.json();
+};
+const escapa = (s) => s.replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// Los códigos de libro se repiten entre colecciones —«GEN» es Génesis en
+// hebreo y en la Septuaginta, y son textos distintos—, así que la colección
+// forma parte de la dirección y no se puede buscar solo por el código.
+// Misma normalización que usa la base al construir el índice: minúsculas sin
+// diacríticos, sigma final unificada y sin puntuación. Sin esto, «Λόγος,» no
+// encuentra a «λογος» en el puente de formas.
+function normaliza(s) {
+  return s.normalize('NFD').toLowerCase()
+    .replace(/[\u0300-\u036f\u0591-\u05c7]/g, '')
+    .replace(/ς/g, 'σ')
+    .replace(/[^\p{L}\p{N}]/gu, '')
+    .trim();
+}
+
+const cache = new Map();
+async function traeCache(url) {
+  if (!cache.has(url)) {
+    cache.set(url, trae(url).catch(() => null));
+  }
+  return cache.get(url);
+}
+
+// El léxico va en cubos por millar de número Strong: G746 está en G0, G3056 en
+// G3. Así una consulta baja unos cientos de kilobytes en vez del diccionario
+// entero, y el segundo toque de la misma zona ya no baja nada.
+const traeLexico = (strong) =>
+  traeCache(`datos/lexico/${strong[0]}${Math.floor(parseInt(strong.slice(1), 10) / 1000)}.json`);
+const traeFormas = (forma) => traeCache(`datos/formas/${forma.codePointAt(0)}.json`);
+const traeMorfologia = () => traeCache('datos/morfologia.json');
+
+function buscaLibro(coleccion, codigo) {
+  const col = indice.find((c) => c.id === coleccion);
+  if (!col) return null;
+  const libro = col.libros.find((l) => l.codigo === codigo);
+  return libro ? { col, libro } : null;
+}
+
+// --- pantallas --------------------------------------------------------------
+// --- biblioteca -------------------------------------------------------------
+/**
+ * Las clases de libro, y qué se le dice de cada una a quien lee.
+ *
+ * Son 138 libros y mezclarlos en una lista sin decir cuál es cuál sería el peor
+ * servicio que se le puede hacer a quien estudia: hay que poder ver de un golpe
+ * si lo que se lee es Escritura o es literatura del mismo período. El criterio
+ * es el de las Asambleas de Dios, que reciben como canon los 66 libros del
+ * canon protestante; lo demás se ofrece para estudio y se dice.
+ *
+ * No se llama «apócrifo» a todo lo que no es canon. Los deuterocanónicos los
+ * recibe Roma y las iglesias orientales, y saberlo importa; los Padres
+ * Apostólicos nunca se presentaron como Escritura, así que llamarlos apócrifos
+ * sería sencillamente falso.
+ */
+const CLASES = {
+  canon: ['Canon', 'Los 66 libros que las Asambleas de Dios reciben como Escritura inspirada.'],
+  deuterocanonico: ['Deuterocanónicos',
+    'Recibidos como canon por la Iglesia católica y las orientales, no por las ' +
+    'Asambleas de Dios. Se ofrecen para estudio.'],
+  septuaginta: ['Otros libros de la Septuaginta',
+    'Vienen en los códices griegos y ninguna iglesia los recibe como canon.'],
+  pseudoepigrafo: ['Pseudoepígrafos',
+    'Atribuidos a un autor que no los escribió. Se citan en el Nuevo Testamento ' +
+    '—Judas 14 cita a Enoc— y por eso se estudian.'],
+  padres: ['Padres Apostólicos',
+    'Cartas y manuales cristianos del siglo I y II. No son apócrifos: nunca se ' +
+    'presentaron como Escritura.'],
+};
+
+/**
+ * Lo que más se pregunta de los Padres Apostólicos es si son «católicos», porque
+ * Ignacio habla de «la iglesia católica». La respuesta cabe en tres párrafos y
+ * va desplegable debajo de la nota, para quien la quiera.
+ */
+const DETALLE = {
+  padres: ['¿Qué son? ¿Son católicos?', [
+    'Son los escritos de los cristianos que vinieron justo después de los ' +
+    'apóstoles, entre los años 90 y 150. Algunos conocieron a los apóstoles o a ' +
+    'sus discípulos: según la tradición, Policarpo fue discípulo de Juan. ' +
+    'Ninguna iglesia los recibe como Escritura inspirada; se leen como ' +
+    'testimonio de cómo creía y vivía la iglesia primitiva.',
+    'No son católicos en el sentido de hoy: son anteriores a la separación ' +
+    'entre Roma y Oriente (1054) y a la Reforma (1517), y todas las tradiciones ' +
+    'los tienen por suyos. Católicos y ortodoxos subrayan en ellos los obispos, ' +
+    'la sucesión de los apóstoles (1 Clemente 42-44) y la eucaristía. Los ' +
+    'evangélicos subrayan la justificación por la fe —«no por nosotros ' +
+    'mismos… sino por la fe» (1 Clemente 32:4)—, que obispo y presbítero ' +
+    'parecen ser el mismo cargo (1 Clemente, Didaché) y que citan la Escritura ' +
+    'sin cesar.',
+    'Cuando Ignacio escribe «donde está Jesucristo, allí está la iglesia ' +
+    'católica» (Esmirniotas 8:2), la palabra griega katholikós significa ' +
+    '«universal»: la iglesia entera frente a una congregación local, no el ' +
+    'nombre de una denominación, que vino siglos después.',
+  ]],
+};
+
+const PESTANAS = [
+  { id: 'canon', nombre: 'Canon', clases: ['canon'] },
+  { id: 'apocrifos', nombre: 'Libros apócrifos',
+    clases: ['deuterocanonico', 'septuaginta', 'pseudoepigrafo'] },
+  { id: 'padres', nombre: 'Padres Apostólicos', clases: ['padres'] },
+];
+
+// El orden en que se enseñan los que no son canon: primero lo que alguna
+// iglesia recibe, y dentro de eso el orden de la Vulgata, que es como se citan.
+const ORDEN_APOCRIFOS = [
+  'TOB', 'JDT', 'SAB', 'SIR', 'BAR', 'CJE', '1MA', '2MA',
+  'SUS', 'SUT', 'BEL', 'BET', '1ES', '3MA', '4MA', 'ODA', 'SSA', 'ENOC',
+];
+
+/**
+ * Cómo se escribe cada libro cuando uno lo escribe deprisa.
+ *
+ * Quien busca un pasaje no teclea «Génesis»: teclea «gn», «gen» o «génesis». El
+ * prefijo cubre los dos últimos casos solo, pero no las abreviaturas que todo el
+ * mundo usa y que no empiezan igual que el nombre. Esta tabla las cubre. No
+ * pretende ser exhaustiva: son las que se usan al citar en español.
+ */
+const ABREVIATURAS = {
+  gn: 'GEN', gen: 'GEN', ex: 'EXO', exo: 'EXO', lv: 'LEV', lev: 'LEV',
+  nm: 'NUM', num: 'NUM', dt: 'DEU', deu: 'DEU', jos: 'JOS', jue: 'JUE', jc: 'JUE',
+  rt: 'RUT', '1s': '1SA', '2s': '2SA', '1sa': '1SA', '2sa': '2SA',
+  '1r': '1RY', '2r': '2RY', '1re': '1RY', '2re': '2RY',
+  '1cr': '1CR', '2cr': '2CR', esd: 'ESD', neh: 'NEH',
+  est: 'EST', sal: 'SAL', pr: 'PRO', prov: 'PRO', ecl: 'ECL', ct: 'CNT', cnt: 'CNT',
+  is: 'ISA', isa: 'ISA', jr: 'JER', jer: 'JER', lm: 'LAM', lam: 'LAM',
+  ez: 'EZE', eze: 'EZE', dn: 'DAN', dan: 'DAN', os: 'OSE', jl: 'JOE', am: 'AMO',
+  abd: 'ABD', jon: 'JON', mi: 'MIQ', miq: 'MIQ', nah: 'NAH', hab: 'HAB',
+  sof: 'SOF', ag: 'AGE', zac: 'ZAC', mal: 'MAL',
+  mt: 'MAT', mat: 'MAT', mc: 'MAR', mr: 'MAR', mar: 'MAR',
+  lc: 'LUC', luc: 'LUC', jn: 'JUA', jua: 'JUA', hch: 'HEC', hec: 'HEC',
+  rm: 'ROM', ro: 'ROM', rom: 'ROM', '1co': '1CO', '2co': '2CO',
+  ga: 'GAL', gal: 'GAL', ef: 'EFE', efe: 'EFE', flp: 'FIL', fil: 'FIL',
+  col: 'COL', '1ts': '1TE', '2ts': '2TE', '1tm': '1TI', '2tm': '2TI',
+  tit: 'TIT', flm: 'FLM', heb: 'HEB', stg: 'SAN', san: 'SAN',
+  '1p': '1PE', '2p': '2PE', '1jn': '1JN', '2jn': '2JN', '3jn': '3JN',
+  jud: 'JUD', ap: 'APO', apo: 'APO',
+  // Los que no están en la Reina-Valera y que aquí sí se pueden leer.
+  tb: 'TOB', tob: 'TOB', jdt: 'JDT', sab: 'SAB', sir: 'SIR', eclo: 'SIR',
+  bar: 'BAR', '1mac': '1MA', '2mac': '2MA', '3mac': '3MA', '4mac': '4MA',
+  '1m': '1MA', '2m': '2MA', '3m': '3MA', '4m': '4MA',
+  did: 'DIDA', herm: 'HERM', bern: 'BERN', diog: 'DIOG',
+};
+
+/**
+ * Lo que hay que teclear para llegar a cada libro.
+ *
+ * Se arma una vez, con el índice ya cargado: por cada libro, su nombre, su
+ * nombre alterno, su código y las abreviaturas que apunten a él. Cada clave va
+ * normalizada, así que «josé», «Jose» y «JOSE» son la misma.
+ */
+let atajos = null;
+function preparaAtajos() {
+  if (atajos) return atajos;
+  atajos = [];
+  for (const col of indice) {
+    for (const libro of col.libros) {
+      const claves = new Set([normaliza(libro.nombre), normaliza(libro.codigo)]);
+      if (libro.alterno) {
+        for (const parte of libro.alterno.split(',')) claves.add(normaliza(parte));
+      }
+      for (const [corta, codigo] of Object.entries(ABREVIATURAS)) {
+        if (codigo === libro.codigo) claves.add(corta);
+      }
+      claves.delete('');
+      atajos.push({ col, libro, claves: [...claves] });
+    }
+  }
+  return atajos;
+}
+
+// El canon primero: quien escribe «Génesis» casi siempre quiere el hebreo, no
+// la versión de la Septuaginta, aunque las dos estén aquí.
+const PESO_COLECCION = { at: 0, nt: 0, lxx: 1, padres: 2, pseudo: 2 };
+
+/**
+ * Busca un pasaje escrito a mano: «Juan 3:16», «Gn 1», «2 Macabeos 7».
+ *
+ * Devuelve los libros que casan, con el capítulo si se pidió uno. No adivina
+ * entre varios: si «Génesis» está en el hebreo y en la Septuaginta, salen los
+ * dos y elige quien lee, que para eso están las dos ediciones.
+ */
+function buscaPasaje(texto) {
+  const crudo = (texto || '').trim();
+  if (!crudo) return [];
+  // El número final es el capítulo; el segundo, el versículo. Los libros que
+  // empiezan por número («1 Samuel») no se confunden porque el patrón exige
+  // que quede algo delante.
+  const partido = crudo.match(/^(.+?)\s*(\d+)(?:\s*[:.,\s]\s*(\d+))?\s*$/);
+  const nombre = normaliza(partido ? partido[1] : crudo);
+  const capitulo = partido ? parseInt(partido[2], 10) : null;
+  const versiculo = partido && partido[3] ? parseInt(partido[3], 10) : null;
+  if (!nombre) return [];
+
+  const salida = [];
+  for (const { col, libro, claves } of preparaAtajos()) {
+    let rango = 9;
+    for (const clave of claves) {
+      if (clave === nombre) rango = Math.min(rango, 0);
+      else if (clave.startsWith(nombre)) rango = Math.min(rango, 1);
+      else if (nombre.length >= 4 && clave.includes(nombre)) rango = Math.min(rango, 2);
+    }
+    if (rango === 9) continue;
+    // Un capítulo que ese libro no tiene: se ofrece el libro, no un enlace roto.
+    const tiene = capitulo !== null && libro.capitulos.includes(capitulo);
+    salida.push({
+      col, libro, rango, versiculo,
+      capitulo: tiene ? capitulo : null,
+      fuera: capitulo !== null && !tiene ? capitulo : null,
+    });
+  }
+  salida.sort((a, b) =>
+    a.rango - b.rango
+    || (PESO_COLECCION[a.col.id] ?? 3) - (PESO_COLECCION[b.col.id] ?? 3)
+    || a.libro.nombre.localeCompare(b.libro.nombre, 'es'));
+  return salida.slice(0, 8);
+}
+
+let pestana = 'canon';
+
+function enlaceLibro(col, libro) {
+  const suelto = col.id === 'lxx' || col.id === 'pseudo';
+  return `<a href="#/${col.id}/${libro.codigo}">${escapa(libro.nombre)}${
+    suelto ? `<small>${escapa(col.corto)}</small>` : ''}</a>`;
+}
+
+/** Los libros de una clase, con la colección de la que salen. */
+function porClase(clase) {
+  const salida = [];
+  for (const col of indice) {
+    for (const libro of col.libros) {
+      if (libro.canon === clase) salida.push({ col, libro });
+    }
+  }
+  if (clase === 'canon') return salida;
+  salida.sort((a, b) => {
+    const pa = ORDEN_APOCRIFOS.indexOf(a.libro.codigo);
+    const pb = ORDEN_APOCRIFOS.indexOf(b.libro.codigo);
+    return (pa < 0 ? 99 : pa) - (pb < 0 ? 99 : pb);
+  });
+  return salida;
+}
+
+/**
+ * Lo que se pone encima de los ciento cinco botones.
+ *
+ * Quien llega por primera vez caía en una rejilla de libros sin una línea que
+ * dijera qué es esto ni por dónde se empieza. Arriba van ahora, por este orden:
+ * dónde escribir el pasaje, por dónde se iba leyendo, qué es esta biblioteca, y
+ * lo único que tiene y no hay en otra parte.
+ */
+function cabeceraPortada() {
+  const partes = [];
+
+  partes.push(`<form class="ir" id="ir" role="search">
+    <input id="qIr" type="search" autocomplete="off" spellcheck="false"
+      aria-label="Ir a un pasaje"
+      placeholder="Ir a un pasaje: Juan 3:16, Gn 1, 2 Macabeos 7">
+  </form>
+  <div class="hallazgos" id="hallazgos"></div>`);
+
+  const ultimo = ultimaLectura();
+  if (ultimo) {
+    partes.push(`<a class="seguir" href="#/${ultimo.col}/${ultimo.cod}/${ultimo.cap}">
+      <span><b>Seguir leyendo</b> · ${escapa(ultimo.titulo)}</span>
+      <small>donde lo dejaste</small>
+    </a>`);
+  }
+
+  partes.push(`<p class="saludo">La Biblia en sus lenguas originales, con el español
+    debajo de cada versículo: <b>Septuaginta</b>, <b>Nuevo Testamento griego</b> y
+    <b>Antiguo Testamento hebreo</b>. Toca cualquier palabra para ver su análisis y
+    su entrada del diccionario.</p>`);
+
+  if (pestana !== 'apocrifos') {
+    partes.push(`<a class="propias" href="#/">
+      <b>Los libros que no encontrarás en otra Biblia española</b>
+      Tobías, Judit, Sabiduría, Eclesiástico, los cuatro Macabeos, el Libro de Enoc,
+      las Odas y los Padres Apostólicos.
+      <small>33 libros traducidos del griego a mano para esta edición, porque ninguna
+      Biblia española de dominio público los trae.</small>
+    </a>`);
+  }
+  return partes.join('');
+}
+
+/** El último capítulo que se abrió, si el navegador lo recuerda. */
+function ultimaLectura() {
+  try {
+    const guardado = JSON.parse(lee('ultimo', 'null'));
+    if (!guardado || !buscaLibro(guardado.col, guardado.cod)) return null;
+    return guardado;
+  } catch (e) { return null; }
+}
+
+/** Pinta lo que casa con lo que se va escribiendo en la caja del pasaje. */
+function pintaHallazgos(texto) {
+  const caja = document.getElementById('hallazgos');
+  if (!caja) return;
+  if (!texto.trim()) { caja.innerHTML = ''; return; }
+  const hallados = buscaPasaje(texto);
+  if (!hallados.length) {
+    caja.innerHTML = '<p class="vacio">No encuentro ningún libro con ese nombre.</p>';
+    return;
+  }
+  caja.innerHTML = hallados.map(({ col, libro, capitulo, versiculo, fuera }) => {
+    const destino = capitulo
+      ? `#/${col.id}/${libro.codigo}/${capitulo}${versiculo ? `?v=${versiculo}` : ''}`
+      : `#/${col.id}/${libro.codigo}`;
+    const rotulo = capitulo
+      ? `${libro.nombre} ${capitulo}${versiculo ? `:${versiculo}` : ''}`
+      : libro.nombre;
+    const aparte = fuera
+      ? `${col.corto} · no tiene capítulo ${fuera}`
+      : `${col.corto} · ${libro.capitulos.length} cap.`;
+    return `<a href="${destino}">
+      <span>${escapa(rotulo)}</span><small>${escapa(aparte)}</small></a>`;
+  }).join('');
+}
+
+function biblioteca() {
+  titulo.textContent = 'Biblia Griega y Hebrea';
+  atras.hidden = true;
+  document.getElementById('mas').hidden = true;
+  document.getElementById('menos').hidden = true;
+
+  const actual = PESTANAS.find((p) => p.id === pestana) || PESTANAS[0];
+  const pestanas = `<nav class="pestanas">${PESTANAS.map((p) => {
+    const cuantos = p.clases.reduce((n, c) => n + porClase(c).length, 0);
+    return `<button data-pestana="${p.id}"${p.id === actual.id ? ' class="activa"' : ''}
+      >${escapa(p.nombre)} <span>${cuantos}</span></button>`;
+  }).join('')}</nav>`;
+
+  // El canon se enseña por colección, porque cada una es una edición distinta
+  // del mismo libro y hay que poder elegir; lo demás, por clase.
+  const secciones = actual.id === 'canon'
+    ? indice.filter((col) => col.libros.some((l) => l.canon === 'canon')).map((col) => `
+      <section>
+        <h2>${escapa(col.nombre)}</h2>
+        <div class="rejilla">
+          ${col.libros.filter((l) => l.canon === 'canon')
+            .map((l) => `<a href="#/${col.id}/${l.codigo}">${escapa(l.nombre)}</a>`).join('')}
+        </div>
+        <p class="fuente">${escapa(col.edicion)} · ${escapa(col.licencia)}</p>
+      </section>`).join('')
+    : actual.clases.filter((c) => porClase(c).length).map((clase) => `
+      <section>
+        <h2>${escapa(CLASES[clase][0])}</h2>
+        <p class="nota">${escapa(CLASES[clase][1])}</p>
+        ${DETALLE[clase] ? `<details class="detalle">
+          <summary>${escapa(DETALLE[clase][0])}</summary>
+          ${DETALLE[clase][1].map((p) => `<p>${escapa(p)}</p>`).join('')}
+        </details>` : ''}
+        <div class="rejilla">
+          ${porClase(clase).map(({ col, libro }) => enlaceLibro(col, libro)).join('')}
+        </div>
+      </section>`).join('');
+
+  vista.innerHTML = cabeceraPortada() + pestanas + secciones;
+  vista.querySelectorAll('[data-pestana]').forEach((boton) => {
+    boton.onclick = () => { pestana = boton.dataset.pestana; biblioteca(); };
+  });
+
+  const tarjeta = vista.querySelector('.propias');
+  if (tarjeta) {
+    tarjeta.onclick = (e) => { e.preventDefault(); pestana = 'apocrifos'; biblioteca(); };
+  }
+
+  const caja = document.getElementById('qIr');
+  if (caja) {
+    caja.oninput = () => pintaHallazgos(caja.value);
+    // Enter va al primero, que es lo que uno espera al escribir «Juan 3».
+    document.getElementById('ir').onsubmit = (e) => {
+      e.preventDefault();
+      const primero = vista.querySelector('.hallazgos a');
+      if (primero) location.hash = primero.getAttribute('href').slice(1);
+    };
+  }
+}
+
+function capitulos(coleccion, codigo) {
+  const hallado = buscaLibro(coleccion, codigo);
+  if (!hallado) return biblioteca();
+  const { libro } = hallado;
+  titulo.textContent = libro.nombre;
+  atras.hidden = false;
+  atras.href = '#/';
+  vista.innerHTML = `
+    <h2>${escapa(libro.original)}</h2>
+    ${libro.nota ? `<p class="nota">${escapa(libro.nota)}</p>` : ''}
+    <div class="rejilla capitulos">
+      ${libro.capitulos.map((c) => `<a href="#/${coleccion}/${codigo}/${c}">${c}</a>`).join('')}
+    </div>`;
+}
+
+async function lector(coleccion, codigo, capitulo, versiculo) {
+  const hallado = buscaLibro(coleccion, codigo);
+  if (!hallado) return biblioteca();
+  const { col, libro } = hallado;
+  titulo.textContent = `${libro.nombre} ${capitulo}`;
+  // Para el «seguir leyendo» de la portada. Va en el navegador de cada quien.
+  guarda('ultimo', JSON.stringify({
+    col: coleccion, cod: codigo, cap: capitulo,
+    titulo: `${libro.nombre} ${capitulo}`,
+  }));
+  atras.hidden = false;
+  atras.href = `#/${coleccion}/${codigo}`;
+  document.getElementById('mas').hidden = false;
+  document.getElementById('menos').hidden = false;
+  vista.innerHTML = '<p class="cargando">Cargando…</p>';
+
+  let versiculos;
+  try {
+    versiculos = await trae(`datos/${coleccion}/${codigo}/${capitulo}.json`);
+  } catch (e) {
+    vista.innerHTML = '<p class="cargando">No se pudo cargar este capítulo. Comprueba la conexión.</p>';
+    return;
+  }
+
+  // El análisis va en su propio archivo y no existe en todas las colecciones:
+  // la Septuaginta, los Padres y los pseudoepígrafos no vienen etiquetados. Si
+  // no está, sus palabras se consultan igual por su forma en el Nuevo
+  // Testamento, que es lo que hace la aplicación de Android.
+  const palabras = await traeCache(`datos/${coleccion}/${codigo}/${capitulo}.palabras.json`);
+  const griego = col.lengua === 'grc';
+
+  const i = libro.capitulos.indexOf(capitulo);
+  const anterior = i > 0 ? libro.capitulos[i - 1] : null;
+  const siguiente = i >= 0 && i < libro.capitulos.length - 1 ? libro.capitulos[i + 1] : null;
+
+  vista.innerHTML = `
+    <div ${col.rtl ? 'dir="rtl"' : ''}>
+      ${versiculos.map((v) => `
+        <p class="versiculo" id="v${v.v}">
+          <span class="n">${v.v}${v.s || ''}</span>${cuerpoDelVersiculo(v, palabras, griego)}
+          ${v.es ? `<span class="es" dir="ltr" lang="es">${escapa(v.es)}</span>` : ''}
+        </p>`).join('')}
+    </div>
+    <nav class="pie">
+      ${anterior ? `<a class="volver" href="#/${coleccion}/${codigo}/${anterior}">‹ ${anterior}</a>` : '<span></span>'}
+      ${siguiente ? `<a class="volver" href="#/${coleccion}/${codigo}/${siguiente}">${siguiente} ›</a>` : '<span></span>'}
+    </nav>`;
+  const buscado = versiculo && vista.querySelector(`#v${versiculo}`);
+  if (buscado) buscado.scrollIntoView({ block: 'center' });
+  else window.scrollTo(0, 0);
+}
+
+/**
+ * El texto del versículo, con sus palabras tocables cuando se pueden consultar.
+ *
+ * Con análisis se usan sus palabras, que traen lema y morfología propios. Sin
+ * él, y si el texto es griego, se parte por espacios y cada trozo se consulta
+ * por su forma. En hebreo sin análisis no se ofrece nada: buscar una forma
+ * hebrea en un índice griego no daría más que ruido.
+ */
+function cuerpoDelVersiculo(v, palabras, griego) {
+  const analisis = palabras && palabras[`${v.v}${v.s || ''}`];
+  if (analisis) {
+    return analisis.map((p) =>
+      `<button class="pal" data-strong="${p[1]}" data-hom="${p[2] || ''}" data-morph="${escapa(p[3] || '')}">${escapa(p[0])}</button>`
+    ).join(' ');
+  }
+  if (!griego) return escapa(v.t);
+  return v.t.split(/\s+/).filter(Boolean).map((palabra) =>
+    `<button class="pal" data-forma="${escapa(palabra)}">${escapa(palabra)}</button>`
+  ).join(' ');
+}
+
+// --- ficha de la palabra ----------------------------------------------------
+const hoja = document.getElementById('hoja');
+const cuerpoHoja = document.getElementById('cuerpoHoja');
+const cierraHoja = () => { hoja.hidden = true; };
+document.getElementById('cerrarHoja').onclick = cierraHoja;
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cierraHoja(); });
+
+vista.addEventListener('click', (e) => {
+  const boton = e.target.closest('.pal');
+  if (boton) abreLaPalabra(boton);
+});
+
+/**
+ * La definición de Strong, en español cuando ya está traducida.
+ *
+ * Strong escribió en inglés en 1890 y su obra es la que hay en dominio
+ * público. Se va traduciendo a mano por orden de frecuencia, así que mientras
+ * a un lema no le haya tocado se enseña la inglesa, dicho claramente: es
+ * preferible a un hueco vacío, y a quien no lee inglés le avisa de por qué no
+ * lo entiende.
+ */
+function definicion(e) {
+  if (e.definicion_es) {
+    return `<div class="apartado"><h4>Diccionario Strong</h4><p>${escapa(e.definicion_es)}</p></div>`;
+  }
+  return '';
+}
+
+/**
+ * El artículo del léxico de referencia, cuando ya se lee en español.
+ *
+ * Brown-Driver-Briggs y Abbott-Smith son las dos obras de referencia serias en
+ * dominio público, y son inglesas. Se traducen con reglas: lo que no está en
+ * ningún idioma —el lema hebreo o griego, las referencias bíblicas, los códigos
+ * de conjugación— pasa intacto, y las abreviaturas se abren, que es lo que
+ * dejaba fuera a quien no se crió leyendo léxicos ingleses. Si un artículo no
+ * sale entero, no sale: se queda abajo, en inglés, y se dice.
+ */
+function articuloEnEspanol(articulo) {
+  if (!articulo || !articulo.texto_es) return '';
+  return `<details class="apartado" open>
+    <summary>${escapa(articulo.fuente)}</summary>
+    <p class="articulo">${escapa(articulo.texto_es)}</p>
+  </details>`;
+}
+
+/**
+ * Lo que sigue en inglés, plegado.
+ *
+ * Mientras a un lema no le haya llegado el turno se enseña el original, dicho
+ * claramente: es preferible a un hueco vacío, y a quien no lee inglés le avisa
+ * de por qué no lo entiende, en vez de dejarlo pensando que falla la
+ * aplicación. Lo que ya está traducido no se repite aquí.
+ */
+function enIngles(e, articulo) {
+  const partes = [];
+  if (!e.definicion_es && e.definicion) {
+    partes.push(`<h4>Diccionario Strong (1890)</h4><p>${escapa(e.definicion)}</p>`);
+  }
+  if (articulo && !articulo.texto_es) {
+    partes.push(`<h4>${escapa(articulo.fuente)}</h4><p>${escapa(articulo.texto)}</p>`);
+  }
+  if (!partes.length) return '';
+  return `<details class="apartado ingles">
+    <summary>Obras de referencia, en inglés</summary>
+    ${partes.join('')}
+  </details>`;
+}
+
+async function abreLaPalabra(boton) {
+  const superficie = boton.textContent;
+  cuerpoHoja.innerHTML = `<h3>${escapa(superficie)}</h3><p class="lema">Consultando…</p>`;
+  hoja.hidden = false;
+
+  let strong = boton.dataset.strong;
+  let hom = boton.dataset.hom || '';
+  let morph = boton.dataset.morph || '';
+  let prestada = false;
+
+  if (!strong) {
+    // Palabra sin análisis propio: se busca su forma en el Nuevo Testamento.
+    const forma = normaliza(boton.dataset.forma || superficie);
+    const cubo = forma ? await traeFormas(forma) : null;
+    const lecturas = cubo && cubo[forma];
+    if (!lecturas || !lecturas.length) {
+      cuerpoHoja.innerHTML = `<h3>${escapa(superficie)}</h3>
+        <p class="aviso">Esta forma no aparece en el Nuevo Testamento, que es de
+        donde se toma el análisis para los textos que no vienen etiquetados.</p>`;
+      return;
+    }
+    [strong, morph] = lecturas[0];
+    prestada = true;
+  }
+
+  const [cubo, morfologia] = await Promise.all([traeLexico(strong), traeMorfologia()]);
+  const e = (cubo && cubo[strong]) || {};
+  const glosa = (e.es || {})[hom] ?? (e.es || {})[''] ?? null;
+  const articulo = (e.articulos || {})[hom] ?? (e.articulos || {})[''] ?? null;
+  const analisis = morph ? (morfologia && morfologia[morph]) || morph : null;
+
+  cuerpoHoja.innerHTML = `
+    <h3>${escapa(superficie)}</h3>
+    <p class="lema">${escapa(e.lema || '')}${e.translit ? ` · ${escapa(e.translit)}` : ''}${glosa ? ` · ${escapa(glosa)}` : ''}</p>
+    <dl>
+      ${analisis ? `<dt>Análisis</dt><dd>${escapa(analisis)}</dd>` : ''}
+      <dt>Strong</dt><dd>${escapa(strong)}</dd>
+      ${e.origen ? `<dt>Procede de</dt><dd>${escapa(e.origen)}</dd>` : ''}
+    </dl>
+    ${definicion(e)}
+    ${articuloEnEspanol(articulo)}
+    ${enIngles(e, articulo)}
+    ${prestada ? `<p class="aviso apartado">Este texto no viene analizado. Lo que ves es
+      lo que esa misma forma significa en el Nuevo Testamento, donde sí está etiquetada.</p>` : ''}`;
+}
+
+// --- navegación -------------------------------------------------------------
+function ruta() {
+  if (!indice) return;
+  const partes = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  if (partes.length < 2) return biblioteca();
+  if (partes.length === 2) return capitulos(partes[0], partes[1]);
+  // El buscador de pasajes añade «?v=16» cuando se pidió un versículo suelto.
+  const [cap, cola] = partes[2].split('?');
+  const pedido = (cola || '').match(/v=(\d+)/);
+  return lector(partes[0], partes[1], parseInt(cap, 10),
+                pedido ? parseInt(pedido[1], 10) : null);
+}
+
+window.addEventListener('hashchange', ruta);
+
+leerElSello()
+  .then(() => trae('datos/indice.json'))
+  .then((d) => { indice = d; ruta(); })
+  .catch(() => {
+    vista.innerHTML = '<p class="cargando">No se pudo cargar la biblioteca.</p>';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+name: APK para compartir
+
+# Deja el APK de la última compilación de publicación en un enlace directo
+# que se pueda abrir desde el teléfono, para instalarlo a mano donde Google
+# Play no distribuye. No compila nada: reutiliza el artefacto que ya existe.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/biblia-**"]
+    paths: [".github/workflows/biblia-apk.yml"]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publicar:
+    name: Publicar el APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Traer el artefacto de la compilación
+        uses: actions/download-artifact@v4
+        with:
+          name: biblia-publicacion
+          run-id: 35279322477
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: descarga
+
+      - name: Dejarlo descargable
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          apk=$(find descarga -name '*.apk' | head -1)
+          if [ -z "$apk" ]; then echo "::error::no se encontró ningún APK en el artefacto"; exit 1; fi
+          cp "$apk" biblia-griega-y-hebrea.apk
+          ls -l biblia-griega-y-hebrea.apk
+          gh release create biblia-apk-v3 biblia-griega-y-hebrea.apk --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Biblia Griega y Hebrea 1.0.0 — APK" --notes "APK firmado, para instalar a mano en Android donde Google Play no distribuye." || gh release upload biblia-apk-v3 biblia-griega-y-hebrea.apk --repo "$GITHUB_REPOSITORY" --clobber
