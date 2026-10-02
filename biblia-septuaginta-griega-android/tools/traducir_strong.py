@@ -4401,3 +4401,206 @@ FRASES.update({
     "rowing or sailing a boat": "remando o navegando una barca",
     "swimming pool": "piscina|sus",
 })
+
+
+# Duodécima tanda. 175 palabras. «glue» se queda fuera: sale una vez de
+# sustantivo —«(< κόλλα, glue)»— y otra de verbo —«1. to glue»—.
+
+PALABRAS.update({
+    # --- cosas ----------------------------------------------------------------
+    "rudder": "timón|sus", "thong": "correa|sus", "stern": "popa|sus",
+    "projections": "salientes|sus", "pitcher": "cántaro|sus",
+    "lampstand": "candelero|sus", "parchment": "pergamino|sus",
+    "dagger": "puñal|sus", "spear-head": "punta de lanza|sus",
+    "nard": "nardo|sus", "mulberry": "mora|sus", "gnat": "mosquito|sus",
+    "callus": "callo|sus", "jawbone": "quijada|sus", "hip": "cadera|sus",
+    "mile": "milla|sus", "lodging-place": "posada|sus",
+    "thank-offering": "ofrenda de acción de gracias|sus",
+
+    # --- personas -------------------------------------------------------------
+    "bridegroom": "novio|sus", "maid-servant": "criada|sus",
+    "charioteer": "auriga|sus", "leper": "leproso|sus",
+    "magian": "mago|sus", "actor": "actor|sus", "railer": "injuriador|sus",
+    "busybody": "entrometido|sus", "doer": "hacedor|sus",
+    "partisans": "partidarios|sus", "followers": "seguidores|sus",
+    "ancestors": "antepasados|sus", "ministers": "ministros|sus",
+    "boys": "muchachos|sus", "labourers": "jornaleros|sus",
+    "comforter": "consolador|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "abbreviation": "abreviatura|sus", "ill-treatment": "maltrato|sus",
+    "mixing": "mezcla|sus", "fiction": "ficción|sus",
+    "knavery": "bellaquería|sus", "provocation": "provocación|sus",
+    "defiling": "mancillamiento|sus", "lore": "saber|sus",
+    "calculation": "cálculo|sus", "juxtaposition": "yuxtaposición|sus",
+    "challenge": "desafío|sus", "afflictions": "aflicciones|sus",
+    "experiment": "experimento|sus", "irritation": "enojo|sus",
+    "category": "categoría|sus", "sufferings": "padecimientos|sus",
+    "confession": "confesión|sus", "legislation": "legislación|sus",
+    "midnight": "medianoche|sus", "seasons": "estaciones|sus",
+    "childhood": "infancia|sus", "parentage": "linaje|sus",
+    "soothsaying": "adivinación|sus", "sadness": "tristeza|sus",
+    "onset": "embestida|sus", "preparations": "preparativos|sus",
+    "parties": "partes|sus", "virginity": "virginidad|sus",
+    "edifying": "edificación|sus", "admonition": "amonestación|sus",
+    "nonsense": "disparate|sus", "asseverations": "aseveraciones|sus",
+    "portions": "porciones|sus", "lewdness": "lascivia|sus",
+    "obtaining": "obtención|sus", "offscouring": "desecho|sus",
+    "foreknowledge": "presciencia|sus", "providing": "provisión|sus",
+    "covetousness": "codicia|sus", "morn": "madrugada|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "inoperative": "inoperante|adj", "walled": "amurallado|adj",
+    "valid": "válido|adj", "critical": "crítico|adj",
+    "propitiatory": "propiciatorio|adj", "slothful": "perezoso|adj",
+    "indifferent": "indiferente|adj", "gnomic": "gnómico|adj",
+    "typical": "típico|adj", "paralytic": "paralítico|adj",
+    "magnificent": "magnífico|adj", "persuasive": "persuasivo|adj",
+    "hilly": "montuoso|adj", "mountainous": "montañoso|adj",
+    "tasteless": "insípido|adj", "temperate": "templado|adj",
+    "unusual": "insólito|adj", "clever": "hábil|adj",
+    "knavish": "bellaco|adj", "bastard": "bastardo|adj",
+    "full-grown": "crecido|adj", "hindmost": "trasero|adj",
+    "august": "augusto|adj", "corporeal": "corpóreo|adj",
+    "tutelary": "tutelar|adj", "self-controlled": "dueño de sí|adj",
+
+    # --- participios ----------------------------------------------------------
+    "discharged": "liberado", "persuaded": "persuadido", "peeled": "pelado",
+    "destined": "destinado", "betrothed": "desposado", "puffed": "hinchado",
+    "vocalized": "vocalizado", "oppressed": "oprimido", "wiped": "enjugado",
+    "refreshed": "reconfortado", "assured": "asegurado",
+    "composed": "compuesto", "transliterated": "transliterado",
+    "comforted": "consolado", "owed": "debido", "talking": "que habla",
+
+    # --- verbos ---------------------------------------------------------------
+    "achieve": "lograr|inf", "denounce": "denunciar|inf",
+    "overstep": "traspasar|inf", "commend": "encomendar|inf",
+    "owe": "deber|inf", "imitate": "imitar|inf", "enact": "promulgar|inf",
+    "spur": "espolear|inf", "mediate": "mediar|inf", "sway": "oscilar|inf",
+    "quote": "citar|inf", "chasten": "castigar|inf",
+    "regulate": "regular|inf", "unbind": "desligar|inf",
+    "bubble": "burbujear|inf", "transact": "tramitar|inf",
+    "confer": "conferir|inf", "condescend": "condescender|inf",
+    "foresee": "prever|inf",
+    "shares": "comparte", "corresponds": "corresponde",
+    "befalls": "acontece", "falls": "cae", "draws": "atrae", "gave": "dio",
+
+    # --- adverbios y números --------------------------------------------------
+    "noisily": "ruidosamente", "scarcely": "apenas",
+    "sensibly": "sensatamente", "briefly": "brevemente",
+    "proverbially": "proverbialmente", "nevertheless": "sin embargo",
+    "presently": "ahora", "howbeit": "no obstante",
+    "comparatively": "comparativamente", "wrongfully": "injustamente",
+    "freshly": "recién", "spiritually": "espiritualmente",
+    "eighty": "ochenta",
+
+    # --- latín ----------------------------------------------------------------
+    # «ilex coccifera» y «related to ὅς as qualis to qui».
+    "coccifera": "coccifera", "qui": "qui",
+})
+
+FRASES.update({
+    "enlist sympathy": "granjearse la simpatía",
+    "by trading": "comerciando",
+})
+
+
+# Decimotercera tanda. 175 palabras.
+
+PALABRAS.update({
+    # --- piedras, plantas, animales -------------------------------------------
+    "topaz": "topacio|sus", "chrysolite": "crisólito|sus",
+    "carnelian": "cornalina|sus", "sard": "sardio|sus",
+    "hyacinth": "jacinto|sus", "mines": "minas|sus",
+    "fig-tree": "higuera|sus", "date-palm": "palmera|sus",
+    "nuts": "nueces|sus", "egg": "huevo|sus", "sparrow": "gorrión|sus",
+    "turtle-dove": "tórtola|sus", "fatlings": "cebones|sus",
+    "crumb": "migaja|sus", "garland": "guirnalda|sus",
+
+    # --- el barco y el campo --------------------------------------------------
+    "oar": "remo|sus", "blade": "hoja|sus", "lee": "sotavento|sus",
+    "promontory": "promontorio|sus", "ravine": "barranco|sus",
+    "palisade": "empalizada|sus", "stool": "banqueta|sus",
+    "pebbles": "guijarros|sus", "bellows": "fuelle|sus",
+    "urn": "urna|sus", "wallet": "alforja|sus", "sackcloth": "cilicio|sus",
+    "libations": "libaciones|sus", "utensils": "utensilios|sus",
+    "gear": "equipo|sus", "strips": "tiras|sus", "houses": "casas|sus",
+    "pedestal": "pedestal|sus", "letter-missive": "carta|sus",
+    "amulet": "amuleto|sus", "pinions": "alas|sus",
+
+    # --- personas -------------------------------------------------------------
+    "fellow-citizen": "conciudadano|sus", "ambassadors": "embajadores|sus",
+    "deceiver": "engañador|sus", "pretender": "pretendiente|sus",
+    "barbarians": "bárbaros|sus", "chiliarch": "quiliarca|sus",
+    "rower": "remero|sus", "brothers": "hermanos|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "quarrels": "riñas|sus", "prostration": "postración|sus",
+    "synonym": "sinónimo|sus", "refining": "refinación|sus",
+    "hosts": "ejércitos|sus", "companies": "grupos|sus",
+    "priority": "prioridad|sus", "morals": "costumbres|sus",
+    "insurrection": "insurrección|sus", "cohort": "cohorte|sus",
+    "penitence": "penitencia|sus", "hell": "infierno|sus",
+    "willingness": "buena disposición|sus", "compass": "circunferencia|sus",
+    "superfluity": "superfluidad|sus", "commonwealth": "república|sus",
+    "disputation": "disputa|sus", "liver": "hígado|sus",
+    "colours": "colores|sus", "whistling": "silbido|sus",
+    "practices": "prácticas|sus", "self-discipline": "autodisciplina|sus",
+    "pretence": "pretexto|sus", "collecting": "recaudación|sus",
+    "embalming": "embalsamamiento|sus", "liquor": "licor|sus",
+    "dreams": "sueños|sus", "enchantment": "encantamiento|sus",
+    "identification": "identificación|sus", "daintiness": "delicadeza|sus",
+    "arranging": "disposición|sus", "puffing": "hinchazón|sus",
+    "swiftness": "rapidez|sus", "imprisonment": "encarcelamiento|sus",
+    "medicine": "medicina|sus", "drugs": "drogas|sus",
+    "revenue": "renta|sus", "imagination": "imaginación|sus",
+    "stories": "pisos|sus", "seedtime": "sementera|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "so-called": "llamado|adj", "poetical": "poético|adj",
+    "winding": "tortuoso|adj", "meek": "manso|adj",
+    "flexible": "flexible|adj", "shallow": "somero|adj",
+    "rocky": "rocoso|adj", "internal": "interno|adj",
+    "saving": "salvador|adj", "sensual": "sensual|adj",
+    "fourfold": "cuádruple|adj", "high-minded": "altivo|adj",
+    "persistent": "persistente|adj", "inferential": "ilativo|adj",
+    "dear": "querido|adj", "affectionate": "afectuoso|adj",
+    "blue": "azul|adj", "wretched": "desdichado|adj",
+    "tempestuous": "tempestuoso|adj", "postexilic": "postexílico|adj",
+    "ruddy": "rubicundo|adj", "unrestrained": "desenfrenado|adj",
+
+    # --- participios ----------------------------------------------------------
+    "swollen": "tumefacto", "realized": "realizado", "startled": "sobresaltado",
+    "believed": "creído", "picked": "recogido", "sold": "vendido",
+    "strangled": "estrangulado", "endowed": "dotado", "trusted": "confiado",
+    "revered": "reverenciado", "increased": "aumentado", "shod": "calzado",
+    "burnished": "bruñido", "approving": "que aprueba",
+    "needing": "que necesita", "quoting": "citando",
+
+    # --- verbos ---------------------------------------------------------------
+    "pretend": "pretender|inf", "enrich": "enriquecer|inf",
+    "offend": "ofender|inf", "convulse": "convulsionar|inf",
+    "drug": "drogar|inf", "assure": "asegurar|inf", "busy": "ocuparse|inf",
+    "wag": "menear|inf", "multiply": "multiplicar|inf",
+    "uplift": "enaltecer|inf", "imprison": "encarcelar|inf",
+    "endow": "dotar|inf", "chirp": "piar|inf", "enlighten": "iluminar|inf",
+    "gnaw": "roer|inf", "disquiet": "inquietar|inf", "feign": "fingir|inf",
+    "delineate": "delinear|inf", "neigh": "relinchar|inf",
+    "surpass": "superar|inf", "becloud": "ofuscar|inf",
+    "graving": "grabar|inf", "warn": "advertir|inf",
+    "binds": "ata", "shines": "brilla", "flows": "fluye", "got": "obtuvo",
+
+    # --- adverbios ------------------------------------------------------------
+    "sumptuously": "suntuosamente", "incorrectly": "incorrectamente",
+    "onwards": "en adelante", "daintily": "delicadamente",
+    "insolently": "insolentemente", "farewell": "adiós",
+    "soldiers'": "de los soldados",
+
+    # --- latín ----------------------------------------------------------------
+    # «perh. = lapis lazuli».
+    "lapis": "lapis", "lazuli": "lazuli",
+})
+
+FRASES.update({
+    "approaching God": "acercarse a Dios",
+})

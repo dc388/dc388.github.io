@@ -90,6 +90,11 @@ SIGLAS: dict[str, str] = {
     "improb.": "improbable", "sacrif.": "sacrificó",
     "cop.": "copulativo", "subjunc.": "subjuntivo",
     "altern.": "alternativa", "etymol.": "etimología",
+    "suff.": "sufijo", "subscr.": "suscripción",
+    "inscr.": "inscripción", "metath.": "metátesis",
+    "ed.": "edición", "ins.": "insértese", "insignif.": "insignificante",
+    "format.": "formación",
+    "uncontr.": "sin contraer",
     "pregn.": "pregnante",      # «constr. pregn.»: construcción pregnante
     "elsew.": "en otros lugares", "ap.": "apud",
     "dei": "de dios",            # «as design. dei»: designación de la deidad
