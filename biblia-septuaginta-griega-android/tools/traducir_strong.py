@@ -4200,3 +4200,204 @@ FRASES.update({
     "I am": "yo soy",
     "completing contracts": "cumplir contratos",
 })
+
+
+# Décima tanda. 165 palabras. Mismas exclusiones de siempre, más «notice» y
+# «swathing», que sueltas no dan nada («escapar aviso del todo») y con su
+# complemento sí.
+
+PALABRAS.update({
+    # --- cosas ----------------------------------------------------------------
+    "touchstone": "piedra de toque|sus", "amethyst": "amatista|sus",
+    "cymbal": "címbalo|sus", "diadem": "diadema|sus",
+    "halter": "ronzal|sus", "chests": "arcas|sus",
+    "denarius": "denario|sus", "half-shekel": "medio siclo|sus",
+    "inscription": "inscripción|sus", "braiding": "trenzado|sus",
+    "sores": "llagas|sus", "bulk": "volumen|sus",
+
+    # --- personas -------------------------------------------------------------
+    "infants": "niños|sus", "newborn": "recién nacido|adj",
+    "guests": "huéspedes|sus", "elders": "ancianos|sus",
+    "centurion": "centurión|sus", "gaoler": "carcelero|sus",
+    "craftsman": "artesano|sus", "creator": "creador|sus",
+    "navigators": "navegantes|sus", "proselytes": "prosélitos|sus",
+    "accuser": "acusador|sus", "wizard": "brujo|sus",
+    "archangel": "arcángel|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "vainglory": "vanagloria|sus", "enrolment": "censo|sus",
+    "refreshment": "alivio|sus", "shamelessness": "desvergüenza|sus",
+    "deceitfulness": "falacia|sus", "arrival": "llegada|sus",
+    "consequences": "consecuencias|sus", "pollution": "contaminación|sus",
+    "deputation": "delegación|sus", "renown": "renombre|sus",
+    "long-suffering": "longanimidad|sus", "perseverance": "perseverancia|sus",
+    "visitation": "visitación|sus", "bulwark": "baluarte|sus",
+    "acquittal": "absolución|sus", "withering": "marchitamiento|sus",
+    "solecism": "solecismo|sus", "levity": "ligereza|sus",
+    "subsistence": "sustento|sus", "selection": "selección|sus",
+    "introduction": "introducción|sus", "amazement": "asombro|sus",
+    "reform": "reforma|sus", "timidity": "timidez|sus",
+    "enumerations": "enumeraciones|sus", "valour": "valor|sus",
+    "dirge": "endecha|sus", "shewing": "manifestación|sus",
+    "testament": "testamento|sus", "orders": "órdenes|sus",
+    "dinner": "comida|sus", "supper": "cena|sus", "wedding": "boda|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "stringent": "astringente|adj", "fitted": "apto|adj",
+    "tribal": "tribal|adj", "careless": "descuidado|adj",
+    "forbearing": "sufrido|adj", "truthful": "veraz|adj",
+    "successive": "sucesivo|adj", "unspeakable": "inefable|adj",
+    "implacable": "implacable|adj", "talkative": "hablador|adj",
+    "licentious": "licencioso|adj", "inexpressible": "inexpresable|adj",
+    "shapeless": "informe|adj", "unhallowed": "profano|adj",
+    "elect": "elegido|adj", "inarticulate": "inarticulado|adj",
+    "cowardly": "cobarde|adj", "pastoral": "pastoral|adj",
+    "translatable": "traducible|adj", "curious": "curioso|adj",
+    "earthly": "terrenal|adj", "illustrious": "ilustre|adj",
+    "leathern": "de cuero|adj", "geographical": "geográfico|adj",
+    "affrighted": "despavorido|adj", "directive": "directivo|adj",
+    "nuptial": "nupcial|adj", "smallest": "más pequeño|adj",
+    "contemporary": "contemporáneo|adj", "obsolete": "obsoleto|adj",
+    "light-armed": "con armadura ligera|adj", "charming": "encantador|adj",
+    "satisfactory": "satisfactorio|adj", "another's": "ajeno|adj",
+
+    # --- participios ----------------------------------------------------------
+    "illustrated": "ilustrado", "blended": "mezclado",
+    "outstretched": "extendido", "derived": "derivado",
+    "hoped": "esperado", "sacrificed": "sacrificado",
+    "denoted": "denotaba", "injured": "dañado", "minded": "dispuesto",
+    "flowed": "fluía", "frequenting": "que frecuenta",
+    "abstaining": "que se abstiene", "resting": "que descansa",
+
+    # --- verbos ---------------------------------------------------------------
+    "refute": "refutar|inf", "stammer": "balbucear|inf",
+    "mutter": "murmurar|inf", "arouse": "despertar|inf",
+    "awaken": "desvelar|inf", "disgorge": "vomitar|inf",
+    "invade": "invadir|inf", "imply": "implicar|inf",
+    "nurture": "criar|inf", "impute": "imputar|inf",
+    "allure": "seducir|inf", "strain": "colar|inf",
+    "publish": "publicar|inf",
+    "brings": "trae", "includes": "incluye", "pays": "presta",
+    "ought": "debe",
+
+    # --- adverbios ------------------------------------------------------------
+    "assuredly": "ciertamente", "verbally": "verbalmente",
+    "confidently": "con confianza", "sometime": "alguna vez",
+    "thereafter": "después", "honourably": "honorablemente",
+    "lawfully": "legítimamente", "riotously": "desenfrenadamente",
+    "successively": "sucesivamente", "scantily": "escasamente",
+    "ship's": "del barco",
+
+    # --- latín y francés de las notas -----------------------------------------
+    # «cf. Lat. conventus agere» y «there is (Fr. il y a)».
+    "agere": "agere", "il": "il",
+})
+
+FRASES.update({
+    "escape notice": "pasar inadvertido",
+    "swathing a dead body": "amortajar un cuerpo",
+})
+
+
+# Undécima tanda. 170 palabras.
+
+PALABRAS.update({
+    # --- el mar y el barco ----------------------------------------------------
+    "sailors": "marineros|sus", "reef": "arrecife|sus",
+    "billow": "oleada|sus", "deluge": "diluvio|sus",
+    "swim": "nadar|inf", "ashore": "a tierra",
+
+    # --- la casa y el taller --------------------------------------------------
+    "terrace": "terraza|sus", "hall": "sala|sus", "patch": "remiendo|sus",
+    "tassel": "borla|sus", "lantern": "linterna|sus", "key": "llave|sus",
+    "knuckles": "nudillos|sus", "breastplate": "coraza|sus",
+    "cummin": "comino|sus", "oxen": "bueyes|sus", "kid": "cabrito|sus",
+    "buds": "brotes|sus", "rainbow": "arco iris|sus",
+    "precipice": "precipicio|sus", "game": "caza|sus",
+
+    # --- personas -------------------------------------------------------------
+    "scholar": "erudito|sus", "tanner": "curtidor|sus",
+    "glutton": "glotón|sus", "hypocrite": "hipócrita|sus",
+    "giver": "dador|sus", "surety": "fiador|sus", "widows": "viudas|sus",
+    "brigand": "bandido|sus", "inventor": "inventor|sus",
+    "evangelist": "evangelista|sus", "granddaughter": "nieta|sus",
+    "partaker": "partícipe|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "questioning": "cuestionamiento|sus", "expulsion": "expulsión|sus",
+    "earnestness": "ahínco|sus", "ancestry": "ascendencia|sus",
+    "scourging": "flagelación|sus", "panic": "pánico|sus",
+    "shock": "sobresalto|sus", "almsgiving": "limosna|sus",
+    "alms": "limosnas|sus", "tradition": "tradición|sus",
+    "transliteration": "transliteración|sus", "eclipse": "eclipse|sus",
+    "accordance": "conformidad|sus", "smiting": "matanza|sus",
+    "law-suit": "pleito|sus", "outcome": "resultado|sus",
+    "communion": "comunión|sus", "hopes": "esperanzas|sus",
+    "weather": "tiempo|sus", "peril": "peligro|sus",
+    "impulses": "impulsos|sus", "revelling": "jolgorio|sus",
+    "encamping": "acampada|sus", "subversion": "subversión|sus",
+    "loquacity": "locuacidad|sus", "wrangling": "contienda|sus",
+    "accuracy": "exactitud|sus", "remedy": "remedio|sus",
+    "discretion": "discreción|sus", "malignity": "malignidad|sus",
+    "reconciliation": "reconciliación|sus", "colony": "colonia|sus",
+    "meals": "comidas|sus", "demeanour": "porte|sus",
+    "judging": "juicio|sus", "hymns": "himnos|sus",
+    "steering": "pilotaje|sus", "conceiving": "concepción|sus",
+    "godliness": "piedad|sus", "settling": "establecimiento|sus",
+    "bout": "ronda|sus", "facility": "facilidad|sus",
+    "rivalry": "rivalidad|sus", "status": "condición|sus",
+    "badness": "maldad|sus", "privileges": "privilegios|sus",
+    "hatred": "odio|sus", "babbling": "palabrería|sus",
+    "nodding": "cabeceo|sus", "conjectural": "conjetural|adj",
+
+    # --- adjetivos ------------------------------------------------------------
+    "urgent": "apremiante|adj", "branching": "ramificado|adj",
+    "twelfth": "duodécimo|adj", "sumptuous": "suntuoso|adj",
+    "hospitable": "hospitalario|adj", "syncopated": "sincopado|adj",
+    "colloquial": "coloquial|adj", "cautious": "cauto|adj",
+    "opportune": "propicio|adj", "prone": "propenso|adj",
+    "privileged": "privilegiado|adj", "desirous": "deseoso|adj",
+    "graceful": "agraciado|adj", "unskilled": "inexperto|adj",
+    "professional": "profesional|adj", "unused": "inusitado|adj",
+    "uttermost": "sumo|adj", "fruitless": "estéril|adj",
+    "goodly": "hermoso|adj", "mature": "maduro|adj",
+
+    # --- participios ----------------------------------------------------------
+    "roused": "despertado", "disputed": "disputado", "wont": "habituado",
+    "confounded": "aturdido", "desecrated": "profanado",
+    "actuated": "accionado", "approved": "aprobado", "softened": "suavizado",
+    "diminished": "disminuido", "proclaimed": "proclamado",
+    "docked": "desmochado", "lighted": "encendido", "cleansed": "limpiado",
+    "bordering": "que linda", "sacrificing": "que sacrifica",
+    "proposes": "propone",
+
+    # --- verbos ---------------------------------------------------------------
+    "beckon": "hacer señas|inf", "arbitrate": "arbitrar|inf",
+    "expound": "exponer|inf", "enfeeble": "enflaquecer|inf",
+    "intimidate": "intimidar|inf", "scoff": "mofarse|inf",
+    "administer": "administrar|inf", "deprave": "depravar|inf",
+    "appeal": "apelar|inf", "whiten": "blanquear|inf",
+    "branding": "marcar a fuego|inf", "baking": "cocer|inf",
+    "earn": "ganar|inf", "spue": "vomitar|inf", "bellow": "bramar|inf",
+    "apprehend": "aprehender|inf", "propitiate": "propiciar|inf",
+    "appease": "aplacar|inf", "buffet": "abofetear|inf",
+    "overpower": "vencer|inf", "flatter": "adular|inf",
+    "suckle": "amamantar|inf", "marvel": "maravillarse|inf",
+    "endue": "dotar|inf", "ill-treat": "maltratar|inf",
+    "annul": "anular|inf", "crawl": "arrastrarse|inf",
+    "prune": "podar|inf", "venture": "aventurarse|inf",
+    "communicate": "comunicar|inf", "censure": "censurar|inf",
+    "mete": "medir|inf",
+
+    # --- adverbios ------------------------------------------------------------
+    "vainly": "en vano", "finely": "finamente",
+
+    # --- latín ----------------------------------------------------------------
+    # «Lat. custodia» y «e contra, Field, Notes, 6».
+    "custodia": "custodia", "contra": "contra",
+})
+
+FRASES.update({
+    "rowing or sailing a boat": "remando o navegando una barca",
+    "swimming pool": "piscina|sus",
+})

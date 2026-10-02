@@ -89,6 +89,8 @@ SIGLAS: dict[str, str] = {
     "tr.": "traducido",           # «AV, tr. as = ῥυπάω»
     "improb.": "improbable", "sacrif.": "sacrificó",
     "cop.": "copulativo", "subjunc.": "subjuntivo",
+    "altern.": "alternativa", "etymol.": "etimología",
+    "pregn.": "pregnante",      # «constr. pregn.»: construcción pregnante
     "elsew.": "en otros lugares", "ap.": "apud",
     "dei": "de dios",            # «as design. dei»: designación de la deidad
     "Trans.": "transitivo", "Intrans.": "intransitivo", "Neut.": "neutro",
