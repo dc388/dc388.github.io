@@ -98,6 +98,9 @@ SIGLAS: dict[str, str] = {
     "punct.": "puntuación", "syncop.": "sincopado", "transl.": "traducido",
     "transpos.": "transposición", "cpd.": "compuesto", "abbr.": "abreviado",
     "instrum.": "instrumento", "urb.": "ciudad",
+    "mus.": "musical", "declar.": "declarativo", "crpt.": "corrupto",
+    "font.": "fuente", "emblemat.": "emblemático",
+    "subjunct.": "subjuntivo", "tech.": "técnico",
     "uncontr.": "sin contraer",
     "pregn.": "pregnante",      # «constr. pregn.»: construcción pregnante
     "elsew.": "en otros lugares", "ap.": "apud",
