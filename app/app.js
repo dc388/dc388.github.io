@@ -27,7 +27,7 @@ const APP_VERSION = 'pwa-0.1.0';
 // ?b=22 hasta ?b=34. Asi no habia forma de saber que build traia cada telefono
 // —justo lo que hacia falta para saber quien ya tenia un arreglo y quien no—.
 // Debe subirse JUNTO con el ?b= de index.html y la version de CACHE en sw.js.
-const BUILD = 'pwa-b34';
+const BUILD = 'pwa-b35';
 
 // ---------- utilidades ----------
 const $ = (id) => document.getElementById(id);
@@ -43,6 +43,38 @@ function show(screen) {
   ['loading', 'enroll', 'acuerdo', 'biometrico', 'selfie', 'enrolar-rostro', 'home', 'result', 'permisos', 'privacidad'].forEach((s) => { $(s).hidden = s !== screen; });
 }
 function busy(on, txt) { $('busy').hidden = !on; if (txt) $('busy-txt').textContent = txt; }
+
+/**
+ * Ultimo recurso cuando algo revienta fuera de un try.
+ *
+ * punch() enciende la capa de ocupado en su primera linea y su unico `finally`
+ * esta 150 lineas mas abajo: cualquier excepcion en medio —la ubicacion, el
+ * rostro, la subida de la foto— se escapaba sin apagarla, y el boton la llamaba
+ * como promesa suelta, sin catch. La persona se quedaba viendo el spinner sobre
+ * negro, sin mensaje y sin forma de reintentar, hasta que mataba la app.
+ *
+ * Apagar la capa es lo que importa; el texto es lo de menos. Un error que no
+ * sabemos explicar tiene que acabar igual en una pantalla con boton, no en un
+ * giro infinito. Y conviene que diga el detalle tecnico: la foto que manda el
+ * trabajador es, muchas veces, el unico rastro que llega.
+ */
+function fallaInesperada(e) {
+  try { busy(false); } catch (_) {}
+  const detalle = (e && (e.message || e.name)) || String(e || 'Error desconocido');
+  try {
+    showResult('warn', 'No se pudo completar',
+      'Algo fallo a media operacion y la app se quedo esperando. Vuelve a ' +
+      'intentar; si se repite, avisa y manda una foto de esta pantalla. ' +
+      'Detalle tecnico: ' + detalle);
+  } catch (_) { alert('No se pudo completar: ' + detalle); }
+}
+
+// Red global: cualquier promesa sin catch termina apagando la capa de ocupado.
+// Sin esto, cada `await` que alguien agregue manana vuelve a abrir la trampa.
+addEventListener('unhandledrejection', (ev) => fallaInesperada(ev.reason));
+// Solo errores de JavaScript: `error` tambien se dispara cuando no carga una
+// imagen, y eso NO debe sacar al trabajador de su pantalla.
+addEventListener('error', (ev) => { if (ev.error) fallaInesperada(ev.error); });
 
 // ---------- almacenamiento ----------
 const store = {
@@ -1583,7 +1615,7 @@ function bindUI() {
   $('bio-btn').addEventListener('click', () => decideBiometric('granted'));
   $('bio-alt').addEventListener('click', () => decideBiometric('declined'));
   document.querySelectorAll('[data-punch]').forEach((b) =>
-    b.addEventListener('click', () => punch(b.dataset.punch)));
+    b.addEventListener('click', () => { punch(b.dataset.punch).catch(fallaInesperada); }));
   $('result-ok').addEventListener('click', renderHome);
   $('signout').addEventListener('click', () => {
     // Esto NO es "cerrar sesion": deja el telefono sin registro y obliga a pedir
