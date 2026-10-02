@@ -93,7 +93,11 @@ SIGLAS: dict[str, str] = {
     "suff.": "sufijo", "subscr.": "suscripción",
     "inscr.": "inscripción", "metath.": "metátesis",
     "ed.": "edición", "ins.": "insértese", "insignif.": "insignificante",
-    "format.": "formación",
+    "format.": "formación", "individ.": "individuo",
+    "abst.": "abstracto", "cuneif.": "cuneiforme", "fam.": "familia",
+    "punct.": "puntuación", "syncop.": "sincopado", "transl.": "traducido",
+    "transpos.": "transposición", "cpd.": "compuesto", "abbr.": "abreviado",
+    "instrum.": "instrumento", "urb.": "ciudad",
     "uncontr.": "sin contraer",
     "pregn.": "pregnante",      # «constr. pregn.»: construcción pregnante
     "elsew.": "en otros lugares", "ap.": "apud",

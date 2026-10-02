@@ -4604,3 +4604,219 @@ PALABRAS.update({
 FRASES.update({
     "approaching God": "acercarse a Dios",
 })
+
+
+# Decimocuarta tanda. 190 palabras, casi todas de Brown-Driver-Briggs, que es
+# lo que queda. El registro es el del Antiguo Testamento: el ganado, el
+# tabernáculo, la guerra y el campo.
+
+PALABRAS.update({
+    # --- animales -------------------------------------------------------------
+    "hart": "ciervo|sus", "stag": "venado|sus", "doe": "cierva|sus",
+    "antelope": "antílope|sus", "mountain-goat": "cabra montés|sus",
+    "whelp": "cachorro|sus", "wolves": "lobos|sus", "camels": "camellos|sus",
+    "cud": "rumia|sus", "hump": "joroba|sus", "sinew": "tendón|sus",
+
+    # --- el tabernáculo y la casa ---------------------------------------------
+    "planks": "tablas|sus", "sockets": "encajes|sus",
+    "pedestals": "pedestales|sus", "columns": "columnas|sus",
+    "supporters": "soportes|sus", "lattice": "reja|sus",
+    "threads": "hebras|sus", "cylinder": "cilindro|sus",
+    "banner": "bandera|sus", "standards": "estandartes|sus",
+    "kettle": "caldero|sus", "pin": "clavija|sus", "wine-vat": "lagar|sus",
+    "palanquin": "palanquín|sus", "litter": "litera|sus",
+    "appendage": "apéndice|sus", "chalk": "yeso|sus",
+    "lye": "lejía|sus", "potash": "potasa|sus", "gravel": "cascajo|sus",
+    "clod": "terrón|sus", "daric": "dárico|sus",
+
+    # --- comida y campo -------------------------------------------------------
+    "cheese": "queso|sus", "curd": "cuajada|sus", "spelt": "espelta|sus",
+    "provender": "forraje|sus", "raisin-cake": "torta de pasas|sus",
+    "acacia": "acacia|sus", "fir": "abeto|sus", "apples": "manzanas|sus",
+    "vintage": "vendimia|sus", "harbor": "puerto|sus",
+    "ravines": "barrancos|sus", "ocean": "océano|sus",
+    "sources": "fuentes|sus", "dropping": "goteo|sus",
+    "rain-storm": "aguacero|sus", "zodiac": "zodíaco|sus",
+
+    # --- culto y guerra -------------------------------------------------------
+    "trespass-offering": "ofrenda por la culpa|sus",
+    "refuse-heap": "muladar|sus", "battle-fields": "campos de batalla|sus",
+    "satraps": "sátrapas|sus", "captains": "capitanes|sus",
+    "non-combatants": "no combatientes|sus", "raid": "correría|sus",
+    "liers-in-wait": "emboscados|sus", "fugitives": "fugitivos|sus",
+    "covenants": "pactos|sus", "breaches": "brechas|sus",
+    "outcasts": "proscritos|sus", "corpses": "cadáveres|sus",
+
+    # --- el cuerpo ------------------------------------------------------------
+    "soles": "plantas|sus", "gums": "encías|sus",
+    "testicle": "testículo|sus", "cuttings": "sajaduras|sus",
+
+    # --- personas -------------------------------------------------------------
+    "foster-mother": "nodriza|sus", "foster-father": "padre adoptivo|sus",
+    "whisperers": "susurradores|sus", "fisher": "pescador|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "permanence": "permanencia|sus", "fierceness": "fiereza|sus",
+    "gloominess": "lobreguez|sus", "intrigue": "intriga|sus",
+    "spoiling": "saqueo|sus", "greed": "avaricia|sus",
+    "alarms": "sobresaltos|sus", "dearth": "carestía|sus",
+    "luxuriance": "exuberancia|sus", "halves": "mitades|sus",
+    "hewing": "labra|sus", "secrets": "secretos|sus",
+    "aversion": "aversión|sus", "moaning": "gemido|sus",
+    "meditation": "meditación|sus", "disaster": "desastre|sus",
+    "discomfiture": "desbarate|sus", "superabundance": "superabundancia|sus",
+    "shouting": "griterío|sus", "songs": "cánticos|sus",
+    "poems": "poemas|sus", "charms": "ensalmos|sus",
+    "changes": "cambios|sus", "dashing": "embate|sus",
+    "red-purple": "púrpura roja|sus", "thorn-bush": "zarzal|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "keen": "agudo|adj", "keener": "más agudo|adj",
+    "perennial": "perenne|adj", "ever-flowing": "de curso perpetuo|adj",
+    "disappointing": "decepcionante|adj", "consuming": "consumidor|adj",
+    "harmless": "inofensivo|adj", "hasty": "presuroso|adj",
+    "funereal": "funerario|adj", "spotted": "moteado|adj",
+    "populous": "populoso|adj", "folding": "plegable|adj",
+    "unwell": "indispuesto|adj", "boisterous": "bullicioso|adj",
+    "turbulent": "turbulento|adj", "presumptuous": "presuntuoso|adj",
+    "fraternal": "fraternal|adj",
+
+    # --- participios ----------------------------------------------------------
+    "designated": "designado", "fastened": "sujetado", "arisen": "surgido",
+    "marred": "estropeado", "confirmed": "confirmado",
+    "verified": "verificado", "allowed": "permitido",
+    "transported": "deportado", "cursed": "maldecido",
+    "swallowed": "tragado", "emptied": "vaciado", "stained": "manchado",
+    "healed": "sanado", "decreed": "decretado", "erected": "erigido",
+    "weaned": "destetado", "rained": "llovido", "trampled": "pisoteado",
+    "threshed": "trillado", "quenched": "apagado", "cleared": "despejado",
+    "saturated": "saturado", "deceived": "engañado", "warned": "advertido",
+    "admonished": "amonestado", "sodden": "hervido", "accounted": "tenido",
+    "stopping": "que tapa", "confining": "que retiene",
+    "journeying": "que viaja", "occasioning": "que ocasiona",
+
+    # --- verbos ---------------------------------------------------------------
+    "bake": "hornear|inf", "startle": "sobresaltar|inf",
+    "assail": "acometer|inf", "seethe": "hervir|inf",
+    "rinse": "enjuagar|inf", "pulverize": "pulverizar|inf",
+    "muse": "cavilar|inf", "discomfit": "desbaratar|inf",
+    "sharpeneth": "afila", "blesseth": "bendice", "hides": "esconde",
+    "seeth": "ve", "defeated": "derrotó", "danceth": "danza",
+
+    # --- adverbios ------------------------------------------------------------
+    "swiftly": "velozmente", "emptily": "vanamente",
+})
+
+FRASES.update({
+    # «the apple of his eye»: en español la niña, no la manzana.
+    "the apple of his eye": "la niña de su ojo",
+})
+
+
+# Decimoquinta tanda. 195 palabras.
+
+PALABRAS.update({
+    # --- plantas y animales ---------------------------------------------------
+    "olive-tree": "olivo|sus", "almond-tree": "almendro|sus",
+    "poplar": "álamo|sus", "shrub": "arbusto|sus", "leeks": "puerros|sus",
+    "mole": "topo|sus", "chameleon": "camaleón|sus",
+    "ewe-lamb": "cordera|sus", "fatling": "cebón|sus",
+    "scarab": "escarabajo|sus", "ruby": "rubí|sus",
+
+    # --- el cuerpo ------------------------------------------------------------
+    "beard": "barba|sus", "venom": "veneno|sus", "pains": "dolores|sus",
+    "wounds": "heridas|sus", "tumours": "tumores|sus",
+    "menstruation": "menstruación|sus",
+
+    # --- cosas ----------------------------------------------------------------
+    "mast": "mástil|sus", "ladder": "escalera|sus", "cage": "jaula|sus",
+    "besom": "escoba|sus", "pan": "sartén|sus", "grating": "rejilla|sus",
+    "snuffers": "despabiladeras|sus", "threshing-sledge": "trillo|sus",
+    "weights": "pesas|sus", "rings": "anillos|sus",
+    "nave": "cubo de rueda|sus", "asphalt": "asfalto|sus",
+    "pipes": "flautas|sus", "stuffs": "telas|sus",
+    "ensign": "enseña|sus", "toilet": "aseo|sus",
+    "building-material": "material de construcción|sus",
+    "hand-breadth": "palmo menor|sus",
+
+    # --- personas -------------------------------------------------------------
+    "guardsman": "guardia|sus", "guards": "guardianes|sus",
+    "body-guard": "guardia personal|sus", "archers": "arqueros|sus",
+    "players": "tañedores|sus", "digger": "excavador|sus",
+    "oppressor": "opresor|sus", "restorer": "restaurador|sus",
+    "rebuilder": "reconstructor|sus", "knave": "bribón|sus",
+    "scorner": "escarnecedor|sus", "scorners": "escarnecedores|sus",
+    "patriarchs": "patriarcas|sus", "sister-in-law": "cuñada|sus",
+    "damsel": "doncella|sus", "cave-dweller": "habitante de cuevas|sus",
+
+    # --- culto, campo, guerra -------------------------------------------------
+    "pilgrim-feast": "fiesta de peregrinación|sus",
+    "tent-village": "aldea de tiendas|sus", "vineyards": "viñas|sus",
+    "gleaning": "espigueo|sus", "handful": "puñado|sus",
+    "conquest": "conquista|sus", "forces": "fuerzas|sus",
+    "spell": "conjuro|sus", "enchantments": "encantamientos|sus",
+    "prescribed-portion": "porción prescrita|sus",
+    "enactments": "preceptos|sus", "transgressions": "transgresiones|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "humour": "humor|sus", "shrewdness": "sagacidad|sus",
+    "harshness": "aspereza|sus", "trepidation": "turbación|sus",
+    "clearness": "claridad|sus", "attestation": "atestación|sus",
+    "communication": "comunicación|sus", "invention": "invención|sus",
+    "carving": "talla|sus", "imprintment": "impresión|sus",
+    "slaughtering": "degüello|sus", "hurling": "lanzamiento|sus",
+    "repairing": "reparación|sus", "confinement": "confinamiento|sus",
+    "consumption": "aniquilación|sus", "evenness": "uniformidad|sus",
+    "dimensions": "dimensiones|sus", "chambers": "cámaras|sus",
+    "goings": "salidas|sus", "fragments": "fragmentos|sus",
+    "braying": "majadura|sus", "down-treading": "sometimiento|sus",
+    "tying": "ligadura|sus", "pottery": "alfarería|sus",
+    "products": "productos|sus", "masses": "masas|sus",
+    "ingredient": "ingrediente|sus", "desirableness": "atractivo|sus",
+    "daytime": "día|sus", "pendant": "colgante|adj",
+
+    # --- adjetivos ------------------------------------------------------------
+    "international": "internacional|adj", "vaulted": "abovedado|adj",
+    "normal": "normal|adj", "eruptive": "eruptivo|adj", "acrid": "acre|adj",
+    "artistic": "artístico|adj", "ingenious": "ingenioso|adj",
+    "smoking": "humeante|adj", "cramped": "estrecho|adj",
+    "scant": "escaso|adj", "juicy": "jugoso|adj",
+    "stammering": "tartamudo|adj", "devious": "sinuoso|adj",
+    "hypocritical": "hipócrita|adj", "gorgeous": "espléndido|adj",
+    "barefoot": "descalzo|adj", "ultimate": "último|adj",
+    "sherd": "tiesto|sus",
+
+    # --- participios ----------------------------------------------------------
+    "perforated": "perforado", "spared": "perdonado", "trained": "adiestrado",
+    "reproached": "reprochado", "carved": "tallado", "inscribed": "inscrito",
+    "attacked": "atacado", "dipped": "sumergido", "corrected": "corregido",
+    "stayed": "detenido", "mended": "remendado", "restricted": "restringido",
+    "alienated": "alienado", "conjectured": "conjeturado",
+    "intended": "pretendido", "cornered": "arrinconado", "digged": "cavado",
+    "girt": "ceñido", "netted": "tejido en red",
+    "acquianted": "familiarizado",     # así, con la errata, viene de la fuente
+    "wounding": "que hiere", "strangling": "que estrangula",
+    "interfering": "que interfiere",
+
+    # --- verbos ---------------------------------------------------------------
+    "lavish": "prodigar|inf", "refine": "refinar|inf",
+    "brace": "fortalecer|inf", "explore": "explorar|inf",
+    "bray": "majar|inf", "exert": "esforzar|inf", "nip": "desnucar|inf",
+    "disappoint": "decepcionar|inf", "decrease": "disminuir|inf",
+    "becometh": "se vuelve", "gathers": "recoge", "gathereth": "reúne",
+    "giveth": "da", "divideth": "divide", "apportioneth": "reparte",
+    "laugheth": "ríe", "pleadeth": "pleitea", "strivest": "compites",
+    "intends": "pretende",
+
+    # --- adverbios ------------------------------------------------------------
+    "hungrily": "con hambre", "ere": "antes de", "foolishly": "neciamente",
+    "shrilly": "con estridencia", "wildly": "desatinadamente",
+    "emphatically": "enfáticamente", "daughter's": "de la hija",
+
+    # --- lo que viene del persa y del acadio ----------------------------------
+    "khan": "khan",
+})
+
+FRASES.update({
+    "springing motion": "movimiento de resorte",
+})
