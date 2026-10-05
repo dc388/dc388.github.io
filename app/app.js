@@ -27,7 +27,7 @@ const APP_VERSION = 'pwa-0.1.0';
 // ?b=22 hasta ?b=34. Asi no habia forma de saber que build traia cada telefono
 // —justo lo que hacia falta para saber quien ya tenia un arreglo y quien no—.
 // Debe subirse JUNTO con el ?b= de index.html y la version de CACHE en sw.js.
-const BUILD = 'pwa-b36';
+const BUILD = 'pwa-b37';
 
 // ---------- utilidades ----------
 const $ = (id) => document.getElementById(id);
@@ -1600,14 +1600,36 @@ function bindUI() {
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
     $('enroll-btn').disabled = e.target.value.length < 6;
   });
+  // El codigo de registro es DE UN SOLO USO: el servidor lo marca usado en el
+  // primer canje y al segundo contesta que ya se uso. Sin este candado, dos
+  // toques seguidos queman el codigo de la persona y la dejan fuera —y la
+  // gente aprendio a tocar varias veces justo cuando la app se quedaba
+  // pensando—. Paso de verdad: el 5 de octubre Enrique recibio un codigo a
+  // las 11:59 y a las 12:06 ya le decia "invalido o ya se uso".
   $('enroll-btn').addEventListener('click', async () => {
+    const btn = $('enroll-btn');
+    if (btn.disabled) return;
+    btn.disabled = true;
     // A partir de aqui manda el codigo, no la reanudacion en segundo plano.
     REGISTRANDO_CON_CODIGO = true;
     const aviso = $('enroll-reconecta');
     if (aviso) aviso.hidden = true;
-    const r = await enroll($('code').value);
     const msg = $('enroll-msg');
     const ref = $('enroll-ref');
+    let r;
+    try {
+      r = await enroll($('code').value);
+    } catch (e) {
+      // Si enroll() revienta, el codigo PUDO haberse consumido en el
+      // servidor. Decirlo es mejor que un mensaje seco: evita que la persona
+      // reintente con el mismo y crea que ella lo quemo.
+      REGISTRANDO_CON_CODIGO = false;
+      msg.className = 'msg err';
+      msg.textContent = 'Se cayo la conexion al enviar el codigo. Vuelve a ' +
+        'intentar; si dice que ya se uso, pide uno nuevo: no fue culpa tuya.';
+      btn.disabled = $('code').value.length < 6;
+      return;
+    }
     if (r.ok) { msg.textContent = ''; if (ref) ref.hidden = true; gateAgreements(); }
     else {
       REGISTRANDO_CON_CODIGO = false;
@@ -1618,6 +1640,9 @@ function bindUI() {
         ref.textContent = t;
         ref.hidden = !t;
       }
+      // Se libera SOLO si fallo: si entro, la pantalla ya cambio y reactivar
+      // el boton solo invita a un segundo canje del mismo codigo.
+      btn.disabled = $('code').value.length < 6;
     }
   });
   document.querySelectorAll('#ac-checks input').forEach((c) => c.addEventListener('change', () => {
