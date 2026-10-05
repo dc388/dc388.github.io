@@ -27,7 +27,7 @@ const APP_VERSION = 'pwa-0.1.0';
 // ?b=22 hasta ?b=34. Asi no habia forma de saber que build traia cada telefono
 // —justo lo que hacia falta para saber quien ya tenia un arreglo y quien no—.
 // Debe subirse JUNTO con el ?b= de index.html y la version de CACHE en sw.js.
-const BUILD = 'pwa-b38';
+const BUILD = 'pwa-b39';
 
 // ---------- utilidades ----------
 const $ = (id) => document.getElementById(id);
@@ -1190,12 +1190,12 @@ function captureSelfie(label, required) {
         const c = $('selfie-canvas');
         const w = video.videoWidth || 480, h = video.videoHeight || 480;
         const side = Math.min(w, h);
-        c.width = 480; c.height = 480;
+        c.width = 320; c.height = 320;
         const ctx = c.getContext('2d');
         // Recorte cuadrado centrado, sin espejo en el archivo (el espejo es solo
         // para que el trabajador se vea natural en pantalla).
-        ctx.drawImage(video, (w - side) / 2, (h - side) / 2, side, side, 0, 0, 480, 480);
-        c.toBlob((blob) => { cleanup(); resolve(blob); }, 'image/jpeg', 0.7);
+        ctx.drawImage(video, (w - side) / 2, (h - side) / 2, side, side, 0, 0, 320, 320);
+        c.toBlob((blob) => { cleanup(); resolve(blob); }, 'image/jpeg', 0.55);
       } catch (e) { cleanup(); resolve(null); }
     };
   });
@@ -1228,29 +1228,36 @@ async function punch(type) {
   busy(true, 'Obteniendo ubicación…');
   const dev = await ensureDevice();
   const loc = await getLocation();
-  if (loc.status !== 'AUTORIZADA') {
+  // Permiso NEGADO: aqui si se detiene, y se explica donde activarlo. Es lo
+  // unico que la persona puede arreglar por su cuenta, y dejarlo pasar
+  // convertiria "apagar la ubicacion" en la forma comoda de checar desde la
+  // casa.
+  if (loc.status === 'DENEGADA') {
     busy(false);
     const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    let detalle;
-    if (loc.status === 'DENEGADA') {
-      // Guia CONCRETA por equipo: "actívala en configuración" no le dice a nadie
-      // dónde. En iPhone el permiso vive en Localización, no en los ajustes de la
-      // app, y por eso la gente no lo encontraba.
-      detalle = esIOS
-        ? 'La ubicación está bloqueada en este iPhone. Actívala así: Ajustes → ' +
-          'Privacidad y seguridad → Localización (enciéndela) → «Sitios web de ' +
-          'Safari» → «Al usar la app». Luego regresa aquí, recarga y toca checar. ' +
-          'Conviene agregar la app a la pantalla de inicio (botón Compartir → ' +
-          '«Agregar a inicio»): así es más estable y te pregunta el permiso al abrir.'
-        : 'La ubicación está bloqueada para este sitio. Tócalo en el candado ' +
-          'junto a la dirección → Ubicación → Permitir, recarga e intenta de nuevo.';
-    } else {
-      detalle = 'No se pudo obtener tu ubicación (señal débil o GPS ocupado). ' +
-        'Ponte donde haya buena señal o cielo abierto e intenta de nuevo.';
-    }
-    return showResult('warn', 'Falta ubicación', detalle);
+    return showResult('warn', 'Falta ubicación', esIOS
+      ? 'La ubicación está bloqueada en este iPhone. Actívala así: Ajustes → ' +
+        'Privacidad y seguridad → Localización (enciéndela) → «Sitios web de ' +
+        'Safari» → «Al usar la app». Luego regresa aquí, recarga y toca checar. ' +
+        'Conviene agregar la app a la pantalla de inicio (botón Compartir → ' +
+        '«Agregar a inicio»): así es más estable y te pregunta el permiso al abrir.'
+      : 'La ubicación está bloqueada para este sitio. Tócalo en el candado ' +
+        'junto a la dirección → Ubicación → Permitir, recarga e intenta de nuevo.');
   }
+
+  // GPS que NO FIJA —nave con techo metalico, sin señal, cielo tapado— no es
+  // culpa de nadie y la persona no puede hacer nada al respecto. Antes la
+  // checada se perdia aqui mismo: no se mandaba, no se encolaba, no quedaba
+  // rastro ni en el telefono ni en el servidor. El trabajador creia haber
+  // checado y no existia nada.
+  //
+  // Ahora la checada SIGUE su camino sin coordenadas. El servidor la guarda
+  // marcada "sin ubicacion" —el texto firmado lleva los campos vacios y el
+  // servidor los lee como nulos— y RH la ve y decide. Una checada anotada
+  // vale mas que una que no existe.
+  const sinUbicacion = loc.status !== 'AUTORIZADA';
+
   const opId = uuid();
 
   // Reto de "persona presente" con Face ID/Touch ID, verificado EN EL SERVIDOR:
@@ -1356,7 +1363,10 @@ async function punch(type) {
       'intentarlo: acércate, con buena luz, y si te pide la foto, tómala.');
   }
 
-  busy(true, 'Registrando checada…');
+  // Se dice en la pantalla: si la checada va sin coordenadas, la persona tiene
+  // que enterarse en el momento, no cuando le reclamen el dia.
+  busy(true, sinUbicacion ? 'Registrando checada (sin ubicación)…'
+                          : 'Registrando checada…');
 
   const deviceMs = Date.now();
   const payload = ['checada.v2', opId, dev.id, type, String(deviceMs),
@@ -1374,8 +1384,10 @@ async function punch(type) {
     challenge_id: faceChallengeId || undefined,
     liveness_passed: faceLiveness == null ? undefined : faceLiveness,
     pad_score: facePad == null ? undefined : facePad,
-    latitude: Number(f6(loc.lat)), longitude: Number(f6(loc.lng)),
-    gps_accuracy_meters: Number(f1(loc.acc)), mock_location: false,
+    latitude: loc.lat == null ? null : Number(f6(loc.lat)),
+    longitude: loc.lng == null ? null : Number(f6(loc.lng)),
+    gps_accuracy_meters: loc.acc == null ? null : Number(f1(loc.acc)),
+    mock_location: false,
     integrity_level: 'amber', origin: 'online',
     audit_photo_path: auditPhotoPath || undefined,
     webauthn: webauthn || undefined,
