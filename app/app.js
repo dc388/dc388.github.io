@@ -27,7 +27,7 @@ const APP_VERSION = 'pwa-0.1.0';
 // ?b=22 hasta ?b=34. Asi no habia forma de saber que build traia cada telefono
 // —justo lo que hacia falta para saber quien ya tenia un arreglo y quien no—.
 // Debe subirse JUNTO con el ?b= de index.html y la version de CACHE en sw.js.
-const BUILD = 'pwa-b37';
+const BUILD = 'pwa-b38';
 
 // ---------- utilidades ----------
 const $ = (id) => document.getElementById(id);
@@ -1591,7 +1591,55 @@ async function renderPrivacidad() {
 }
 
 // ---------- arranque ----------
+
+/**
+ * Codigo traido en el enlace: .../app/?c=544239
+ *
+ * RH reparte los codigos por WhatsApp, y teclear seis digitos en el telefono
+ * de la nave es donde mas se tropieza la gente: un digito de mas, el campo que
+ * los corta, o de plano se copia con un espacio. Con el codigo en el enlace la
+ * persona toca y el campo ya viene lleno.
+ *
+ * NO se canjea solo. El boton sigue siendo un acto deliberado: un enlace que
+ * registrara el telefono con solo abrirlo convertiria cualquier vista previa
+ * —la de WhatsApp, la del navegador— en un canje accidental, y el codigo es de
+ * un solo uso.
+ *
+ * El codigo se borra de la barra de direcciones en cuanto se lee. Asi no queda
+ * en el historial ni se reenvia al compartir la pagina, que es la forma mas
+ * facil de que el codigo de alguien acabe en otro telefono.
+ */
+const LLAVE_CODIGO_ENLACE = 'codigo-del-enlace';
+
+function codigoDelEnlace() {
+  let v = null;
+  try { v = new URLSearchParams(location.search).get('c'); } catch (e) { v = null; }
+
+  if (v && /^\d{6,10}$/.test(v)) {
+    // Se guarda ANTES de limpiar la URL. El service worker recarga la pagina
+    // en cuanto toma el control (controllerchange, mas abajo), y eso ocurre
+    // justo en la PRIMERA visita: el unico momento en que el codigo del
+    // enlace hace falta. Sin esta copia, limpiar la direccion lo borraba a los
+    // 150 ms y el campo aparecia vacio.
+    try { sessionStorage.setItem(LLAVE_CODIGO_ENLACE, v); } catch (e) {}
+    try {
+      history.replaceState(null, '', location.pathname + location.hash);
+    } catch (e) { /* navegador que no deja: el codigo se queda a la vista */ }
+  } else {
+    // Venimos de la recarga del service worker: la URL ya esta limpia.
+    try { v = sessionStorage.getItem(LLAVE_CODIGO_ENLACE); } catch (e) { v = null; }
+    if (!v || !/^\d{6,10}$/.test(v)) return;
+  }
+
+  const campo = $('code');
+  if (!campo) return;
+  campo.value = v;
+  const btn = $('enroll-btn');
+  if (btn) btn.disabled = false;
+}
+
 function bindUI() {
+  codigoDelEnlace();
   $('code').addEventListener('input', (e) => {
     // De 6 a 10 digitos. Los de un solo uso son de 6; el REUTILIZABLE que RH
     // entrega para no volver a llamar es de 8. Cortar a 6 dejaba a la persona
@@ -1630,7 +1678,10 @@ function bindUI() {
       btn.disabled = $('code').value.length < 6;
       return;
     }
-    if (r.ok) { msg.textContent = ''; if (ref) ref.hidden = true; gateAgreements(); }
+    if (r.ok) {
+      try { sessionStorage.removeItem(LLAVE_CODIGO_ENLACE); } catch (e) {}
+      msg.textContent = ''; if (ref) ref.hidden = true; gateAgreements();
+    }
     else {
       REGISTRANDO_CON_CODIGO = false;
       msg.className = 'msg err';
