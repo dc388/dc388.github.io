@@ -1,6 +1,6 @@
 /* Service worker LUFT: cachea el "app shell" para que la app abra AL INSTANTE,
    con o sin internet. Las llamadas al backend NUNCA se cachean (van a la red). */
-const CACHE = 'luft-shell-v39';
+const CACHE = 'luft-shell-v40';
 const SHELL = [
   './', './index.html', './styles.css', './app.js', './face.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png',
