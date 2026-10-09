@@ -411,6 +411,34 @@ SIGLAS.update({
     "prol.": "prólogo",
     "dim.": "diminutivo",
     "qu.": "pregunta",
+    # «l.c.» es «loco citato». La cadena se partía en «l.» y «c.», y como
+    # «c.» es el «cum» latino, 65 artículos remitían a «l. con.».
+    "l.c.": "lug. cit.",
+    "ll.c.": "lugs. cits.",
+    # «Art.» al principio de una remisión —«cf. Art. Communion, DB»— es la
+    # misma sigla. Hay que ponerla entera porque «art» a secas ya no vale:
+    # la recuperaba la pasada en minúscula, y esa puerta está cerrada.
+    "Art.": "artículo",
+})
+
+SIGLAS.update({
+    # «Da LXX», «Da TH»: Daniel. Va con mayúscula a propósito, porque el «da»
+    # en minúscula de «(Lat. da operam)» es latín y no el libro.
+    "Da": "Dn",
+    # «Si 7:33א(AB, χάρις)»: los manuscritos, no un código de BDB.
+    "AB": "AB",
+    # Apellidos de editores que se citan a secas y no se traducen.
+    "Hort": "Hort",
+    # «dial. deor.» es el título de Luciano, «Diálogos de los dioses».
+    "deor.": "deor.",
+    # «חוה aph.»: el afel, el tronco causativo del arameo.
+    "aph.": "afel",
+    "corresp.": "correspondiente",
+    # «Epp. Paul.», «Westc., Epp. Jo.»: las epístolas.
+    "Epp.": "Epístolas",
+    "epp.": "epístolas",
+    # «n.pr.divin.»: nombre propio de divinidad.
+    "divin.": "divino",
 })
 
 # Lo que no está en ningún idioma y pasa tal cual: hebreo, griego, cifras,
@@ -452,7 +480,16 @@ def _desnudar(pieza: str) -> tuple[str, str, str]:
 # («V. Milligan» = see) quedaron reconocidas también sin punto, y entonces
 # «B.C. 681-668» —que el trozador parte en «B», «.», «C», «.»— salía «B. con.
 # 681-668». La fecha de Esarhadón no lleva preposición.
-_NUNCA_SIN_PUNTO = {"As", "C", "V"}
+# «art» se añade por lo mismo: «art.» es «artículo», pero las ocho veces que
+# la palabra sale sin punto no es ninguna sigla, sino el sustantivo inglés
+# —«art, craft, trade»— o el «thou art» arcaico, y «artículo, maña, comercio»
+# no es lo que dice τέχνη.
+# «Pe» es el caso más caro de todos: «Pe.» es el peal arameo, pero de las 933
+# veces que la sigla sale sin punto, 913 son la carta de Pedro. Mientras
+# estuvo en la lista sin punto, 477 artículos publicados decían «II Peal
+# 2:12» donde la fuente citaba 2 Pedro. Sin punto se deja pasar como pasan
+# «Mt» o «Lk», que tampoco son siglas sino el libro.
+_NUNCA_SIN_PUNTO = {"As", "C", "V", "art", "Pe"}
 
 # Las mismas siglas sin el punto final: las dos obras lo ponen o no según les
 # viene («pl.» y «pl»). La búsqueda respeta las mayúsculas a propósito: sin eso,

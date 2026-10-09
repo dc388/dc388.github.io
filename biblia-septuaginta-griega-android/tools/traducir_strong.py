@@ -5262,3 +5262,236 @@ PALABRAS.update({
 FRASES.update({
     "vine dresser": "viñador|sus",
 })
+
+
+# Vigésima tanda. 275 palabras y 40 frases.
+#
+# Esta vez el trabajo no ha sido buscar palabras nuevas sino desatascar las
+# que llevaban diecinueve tandas apartadas por ambiguas. Nueve de las diez que
+# más artículos bloqueaban —«sore», «rent», «craft», «scale», «spreading»,
+# «working», «entering», «rolling», «uttering»— eran la misma clase de
+# problema: en inglés una sola forma hace de sustantivo y de gerundio, y en
+# español no hay una palabra que valga para las dos.
+#
+# La salida ha sido fijar la acepción rara con una frase y dejar la corriente
+# en la palabra suelta. «sore» vale «llaga» a secas, y «sore troubled» —que no
+# es ninguna llaga sino «muy afligido»— se resuelve entera antes de llegar a
+# ella. Así con las nueve.
+#
+# Siguen fuera, y por las mismas razones de siempre, «hit», «coat», «stopped»,
+# «serving», «doth», «wilt» y «did». Las cuatro últimas son auxiliares: «thou
+# wilt dash in pieces» es «destrozarás», y eso no se arma palabra a palabra.
+FRASES.update({
+    # llaga y no otra cosa
+    "a spreading sore": "una llaga que se extiende",
+    "an eating sore": "una llaga que corroe",
+    "leads to mortification": "lleva a la gangrena",
+    "sore troubled": "muy afligido",
+    "sore thy smiting": "grave tu golpe",
+    "a sore, grievous destruction": "una destrucción grave y penosa",
+
+    # «rent»: desgarrón, alquiler o participio
+    "making up rent": "completando la renta",
+    "rent open": "desgarrado",
+    "be rent": "ser desgarrado",
+
+    # «craft»: maña u oficio
+    "the same craft": "el mismo oficio",
+    "art, craft, trade": "arte, oficio, comercio",
+
+    # «scale»: escama o platillo de balanza
+    "the scale incline": "la balanza inclinarse",
+    "scale, balance": "platillo, balanza",
+    "balance, scale": "balanza, platillo",
+
+    # gerundios que a veces son sustantivo y a veces verbo
+    "working for pay": "trabajar a sueldo",
+    "by working or trading": "trabajando o comerciando",
+    "working wonders": "que obra maravillas",
+    "skilful working": "labor hábil",
+    "of entering a house": "de entrar en una casa",
+    "one entering by": "uno que entra por",
+    "a rolling place": "un lugar para revolcarse",
+    "the rolling swell of the sea": "el oleaje del mar",
+    "as rolling or circling about": "por rodar o dar vueltas",
+    "rolling itself together": "enrollarse sobre sí mismo",
+    "mouth uttering smooth words": "boca que profiere palabras lisonjeras",
+    "closing the ears": "cerrar los oídos",
+    "closing the eyes": "cerrar los ojos",
+    "devouring dead bodies": "que devoran cadáveres",
+    "lion growling over prey": "león que gruñe sobre la presa",
+    "shaped like": "en forma de",
+    "thy hands shaped me": "tus manos me formaron",
+    "who lives on scraps": "que vive de sobras",
+    "the lives of men": "las vidas de los hombres",
+    "to glue or cement together": "pegar o cementar juntos",
+    "stick, glue": "pegar, encolar",
+    "lap up": "lamer",
+
+    # sueltas
+    "on shipboard": "a bordo",
+    "twinkling of an eye": "abrir y cerrar de ojos",
+    "not to be contradicted": "que no se puede contradecir",
+    "da operam": "da operam",
+    "practising the same craft": "que practica el mismo oficio",
+    # El «art» arcaico de la segunda persona, que no es ningún arte.
+    "thou art": "tú eres",
+    "art thou": "eres tú",
+})
+
+PALABRAS.update({
+    # --- cosas ----------------------------------------------------------------
+    "wine-skin": "odre|sus", "lawsuit": "pleito|sus", "threat": "amenaza|sus",
+    "battle-cry": "grito de guerra|sus", "tolerance": "tolerancia|sus",
+    "tetradrachm": "tetradracma|sus", "drachmas": "dracmas|sus",
+    "drachmae": "dracmas|sus", "hallelujah": "aleluya|sus",
+    "alleluia": "aleluya|sus", "bramble-bush": "zarza|sus",
+    "commemoration": "conmemoración|sus", "unity": "unidad|sus",
+    "unanimity": "unanimidad|sus", "senate": "senado|sus",
+    "gangrene": "gangrena|sus", "corrosion": "corrosión|sus",
+    "freight": "flete|sus", "oil-press": "prensa de aceite|sus",
+    "papyri": "papiros|sus", "vindication": "vindicación|sus",
+    "sounding-lead": "escandallo|sus", "soundings": "sondeos|sus",
+    "fixity": "fijeza|sus", "subordination": "subordinación|sus",
+    "expressions": "expresiones|sus", "superstition": "superstición|sus",
+    "temple-offerings": "ofrendas del templo|sus",
+    "conversion": "conversión|sus", "inversion": "inversión|sus",
+    "formulae": "fórmulas|sus", "tongues": "lenguas|sus",
+    "derivations": "derivaciones|sus", "renderings": "traducciones|sus",
+    "versions": "versiones|sus", "misunderstanding": "malentendido|sus",
+    "unfaithfulness": "infidelidad|sus", "wedding-feast": "banquete de bodas|sus",
+    "oration": "discurso|sus", "ownership": "propiedad|sus",
+    "cycle": "ciclo|sus", "slip-knot": "nudo corredizo|sus",
+    "acknowledgment": "reconocimiento|sus", "election": "elección|sus",
+    "displacement": "desplazamiento|sus", "trance": "éxtasis|sus",
+    "moderation": "moderación|sus", "reasonableness": "razonabilidad|sus",
+    "cowardice": "cobardía|sus", "alternatives": "alternativas|sus",
+    "deliberation": "deliberación|sus", "house-breaking": "allanamiento|sus",
+    "olive-oil": "aceite de oliva|sus", "olive-grove": "olivar|sus",
+    "olive-garden": "olivar|sus", "benedictions": "bendiciones|sus",
+    "roads": "caminos|sus", "colt": "potro|sus", "embassy": "embajada|sus",
+    "consciousness": "conciencia|sus", "philosophy": "filosofía|sus",
+    "taxes": "impuestos|sus", "winepress": "lagar|sus",
+    "dropsy": "hidropesía|sus", "instinct": "instinto|sus",
+    "cedar-wood": "madera de cedro|sus", "alloy": "aleación|sus",
+    "tin": "estaño|sus", "hin": "hin|sus", "tendrils": "zarcillos|sus",
+    "clarions": "clarines|sus", "turbans": "turbantes|sus",
+    "snares": "lazos|sus", "crowns": "coronas|sus", "stair": "escalón|sus",
+    "delightfulness": "deleite|sus", "innocency": "inocencia|sus",
+    "bareness": "desnudez|sus", "deception": "engaño|sus",
+    "water-course": "cauce|sus", "twilight": "crepúsculo|sus",
+    "commandments": "mandamientos|sus", "truce": "tregua|sus",
+    "standpoint": "punto de vista|sus", "regeneration": "regeneración|sus",
+    "mid-heaven": "medio del cielo|sus", "assertion": "afirmación|sus",
+    "twinkling": "parpadeo|sus", "formlessness": "ausencia de forma|sus",
+    "phantom": "fantasma|sus",
+
+    # --- personas -------------------------------------------------------------
+    "man-slayer": "homicida|sus", "baptizer": "bautizador|sus",
+    "expert": "experto|sus", "passenger": "pasajero|sus",
+    "ethnarch": "etnarca|sus", "idolator": "idólatra|sus",
+    "begetter": "engendrador|sus", "wailer": "plañidero|sus",
+    "bondmaid": "sierva|sus", "observer": "observador|sus",
+    "avenger": "vengador|sus", "prison-keeper": "carcelero|sus",
+    "grand-children": "nietos|sus", "persecutor": "perseguidor|sus",
+    "demoniac": "endemoniado|sus", "peacemaker": "pacificador|sus",
+    "councillor": "consejero|sus", "senator": "senador|sus",
+    "refiner": "refinador|sus",
+
+    # --- las nueve que estaban atascadas --------------------------------------
+    # La frase de arriba se queda con la acepción rara; aquí va la corriente.
+    "sore": "llaga|sus", "rent": "desgarrón|sus", "craft": "maña|sus",
+    "scale": "escama|sus", "glue": "cola|sus", "spreading": "extensión|sus",
+    "working": "operación|sus", "entering": "entrada|sus",
+    "closing": "cierre|sus", "rolling": "rodar|sus",
+    "wallowing": "revolcarse|sus", "uttering": "proferir|sus",
+    "devouring": "devorar|sus", "growling": "gruñido|sus",
+    "visiting": "visita|sus", "lives": "vive",
+
+    # --- adjetivos ------------------------------------------------------------
+    "remiss": "negligente|adj", "new-born": "recién nacido|adj",
+    "illative": "ilativo|adj", "imperishable": "imperecedero|adj",
+    "variable": "variable|adj", "exuberant": "exuberante|adj",
+    "merciless": "despiadado|adj", "uncomely": "indecoroso|adj",
+    "unseemly": "indecoroso|adj", "accessible": "accesible|adj",
+    "barbaric": "bárbaro|adj", "uncarded": "sin cardar|adj",
+    "undressed": "sin abatanar|adj", "undeniable": "innegable|adj",
+    "reprobate": "réprobo|adj", "impenitent": "impenitente|adj",
+    "audible": "audible|adj", "provincial": "provincial|adj",
+    "unalloyed": "puro|adj", "undeserved": "inmerecido|adj",
+    "ineffectual": "ineficaz|adj", "pre-christian": "precristiano|adj",
+    "parental": "parental|adj", "lustful": "lujurioso|adj",
+    "unorganized": "desorganizado|adj",
+    "trumpet-shaped": "en forma de trompeta|adj",
+    "linguistic": "lingüístico|adj", "epistolary": "epistolar|adj",
+    "needful": "necesario|adj", "notorious": "notorio|adj",
+    "effective": "eficaz|adj", "uncontrolled": "desenfrenado|adj",
+    "sabbatical": "sabático|adj", "mendicant": "mendicante|adj",
+    "abnormal": "anormal|adj", "unidentified": "no identificado|adj",
+    "marine": "marino|adj", "targumic": "targúmico|adj", "apt": "apto|adj",
+    "self-imposed": "autoimpuesto|adj", "radiant": "radiante|adj",
+    "double-tongued": "de doble lengua|adj",
+    "double-mouthed": "de doble boca|adj", "two-edged": "de doble filo|adj",
+    "deceased": "difunto|adj", "fiftieth": "quincuagésimo|adj",
+    "silken": "de seda|adj", "fleshly": "carnal|adj", "convex": "convexo|adj",
+    "hapless": "desdichado|adj", "abashed": "avergonzado|adj",
+    "insensible": "insensible|adj", "tongue-shaped": "en forma de lengua|adj",
+    "resultant": "resultante|adj", "superstitious": "supersticioso|adj",
+    "twofold": "doble|adj", "short-sighted": "corto de vista|adj",
+    "sombre": "sombrío|adj", "odious": "odioso|adj",
+
+    # --- verbos ---------------------------------------------------------------
+    "nullify": "anular|inf", "rebuild": "reconstruir|inf",
+    "disembark": "desembarcar|inf", "defer": "aplazar|inf",
+    "accustom": "acostumbrar|inf", "retard": "retardar|inf",
+    "ulcerate": "ulcerar|inf", "adulterate": "adulterar|inf",
+    "solve": "resolver|inf", "unfold": "desplegar|inf",
+    "forswear": "perjurar|inf", "miscarry": "abortar|inf",
+    "abominate": "abominar|inf", "intermit": "interrumpir|inf",
+    "confute": "refutar|inf", "jettison": "echar por la borda|inf",
+    "imprint": "imprimir|inf", "radiate": "irradiar|inf",
+    "undergird": "ceñir por debajo|inf", "wean": "destetar|inf",
+    "glide": "deslizarse|inf", "suppress": "reprimir|inf",
+    "efface": "borrar|inf", "atone": "expiar|inf", "fester": "supurar|inf",
+    "spatter": "salpicar|inf", "distil": "destilar|inf",
+    "promote": "promover|inf", "float": "flotar|inf",
+    "engulf": "engullir|inf", "banish": "desterrar|inf",
+    "domineer": "tiranizar|inf", "lap": "lamer|inf",
+    "impend": "ser inminente|inf",
+
+    # --- adverbios y participios ----------------------------------------------
+    "incessantly": "incesantemente", "uselessly": "inútilmente",
+    "righteously": "justamente", "justly": "justamente",
+    "sternly": "severamente", "loosely": "vagamente",
+    "secondly": "en segundo lugar", "willingly": "de buena gana",
+    "seventy-seven": "setenta y siete", "thereon": "sobre ello",
+    "peradventure": "quizá", "rashly": "temerariamente",
+    "corruptly": "corruptamente", "wisely": "sabiamente",
+    "gratuitously": "gratuitamente", "aimlessly": "sin rumbo",
+    "aforetime": "antiguamente", "presumptuously": "presuntuosamente",
+    "painted": "pintado", "recognised": "reconocido", "coined": "acuñado",
+    "contradicted": "contradicho", "transmitted": "transmitido",
+    "equipped": "equipado", "dislocated": "dislocado",
+    "appraised": "tasado", "postponed": "pospuesto",
+    "installed": "instalado", "stationed": "apostado",
+    "stoned": "apedreado", "annihilated": "aniquilado",
+    "intertwined": "entrelazado", "rinsed": "enjuagado",
+    "suborned": "sobornado", "articulated": "articulado",
+    "approximates": "se aproxima",
+
+    # --- erratas de la edición, copiadas tal cual -----------------------------
+    # «chiey» por «chiefly» y «diference» por «difference»: el impresor se
+    # comió la efe. «tessallated» por «tessellated». Se traduce lo que quiso
+    # poner y se deja dicho aquí dónde estaba el error.
+    "chiey": "sobre todo", "diference": "diferencia",
+    "tessallated": "teselado|adj",
+
+    # --- latín del aparato, que cita y no explica -----------------------------
+    "fermamentum": "fermamentum", "propterea": "propterea", "quod": "quod",
+    "sincerus": "sincerus", "concupiscentia": "concupiscentia",
+    "quadrans": "quadrans", "sextarius": "sextarius", "libra": "libra",
+    "quisque": "quisque", "unusquisque": "unusquisque",
+    "cognitio": "cognitio", "effundor": "effundor", "commodi": "commodi",
+    "episcopus": "episcopus", "non": "non", "licet": "licet",
+    "nepos": "nepos", "tris": "tres veces",
+})
