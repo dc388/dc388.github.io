@@ -1,12 +1,20 @@
 name: APK para compartir
 
-# Deja el APK de la última compilación de publicación en un enlace directo
-# que se pueda abrir desde el teléfono, para instalarlo a mano donde Google
-# Play no distribuye. No compila nada: reutiliza el artefacto que ya existe.
+# Deja el APK de la última compilación de publicación en un enlace directo que
+# se pueda abrir desde el teléfono, para instalarlo a mano donde Google Play no
+# distribuye todavía. No compila nada: reutiliza el artefacto que ya existe.
+#
+# La versión anterior de este flujo tenía clavados a mano el run del que sacaba
+# el APK y el número de versión del título. Quedó publicando «1.0.0» cuando el
+# código iba ya por la 1.2.1, y el artefacto al que apuntaba había caducado.
+# Aquí no se escribe ningún número: el run se busca y la versión se lee del
+# propio APK, que es el único sitio donde no puede estar desfasada.
 
 on:
   workflow_dispatch:
   push:
+    # GitHub solo ofrece el botón «Run workflow» en la rama por defecto, así que
+    # mientras esto viva en una rama de trabajo se lanza tocando el archivo.
     branches: ["claude/biblia-**"]
     paths: [".github/workflows/biblia-apk.yml"]
 
@@ -19,20 +27,115 @@ jobs:
     name: Publicar el APK
     runs-on: ubuntu-latest
     steps:
-      - name: Traer el artefacto de la compilación
+      - uses: actions/checkout@v4
+
+      - name: Buscar la última compilación de publicación que salió bien
+        id: origen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          datos=$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/biblia-release.yml/runs?branch=$GITHUB_REF_NAME&status=success&per_page=1" \
+            --jq '.workflow_runs[0] // empty | "\(.id) \(.head_sha) \(.created_at)"')
+          if [ -z "$datos" ]; then
+            echo "::error::No hay ninguna ejecución de «Publicación — Biblia» con éxito en $GITHUB_REF_NAME. Lánzala antes."
+            exit 1
+          fi
+          set -- $datos
+          echo "run=$1" >> "$GITHUB_OUTPUT"
+          echo "sha=$2" >> "$GITHUB_OUTPUT"
+          echo "fecha=$3" >> "$GITHUB_OUTPUT"
+          echo "APK del run $1, commit $2, del $3."
+
+      - name: Traer el artefacto de esa compilación
         uses: actions/download-artifact@v4
         with:
           name: biblia-publicacion
-          run-id: 35279322477
+          run-id: ${{ steps.origen.outputs.run }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: descarga
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Instalar las build-tools
+        run: sdkmanager --install "build-tools;36.0.0"
+
+      - name: Comprobar que el APK está firmado y leerle la versión
+        id: apk
+        run: |
+          apk=$(find descarga -name '*.apk' | head -1)
+          if [ -z "$apk" ]; then
+            echo "::error::El artefacto no trae ningún APK."
+            exit 1
+          fi
+          herramientas="$ANDROID_HOME/build-tools/36.0.0"
+
+          # Un APK sin firmar Android no lo instala: más vale que se caiga aquí
+          # y no en el teléfono de quien se baje el enlace.
+          if ! "$herramientas/apksigner" verify --print-certs "$apk" > certificado.txt 2>&1; then
+            echo "::error::El APK no está firmado o la firma no es válida. Mira si los secretos de firma siguen puestos: docs/PUBLICAR_EN_PLAY.md"
+            cat certificado.txt
+            exit 1
+          fi
+          echo "Firma:"; sed -n '1,6p' certificado.txt
+
+          ficha=$("$herramientas/aapt2" dump badging "$apk")
+          paquete=$(printf '%s' "$ficha" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")
+          codigo=$(printf '%s' "$ficha" | sed -n "s/.*versionCode='\([^']*\)'.*/\1/p" | head -1)
+          nombre=$(printf '%s' "$ficha" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p" | head -1)
+
+          # El de depuración lleva «.debug» y no se publica por error.
+          if [ "$paquete" != "com.dc388.bibliagriega" ]; then
+            echo "::error::El APK dice ser «$paquete», no la aplicación de publicación."
+            exit 1
+          fi
+          echo "paquete=$paquete" >> "$GITHUB_OUTPUT"
+          echo "codigo=$codigo"   >> "$GITHUB_OUTPUT"
+          echo "nombre=$nombre"   >> "$GITHUB_OUTPUT"
+          cp "$apk" biblia-griega-y-hebrea.apk
+          echo "peso=$(du -h biblia-griega-y-hebrea.apk | cut -f1)" >> "$GITHUB_OUTPUT"
+          echo "$paquete $nombre (versionCode $codigo)"
 
       - name: Dejarlo descargable
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ETIQUETA: biblia-apk-v${{ steps.apk.outputs.codigo }}
+          TITULO: Biblia Griega y Hebrea ${{ steps.apk.outputs.nombre }} — APK
         run: |
-          apk=$(find descarga -name '*.apk' | head -1)
-          if [ -z "$apk" ]; then echo "::error::no se encontró ningún APK en el artefacto"; exit 1; fi
-          cp "$apk" biblia-griega-y-hebrea.apk
-          ls -l biblia-griega-y-hebrea.apk
-          gh release create biblia-apk-v3 biblia-griega-y-hebrea.apk --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Biblia Griega y Hebrea 1.0.0 — APK" --notes "APK firmado, para instalar a mano en Android donde Google Play no distribuye." || gh release upload biblia-apk-v3 biblia-griega-y-hebrea.apk --repo "$GITHUB_REPOSITORY" --clobber
+          cat > notas.md <<FIN
+          APK firmado de la versión **${{ steps.apk.outputs.nombre }}** (versionCode ${{ steps.apk.outputs.codigo }}), ${{ steps.apk.outputs.peso }}.
+
+          Para instalarlo en Android, sin pasar por Google Play:
+
+          1. Abre esta página **desde el teléfono** y descarga el archivo \`.apk\`.
+          2. Al abrirlo, Android avisará de que viene de un origen desconocido.
+             Toca **Ajustes** y concede el permiso de instalar al navegador o al
+             gestor de archivos que lo haya descargado. Solo hay que hacerlo una vez.
+          3. Vuelve a abrir el archivo e instala.
+
+          Si ya tenías una versión anterior instalada, esta se pone encima y
+          conserva las notas, los marcadores y la posición de lectura.
+
+          Compilado del commit \`${{ steps.origen.outputs.sha }}\`, en la ejecución
+          [${{ steps.origen.outputs.run }}](https://github.com/${{ github.repository }}/actions/runs/${{ steps.origen.outputs.run }}) de
+          «Publicación — Biblia».
+          FIN
+
+          gh release create "$ETIQUETA" biblia-griega-y-hebrea.apk \
+             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+             --title "$TITULO" --notes-file notas.md \
+          || gh release upload "$ETIQUETA" biblia-griega-y-hebrea.apk \
+             --repo "$GITHUB_REPOSITORY" --clobber
+
+          {
+            echo "## APK publicado"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Versión | ${{ steps.apk.outputs.nombre }} (código ${{ steps.apk.outputs.codigo }}) |"
+            echo "| Peso | ${{ steps.apk.outputs.peso }} |"
+            echo "| Enlace | https://github.com/$GITHUB_REPOSITORY/releases/tag/$ETIQUETA |"
+          } >> "$GITHUB_STEP_SUMMARY"
