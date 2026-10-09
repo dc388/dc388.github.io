@@ -34,19 +34,34 @@ y «Anuncios: identificadores reales». Lo que queda es todo de Play Console.
 
 De los cinco, **solo el 5 marca el calendario**. Los demás son de una tarde.
 
-### La APK pública va cuatro versiones por detrás
+### La APK que se puede instalar sin pasar por Play
 
-En GitHub hay una release pública, `biblia-apk-v3` («Biblia Griega y Hebrea
-1.0.0»), del 18 de septiembre, con 9 descargas. Esa APK es `versionCode` 3.
+Mientras Play no la distribuya, la aplicación se instala desde una release de
+GitHub. La etiqueta lleva el `versionCode` dentro, así que la de ahora es
 
-El código va ya por `versionCode` 7 / `versionName` 1.2.1, y esas cuatro
-versiones de diferencia no están publicadas en ninguna parte: el AAB y el APK
-actuales solo existen como artefacto de Actions, que caduca a los 30 días y
-pide estar dentro de GitHub para descargarlo.
+**<https://github.com/dc388/dc388.github.io/releases/tag/biblia-apk-v7>**
 
-Si lo que se quiere es que la gente pueda instalar lo de ahora sin esperar a
-Play, hay que etiquetar una release nueva. El flujo ya se dispara con las
-etiquetas `biblia-v*`.
+(«Biblia Griega y Hebrea 1.2.1 — APK», 30 MB).
+
+Quien se la baje tiene que conceder el permiso de **instalar aplicaciones de
+origen desconocido** al navegador o al gestor de archivos. Android lo pide una
+sola vez y es donde se atasca todo el que instala un APK a mano por primera
+vez; las notas de la release lo explican paso a paso.
+
+Para publicar una versión nueva **no hay que tocar ningún número**. El flujo
+«APK para compartir» coge el APK de la última compilación de publicación que
+haya salido bien, le lee la versión con `aapt2`, comprueba con `apksigner` que
+está firmado y que el paquete no es el de depuración, y de ahí saca la etiqueta
+y el título. Se lanza desde Actions, o tocando su propio archivo mientras viva
+en una rama de trabajo.
+
+La release vieja `biblia-apk-v3` («Biblia Griega y Hebrea 1.0.0», 18 de
+septiembre, 9 descargas) se queda donde está: quien la instaló recibe la nueva
+encima, con sus notas y marcadores intactos, porque la clave de firma es la
+misma. Eso se comprobó mirando el registro de las dos compilaciones: el almacén
+restaurado pesa 2710 bytes en las dos, o sea el mismo secreto. Si alguna vez se
+cambiara la clave, Android rechazaría la actualización con «aplicación no
+instalada» y habría que desinstalar antes, perdiendo las notas.
 
 ## Las capturas — hechas
 
