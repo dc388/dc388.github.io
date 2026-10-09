@@ -733,6 +733,12 @@ function getLocation() {
 // Error de GPS con el que ya se puede decidir una geocerca de 250 m sin apostar.
 const ACC_BUENA_M = 100;
 
+// Error con el que la lectura no dice NADA sobre una geocerca de 250 m. iOS
+// devuelve ~2000 m fijos cuando "Ubicacion precisa" esta apagada para el sitio,
+// y ninguna espera lo mejora: no es un fix lento, es un ajuste. Se pone alto a
+// proposito (1 km) para no estorbarle a un GPS honesto bajo techo metalico.
+const ACC_INUTIL_M = 1000;
+
 // Sigue escuchando al GPS hasta `ms` y devuelve la MEJOR lectura (la de menor
 // error). Corta antes si llega una suficientemente buena.
 function afinarUbicacion(inicial, ms) {
@@ -1251,6 +1257,29 @@ async function punch(type) {
         '«Agregar a inicio»): así es más estable y te pregunta el permiso al abrir.'
       : 'La ubicación está bloqueada para este sitio. Tócalo en el candado ' +
         'junto a la dirección → Ubicación → Permitir, recarga e intenta de nuevo.');
+  }
+
+  // Lectura con KILOMETROS de error. Mandarla es regalarle a la persona un
+  // "fuera de la geocerca: a 4563 m" que la culpa de algo que es un ajuste de
+  // su telefono. Le paso a N1-001 cinco veces entre el 11/09 y el 08/10, con
+  // acc = 2000 m exactos las cinco, y dejo de intentar. Aqui se detiene y se
+  // le dice que prender, que es lo unico que lo arregla.
+  if (loc.status === 'AUTORIZADA' && loc.acc != null && loc.acc > ACC_INUTIL_M) {
+    busy(false);
+    const esIOS2 = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    return showResult('warn', 'Prende la ubicación precisa', esIOS2
+      ? 'Tu iPhone está dando una ubicación aproximada, con ' +
+        Math.round(loc.acc) + ' metros de error. Así el sistema no puede saber ' +
+        'si estás en la planta y te rechazaría la checada. Préndela así: ' +
+        'Ajustes → Privacidad y seguridad → Localización → «Sitios web de ' +
+        'Safari» → enciende «Ubicación exacta». Luego vuelve aquí y chécale ' +
+        'otra vez. Tu checada NO se mandó todavía.'
+      : 'Tu teléfono está dando una ubicación aproximada, con ' +
+        Math.round(loc.acc) + ' metros de error. Así el sistema no puede saber ' +
+        'si estás en la planta. Préndela así: Ajustes → Ubicación → activa la ' +
+        '«precisión de ubicación» (o «Usar GPS»). Luego vuelve aquí y chécale ' +
+        'otra vez. Tu checada NO se mandó todavía.');
   }
 
   // GPS que NO FIJA —nave con techo metalico, sin señal, cielo tapado— no es
