@@ -5153,3 +5153,112 @@ PALABRAS.update({
     "amo": "amo", "diligo": "diligo", "reus": "reus", "specto": "specto",
     "angiare": "angiare", "auchor": "auchor",
 })
+
+
+# Decimonovena tanda. 200 palabras.
+
+PALABRAS.update({
+    # --- cosas y oficios ------------------------------------------------------
+    "frog": "rana|sus", "quartz": "cuarzo|sus", "antidote": "antídoto|sus",
+    "alpha": "alfa|sus", "assarion": "asarion|sus", "label": "etiqueta|sus",
+    "mummy": "momia|sus", "sheepfold": "redil|sus", "audience": "audiencia|sus",
+    "bilge-water": "agua de sentina|sus", "sea-shore": "orilla del mar|sus",
+    "fluids": "líquidos|sus", "receipts": "recibos|sus",
+    "rescript": "rescripto|sus", "court-days": "días de audiencia|sus",
+    "marriage-contract": "contrato matrimonial|sus", "contracts": "contratos|sus",
+    "deposition": "declaración|sus", "spellings": "grafías|sus",
+    "paraphrase": "paráfrasis|sus", "gerundive": "gerundivo|sus",
+
+    # --- personas -------------------------------------------------------------
+    "slave-dealer": "tratante de esclavos|sus", "kidnapper": "secuestrador|sus",
+    "unbelievers": "incrédulos|sus", "nonbeliever": "no creyente|sus",
+    "philosophers": "filósofos|sus", "inspector": "inspector|sus",
+    "sodomite": "sodomita|sus", "boaster": "fanfarrón|sus",
+    "swindler": "estafador|sus", "eye-witness": "testigo ocular|sus",
+    "flute-player": "flautista|sus", "torturer": "torturador|sus",
+    "lounger": "holgazán|sus", "consul": "cónsul|sus",
+    "non-combatant": "no combatiente|sus", "modem": "modernos",
+
+    # --- abstractos -----------------------------------------------------------
+    "disarray": "desorden|sus", "wastefulness": "derroche|sus",
+    "engagements": "compromisos|sus", "well-doing": "bien obrar|sus",
+    "malediction": "maldición|sus", "dues": "deberes|sus",
+    "disannulling": "abrogación|sus", "principality": "principado|sus",
+    "delivery": "alumbramiento|sus", "ungodliness": "impiedad|sus",
+    "behaviour": "conducta|sus", "wheeling": "viraje|sus",
+    "agony": "agonía|sus", "separations": "separaciones|sus",
+    "ablutions": "abluciones|sus", "forsaking": "abandono|sus",
+    "threatening": "amenaza|sus", "boastfulness": "jactancia|sus",
+    "vaunting": "fanfarronería|sus", "sun-rising": "salida del sol|sus",
+    "instalment": "plazo|sus", "glance": "mirada|sus",
+    "approbation": "aprobación|sus", "pronunciation": "pronunciación|sus",
+    "losing": "pérdida|sus", "renovation": "renovación|sus",
+    "raising": "alzamiento|sus", "erection": "erección|sus",
+    "actuality": "realidad|sus", "lawlessness": "iniquidad|sus",
+    "survival": "pervivencia|sus", "excellencies": "excelencias|sus",
+    "licentiousness": "desenfreno|sus", "disrepute": "descrédito|sus",
+    "anathema": "anatema|sus", "infrequency": "escasez|sus",
+    "starting": "punto de partida|sus", "underivorld": "inframundo",
+
+    # --- adjetivos ------------------------------------------------------------
+    "unreprovable": "irreprochable|adj", "unlawful": "ilícito|adj",
+    "unbending": "inflexible|adj", "waterless": "sin agua|adj",
+    "incontinent": "incontinente|adj", "self-chosen": "de propia elección|adj",
+    "wilful": "deliberado|adj", "unbelieving": "incrédulo|adj",
+    "unwilling": "de mala gana|adj", "sea-green": "verde mar|adj",
+    "uncreated": "increado|adj", "sandy": "arenoso|adj",
+    "un-lettered": "iletrado|adj", "bloody": "sangriento|adj",
+    "agricultural": "agrícola|adj", "unobserved": "inadvertido|adj",
+    "indistinct": "indistinto|adj", "dissonant": "disonante|adj",
+    "discordant": "discordante|adj", "administrative": "administrativo|adj",
+    "void": "nulo|adj", "age-long": "secular|adj",
+    "untempted": "no tentado|adj", "untried": "no probado|adj",
+    "self-condemned": "condenado por sí mismo|adj", "unerring": "infalible|adj",
+    "tolerable": "tolerable|adj", "unapproachable": "inaccesible|adj",
+    "inadmissible": "inadmisible|adj", "unmoved": "inmóvil|adj",
+    "undamaged": "indemne|adj", "unfeigned": "no fingido|adj",
+    "boundless": "ilimitado|adj", "bottomless": "sin fondo|adj",
+    "senatorial": "senatorial|adj", "squalid": "escuálido|adj",
+    "dismal": "lúgubre|adj", "unconcealed": "no oculto|adj",
+    "imperfect": "imperfecto|adj", "unwashed": "sin lavar|adj",
+    "prickly": "espinoso|adj", "invincible": "invencible|adj",
+    "intrinsic": "intrínseco|adj", "rapacious": "rapaz|adj",
+    "fibrous": "fibroso|adj", "rarest": "la más rara|adj",
+
+    # --- participios ----------------------------------------------------------
+    "unveiled": "descubierto", "baptized": "bautizado",
+    "excommunicated": "excomulgado", "compelled": "obligado",
+    "wading": "que vadea", "supervising": "que supervisa",
+    "conforming": "que se ajusta", "admitting": "que admite",
+    "clanging": "que retiñe",
+
+    # --- verbos ---------------------------------------------------------------
+    "bale": "achicar|inf", "stow": "guardar|inf", "regain": "recobrar|inf",
+    "dictate": "dictar|inf", "catechize": "catequizar|inf",
+    "baptize": "bautizar|inf", "disbelieve": "descreer|inf",
+    "educate": "educar|inf", "necessitate": "forzar|inf",
+    "contradict": "contradecir|inf", "renounce": "renunciar|inf",
+    "unroll": "desenrollar|inf",
+    "inclines": "se inclina", "retains": "conserva", "procures": "procura",
+
+    # --- adverbios y números --------------------------------------------------
+    "deservedly": "merecidamente", "steadfastly": "con firmeza",
+    "blamelessly": "irreprochablemente", "worthily": "dignamente",
+    "forensically": "forensemente", "breast-deep": "hasta el pecho",
+    "unceasingly": "incesantemente", "perpetually": "perpetuamente",
+    "unremittingly": "sin cesar", "lawlessly": "ilegalmente",
+    "one-tenth": "una décima parte", "seventeen": "diecisiete",
+    "ehiefly": "sobre todo",      # así, con la errata de la fuente
+
+    # --- latín de las notas ---------------------------------------------------
+    # «out of place (Lat. inordinatus)», «ἄπ-ειμι (εἶμι, ibo)», «at once (Lat.
+    # simul)», «cf. Lat. conferre sermones», «cf. Lat. conventus agere»,
+    # «filius magistri».
+    "inordinatus": "inordinatus", "ibo": "ibo", "simul": "simul",
+    "sermones": "sermones", "conferre": "conferre", "conventus": "conventus",
+    "magistri": "magistri", "filius": "filius",
+})
+
+FRASES.update({
+    "vine dresser": "viñador|sus",
+})
