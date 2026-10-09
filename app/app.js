@@ -1463,7 +1463,19 @@ async function punch(type) {
 function handlePunchResponse(type, r) {
   busy(false);
   if (!r.ok || !r.data) {
-    return showResult('err', 'No se registró', (r.data && r.data.error) || 'Error de servidor. Intenta de nuevo.');
+    // "Error de servidor" a secas no le sirve a nadie: ni a quien checa, que no
+    // sabe que hacer, ni a quien lo diagnostica desde una foto de la pantalla.
+    // El codigo HTTP separa en un vistazo una sesion muerta (401) de una caida
+    // del servidor (5xx) o de un dato mal mandado (4xx).
+    const detalle = (r.data && (r.data.error || r.data.message))
+      || (typeof r.data === 'string' && r.data ? r.data.slice(0, 120) : '')
+      || 'sin detalle';
+    const consejo = r.status === 401
+      ? ' Tu sesión caducó: vuelve a entrar con tu código y queda.'
+      : '';
+    return showResult('err', 'No se registró',
+      'El servidor no aceptó la checada. Código ' + (r.status || '—') + ': ' +
+      detalle + '.' + consejo + ' Manda una foto de esta pantalla.');
   }
   const d = r.data;
   const st = d.status;
