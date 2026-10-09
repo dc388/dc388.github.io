@@ -445,8 +445,15 @@ function explicarFalloRegistro(r) {
     return 'El servidor de asistencia no está respondiendo. No es tu teléfono. Espera ' +
            'unos minutos y vuelve a tocar Entrar: tu código no se gastó.';
   }
+  // Los codigos de esta empresa YA NO VENCEN desde el parche del 05/10. Si el
+  // servidor contesta "vencido" es que no hallo un codigo activo con ese
+  // numero, y en la practica eso casi siempre significa que ya se uso: son de
+  // un solo uso. Decir "vencio" revive el reclamo que mas repite la gente
+  // —"es que se me vence el codigo"— por un motivo que ya no existe.
   if (e.includes('expired') || e.includes('vencid')) {
-    return 'Ese código ya venció. Pídele uno nuevo a Recursos Humanos.';
+    return 'Ese código ya no sirve. Lo más probable es que ya lo hayas usado: ' +
+           'cada código funciona una sola vez. Pide uno nuevo a Administración; ' +
+           'los códigos nuevos no se vencen nunca.';
   }
   if (e.includes('used') || e.includes('usado')) {
     return 'Ese código ya se usó en otro teléfono. Pídele uno nuevo a Recursos Humanos ' +
