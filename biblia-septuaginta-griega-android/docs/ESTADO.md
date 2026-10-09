@@ -1,4 +1,4 @@
-# Dónde se quedó esto — 14 de septiembre de 2026
+# Dónde se quedó esto — 9 de octubre de 2026
 
 Nota para retomar sin reconstruir nada de memoria.
 
@@ -19,18 +19,34 @@ Nota para retomar sin reconstruir nada de memoria.
 
 ## Lo que bloquea ahora mismo
 
+Lo técnico está terminado. El flujo «Publicación — Biblia» produce en cada
+cambio un **AAB firmado y con los identificadores reales de AdMob**, que es lo
+que Play acepta; se comprueba en el resumen de la ejecución, que dice «Firmada»
+y «Anuncios: identificadores reales». Lo que queda es todo de Play Console.
+
 | | Qué falta | De quién depende |
 |---|---|---|
-| 1 | **AdMob**: crear la app y el bloque de banner | tuyo, 5 minutos |
-| 2 | Secretos `ADMOB_APP_ID` y `ADMOB_BANNER` en GitHub | depende de 1 |
-| 3 | Capturas de pantalla | **hecho** — `docs/store/capturas/` |
-| 4 | Borrar los idiomas sobrantes de la ficha de Play | tuyo |
-| 5 | Formulario de **Seguridad de los datos** | respuestas en PUBLICAR_EN_PLAY.md |
-| 6 | Perfil de pagos de AdMob | tuyo, y sin él no sirven anuncios |
+| 1 | Borrar los idiomas sobrantes de la ficha de Play | tuyo |
+| 2 | Formulario de **Seguridad de los datos** | respuestas en PUBLICAR_EN_PLAY.md |
+| 3 | Perfil de pagos de AdMob | tuyo, y sin él no se cobra |
+| 4 | Verificación de identidad de Play | tuya, tarda días |
+| 5 | **Prueba cerrada: 12 probadores, 14 días seguidos** | tuya, si la cuenta es personal y posterior a nov. de 2023 |
 
-Sin los secretos de AdMob, `assembleRelease` **falla a propósito**: una versión
-firmada con los identificadores de prueba se vería idéntica y no ingresaría
-nada.
+De los cinco, **solo el 5 marca el calendario**. Los demás son de una tarde.
+
+### La APK pública va cuatro versiones por detrás
+
+En GitHub hay una release pública, `biblia-apk-v3` («Biblia Griega y Hebrea
+1.0.0»), del 18 de septiembre, con 9 descargas. Esa APK es `versionCode` 3.
+
+El código va ya por `versionCode` 7 / `versionName` 1.2.1, y esas cuatro
+versiones de diferencia no están publicadas en ninguna parte: el AAB y el APK
+actuales solo existen como artefacto de Actions, que caduca a los 30 días y
+pide estar dentro de GitHub para descargarlo.
+
+Si lo que se quiere es que la gente pueda instalar lo de ahora sin esperar a
+Play, hay que etiquetar una release nueva. El flujo ya se dispara con las
+etiquetas `biblia-v*`.
 
 ## Las capturas — hechas
 

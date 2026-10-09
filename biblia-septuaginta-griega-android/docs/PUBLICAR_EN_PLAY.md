@@ -4,24 +4,43 @@
 > **AAB de Android** para **Google Play Console** (https://play.google.com/console).
 > Para iOS haría falta un proyecto aparte compilado en macOS con Xcode.
 
-Lo que ya está hecho y lo que falta:
+Lo que ya está hecho y lo que falta. Comprobado el 9 de octubre de 2026 contra
+el registro del flujo «Publicación — Biblia», que es la única fuente que no se
+queda vieja: lo que diga esta tabla se puede verificar ahí.
 
 | | Qué | Estado |
 |---|---|---|
-| 1 | Clave de firma | **tuya, falta** |
-| 2 | Secretos de firma en GitHub | **falta** (depende de 1) |
-| 3 | Cuenta de AdMob y bloque de banner | **tuya, falta** — [ANUNCIOS_Y_SUSCRIPCION.md](ANUNCIOS_Y_SUSCRIPCION.md) |
-| 4 | Secretos de AdMob en GitHub | **falta** (depende de 3) |
-| 5 | Producto de suscripción en Play | **tuyo, falta** (después de subir la primera versión) |
-| 6 | AAB compilado | listo — se genera solo |
-| 7 | Textos de la ficha | listos, en [FICHA_PLAY_STORE.md](FICHA_PLAY_STORE.md) |
-| 8 | Icono y gráfico destacado | listos, en `docs/store/` |
-| 9 | Capturas de pantalla | **tuyas, faltan** |
-| 10 | Política de privacidad publicada | **hecho** — https://dc388.github.io/biblia-privacidad.html |
-| 11 | Formularios de Play Console | respuestas preparadas, abajo |
+| 1 | Clave de firma | **hecho** |
+| 2 | Secretos de firma en GitHub | **hecho** — el flujo dice «Firmada: el AAB se puede subir a Google Play» |
+| 3 | Cuenta de AdMob y bloque de banner | **hecho** |
+| 4 | Secretos de AdMob en GitHub | **hecho** — el flujo dice «Anuncios: identificadores reales de AdMob» |
+| 5 | AAB compilado y firmado | **hecho** — se genera en cada cambio, listo para subir |
+| 6 | Textos de la ficha | listos, en [FICHA_PLAY_STORE.md](FICHA_PLAY_STORE.md) |
+| 7 | Icono y gráfico destacado | listos, en `docs/store/` |
+| 8 | Capturas de pantalla | **hecho** — `docs/store/capturas/` |
+| 9 | Política de privacidad publicada | **hecho** — https://dc388.github.io/biblia-privacidad.html |
+| 10 | Formularios de Play Console | respuestas preparadas abajo; rellenarlos es tuyo |
+| 11 | Producto de suscripción en Play | **tuyo** (después de subir la primera versión) |
+| 12 | Verificación de identidad de Play | **tuya** — tarda días, conviene empezarla ya |
+| 13 | Prueba cerrada de 14 días con 12 probadores | **tuya**, si la cuenta es personal y de después de noviembre de 2023 |
 
 Lo marcado como **tuyo** lo es porque exige una cuenta, un pago o un teléfono:
 nadie más puede hacerlo por ti.
+
+De lo que queda, **lo único que marca el calendario es el punto 13**. Todo lo
+demás son trámites de una tarde; esa prueba son catorce días seguidos y no se
+pueden acortar.
+
+### Cómo comprobar esta tabla sin fiarse de ella
+
+En Actions → «Publicación — Biblia», el resumen de la última ejecución dice en
+dos líneas si el AAB sirve:
+
+- «Firmada: el AAB se puede subir a Google Play» ↔ «**Sin firmar.**»
+- «Anuncios: identificadores reales de AdMob» ↔ «**Anuncios de prueba.**»
+
+Si las dos salen en la primera forma, el archivo que cuelga de esa ejecución se
+puede subir a Play tal cual. Los artefactos se guardan 30 días.
 
 ---
 
