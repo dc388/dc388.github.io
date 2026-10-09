@@ -1452,13 +1452,19 @@ function handlePunchResponse(type, r) {
 async function enqueue(item) { const q = (await idbGet('queue')) || []; q.push(item); await idbSet('queue', q); }
 async function queue() { return (await idbGet('queue')) || []; }
 let flushing = false;
+let INTENTOS_COLA = 0;
 async function flushQueue() {
-  if (flushing || !navigator.onLine) return; // sin red no tiene caso; sin reentradas
+  // navigator.onLine da falso con senal buena en iOS mas seguido de lo que
+  // deberia, y cuando miente la cola no se intentaba NUNCA. Intentar y que
+  // falle el fetch cuesta mucho menos que una checada que nadie manda.
+  if (flushing) return;
   const q = await queue();
   if (!q.length) return;
   flushing = true;
   try {
-    let token = await accessToken();
+    let token;
+    try { token = await accessToken(); }
+    catch (e) { INTENTOS_COLA++; renderQueue(); return; } // sin token no hay envio
     const rest = [];
     const avisos = [];
     for (const item of q) {
@@ -1483,8 +1489,9 @@ async function flushQueue() {
                         status: r.data.status,
                         reason: r.data.review_reason || '' });
         }
-      } catch { rest.push(item); } // red se cayo de nuevo: se queda para el proximo intento
+      } catch { rest.push(item); INTENTOS_COLA++; } // red se cayo: se queda para el proximo intento
     }
+    if (!rest.length) INTENTOS_COLA = 0;
     await idbSet('queue', rest);
     renderQueue();
     if (avisos.length) await avisarRechazos(avisos);
@@ -1525,7 +1532,10 @@ async function renderQueue() {
   const el = $('queue');
   if (!q.length) { el.hidden = true; return; }
   el.hidden = false;
-  el.textContent = q.length + ' checada(s) pendiente(s) de enviar. Se mandan solas; no las vuelvas a checar.';
+  el.textContent = INTENTOS_COLA >= 3
+    ? '\u26a0 ' + q.length + ' checada(s) SIN ENVIAR tras varios intentos. Abre la app ' +
+      'con wifi o buena señal, y avisa a tu jefe si sigue igual mañana.'
+    : q.length + ' checada(s) pendiente(s) de enviar. Se mandan solas; no las vuelvas a checar.';
 }
 
 // ---------- UI ----------
