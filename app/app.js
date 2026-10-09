@@ -1424,9 +1424,10 @@ async function punch(type) {
     await enqueue({ body, type, savedAt: deviceMs });
     busy(false);
     renderQueue();
-    return showResult('warn', 'Guardada sin conexión',
+    return showResult('warn', 'Guardada en el teléfono',
       PUNCH_LABEL[type] + ' registrada a las ' + hhmm(deviceMs) +
-      '. Se enviará automáticamente cuando haya internet. La hora se conserva.');
+      '. No se pudo enviar en este momento; se manda sola en cuanto se pueda y ' +
+      'la hora se conserva. Deja la app abierta unos segundos.');
   } finally { busy(false); }
 }
 
@@ -1459,6 +1460,7 @@ async function flushQueue() {
   try {
     let token = await accessToken();
     const rest = [];
+    const avisos = [];
     for (const item of q) {
       // Al sincronizar diferido, la checada se marca como offline_sync para que RH
       // sepa que se capturo sin señal (la hora ya viaja en device_time firmado).
@@ -1471,19 +1473,59 @@ async function flushQueue() {
         }
         // ok, o duplicado ya registrado (el servidor es idempotente por
         // client_operation_id: 200 con duplicate:true, o 409) -> se saca de la cola.
-        if (!r.ok && r.status !== 409) rest.push(item);
+        if (!r.ok && r.status !== 409) { rest.push(item); continue; }
+        // El servidor la ACEPTO, pero pudo haberla graduado como rechazada o a
+        // revision. Sacarla de la cola en silencio es lo peor que puede pasar:
+        // la persona cree que cheque, el reporte la cuenta como falta, y nadie
+        // se entera hasta que alguien reclama.
+        if (r.ok && r.data && r.data.status && r.data.status !== 'valid') {
+          avisos.push({ type: item.type, savedAt: item.savedAt,
+                        status: r.data.status,
+                        reason: r.data.review_reason || '' });
+        }
       } catch { rest.push(item); } // red se cayo de nuevo: se queda para el proximo intento
     }
     await idbSet('queue', rest);
     renderQueue();
+    if (avisos.length) await avisarRechazos(avisos);
   } finally { flushing = false; }
+}
+
+// Una checada que el servidor rechaza al sincronizar no puede desaparecer en
+// silencio. Se guarda el aviso y se ensena en cuanto la persona este mirando.
+async function avisarRechazos(avisos) {
+  let pend = [];
+  try { pend = (await idbGet('rechazos-pendientes')) || []; } catch (e) { pend = []; }
+  try { await idbSet('rechazos-pendientes', pend.concat(avisos)); } catch (e) {}
+  if (!document.hidden) await mostrarRechazosPendientes();
+}
+
+async function mostrarRechazosPendientes() {
+  let avisos = [];
+  try { avisos = (await idbGet('rechazos-pendientes')) || []; } catch (e) { avisos = []; }
+  if (!avisos.length) return;
+  try { await idbSet('rechazos-pendientes', []); } catch (e) {}
+  const a = avisos[0];
+  const resto = avisos.length > 1 ? ' (y ' + (avisos.length - 1) + ' más)' : '';
+  const etiqueta = PUNCH_LABEL[a.type] || 'Checada';
+  if (a.status === 'rejected') {
+    return showResult('err', etiqueta + ' NO quedó registrada',
+      'Tu ' + etiqueta.toLowerCase() + ' de las ' + hhmm(a.savedAt) +
+      ' sí se envió, pero el sistema la rechazó' + resto + '. Motivo: ' +
+      (a.reason || 'no especificado') +
+      '. Avisa a tu jefe y manda una foto de esta pantalla.');
+  }
+  return showResult('warn', etiqueta + ' quedó a revisión',
+    'Tu ' + etiqueta.toLowerCase() + ' de las ' + hhmm(a.savedAt) +
+    ' se envió y quedó pendiente de revisión de RH' + resto + '. Motivo: ' +
+    (a.reason || 'no especificado') + '.');
 }
 async function renderQueue() {
   const q = await queue();
   const el = $('queue');
   if (!q.length) { el.hidden = true; return; }
   el.hidden = false;
-  el.textContent = q.length + ' checada(s) guardada(s) sin conexión. Se envían solas al reconectar.';
+  el.textContent = q.length + ' checada(s) pendiente(s) de enviar. Se mandan solas; no las vuelvas a checar.';
 }
 
 // ---------- UI ----------
@@ -1780,7 +1822,7 @@ function bindUI() {
   // El evento 'online' no siempre dispara en iOS. Reforzamos la sincronia al
   // volver la app a primer plano y con un latido periodico: flushQueue() sale
   // solo si hay red y algo en cola, asi que es barato.
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) { updateChips(); flushQueue(); } });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { updateChips(); flushQueue(); mostrarRechazosPendientes(); } });
   setInterval(() => flushQueue(), 60000);
   setInterval(tickClock, 15000);
 }
@@ -1808,7 +1850,7 @@ function boot() {
   // usable —Home si hay sesion, Registro si no— y las revisiones de red corren
   // en segundo plano: si resulta que falta aceptar un acuerdo, gateAgreements()
   // cambia a esa pantalla despues, sin bloquear.
-  if (store.get('session')) { renderHome(); gateAgreements(); flushQueue(); }
+  if (store.get('session')) { renderHome(); gateAgreements(); flushQueue(); mostrarRechazosPendientes(); }
   else show('enroll');
 
   arrancarIdentidad();
@@ -1899,7 +1941,7 @@ async function arrancarIdentidad() {
     // nada: su sesion es la buena y ya esta en su pantalla.
     if (REGISTRANDO_CON_CODIGO) return;
 
-    if (listo) { renderHome(); gateAgreements(); flushQueue(); }
+    if (listo) { renderHome(); gateAgreements(); flushQueue(); mostrarRechazosPendientes(); }
     else {
       const m = $('enroll-msg');
       if (m && !m.textContent) {
