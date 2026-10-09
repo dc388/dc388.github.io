@@ -5049,3 +5049,107 @@ PALABRAS.update({
     "aevum": "aevum", "habet": "habet", "urbanus": "urbanus",
     "frapping": "frapping",
 })
+
+
+# Decimoctava tanda. 195 palabras. Aquí el vocabulario ya no es el del texto
+# bíblico sino el de Abbott-Smith discutiendo con sus colegas: ilativo,
+# partitivo, elidido, irreprensible, inmutabilidad.
+#
+# Entran también seis que en tandas anteriores di por puestas porque otra
+# palabra ya tenía esa traducción, y nunca llegué a escribir su clave:
+# «mutilated», «contamination», «ungrateful», «proven», «destination» e
+# «insipid». Un valor repetido no estorba; una clave que falta, sí.
+
+PALABRAS.update({
+    # --- las que faltaban de antes --------------------------------------------
+    "mutilated": "mutilado", "contamination": "contaminación|sus",
+    "ungrateful": "ingrato|adj", "proven": "probado",
+    "destination": "destino|sus", "insipid": "insípido|adj",
+
+    # --- cosas ----------------------------------------------------------------
+    "charcoal": "carbón|sus", "aloes": "áloes|sus", "dates": "dátiles|sus",
+    "palm-branch": "rama de palma|sus", "fore-sail": "vela de proa|sus",
+    "top-sail": "vela de gavia|sus", "acantha-wood": "madera de acanto|sus",
+    "characters": "caracteres|sus", "texts": "textos|sus",
+
+    # --- personas -------------------------------------------------------------
+    "manslayer": "homicida|sus", "helper": "ayudador|sus",
+    "master-builder": "maestro de obras|sus", "contractors": "contratistas|sus",
+    "apprentice": "aprendiz|sus", "coppersmith": "calderero|sus",
+    "tax-collector": "recaudador de impuestos|sus", "hearer": "oidor|sus",
+    "autocrat": "autócrata|sus", "athletes": "atletas|sus",
+    "sender": "remitente|sus", "culprit": "reo|sus",
+
+    # --- abstractos -----------------------------------------------------------
+    "indignity": "afrenta|sus", "loosening": "aflojamiento|sus",
+    "uncircumcision": "incircuncisión|sus",
+    "unprofitableness": "inutilidad|sus", "baseness": "bajeza|sus",
+    "truancy": "absentismo|sus", "excommunication": "excomunión|sus",
+    "soberness": "sensatez|sus", "liberality": "liberalidad|sus",
+    "resource": "recurso|sus", "symptoms": "síntomas|sus",
+    "immutability": "inmutabilidad|sus", "unbelief": "incredulidad|sus",
+    "instability": "inestabilidad|sus", "disclosure": "revelación|sus",
+    "revealing": "develamiento|sus", "uncovering": "descubrimiento|sus",
+    "manifestion": "manifestación",     # así, con la errata de la fuente
+    "substitution": "sustitución|sus", "co-operation": "cooperación|sus",
+    "associations": "asociaciones|sus", "funds": "fondos|sus",
+    "misappropriation": "malversación|sus", "agencies": "agentes|sus",
+    "overflowing": "desbordamiento|sus", "misuse": "mal uso|sus",
+    "charges": "expensas|sus", "refreshing": "refrigerio|sus",
+    "dipping": "zambullida|sus", "lustration": "lustración|sus",
+    "gains": "ganancias|sus", "precision": "precisión|sus",
+    "effulgence": "fulgor|sus", "interrogations": "interrogaciones|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "regal": "regio|adj", "contented": "contento|adj",
+    "self-sufficient": "autosuficiente|adj", "sure-footed": "de pie firme|adj",
+    "originating": "originante|adj", "undying": "imperecedero|adj",
+    "unreasoning": "irreflexivo|adj", "instinctive": "instintivo|adj",
+    "unreasoned": "irrazonado|adj", "unregretted": "sin arrepentimiento|adj",
+    "unfailing": "inagotable|adj", "kindlier": "más benigno|adj",
+    "sterner": "más severo|adj", "indivisible": "indivisible|adj",
+    "unselfish": "desinteresado|adj", "unsparing": "sin reservas|adj",
+    "informal": "informal|adj", "heretical": "herético|adj",
+    "factious": "faccioso|adj", "unserviceable": "inservible|adj",
+    "unprepared": "desprevenido|adj", "ineffective": "ineficaz|adj",
+    "preliminary": "preliminar|adj", "best-ruling": "de buen gobierno|adj",
+    "interminable": "interminable|adj", "endless": "sin fin|adj",
+    "unwise": "insensato|adj", "indissoluble": "indisoluble|adj",
+    "greedy": "ávido|adj", "rude": "rudo|adj", "conjugal": "conyugal|adj",
+    "purer": "más puro|adj", "lustral": "lustral|adj",
+    "irreprehensible": "irreprensible|adj", "unholy": "no santo|adj",
+    "immutable": "inmutable|adj",
+
+    # --- participios ----------------------------------------------------------
+    "repented": "arrepentido", "elided": "elidido",
+    "substituted": "sustituido", "cited": "citado", "elected": "elegidos",
+    "symbolizing": "que simboliza", "hasting": "que se apresura",
+    "signifying": "que significa", "beaming": "que irradia",
+
+    # --- verbos ---------------------------------------------------------------
+    "enquire": "indagar|inf", "bewitch": "hechizar|inf",
+    "deepen": "ahondar|inf", "unroof": "destechar|inf",
+    "endeavour": "procurar|inf", "irradiate": "irradiar|inf",
+    "alienate": "enajenar|inf", "estrange": "extrañar|inf",
+    "replace": "reemplazar|inf", "supersede": "suplantar|inf",
+    "governs": "rige", "replaces": "reemplaza", "holds": "se sostiene",
+    "deals": "trata", "advanceth": "avanza", "suffereth": "padece",
+
+    # --- adverbios ------------------------------------------------------------
+    "festally": "festivamente", "unjustly": "injustamente",
+    "afresh": "de nuevo", "unbecomingly": "indecorosamente",
+    "dishonourably": "deshonrosamente", "unseasonably": "a destiempo",
+    "excessively": "excesivamente", "fitly": "adecuadamente",
+    "fixedly": "fijamente", "impartially": "imparcialmente",
+    "abruptly": "bruscamente", "curtly": "secamente",
+    "pleasantly": "agradablemente", "allegorically": "alegóricamente",
+    "unlike": "a diferencia de", "men's": "de los hombres",
+
+    # --- latín de las notas ---------------------------------------------------
+    # «love based on esteem (diligo)» frente a «that expressed by φιλέω (amo)»,
+    # «the accused (Lat. reus)», «Of situation and direction (Lat. specto)»,
+    # «cf. Vg. angiare». «auchor» va con la errata: así lo escribe Abbott-Smith
+    # donde quería poner «auctor».
+    "amo": "amo", "diligo": "diligo", "reus": "reus", "specto": "specto",
+    "angiare": "angiare", "auchor": "auchor",
+})

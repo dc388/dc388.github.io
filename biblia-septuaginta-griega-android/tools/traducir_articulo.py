@@ -101,6 +101,9 @@ SIGLAS: dict[str, str] = {
     "mus.": "musical", "declar.": "declarativo", "crpt.": "corrupto",
     "font.": "fuente", "emblemat.": "emblemático",
     "subjunct.": "subjuntivo", "tech.": "técnico",
+    "indec.": "indeclinable", "pars.": "partitivo", "pos.": "positivo",
+    "bibl.": "bíblico", "dau.": "hija", "gals.": "galones",
+    "non-lit.": "no literario", "alternat.": "alternativa", "sv.": "s. v.",
     "uncontr.": "sin contraer",
     "pregn.": "pregnante",      # «constr. pregn.»: construcción pregnante
     "elsew.": "en otros lugares", "ap.": "apud",
