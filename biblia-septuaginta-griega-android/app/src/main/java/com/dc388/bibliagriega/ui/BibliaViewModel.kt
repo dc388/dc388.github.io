@@ -53,12 +53,18 @@ data class WordStudy(
 )
 
 /**
- * Una palabra de la Septuaginta, que no viene analizada: lo que se enseña son
- * las lecturas de esa misma forma en el Nuevo Testamento.
+ * Una palabra de un texto griego que no viene analizado —la Septuaginta, los
+ * Padres Apostólicos o los pseudoepígrafos—: lo que se enseña son las lecturas
+ * de esa misma forma en el Nuevo Testamento.
+ *
+ * [collectionId] no es decorativo: el panel nombra el corpus del que sale la
+ * palabra, y sin este dato decía «la Septuaginta» también al tocar una palabra
+ * de Ignacio o de Henoc.
  */
 data class PlainWordStudy(
     val surface: String,
     val reference: String,
+    val collectionId: String,
     val readings: List<FormReading> = emptyList(),
     val loading: Boolean = true,
 )
@@ -202,9 +208,9 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /** Consulta una palabra de un texto sin análisis, por su forma. */
-    fun studyPlainWord(surface: String, reference: String) {
+    fun studyPlainWord(surface: String, reference: String, collectionId: String) {
         val limpia = surface.trim().trim('·', ',', '.', ';', ':', '(', ')', '\u2019', '\u00b7')
-        _plainWord.value = PlainWordStudy(limpia, reference)
+        _plainWord.value = PlainWordStudy(limpia, reference, collectionId)
         viewModelScope.launch {
             val readings = repo.formReadings(limpia)
             _plainWord.value = _plainWord.value

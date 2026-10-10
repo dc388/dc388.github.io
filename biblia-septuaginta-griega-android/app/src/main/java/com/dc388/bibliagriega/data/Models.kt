@@ -125,10 +125,11 @@ data class LexiconEntry(
 /**
  * Lo que una forma griega significa en el Nuevo Testamento.
  *
- * Sirve para consultar la Septuaginta, que no viene analizada: si la palabra
+ * Sirve para consultar los tres corpus griegos que no vienen analizados —la
+ * Septuaginta, los Padres Apostólicos y los pseudoepígrafos—: si la palabra
  * aparece con la misma forma exacta en el Nuevo Testamento, se puede enseñar lo
- * que allí significa. No es un análisis de la Septuaginta, y la aplicación lo
- * dice al mostrarlo.
+ * que allí significa. No es un análisis del texto que se está leyendo, y la
+ * aplicación lo dice al mostrarlo, nombrando el corpus del que sale.
  */
 data class FormReading(
     val strong: String,

@@ -257,13 +257,60 @@ private fun Field(label: String, value: String) {
 }
 
 /**
+ * Lo que el panel dice según el corpus del que salga la palabra.
+ *
+ * Los tres textos griegos sin etiquetar comparten este panel, y durante un
+ * tiempo los tres anunciaron «La Septuaginta no viene analizada», también al
+ * tocar una palabra de Ignacio o de Henoc: daba a entender que se estaba
+ * leyendo la Septuaginta. Cada corpus se nombra por lo que es, y con su propia
+ * edición, que tampoco es la misma.
+ */
+private data class AvisoSinAnalisis(val encabezado: String, val pie: String)
+
+private fun avisoDe(collectionId: String): AvisoSinAnalisis = when (collectionId) {
+    "padres" -> AvisoSinAnalisis(
+        "En los escritos de los Padres no se analizan los términos griegos. Esta " +
+            "forma aparece así en el Nuevo Testamento:",
+        "La edición de Lake es texto corrido, sin numeración Strong ni morfología: " +
+            "no existe una digitalización analizada de los Padres Apostólicos cuya " +
+            "licencia permita distribuirla con la aplicación. Esto es una ayuda por " +
+            "coincidencia de forma, no un análisis del griego de los Padres.",
+    )
+    "pseudo" -> AvisoSinAnalisis(
+        "En los pseudoepígrafos no se analizan los términos griegos. Esta forma " +
+            "aparece así en el Nuevo Testamento:",
+        "La edición de Flemming es texto corrido, sin numeración Strong ni " +
+            "morfología: no existe una digitalización analizada de estos libros cuya " +
+            "licencia permita distribuirla con la aplicación. Esto es una ayuda por " +
+            "coincidencia de forma, no un análisis de su griego.",
+    )
+    "lxx" -> AvisoSinAnalisis(
+        "La Septuaginta no viene analizada. Esta forma aparece así en el Nuevo " +
+            "Testamento:",
+        "La edición de Swete es texto corrido, sin numeración Strong ni morfología: " +
+            "no existe una digitalización analizada de la Septuaginta cuya licencia " +
+            "permita distribuirla con la aplicación. Esto es una ayuda por coincidencia " +
+            "de forma, no un análisis del texto griego de los Setenta.",
+    )
+    // Si algún día entra un cuarto corpus sin etiquetar y se olvida ponerlo
+    // arriba, que diga una verdad de todos y no el nombre del que no es.
+    else -> AvisoSinAnalisis(
+        "Este texto no viene analizado. Esta forma aparece así en el Nuevo " +
+            "Testamento:",
+        "Es texto corrido, sin numeración Strong ni morfología. Esto es una ayuda " +
+            "por coincidencia de forma, no un análisis de su griego.",
+    )
+}
+
+/**
  * Panel de una palabra de un texto sin análisis.
  *
- * La Septuaginta de Swete es texto corrido: no lleva números Strong ni
- * morfología. Lo que se enseña aquí es lo que esa misma forma significa en el
- * Nuevo Testamento, y el panel lo dice con todas las letras, porque no es lo
- * mismo: una forma puede coincidir y venir de otra palabra, y el griego de los
- * Setenta no siempre usa el vocabulario con el sentido que tiene en el Nuevo.
+ * Ni la Septuaginta, ni los Padres, ni los pseudoepígrafos llevan números
+ * Strong ni morfología. Lo que se enseña aquí es lo que esa misma forma
+ * significa en el Nuevo Testamento, y el panel lo dice con todas las letras,
+ * porque no es lo mismo: una forma puede coincidir y venir de otra palabra, y
+ * el griego de cada corpus no usa siempre el vocabulario con el sentido que
+ * tiene en el Nuevo.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -273,6 +320,7 @@ fun PlainWordSheet(
     onSearch: (String) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val aviso = avisoDe(study.collectionId)
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(
@@ -315,8 +363,7 @@ fun PlainWordSheet(
                 )
             } else {
                 Text(
-                    text = "La Septuaginta no viene analizada. Esta forma aparece así en el " +
-                        "Nuevo Testamento:",
+                    text = aviso.encabezado,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -366,10 +413,7 @@ fun PlainWordSheet(
             ) { Text("Buscar esta palabra") }
 
             Text(
-                text = "La edición de Swete es texto corrido, sin numeración Strong ni " +
-                    "morfología: no existe una digitalización analizada de la Septuaginta " +
-                    "cuya licencia permita distribuirla con la aplicación. Esto es una ayuda " +
-                    "por coincidencia de forma, no un análisis del texto griego de los Setenta.",
+                text = aviso.pie,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 18.dp),

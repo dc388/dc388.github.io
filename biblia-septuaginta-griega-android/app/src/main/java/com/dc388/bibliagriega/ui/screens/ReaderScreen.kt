@@ -313,9 +313,11 @@ fun ReaderScreen(
                         modifier = Modifier.padding(top = 8.dp, bottom = 12.dp),
                     )
                 } else if ((book?.collectionId ?: "") in GRIEGO_SIN_ANALIZAR) {
-                    // Ni la Septuaginta ni los Padres Apostólicos vienen
-                    // analizados, pero se puede consultar cada palabra por su
-                    // forma en el Nuevo Testamento.
+                    // Ni la Septuaginta ni los Padres Apostólicos ni los
+                    // pseudoepígrafos vienen analizados, pero se puede consultar
+                    // cada palabra por su forma en el Nuevo Testamento. Se pasa
+                    // el corpus para que el panel diga de cuál de los tres habla.
+                    val corpus = book?.collectionId ?: ""
                     Text(
                         text = "Toca una palabra para consultarla",
                         style = MaterialTheme.typography.labelMedium,
@@ -325,7 +327,7 @@ fun ReaderScreen(
                         text = verse.text,
                         onWordClick = { palabra ->
                             sheetVerse = null
-                            vm.studyPlainWord(palabra, reference)
+                            vm.studyPlainWord(palabra, reference, corpus)
                         },
                         modifier = Modifier.padding(top = 8.dp, bottom = 12.dp),
                     )
