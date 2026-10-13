@@ -10,6 +10,13 @@ name: APK para compartir
 # Aquí no se escribe ningún número: el run se busca y la versión se lee del
 # propio APK, que es el único sitio donde no puede estar desfasada.
 
+# CUIDADO con «Run workflow» mientras esto viva en una rama de trabajo: en
+# `main` sigue estando la versión vieja de este archivo, la que tiene clavado
+# el run de septiembre y publica sobre la etiqueta `biblia-apk-v3` con el
+# título «1.0.0». Lanzarlo desde el botón puede ejecutar esa copia y pisar el
+# APK que la gente ya se descargó. Hasta que esta rama se fusione, la forma
+# segura de lanzarlo es tocar este archivo y empujar, que corre la copia de la
+# rama.
 on:
   workflow_dispatch:
   push:
