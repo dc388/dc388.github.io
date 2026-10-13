@@ -99,6 +99,21 @@ jobs:
           echo "peso=$(du -h biblia-griega-y-hebrea.apk | cut -f1)" >> "$GITHUB_OUTPUT"
           echo "$paquete $nombre (versionCode $codigo)"
 
+          # El AAB es lo que pide Play Console; el APK solo sirve para instalar
+          # a mano. Sale de la misma compilación firmada que acaba de pasar las
+          # comprobaciones de arriba, así que viaja con ella en vez de quedarse
+          # dentro de un artefacto de Actions que caduca y hay que descomprimir.
+          aab=$(find descarga -name '*.aab' | head -1)
+          if [ -n "$aab" ]; then
+            cp "$aab" biblia-griega-y-hebrea.aab
+            echo "aab=si" >> "$GITHUB_OUTPUT"
+            echo "pesoaab=$(du -h biblia-griega-y-hebrea.aab | cut -f1)" >> "$GITHUB_OUTPUT"
+            echo "AAB para Play: $(du -h biblia-griega-y-hebrea.aab | cut -f1)"
+          else
+            echo "::warning::El artefacto no trae ningún AAB; se publica solo el APK."
+            echo "aab=no" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Dejarlo descargable
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -119,15 +134,25 @@ jobs:
           Si ya tenías una versión anterior instalada, esta se pone encima y
           conserva las notas, los marcadores y la posición de lectura.
 
+          El archivo \`.aab\` que acompaña al \`.apk\` no se instala en el teléfono:
+          es el formato que pide Google Play Console al subir una versión.
+
           Compilado del commit \`${{ steps.origen.outputs.sha }}\`, en la ejecución
           [${{ steps.origen.outputs.run }}](https://github.com/${{ github.repository }}/actions/runs/${{ steps.origen.outputs.run }}) de
           «Publicación — Biblia».
           FIN
 
-          gh release create "$ETIQUETA" biblia-griega-y-hebrea.apk \
+          # Con «set -e», un «[ -f x ] && …» que da falso tumba el paso entero,
+          # porque la lista completa devuelve 1. Va en un if.
+          archivos=(biblia-griega-y-hebrea.apk)
+          if [ -f biblia-griega-y-hebrea.aab ]; then
+            archivos+=(biblia-griega-y-hebrea.aab)
+          fi
+
+          gh release create "$ETIQUETA" "${archivos[@]}" \
              --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
              --title "$TITULO" --notes-file notas.md \
-          || gh release upload "$ETIQUETA" biblia-griega-y-hebrea.apk \
+          || gh release upload "$ETIQUETA" "${archivos[@]}" \
              --repo "$GITHUB_REPOSITORY" --clobber
 
           {
@@ -136,6 +161,7 @@ jobs:
             echo "| | |"
             echo "|---|---|"
             echo "| Versión | ${{ steps.apk.outputs.nombre }} (código ${{ steps.apk.outputs.codigo }}) |"
-            echo "| Peso | ${{ steps.apk.outputs.peso }} |"
+            echo "| Peso del APK | ${{ steps.apk.outputs.peso }} |"
+            echo "| AAB para Play | ${{ steps.apk.outputs.aab == 'si' && steps.apk.outputs.pesoaab || 'no se encontró' }} |"
             echo "| Enlace | https://github.com/$GITHUB_REPOSITORY/releases/tag/$ETIQUETA |"
           } >> "$GITHUB_STEP_SUMMARY"
