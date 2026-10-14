@@ -934,18 +934,34 @@ async function capturarEnrolamiento() {
 }
 
 // Pide un reto de vida al servidor y devuelve su id (o null).
+//
+// DOS CAMINOS AL MISMO RETO, y el orden importa:
+//
+//   1. /rest/v1/rpc/issue_liveness_challenge  — la base de datos directo.
+//   2. /functions/v1/liveness_challenge       — la misma RPC, pero envuelta en
+//                                               una Edge Function de 3 lineas.
+//
+// El 12 y 13 de octubre Edge Functions de Supabase estuvo degradado 21 horas y
+// la nave entera se quedo sin checar. La base de datos NO se cayo en ningun
+// momento. La envoltura no aporta nada que la base no haga sola, asi que se
+// pide primero por la base y Edge Functions queda de repuesto. Mientras exista
+// uno de los dos, hay reto y hay checada.
+//
+// Cuatro intentos en total, alternando. Uno solo se pierde con cualquier bache
+// de señal —la llamada tiene un tope de 12 s— y quedarse sin reto no es gratis:
+// el servidor RECHAZA la checada por "reto de vida inexistente", que es lo que
+// vio Hazael el 6 de octubre a las 9:01.
 async function pedirRetoVida() {
-  // Dos intentos. El primero se pierde con cualquier bache de señal —la llamada
-  // tiene un tope de 12 s— y quedarse sin reto no es gratis: el servidor
-  // RECHAZA la checada por "reto de vida inexistente", que es lo que vio
-  // Hazael el 6 de octubre a las 9:01.
-  for (let i = 0; i < 2; i++) {
-    try {
-      const token = await accessToken();
-      const r = await api('/functions/v1/liveness_challenge', { auth: token, body: {} });
-      if (r.ok && r.data && r.data.challenge_id) return r.data.challenge_id;
-    } catch (e) { /* se reintenta */ }
-    if (i === 0) await new Promise((r) => setTimeout(r, 700));
+  const rutas = ['/rest/v1/rpc/issue_liveness_challenge', '/functions/v1/liveness_challenge'];
+  for (let vuelta = 0; vuelta < 2; vuelta++) {
+    for (const ruta of rutas) {
+      try {
+        const token = await accessToken();
+        const r = await api(ruta, { auth: token, body: {} });
+        if (r.ok && r.data && r.data.challenge_id) return r.data.challenge_id;
+      } catch (e) { /* se cae a la otra ruta */ }
+    }
+    if (vuelta === 0) await new Promise((r) => setTimeout(r, 700));
   }
   return null;
 }
