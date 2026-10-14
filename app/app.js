@@ -1516,7 +1516,28 @@ function handlePunchResponse(type, r) {
 async function enqueue(item) { const q = (await idbGet('queue')) || []; q.push(item); await idbSet('queue', q); }
 async function queue() { return (await idbGet('queue')) || []; }
 let flushing = false;
-let INTENTOS_COLA = 0;
+
+// Cuantas veces se intento mandar CADA checada. El contador vive dentro del
+// item y se guarda en el telefono junto con la cola.
+//
+// Antes era una variable suelta en memoria, y eso tenia dos agujeros que juntos
+// dejaban al trabajador tranquilo mientras perdia el dia:
+//   - se borraba al cerrar la app, asi que una checada atorada tres dias
+//     amanecia en cero y volvia a decir "se mandan solas";
+//   - solo subia cuando se caia la red. Si el servidor CONTESTABA y decia que
+//     no (400, 401, 500), el item volvia a la cola sin contar el intento: la
+//     app reintentaba cada 60 s para siempre, en silencio, mostrando el aviso
+//     tranquilizador "no las vuelvas a checar".
+function intentosCola(q) { return q.reduce(function (m, it) { return Math.max(m, it.intentos || 0); }, 0); }
+function ultimoErrorCola(q) {
+  for (var i = 0; i < q.length; i++) if (q[i].ultimoError) return q[i].ultimoError;
+  return '';
+}
+function fallo(item, motivo) {
+  item.intentos = (item.intentos || 0) + 1;
+  item.ultimoError = motivo;
+}
+
 async function flushQueue() {
   // navigator.onLine da falso con senal buena en iOS mas seguido de lo que
   // deberia, y cuando miente la cola no se intentaba NUNCA. Intentar y que
@@ -1528,7 +1549,14 @@ async function flushQueue() {
   try {
     let token;
     try { token = await accessToken(); }
-    catch (e) { INTENTOS_COLA++; renderQueue(); return; } // sin token no hay envio
+    catch (e) {
+      // Sin token no hay envio. Cuenta como intento fallido para TODAS: es la
+      // causa mas comun de una cola que no avanza con señal perfecta.
+      for (const item of q) fallo(item, 'sesión caducada');
+      await idbSet('queue', q);
+      renderQueue();
+      return;
+    }
     const rest = [];
     const avisos = [];
     for (const item of q) {
@@ -1543,7 +1571,15 @@ async function flushQueue() {
         }
         // ok, o duplicado ya registrado (el servidor es idempotente por
         // client_operation_id: 200 con duplicate:true, o 409) -> se saca de la cola.
-        if (!r.ok && r.status !== 409) { rest.push(item); continue; }
+        if (!r.ok && r.status !== 409) {
+          // El servidor contesto y dijo que no. Reintentar cada minuto esta
+          // bien; callarselo no. Se cuenta igual que una caida de red para que
+          // el aviso deje de ser el tranquilizador, y se guarda el codigo para
+          // poder decirlo en pantalla.
+          fallo(item, 'código ' + r.status);
+          rest.push(item);
+          continue;
+        }
         // El servidor la ACEPTO, pero pudo haberla graduado como rechazada o a
         // revision. Sacarla de la cola en silencio es lo peor que puede pasar:
         // la persona cree que cheque, el reporte la cuenta como falta, y nadie
@@ -1553,9 +1589,8 @@ async function flushQueue() {
                         status: r.data.status,
                         reason: r.data.review_reason || '' });
         }
-      } catch { rest.push(item); INTENTOS_COLA++; } // red se cayo: se queda para el proximo intento
+      } catch { fallo(item, 'sin conexión'); rest.push(item); } // red se cayo: se queda para el proximo intento
     }
-    if (!rest.length) INTENTOS_COLA = 0;
     await idbSet('queue', rest);
     renderQueue();
     if (avisos.length) await avisarRechazos(avisos);
@@ -1594,12 +1629,22 @@ async function mostrarRechazosPendientes() {
 async function renderQueue() {
   const q = await queue();
   const el = $('queue');
-  if (!q.length) { el.hidden = true; return; }
+  if (!q.length) { el.hidden = true; el.className = 'queue'; return; }
   el.hidden = false;
-  el.textContent = INTENTOS_COLA >= 3
-    ? '\u26a0 ' + q.length + ' checada(s) SIN ENVIAR tras varios intentos. Abre la app ' +
-      'con wifi o buena señal, y avisa a tu jefe si sigue igual mañana.'
-    : q.length + ' checada(s) pendiente(s) de enviar. Se mandan solas; no las vuelvas a checar.';
+  const n = intentosCola(q);
+  if (n < 3) {
+    // Todavia es razonable esperar. Este mensaje es una promesa: solo se dice
+    // mientras la app de verdad pueda cumplirla.
+    el.className = 'queue';
+    el.textContent = q.length + ' checada(s) pendiente(s) de enviar. Se mandan solas; ' +
+      'no las vuelvas a checar.';
+    return;
+  }
+  const err = ultimoErrorCola(q);
+  el.className = 'queue atorada';
+  el.textContent = '\u26a0 ' + q.length + ' checada(s) SIN REGISTRAR tras ' + n + ' intentos' +
+    (err ? ' (' + err + ')' : '') + '. NO cuentan todavía. Avisa a tu jefe y manda una foto ' +
+    'de esta pantalla.';
 }
 
 // ---------- UI ----------

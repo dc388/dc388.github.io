@@ -75,6 +75,7 @@ h2{font-family:"Cormorant",Georgia,serif;font-weight:600;font-size:24px;margin:0
 .chip.ok{background:var(--accent-bg);color:var(--accent)} .chip.warn{background:rgba(240,180,41,.14);color:var(--amber)} .chip.err{background:rgba(239,106,90,.14);color:var(--red)}
 
 .queue{margin-top:14px;background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.35);border-radius:12px;padding:10px 12px;font-size:14px;color:var(--amber)}
+.queue.atorada{background:rgba(239,106,90,.12);border-color:rgba(239,106,90,.45);color:var(--red);font-weight:700}
 .foot{display:flex;justify-content:space-between;margin-top:24px}
 
 .result-badge{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:52px;color:var(--accent-ink)}
