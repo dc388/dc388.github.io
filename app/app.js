@@ -1674,8 +1674,14 @@ function renderHome() {
 function tickClock() { const d = new Date(); $('clock').textContent = hhmm(d.getTime()); }
 async function updateChips() {
   const cap = deviceCapabilities();
+  // navigator.onLine solo dice si hay interfaz de red, NO si hay internet de
+  // verdad. Martin, 15/10 8:32: el chip decia "En linea" sin un solo byte de
+  // datos, y se espero a llegar a la torre para checar —media hora de retardo
+  // que no era suya—. Mientras el chip prometa conexion, alguien va a esperar.
+  // Dice lo que sabe y, cuando no hay, dice que igual se puede checar.
   const net = navigator.onLine;
-  setChip('chip-net', net ? 'ok' : 'warn', net ? 'En línea' : 'Sin conexión');
+  setChip('chip-net', net ? 'ok' : 'warn',
+          net ? 'Con señal' : 'Sin señal · igual puedes checar');
   setChip('chip-dev', 'ok', 'Registrado');
   // Ubicacion: estado del permiso si el navegador lo expone.
   if (navigator.permissions && navigator.permissions.query) {
