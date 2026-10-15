@@ -951,18 +951,29 @@ async function capturarEnrolamiento() {
 // de señal —la llamada tiene un tope de 12 s— y quedarse sin reto no es gratis:
 // el servidor RECHAZA la checada por "reto de vida inexistente", que es lo que
 // vio Hazael el 6 de octubre a las 9:01.
+//
+// Ademas deja dicho si el servidor contesto. Es el UNICO dato honesto que
+// tenemos sobre la red: navigator.onLine solo mira si hay interfaz, y en una
+// nave con antena y sin datos dice que si. Todo lo que decida "online" a
+// partir de aqui usa esto, no el chip.
+let SERVIDOR_VIVO = null;   // null = todavia no se sabe
 async function pedirRetoVida() {
   const rutas = ['/rest/v1/rpc/issue_liveness_challenge', '/functions/v1/liveness_challenge'];
-  for (let vuelta = 0; vuelta < 2; vuelta++) {
+  // 6 s por intento, no 12: cuatro intentos de 12 s son 48 segundos mirando la
+  // pantalla antes de que la app admita que no hay red. Nadie espera eso; se
+  // dan por vencidos y se van sin checar.
+  const vueltas = navigator.onLine ? 2 : 1;
+  for (let vuelta = 0; vuelta < vueltas; vuelta++) {
     for (const ruta of rutas) {
       try {
         const token = await accessToken();
-        const r = await api(ruta, { auth: token, body: {} });
-        if (r.ok && r.data && r.data.challenge_id) return r.data.challenge_id;
+        const r = await api(ruta, { auth: token, body: {}, timeoutMs: 6000 });
+        if (r.ok && r.data && r.data.challenge_id) { SERVIDOR_VIVO = true; return r.data.challenge_id; }
       } catch (e) { /* se cae a la otra ruta */ }
     }
-    if (vuelta === 0) await new Promise((r) => setTimeout(r, 700));
+    if (vuelta === 0 && vueltas > 1) await new Promise((r) => setTimeout(r, 500));
   }
+  SERVIDOR_VIVO = false;
   return null;
 }
 
@@ -1364,7 +1375,16 @@ async function punch(type) {
       // aplica igual, y abajo se le pide la selfie de evidencia porque
       // faceEmbedding quedo vacio. RH la ve con foto y ubicacion.
       method = 'device_biometric';
-    } else if (navigator.onLine) {
+    } else if (navigator.onLine && SERVIDOR_VIVO !== false) {
+      // SERVIDOR_VIVO, no navigator.onLine: el chip decia "En linea" en medio
+      // de la nada y por eso esta rama se ejecutaba sin red. El rostro se lee
+      // con librerias que vienen por CDN; sin internet no cargan, la lectura
+      // falla siempre, y la persona recibia "no se pudo reconocer tu rostro"
+      // —que no tenia nada que ver— y despues "falta la foto", porque la foto
+      // tampoco podia subir. Resultado: imposible checar sin red. (Martin,
+      // 15/10.) Si el servidor no contesto, esto se salta y la checada se
+      // encola, que es justo para lo que existe la cola.
+      //
       // Con señal el rostro es obligatorio... pero no hasta dejar a alguien sin
       // checar. Esto es lo que se vivio: contraluz, lente sucio, pantalla al
       // sol, y la persona reintentando sin salida mientras se le pasaba la hora.
@@ -1401,7 +1421,9 @@ async function punch(type) {
   // Selfie de auditoría: solo para quien NO checa por rostro (la cara ya es la
   // evidencia). Se sube antes, con el mismo opId como folio.
   let auditPhotoPath = null;
-  if (!faceEmbedding && navigator.onLine && (( POL && POL.audit_photo_enabled ) || rostroFallado)) {
+  // Misma regla que arriba: "hay red" es que el servidor haya contestado.
+  const servidorAlcanzable = navigator.onLine && SERVIDOR_VIVO !== false;
+  if (!faceEmbedding && servidorAlcanzable && (( POL && POL.audit_photo_enabled ) || rostroFallado)) {
     busy(false);
     // Si se llego aqui porque el rostro no se pudo leer, la foto NO es opcional:
     // es la unica evidencia de quien checo.
@@ -1415,7 +1437,11 @@ async function punch(type) {
   // checada valida, de alguien con rostro enrolado, sin una sola evidencia de
   // quien la hizo. Si la foto no se pudo tomar, se pide reintentar el rostro
   // —que es justo lo que ya hacia falta—, no se deja pasar a medias.
-  if (rostroFallado && !auditPhotoPath) {
+  // Sin servidor no hay a donde subir la foto, y una checada encolada sin foto
+  // vale infinitamente mas que ninguna checada: viaja firmada con la llave de
+  // SU telefono y RH la ve como offline_sync. Bloquear aqui era dejar a la
+  // persona sin registro por algo que no podia resolver.
+  if (rostroFallado && !auditPhotoPath && servidorAlcanzable) {
     busy(false);
     return showResult('warn', 'Falta la foto',
       'Para checar sin reconocer tu rostro hace falta la foto. Vuelve a ' +
