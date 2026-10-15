@@ -300,8 +300,22 @@ async function reanudarSesion() {
   if (IDENT_NUEVA) return false;
   if (!ident.altaEn && !ident.migradaEn) return false;
   try {
+    // Las dos llamadas van firmadas con la ANON_KEY en Authorization.
+    //
+    // resume_device NO mira ese encabezado: lo unico que lo autentica es la
+    // firma del reto con la llave privada de este telefono (bearer() y
+    // resolveCaller() ni siquiera se invocan en su handler). Pero la funcion
+    // se desplego desde el panel, y el panel deja "Verify JWT" ENCENDIDO: la
+    // puerta de enlace rechaza con 401 antes de que la funcion corra. Quien
+    // llama aqui es, por definicion, alguien cuya sesion ya murio y no tiene
+    // JWT que ofrecer.
+    //
+    // La ANON_KEY es un JWT firmado y valido de este proyecto, asi que pasa la
+    // puerta sin conceder nada: ya viaja en 'apikey' en cada peticion y no
+    // identifica a nadie. Asi resume_device funciona con el interruptor
+    // encendido o apagado, y la sesion se recupera sola.
     const r1 = await api('/functions/v1/resume_device',
-      { body: { device_id: ident.id }, timeoutMs: 10000 });
+      { auth: ANON_KEY, body: { device_id: ident.id }, timeoutMs: 10000 });
     const reto = r1.ok && r1.data && r1.data.challenge;
     if (!reto) return false;
 
@@ -312,7 +326,7 @@ async function reanudarSesion() {
     let spki = null;
     try { spki = bufToB64(await crypto.subtle.exportKey('spki', ident.pair.publicKey)); } catch (e) {}
 
-    const r2 = await api('/functions/v1/resume_device', { timeoutMs: 12000, body: {
+    const r2 = await api('/functions/v1/resume_device', { auth: ANON_KEY, timeoutMs: 12000, body: {
       device_id: ident.id, challenge: reto, signature: firma,
       public_key: spki || undefined, app_version: BUILD,
     }});
