@@ -443,9 +443,24 @@ function explicarFalloRegistro(r) {
     return 'No hubo internet para registrarte. Conéctate al WiFi o prende tus datos ' +
            'y vuelve a tocar Entrar. Tu código no se gastó.';
   }
+  // 409 lo devuelve enroll_device por VARIAS razones distintas, y decirlas
+  // todas como "ya tienes otro telefono" manda a la persona a resolver algo
+  // que no tiene roto. Kike, 15/10 8:49: su codigo no tenia emisor registrado
+  // —lo creamos con SQL directo y se nos fue created_by— y la app le dijo que
+  // liberara un telefono que estaba perfectamente bien.
+  if (st === 409 && (e.includes('emisor') || e.includes('issuer'))) {
+    return 'Tu código está incompleto del lado del sistema; no es tu teléfono y no ' +
+           'es tu culpa. Manda una foto de esta pantalla a Administración: se ' +
+           'arregla en un minuto y tu código sigue sirviendo.';
+  }
+  if (st === 409 && (e.includes('ya no existe') || e.includes('not found'))) {
+    return 'Tu ficha no aparece en el sistema de asistencia. No es tu teléfono. ' +
+           'Manda una foto de esta pantalla a Recursos Humanos.';
+  }
   if (st === 409 || e.includes('conflict') || e.includes('already enrolled')) {
     return 'Ya tienes un teléfono registrado a tu nombre. Avísale a Administración ' +
-           'cuál es el teléfono que vas a usar de hoy en adelante para que liberen el otro.';
+           'cuál es el teléfono que vas a usar de hoy en adelante para que liberen ' +
+           'el otro, y manda una foto de esta pantalla.';
   }
   if (st === 403 || e.includes('inactive') || e.includes('inactiv') || e.includes('baja')) {
     return 'Tu cuenta no está activa en el sistema de asistencia. Avísale a Recursos ' +
