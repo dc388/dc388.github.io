@@ -1529,6 +1529,7 @@ async function punch(type) {
     return handlePunchResponse(type, r);
   } catch (e) {
     await enqueue({ body, type, savedAt: deviceMs });
+    await marcarUltimaChecada(type, deviceMs);
     busy(false);
     renderQueue();
     return showResult('warn', 'Guardada en el teléfono',
@@ -1536,6 +1537,49 @@ async function punch(type) {
       '. No se pudo enviar en este momento; se manda sola en cuanto se pueda y ' +
       'la hora se conserva. Deja la app abierta unos segundos.');
   } finally { busy(false); }
+}
+
+// ---------- recordatorio de salida ----------
+//
+// Casi nadie marca salida, y una jornada sin cierre no se puede pagar: el
+// calculo la deja abierta y el dia entero queda en el aire. El trabajador no
+// esta siendo descuidado —marca entrada porque le preocupa el retardo, y a las
+// seis de la tarde ya nadie se acuerda de abrir la app otra vez—.
+//
+// La app no sabe el horario de cada quien (eso vive en el servidor), pero si
+// sabe que esta persona marco entrada hoy y no ha marcado salida. Con eso basta
+// para recordarselo cada vez que abra.
+async function marcarUltimaChecada(tipo, ms) {
+  try { await idbSet('ultima-checada', { tipo, ms: ms || Date.now() }); } catch (e) {}
+}
+
+function esHoy(ms) {
+  const a = new Date(ms), b = new Date();
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth()
+      && a.getDate() === b.getDate();
+}
+
+async function renderRecordatorioSalida() {
+  const el = $('aviso-salida');
+  if (!el) return;
+  let u = null;
+  try { u = await idbGet('ultima-checada'); } catch (e) { u = null; }
+  // Dentro de la jornada = lo ultimo que marco fue entrada o regreso de comida.
+  const dentro = u && esHoy(u.ms) && (u.tipo === 'in' || u.tipo === 'break_end');
+  if (!dentro) { el.hidden = true; el.className = 'aviso-salida'; return; }
+  el.hidden = false;
+  // A partir de las 16:00 deja de ser un recordatorio y pasa a ser urgente: el
+  // turno de lunes a viernes cierra a las 18:00 y el sabado a la 1.
+  if (new Date().getHours() >= 16) {
+    el.className = 'aviso-salida urgente';
+    el.textContent = '⏰ Marcaste entrada a las ' + hhmm(u.ms) + ' y NO has marcado salida. ' +
+      'Sin salida tu día queda abierto y no se puede pagar completo. ' +
+      'Aprieta REGISTRAR SALIDA antes de irte.';
+    return;
+  }
+  el.className = 'aviso-salida';
+  el.textContent = 'Entrada registrada a las ' + hhmm(u.ms) +
+    '. Al terminar tu jornada, no olvides apretar REGISTRAR SALIDA.';
 }
 
 function handlePunchResponse(type, r) {
@@ -1559,6 +1603,7 @@ function handlePunchResponse(type, r) {
   const st = d.status;
   // El servidor decide si el passkey fue valido (no el cliente).
   const fid = d.passkey_verified === true ? ' Verificado con Face ID.' : '';
+  if (st === 'valid' || st === 'review') { marcarUltimaChecada(type); renderRecordatorioSalida(); }
   if (st === 'valid') return showResult('ok', PUNCH_LABEL[type] + ' registrada',
     (d.worksite ? 'En ' + d.worksite + '. ' : '') + 'Folio ' + (d.folio ?? '—') + '.' + fid);
   if (st === 'rejected') return showResult('err', PUNCH_LABEL[type] + ' rechazada',
@@ -1718,6 +1763,7 @@ function renderHome() {
   tickClock();
   updateChips();
   renderQueue();
+  renderRecordatorioSalida();
   loadPolicy();
   show('home');
   // Si ya autorizó el biométrico pero aún no enrola su rostro, lo mandamos a
@@ -2002,7 +2048,7 @@ function bindUI() {
   // El evento 'online' no siempre dispara en iOS. Reforzamos la sincronia al
   // volver la app a primer plano y con un latido periodico: flushQueue() sale
   // solo si hay red y algo en cola, asi que es barato.
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) { updateChips(); flushQueue(); mostrarRechazosPendientes(); } });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { updateChips(); flushQueue(); mostrarRechazosPendientes(); renderRecordatorioSalida(); } });
   setInterval(() => flushQueue(), 60000);
   setInterval(tickClock, 15000);
 }
@@ -2048,7 +2094,14 @@ function boot() {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (recargando) return;
       recargando = true;
-      location.reload();
+      // Pero NO a media checada: recargar ahi tira el rostro ya leido, la foto
+      // ya tomada y la firma ya hecha, y la persona vuelve a empezar sin saber
+      // por que. Se espera a que la pantalla este quieta.
+      const cuandoSePueda = () => {
+        if (!$('home').hidden || document.hidden) return location.reload();
+        setTimeout(cuandoSePueda, 2000);
+      };
+      cuandoSePueda();
     });
     navigator.serviceWorker.register('sw.js')
       .then((reg) => { try { reg.update(); } catch {} })
