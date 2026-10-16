@@ -553,7 +553,10 @@ CSS_EXTRA = """
 .art p{margin:0 0 .55rem}
 ul.ocur{list-style:none;padding:0;margin:0 0 1rem}
 ul.ocur li{padding:.55rem 0;border-bottom:1px solid var(--b)}
-.ref{font:600 14px/1.5 system-ui,sans-serif;text-decoration:none;padding-block:.5rem}
+/* En linea, el relleno vertical no levanta la caja: se pintaba por encima de
+   la traduccion de abajo y tocarla navegaba. En inline-flex la caja es real. */
+.ref{font:600 14px/1.5 system-ui,sans-serif;text-decoration:none;
+ display:inline-flex;align-items:center;min-height:2.75rem}
 .fm{font-size:1.05em;margin-inline-start:.4rem}
 .tx{display:block;color:var(--s);font-size:.95em;margin-top:.15rem}
 .vc{color:var(--s);font:13px/1 system-ui,sans-serif}

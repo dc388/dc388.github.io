@@ -73,8 +73,12 @@ ul.g a{display:flex;align-items:center;justify-content:center;min-width:2.75rem;
  padding:.25rem .5rem;border:1px solid var(--bc);
  border-radius:.35rem;text-decoration:none;font:15px/1 system-ui,sans-serif}
 ul.l{list-style:none;padding:0;margin:0}
-ul.l li{border-bottom:1px solid var(--b);font:16px/1.4 system-ui,sans-serif}
-ul.l a{display:flex;align-items:center;min-height:2.75rem;text-decoration:none}
+ul.l li{display:flex;align-items:center;gap:.5rem;min-height:2.75rem;
+ border-bottom:1px solid var(--b);font:16px/1.4 system-ui,sans-serif}
+ /* El enlace se estira a lo alto de la fila para que se pueda tocar entero,
+    pero la fila sigue siendo una linea: detras del enlace va «28 cap.», y con
+    el enlace en bloque esa cuenta se caia al renglon de abajo. */
+ul.l a{display:flex;align-items:center;align-self:stretch;text-decoration:none}
 .n{color:var(--s);font:14px/1.6 system-ui,sans-serif}
 .par{border-inline-start:3px solid var(--b);padding:.15rem 0 .15rem .9rem;margin:1.6rem 0;
  color:var(--s);font:15px/1.6 system-ui,sans-serif}
