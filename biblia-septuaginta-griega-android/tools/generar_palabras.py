@@ -553,11 +553,12 @@ CSS_EXTRA = """
 .art p{margin:0 0 .55rem}
 ul.ocur{list-style:none;padding:0;margin:0 0 1rem}
 ul.ocur li{padding:.55rem 0;border-bottom:1px solid var(--b)}
-.ref{font:600 14px/1.5 system-ui,sans-serif;text-decoration:none}
+.ref{font:600 14px/1.5 system-ui,sans-serif;text-decoration:none;padding-block:.5rem}
 .fm{font-size:1.05em;margin-inline-start:.4rem}
 .tx{display:block;color:var(--s);font-size:.95em;margin-top:.15rem}
 .vc{color:var(--s);font:13px/1 system-ui,sans-serif}
-ul.g .aqui{display:block;min-width:2.6rem;text-align:center;padding:.45rem .5rem;
+ul.g .aqui{display:flex;align-items:center;justify-content:center;min-width:2.75rem;
+ min-height:2.75rem;padding:.25rem .5rem;
  border:1px solid var(--a);border-radius:.35rem;font:15px/1 system-ui,sans-serif;color:var(--a)}
 """
 
