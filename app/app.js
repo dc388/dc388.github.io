@@ -102,8 +102,15 @@ const store = {
 function idb() {
   return new Promise((res, rej) => {
     const r = indexedDB.open('luft', 1);
+    // Safari tiene un caso conocido en que open() no dispara ni onsuccess ni
+    // onerror y la promesa nunca se asienta. Cuando eso pasa a media checada,
+    // el spinner se queda eterno y los botones mueren hasta que recarguen.
+    // Fallar rapido se puede manejar; colgarse no.
+    const t = setTimeout(() => rej(new Error('idb-sin-respuesta')), 5000);
     r.onupgradeneeded = () => r.result.createObjectStore('kv');
-    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    r.onsuccess = () => { clearTimeout(t); res(r.result); };
+    r.onerror   = () => { clearTimeout(t); rej(r.error); };
+    r.onblocked = () => { clearTimeout(t); rej(new Error('idb-bloqueada')); };
   });
 }
 async function idbGet(k) { const db = await idb(); return new Promise((res, rej) => {
@@ -166,7 +173,13 @@ const IDENT_KEY = 'identidad';
 /** La identidad guardada, o null. NO crea nada: solo lee. */
 async function leerIdentidad() {
   let ident = null;
-  try { ident = await idbGet(IDENT_KEY); } catch (e) { return null; }
+  // Un error de LECTURA no significa que no haya identidad. Safari lanza aqui
+  // tras un cierre en segundo plano o con poco espacio, y devolver null hacia
+  // que ensureDevice creara una llave nueva ENCIMA de la buena: el telefono
+  // perdia su registro para siempre y la persona tenia que pedir codigo nuevo.
+  // Ese es el viejo "otra vez me pide el codigo". Ahora se propaga.
+  try { ident = await idbGet(IDENT_KEY); }
+  catch (e) { const err = new Error('idb-ilegible'); err.transitorio = true; throw err; }
   if (ident && ident.id && ident.pair) return ident;
 
   // Formato viejo (id en localStorage, par en IndexedDB). Se migra tal cual —
@@ -222,7 +235,13 @@ async function nuevaIdentidad() {
 let IDENT_NUEVA = false;
 
 async function ensureDevice() {
-  let ident = await leerIdentidad();
+  // Un reintento antes de rendirse: el fallo de IndexedDB suele ser pasajero.
+  let ident;
+  try { ident = await leerIdentidad(); }
+  catch (e) {
+    await new Promise((r) => setTimeout(r, 400));
+    ident = await leerIdentidad();   // si vuelve a lanzar, sube y NO se crea nada
+  }
   if (!ident) { IDENT_NUEVA = true; ident = await nuevaIdentidad(); }
   const spki = bufToB64(await crypto.subtle.exportKey('spki', ident.pair.publicKey));
   return { id: ident.id, pair: ident.pair, spki };
@@ -273,6 +292,10 @@ async function api(path, { method = 'POST', body, auth, timeoutMs = 12000 } = {}
 // token a punto de morir, la renovacion llegaba tarde y la sesion se caia. Con
 // 10 minutos hay toda una jornada de oportunidades para renovar a tiempo.
 const MARGEN_SESION_SEG = 600;
+
+// Promesa del refresh en vuelo, para que dos llamadas simultaneas compartan
+// resultado en vez de quemar el refresh_token dos veces.
+let REFRESCANDO = null;
 
 /**
  * Reanuda la sesion SIN codigo, firmando un reto con la llave de este telefono.
@@ -355,11 +378,13 @@ async function accessToken() {
   // codigo. Antes esto devolvia null y la unica salida era la pantalla del
   // codigo, o sea una llamada a RH por cada tropiezo.
   if (!s) {
-    if (navigator.onLine && await reanudarSesion()) {
-      s = store.get('session');
-      return s ? s.access_token : null;
-    }
-    return null;
+    // Se relee SIEMPRE el almacen. reanudarSesion() devuelve false tambien
+    // cuando tuvo exito pero descarto su sesion porque entretanto aparecio
+    // otra (la del codigo). Ese false se leia como "no hay sesion" y la
+    // peticion salia sin Authorization -> 401 en la primera checada del dia.
+    if (navigator.onLine) { try { await reanudarSesion(); } catch (e) {} }
+    s = store.get('session');
+    return s ? s.access_token : null;
   }
 
   // Solo intentamos refrescar si el token esta por vencer Y hay red. Offline o con
@@ -367,7 +392,16 @@ async function accessToken() {
   if (s.expires_at && Date.now() / 1000 > s.expires_at - MARGEN_SESION_SEG && navigator.onLine) {
     let muerto = false;
     try {
-      const r = await api('/auth/v1/token?grant_type=refresh_token', { body: { refresh_token: s.refresh_token } });
+      // Un refresh a la vez. boot() lanza gateAgreements() y flushQueue() en la
+      // misma linea y las dos piden token: dos POST con el MISMO refresh_token.
+      // Supabase revoca la familia entera cuando uno se reusa fuera de su
+      // margen, asi que la carrera podia matar una sesion que estaba viva.
+      if (!REFRESCANDO) {
+        REFRESCANDO = api('/auth/v1/token?grant_type=refresh_token',
+                          { body: { refresh_token: s.refresh_token } })
+          .finally(() => { setTimeout(() => { REFRESCANDO = null; }, 1500); });
+      }
+      const r = await REFRESCANDO;
       if (r.ok && r.data && r.data.access_token) {
         const ns = { ...s, access_token: r.data.access_token, refresh_token: r.data.refresh_token,
           expires_at: r.data.expires_at || Math.floor(Date.now() / 1000) + (r.data.expires_in || 3600) };
@@ -704,7 +738,11 @@ async function enrollPasskey() {
 // devuelve la asercion lista para mandar en la checada. null si no aplica o
 // falla (nunca bloquea la asistencia).
 async function assertPasskey(opId) {
-  const idb64 = await idbGet('passkeyId');
+  // El passkey es OPCIONAL: su falla no puede tumbar una checada. Esta lectura
+  // estaba fuera del try y una excepcion de IndexedDB subia hasta el manejador
+  // generico, dejando a la persona con "algo fallo" y sin checada ni encolar.
+  let idb64 = null;
+  try { idb64 = await idbGet('passkeyId'); } catch (e) { return null; }
   if (!idb64) return null;
   try {
     const token = await accessToken();
@@ -1260,7 +1298,22 @@ function captureSelfie(label, required) {
     $('selfie-take').hidden = false;
     show('selfie');
 
-    const cleanup = () => { $('selfie-take').onclick = null; stopSelfieStream(); };
+    // Habia un boton "Continuar sin foto" en el HTML que NADIE conectaba: si la
+    // vista previa salia negra (otra app tomo la camara, iOS no solto el
+    // stream), no habia nada que tocar y la checada moria ahi, con los botones
+    // trabados por CHECANDO. Ahora tiene salida, y un techo de 90 s por si la
+    // persona deja el telefono en la mano y se distrae.
+    let techo = null;
+    const cleanup = () => {
+      $('selfie-take').onclick = null;
+      $('selfie-skip').onclick = null;
+      $('selfie-skip').hidden = true;
+      if (techo) { clearTimeout(techo); techo = null; }
+      stopSelfieStream();
+    };
+    $('selfie-skip').hidden = false;
+    $('selfie-skip').onclick = () => { cleanup(); resolve(null); };
+    techo = setTimeout(() => { cleanup(); resolve(null); }, 90000);
     $('selfie-take').onclick = () => {
       try {
         const c = $('selfie-canvas');
@@ -1284,16 +1337,21 @@ async function uploadSelfie(blob, opId) {
   const yyyy = now.getFullYear();
   const mm = String(now.getMonth() + 1).padStart(2, '0');
   const path = empId + '/' + yyyy + '/' + mm + '/' + opId + '.jpg';
+  // Unico fetch del archivo sin tope de tiempo: con señal que va y viene se
+  // quedaba colgado y la app entera con el "Subiendo foto..." puesto.
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 20000);
   try {
     const token = await accessToken();
     const res = await fetch(SUPABASE_URL + '/storage/v1/object/checadas-contexto/' + path, {
       method: 'POST',
       headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + token, 'Content-Type': 'image/jpeg', 'x-upsert': 'false' },
       body: blob,
+      signal: ctl.signal,
     });
     if (!res.ok) return null;
     return path;
-  } catch { return null; }
+  } catch { return null; } finally { clearTimeout(t); }
 }
 
 // ---------- checada ----------
@@ -1439,7 +1497,10 @@ async function punch(type) {
         return showResult('warn', 'Falta reconocer tu rostro',
           'Acércate, con buena luz e intenta de nuevo.');
       }
-      store.del('fallosRostro');
+      // NO se borra el contador aqui. Al borrarlo, si luego la foto fallaba
+      // —camara ocupada, permiso negado— la persona volvia a tener que fallar
+      // el rostro TRES veces para que se le ofreciera la foto otra vez. Ciclo
+      // sin salida, de minuto y medio por vuelta. Se borra al lograr checar.
       rostroFallado = true;
       method = 'device_biometric';
     }
@@ -1520,17 +1581,35 @@ async function punch(type) {
     // justamente porque la red no respondio, que es la situacion que
     // offline_sync describe.
     if (method === 'face' && !faceChallengeId) throw new Error('sin-reto');
-    const r = await api('/functions/v1/punch_register', { body, auth: token });
+    let r = await api('/functions/v1/punch_register', { body, auth: token });
     if (r.status === 401) { // sesion vencida: reintento con refresh
       const t2 = await accessToken();
-      const r2 = await api('/functions/v1/punch_register', { body, auth: t2 });
-      return handlePunchResponse(type, r2);
+      r = await api('/functions/v1/punch_register', { body, auth: t2 });
+    }
+    // ESTO es lo que paso el 12 y 13 de octubre. api() no lanza cuando el
+    // servidor contesta mal: devuelve {ok:false}. Con Edge Functions degradado
+    // la pasarela respondia 502/503 RAPIDO, el tope de 12 s nunca saltaba, no
+    // se caia al catch, y la cola offline —que existe justo para esto— no se
+    // usaba. La checada se perdia con un mensaje de error en pantalla.
+    //
+    // Un servidor que contesta "ahorita no" es exactamente lo mismo que un
+    // servidor que no contesta: se encola y se manda despues, con la hora real.
+    if (!r.ok && (r.status === 0 || r.status === 408 || r.status === 425 ||
+                  r.status === 429 || r.status >= 500)) {
+      throw new Error('servidor-' + r.status);
     }
     return handlePunchResponse(type, r);
   } catch (e) {
-    await enqueue({ body, type, savedAt: deviceMs });
-    await marcarUltimaChecada(type, deviceMs);
+    const guardada = await enqueue({ body, type, savedAt: deviceMs });
     busy(false);
+    if (!guardada) {
+      // Ni se mando ni se pudo guardar. Decirle "se manda sola" seria mentirle.
+      return showResult('err', 'TU CHECADA NO QUEDÓ',
+        'No se pudo enviar y tampoco se pudo guardar en este teléfono. ' +
+        'Avisa a tu jefe AHORA y manda una foto de esta pantalla. ' +
+        'Si puedes, cierra la app por completo y vuelve a checar.');
+    }
+    await marcarUltimaChecada(type, deviceMs);
     renderQueue();
     return showResult('warn', 'Guardada en el teléfono',
       PUNCH_LABEL[type] + ' registrada a las ' + hhmm(deviceMs) +
@@ -1613,8 +1692,16 @@ function handlePunchResponse(type, r) {
 }
 
 // ---------- cola offline ----------
-async function enqueue(item) { const q = (await idbGet('queue')) || []; q.push(item); await idbSet('queue', q); }
-async function queue() { return (await idbGet('queue')) || []; }
+// Devuelve false en vez de lanzar. Es la UNICA escritura del archivo cuya
+// falla pierde datos: si truena, la persona tiene que enterarse en el momento,
+// no recibir "guardada en el telefono" sobre una cola que no existe.
+async function enqueue(item) {
+  try { const q = (await idbGet('queue')) || []; q.push(item); await idbSet('queue', q); return true; }
+  catch (e) { return false; }
+}
+async function queue() {
+  try { return (await idbGet('queue')) || []; } catch (e) { return []; }
+}
 let flushing = false;
 
 // Cuantas veces se intento mandar CADA checada. El contador vive dentro del
@@ -1642,18 +1729,27 @@ async function flushQueue() {
   // navigator.onLine da falso con senal buena en iOS mas seguido de lo que
   // deberia, y cuando miente la cola no se intentaba NUNCA. Intentar y que
   // falle el fetch cuesta mucho menos que una checada que nadie manda.
+  // El candado se levanta ANTES de cualquier await. Estaba despues, y dos
+  // disparos simultaneos —volver a la app y el latido de 60 s caen juntos—
+  // pasaban los dos y recorrian la misma lista.
   if (flushing) return;
-  const q = await queue();
-  if (!q.length) return;
   flushing = true;
   try {
+    const q = await queue();
+    if (!q.length) return;
     let token;
     try { token = await accessToken(); }
     catch (e) {
       // Sin token no hay envio. Cuenta como intento fallido para TODAS: es la
       // causa mas comun de una cola que no avanza con señal perfecta.
       for (const item of q) fallo(item, 'sesión caducada');
-      await idbSet('queue', q);
+      const ahora = await queue();
+      const porId = new Map(q.map((it) => [it.body && it.body.client_operation_id, it]));
+      for (const it of ahora) {
+        const r = porId.get(it.body && it.body.client_operation_id);
+        if (r) { it.intentos = r.intentos; it.ultimoError = r.ultimoError; }
+      }
+      await idbSet('queue', ahora);
       renderQueue();
       return;
     }
@@ -1691,7 +1787,26 @@ async function flushQueue() {
         }
       } catch { fallo(item, 'sin conexión'); rest.push(item); } // red se cayo: se queda para el proximo intento
     }
-    await idbSet('queue', rest);
+    // NO se pisa la cola con una copia vieja. Mientras este bucle corria —hasta
+    // 24 s por checada— el trabajador pudo apretar un boton y encolar otra; al
+    // escribir `rest` tal cual, esa checada nueva se borraba en silencio, con
+    // la pantalla diciendole que se mandaria sola. Se quitan SOLO las que de
+    // verdad se fueron, releyendo la cola de ahora.
+    const idsEnviados = new Set(
+      q.filter((it) => rest.indexOf(it) === -1)
+       .map((it) => it.body && it.body.client_operation_id)
+       .filter(Boolean));
+    const ahora = await queue();
+    const pendientes = ahora.filter((it) =>
+      !idsEnviados.has(it.body && it.body.client_operation_id));
+    // Los contadores de intento viven en los objetos de `rest`, que son los
+    // mismos de `q`; se trasladan a la lista fresca por id.
+    const porId = new Map(rest.map((it) => [it.body && it.body.client_operation_id, it]));
+    for (const it of pendientes) {
+      const r = porId.get(it.body && it.body.client_operation_id);
+      if (r) { it.intentos = r.intentos; it.ultimoError = r.ultimoError; }
+    }
+    await idbSet('queue', pendientes);
     renderQueue();
     if (avisos.length) await avisarRechazos(avisos);
   } finally { flushing = false; }
@@ -1769,7 +1884,9 @@ function renderHome() {
   // Si ya autorizó el biométrico pero aún no enrola su rostro, lo mandamos a
   // registrarlo (es requisito para checar con la cara). No bloquea si no aplica.
   loadFaceStatus().then(() => {
-    if (FACE && FACE.granted && !FACE.enrolled && !$('home').hidden) renderEnrolar();
+    // !CHECANDO: esta llamada tarda hasta 12 s con señal mala, y al resolver
+    // saltaba a la pantalla de enrolar rostro ENCIMA de una checada en curso.
+    if (FACE && FACE.granted && !FACE.enrolled && !$('home').hidden && !CHECANDO) renderEnrolar();
   });
 }
 function tickClock() { const d = new Date(); $('clock').textContent = hhmm(d.getTime()); }
