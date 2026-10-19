@@ -21,16 +21,43 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Biblia Griega y Hebrea",
-  "url": "https://dc388.github.io/biblia/",
-  "inLanguage": "es",
-  "applicationCategory": "ReferenceApplication",
-  "operatingSystem": "Web, Android",
-  "isAccessibleForFree": true,
-  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-  "description": "Septuaginta, Nuevo Testamento griego y Antiguo Testamento hebreo en sus lenguas originales, con interlineal, números Strong, diccionario en español y la Reina-Valera 1909. Incluye los libros apócrifos y los Padres Apostólicos traducidos al español.",
-  "image": "https://dc388.github.io/biblia/icono.png"
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://dc388.github.io/biblia/#sitio",
+      "name": "Biblia Griega y Hebrea",
+      "alternateName": "Biblia Griega",
+      "url": "https://dc388.github.io/biblia/",
+      "inLanguage": "es"
+    },
+    {
+      "@type": "WebApplication",
+      "name": "Biblia Griega y Hebrea",
+      "url": "https://dc388.github.io/biblia/",
+      "isPartOf": {"@id": "https://dc388.github.io/biblia/#sitio"},
+      "inLanguage": "es",
+      "applicationCategory": "ReferenceApplication",
+      "operatingSystem": "Web",
+      "isAccessibleForFree": true,
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+      "description": "Septuaginta, Nuevo Testamento griego y Antiguo Testamento hebreo en sus lenguas originales, con interlineal, números Strong, diccionario en español y la Reina-Valera 1909. Incluye los libros apócrifos y los Padres Apostólicos traducidos al español.",
+      "image": "https://dc388.github.io/biblia/icono.png",
+      "sameAs": ["https://play.google.com/store/apps/details?id=com.dc388.bibliagriega"]
+    },
+    {
+      "@type": "MobileApplication",
+      "name": "Biblia Griega y Hebrea",
+      "url": "https://play.google.com/store/apps/details?id=com.dc388.bibliagriega",
+      "installUrl": "https://play.google.com/store/apps/details?id=com.dc388.bibliagriega",
+      "inLanguage": "es",
+      "applicationCategory": "ReferenceApplication",
+      "operatingSystem": "Android 8.0 o posterior",
+      "softwareVersion": "1.2.3",
+      "isAccessibleForFree": true,
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+      "image": "https://dc388.github.io/biblia/icono.png"
+    }
+  ]
 }
 </script>
 <meta name="theme-color" content="#f5efe2" media="(prefers-color-scheme: light)">
@@ -131,6 +158,7 @@ h2:first-child{margin-top:4px}
 .seguir small{color:var(--tinta-suave); font-size:.8125rem}
 .saludo{margin:0 0 14px; line-height:1.6; color:var(--tinta-suave); font-size:.9375rem}
 .saludo b{color:var(--tinta); font-weight:600}
+.saludo a{color:var(--realce); font-weight:600}
 .propias{
   display:block; padding:13px 15px; margin:0 0 20px; border:1px solid var(--borde);
   border-radius:11px; background:var(--papel-alto); text-decoration:none; color:var(--tinta);
@@ -254,6 +282,9 @@ footer a{color:var(--realce)}
       palabras del griego y del hebreo bíblicos con su significado en español, el
       artículo del léxico traducido y la lista de los sitios donde sale cada una
       en el texto.</p>
+    <p><a href="https://play.google.com/store/apps/details?id=com.dc388.bibliagriega">La
+      aplicación para Android, gratis en Google Play</a>: lo mismo en el teléfono,
+      sin necesidad de conexión.</p>
     <p class="cargando">Cargando la biblioteca…</p>
     <noscript><p>Para leer los textos hay que activar JavaScript en el navegador.</p></noscript>
   </section>
@@ -598,6 +629,12 @@ function cabeceraPortada() {
     debajo de cada versículo: <b>Septuaginta</b>, <b>Nuevo Testamento griego</b> y
     <b>Antiguo Testamento hebreo</b>. Toca cualquier palabra para ver su análisis y
     su entrada del diccionario.</p>`);
+
+  // Desde octubre la app está en producción en Play: ya no hace falta
+  // apuntarse como probador, así que se puede ofrecer a cualquiera.
+  partes.push(`<p class="saludo">¿Mejor en el teléfono?
+    <a href="https://play.google.com/store/apps/details?id=com.dc388.bibliagriega">Descárgala
+    gratis en Google Play</a>: funciona sin conexión.</p>`);
 
   if (pestana !== 'apocrifos') {
     partes.push(`<a class="propias" href="#/">
