@@ -142,6 +142,72 @@ jobs:
           ADMOB_BANNER: ${{ secrets.ADMOB_BANNER }}
         run: ./gradlew bundleRelease assembleRelease ${{ steps.anuncios.outputs.extra }} --stacktrace
 
+      # Hasta ahora nada arrancaba nunca la compilación de publicación. Las
+      # pruebas del emulador corren «connectedDebugAndroidTest», o sea la de
+      # depuración: sin R8, sin recorte de recursos y con los anuncios de
+      # prueba. Una versión que compila, se firma y se cierra sola al abrirla
+      # pasaba por aquí con todo en verde y llegaba entera al teléfono de un
+      # usuario. Pasó.
+      #
+      # Esto no sustituye a las pruebas funcionales: solo comprueba lo mínimo
+      # que ninguna comprobaba, que es que la aplicación que de verdad se
+      # publica abre y sigue en pie. Se hace sobre el APK firmado que acaba de
+      # salir, con los identificadores reales de AdMob, no sobre una variante
+      # parecida.
+      - name: Habilitar KVM para el emulador
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+        working-directory: .
+
+      - name: Comprobar que la versión de publicación abre
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          ram-size: 4096M
+          disk-size: 4096M
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          working-directory: biblia-septuaginta-griega-android
+          script: |
+            apk=$(find app/build/outputs/apk/release -name '*.apk' | head -1)
+            test -n "$apk" || { echo "::error::No se compiló ningún APK de publicación."; exit 1; }
+            echo "Instalando $apk"
+            adb install -r "$apk"
+            adb logcat -c
+
+            # Se lanza con «monkey» y no con «am start» para no tener que saber
+            # el nombre de la actividad: resuelve sola la del lanzador, que es
+            # por donde entra el usuario al tocar el icono.
+            adb shell monkey -p com.dc388.bibliagriega -c android.intent.category.LAUNCHER 1
+
+            # La base de datos se copia del APK al almacenamiento interno la
+            # primera vez, y son unos 25 MB: hay que darle tiempo antes de
+            # preguntar si sigue viva.
+            sleep 30
+
+            # «adb shell» devuelve retorno de carro, y un «\r» suelto no es
+            # cadena vacía: sin limpiarlo, una aplicación muerta pasaría por
+            # viva y esta comprobación no serviría para nada.
+            vivo=$(adb shell pidof com.dc388.bibliagriega 2>/dev/null | tr -d '\r\n ' || true)
+            caidas=$(adb logcat -d -b crash | grep -c "FATAL EXCEPTION" | tr -d '\r\n ' || true)
+            caidas=${caidas:-0}
+
+            if [ -z "$vivo" ] || [ "$caidas" -gt 0 ]; then
+              echo "::error::La aplicación de publicación no se mantiene abierta. Esto es lo que vería el usuario al tocar el icono."
+              echo "----- registro de fallos -----"
+              adb logcat -d -b crash | tail -120
+              echo "----- últimas líneas del registro -----"
+              adb logcat -d | grep -iE "bibliagriega|AndroidRuntime|ads" | tail -60
+              exit 1
+            fi
+            echo "La aplicación de publicación arranca y sigue en pie (pid $vivo)."
+
       - name: Borrar el almacén de claves
         if: always()
         run: rm -f "$RUNNER_TEMP/release.jks"
