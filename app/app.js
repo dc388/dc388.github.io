@@ -320,7 +320,16 @@ async function reanudarSesion() {
   // registrada. Sin este filtro, un telefono recien instalado llamaba a
   // resume_device en cada apertura y, peor, si el servidor llegaba a contestar
   // que si, entraba sin haberse registrado nunca.
-  if (IDENT_NUEVA) return false;
+  //
+  // El filtro es `altaEn`, NO la bandera IDENT_NUEVA. Aqui habia un
+  // `if (IDENT_NUEVA) return false;` y dejaba fuera justo a quien acababa de
+  // darse de alta: la bandera se prende cuando la app crea la llave al abrir y
+  // ya no se apaga nunca en esa sesion de pantalla, aunque dos segundos despues
+  // el trabajador teclee su codigo y marcarAlta() deje constancia de que SI se
+  // registro. Resultado: en el dia de su alta, ese telefono tenia la
+  // reanudacion muerta, y si la sesion se le caia —un refresh rechazado
+  // basta— la app no podia recuperarla sola y le pedia el codigo otra vez.
+  // `altaEn` vive en IndexedDB, se relee en cada llamada y dice la verdad.
   if (!ident.altaEn && !ident.migradaEn) return false;
   try {
     // Las dos llamadas van firmadas con la ANON_KEY en Authorization.
