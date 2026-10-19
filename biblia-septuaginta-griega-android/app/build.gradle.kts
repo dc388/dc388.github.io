@@ -32,13 +32,51 @@ val admobAppIdDePrueba = "ca-app-pub-3940256099942544~3347511713"
 val admobBannerDePrueba = "ca-app-pub-3940256099942544/6300978111"
 
 fun ajuste(propiedad: String, env: String, pruebas: String): String =
-    (findProperty(propiedad) as String?)?.takeIf { it.isNotBlank() }
+    ((findProperty(propiedad) as String?)?.takeIf { it.isNotBlank() }
         ?: System.getenv(env)?.takeIf { it.isNotBlank() }
-        ?: pruebas
+        ?: pruebas).trim()
+
+// El valor entra tal cual en el manifiesto como APPLICATION_ID, y el SDK de
+// anuncios de Google MATA la aplicación al arrancar si no tiene exactamente la
+// forma de un App ID. No lanza una excepción que se pueda atrapar: revienta en
+// su propio ContentProvider, antes de que corra una sola línea nuestra, así que
+// el usuario ve la app cerrarse sola nada más tocar el icono.
+//
+// Eso solo ocurre compilando para publicación, porque la de depuración usa los
+// identificadores de prueba de Google, que sí son válidos. Las pruebas del
+// emulador corren sobre depuración: nunca lo verían.
+//
+// El error fácil es cambiarlos de sitio. El App ID lleva una virgulilla
+// —ca-app-pub-0000000000000000~1111111111— y el bloque de anuncios una barra
+// —ca-app-pub-0000000000000000/2222222222—. Pegar uno donde va el otro produce
+// una aplicación que compila, se firma, se sube, se instala y se cierra sola.
+//
+// Se comprueba aquí, al compilar, porque es el último sitio donde el fallo
+// todavía es barato.
+fun exigeFormato(valor: String, patron: Regex, secreto: String, forma: String) {
+    if (!patron.matches(valor)) {
+        throw GradleException(
+            "$secreto no tiene forma de $forma: «$valor».\n" +
+                "Se esperaba algo como $forma.\n" +
+                "Recuerda que el App ID lleva ~ y el bloque de anuncios lleva /; " +
+                "si están cambiados de sitio, la aplicación se cierra al abrirla."
+        )
+    }
+}
+
 
 val admobAppId = ajuste("admobAppId", "ADMOB_APP_ID", admobAppIdDePrueba)
 val admobBanner = ajuste("admobBanner", "ADMOB_BANNER", admobBannerDePrueba)
 val admobEsDePrueba = admobAppId == admobAppIdDePrueba || admobBanner == admobBannerDePrueba
+
+exigeFormato(
+    admobAppId, Regex("""ca-app-pub-\d+~\d+"""),
+    "ADMOB_APP_ID", "ca-app-pub-0000000000000000~1111111111",
+)
+exigeFormato(
+    admobBanner, Regex("""ca-app-pub-\d+/\d+"""),
+    "ADMOB_BANNER", "ca-app-pub-0000000000000000/2222222222",
+)
 
 android {
     namespace = "com.dc388.bibliagriega"
