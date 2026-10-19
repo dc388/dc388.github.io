@@ -25,6 +25,11 @@ on:
     branches: ["claude/biblia-**"]
     paths: [".github/workflows/biblia-apk.yml"]
 
+# Lo que se publica aqui ya no sale a ciegas: «Publicacion — Biblia» instala el
+# APK firmado en un emulador y comprueba que abre antes de dejar artefacto. Si
+# la aplicacion se cierra al arrancar, aquel trabajo se pone rojo y este no
+# encuentra de donde sacar nada.
+
 permissions:
   contents: write
   actions: read
