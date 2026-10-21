@@ -1,4 +1,4 @@
-# Dónde se quedó esto — 9 de octubre de 2026
+# Dónde se quedó esto — 21 de octubre de 2026
 
 Nota para retomar sin reconstruir nada de memoria.
 
@@ -17,31 +17,43 @@ Nota para retomar sin reconstruir nada de memoria.
 - **Play Console**: clasificación de contenido, público objetivo, funciones
   financieras, salud e ID de publicidad, todo contestado.
 
-## Lo que bloquea ahora mismo
+## Publicada
 
-Lo técnico está terminado. El flujo «Publicación — Biblia» produce en cada
-cambio un **AAB firmado y con los identificadores reales de AdMob**, que es lo
-que Play acepta; se comprueba en el resumen de la ejecución, que dice «Firmada»
-y «Anuncios: identificadores reales». Lo que queda es todo de Play Console.
+**La aplicación está en Google Play, en producción, desde el 17 de octubre de
+2026.** La prueba cerrada de 12 probadores y 14 días, la verificación de
+desarrollador y el acceso a producción están los tres concedidos.
+
+La versión viva es la **1.2.4** (`versionCode` 10). La anterior, la 1.2.3,
+llegó a producción y **se cerraba al tocar el icono**: está contado en
+[TRASPASO.md](TRASPASO.md), y lo que lo permitió —que nada arrancara nunca la
+compilación de publicación— quedó cerrado con `tools/comprobar_arranque.sh`.
+
+### Lo que falta, y ya no bloquea publicar
 
 | | Qué falta | De quién depende |
 |---|---|---|
-| 1 | Borrar los idiomas sobrantes de la ficha de Play | tuyo |
-| 2 | Formulario de **Seguridad de los datos** | respuestas en PUBLICAR_EN_PLAY.md |
-| 3 | Perfil de pagos de AdMob | tuyo, y sin él no se cobra |
-| 4 | Verificación de identidad de Play | tuya, tarda días |
-| 5 | **Prueba cerrada: 12 probadores, 14 días seguidos** | tuya, si la cuenta es personal y posterior a nov. de 2023 |
+| 1 | **Perfil de pagos de AdMob y formulario fiscal de EE. UU.** | tuyo, y sin ellos no se cobra nada |
+| 2 | Comprobar que Estados Unidos está en la lista de países | tuyo |
+| 3 | Formulario de **Seguridad de los datos**, si sigue pendiente | respuestas en PUBLICAR_EN_PLAY.md |
+| 4 | Borrar los idiomas sobrantes de la ficha | tuyo |
 
-De los cinco, **solo el 5 marca el calendario**. Los demás son de una tarde.
+**El 1 es el único que importa de verdad ahora.** La aplicación está publicada
+y sirviendo anuncios; sin perfil de pagos esos anuncios no ingresan nada, y sin
+el formulario fiscal se retiene lo que generen los usuarios estadounidenses.
 
-### La APK que se puede instalar sin pasar por Play
+### La APK para quien no tiene Play
 
-Mientras Play no la distribuya, la aplicación se instala desde una release de
-GitHub. La etiqueta lleva el `versionCode` dentro, así que la de ahora es
+Ya no es la vía principal —la aplicación está en la tienda— pero sigue
+haciendo falta donde Play no llega: **en Cuba no opera**, y el país ni siquiera
+aparece en la lista que Play deja seleccionar. Allí la única forma es mandar el
+archivo.
 
-**<https://github.com/dc388/dc388.github.io/releases/tag/biblia-apk-v7>**
+Ojo: una instalación a mano **no cuenta** como instalación en Play, no suma a
+las estadísticas ni al posicionamiento. La etiqueta lleva el `versionCode` dentro, así que la de ahora es
 
-(«Biblia Griega y Hebrea 1.2.1 — APK», 30 MB).
+**<https://github.com/dc388/dc388.github.io/releases/tag/biblia-apk-v10>**
+
+(«Biblia Griega y Hebrea 1.2.4 — APK», 30 MB).
 
 Quien se la baje tiene que conceder el permiso de **instalar aplicaciones de
 origen desconocido** al navegador o al gestor de archivos. Android lo pide una

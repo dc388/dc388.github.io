@@ -41,7 +41,7 @@ hispanohablante. Es el motivo de la mitad del trabajo hecho.
 
 | | |
 |---|---|
-| Versión | **1.2.3** (`versionCode` 9) |
+| Versión | **1.2.4** (`versionCode` 10) |
 | Firma | clave real, en los secretos de GitHub Actions |
 | Anuncios | AdMob con identificadores reales |
 | Pruebas | 15 unitarias y 6 en emulador, en verde |
@@ -62,7 +62,8 @@ hispanohablante. Es el motivo de la mitad del trabajo hecho.
 
 ### Releases publicadas
 
-- `biblia-apk-v9` — 1.2.3, la actual, con `.apk` y `.aab`
+- `biblia-apk-v10` — 1.2.4, la actual, con `.apk` y `.aab`
+- `biblia-apk-v9` — 1.2.3, **rota**: se cerraba al arrancar
 - `biblia-apk-v8`, `biblia-apk-v7` — anteriores
 - `biblia-apk-v3` — 1.0.0, de septiembre, **no borrar**: tiene descargas
 
@@ -133,11 +134,15 @@ de capturas que mandó el dueño.
 
 | | Punto | Estado |
 |---|---|---|
-| 1 | Acceso a producción | ❓ **solicitud enviada, resultado desconocido** |
+| 1 | Acceso a producción | ✅ **concedido**; publicada en producción el 17 oct |
 | 2 | Estados Unidos en la lista de países | ❓ sin confirmar |
 | 3 | Seguridad de los datos | ❓ sin confirmar |
 | 4 | Verificación de desarrollador | ✅ **Registrada**, 14 sept |
 | 5 | AdMob: perfil de pagos + formulario fiscal de EE. UU. | ❓ sin confirmar |
+
+**Falta el 5 para cobrar.** Los anuncios se sirven igual, pero sin perfil de
+pagos no ingresa nada, y sin el formulario fiscal se retiene lo que generen
+los usuarios estadounidenses.
 
 - **Prueba cerrada**: completada, 12 probadores, 14 días seguidos.
 - **Prueba abierta**: canal activo, 178 países, con la versión 9 dentro.
@@ -179,6 +184,34 @@ estadísticas ni al posicionamiento. Sirve para que esas dos personas lean hoy,
 no como plan de difusión.
 
 ---
+
+### La compilación de publicación es otra aplicación
+
+La 1.2.3 llegó a producción y se cerraba al tocar el icono. El volcado:
+
+```
+FATAL EXCEPTION: main
+Caused by: vs: java.lang.RuntimeException:
+    Failed to create an instance of androidx.work.impl.WorkDatabase
+```
+
+R8 renombró a `vs` una clase que Room **busca por reflexión** por su nombre.
+Esa base de datos ni siquiera es del proyecto: la arrastra el SDK de anuncios.
+`proguard-rules.pro` decía «la app no usa reflexión»: cierto del código propio
+y falso de lo que ese código arrastra.
+
+**Lo que de verdad falló no fue R8, sino que nada arrancaba nunca la
+compilación de publicación.** Las pruebas del emulador corren
+`connectedDebugAndroidTest` —depuración, sin R8, sin recorte de recursos, con
+anuncios de prueba—, así que una versión que se cierra sola pasaba por todas
+las comprobaciones en verde.
+
+Desde entonces, «Publicación — Biblia» instala el APK firmado en un emulador,
+lo abre por el icono y comprueba que sigue en pie
+(`tools/comprobar_arranque.sh`). Si no abre, no hay artefacto que subir.
+
+**No toques eso.** Es lo único que separa un fallo de compilación de una
+reseña de una estrella.
 
 ## 5. Reglas que no se rompen
 
