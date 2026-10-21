@@ -854,6 +854,12 @@ function afinarUbicacion(inicial, ms) {
 
 // ---------- politica de checada de la empresa ----------
 let POL = null; // { audit_photo_enabled, offsite_requires_photo, allow_offsite_punch }
+
+// Aviso que la checada se lleva consigo cuando la ubicacion no sirvio (permiso
+// negado o GPS con kilometros de error). Ya no se usa para bloquear: se pega al
+// final del resultado, para que la persona sepa que le toca arreglar SIN que se
+// le quite el dia por no saberlo.
+let AVISO_UBICACION = '';
 async function loadPolicy() {
   try {
     const token = await accessToken();
@@ -1371,45 +1377,41 @@ async function punch(type) {
   busy(true, 'Obteniendo ubicación…');
   const dev = await ensureDevice();
   const loc = await getLocation();
-  // Permiso NEGADO: aqui si se detiene, y se explica donde activarlo. Es lo
-  // unico que la persona puede arreglar por su cuenta, y dejarlo pasar
-  // convertiria "apagar la ubicacion" en la forma comoda de checar desde la
-  // casa.
+  // La ubicacion YA NO DETIENE UNA CHECADA.
+  //
+  // Antes, un permiso negado o un GPS con kilometros de error terminaban la
+  // funcion aqui mismo: la persona se quedaba sin registro por un ajuste de su
+  // telefono. Le paso a N1-001 cinco veces entre el 11/09 y el 08/10 con acc =
+  // 2000 m, dejo de intentar, y acumulo un mes entero sin una sola checada.
+  //
+  // Con allow_offsite_punch encendido el servidor ya no rechaza: una checada
+  // sin ubicacion util entra A REVISION, con su hora y la firma de este
+  // telefono. O sea que el muro de la app quedo siendo MAS estricto que la
+  // politica, y lo unico que lograba era borrar gente del registro.
+  //
+  // Ahora la checada se manda siempre y el aviso viaja con ella: se le dice en
+  // la misma pantalla del resultado que prenda la ubicacion, sin quitarle el
+  // dia por no saber hacerlo.
+  const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  AVISO_UBICACION = '';
   if (loc.status === 'DENEGADA') {
-    busy(false);
-    const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    return showResult('warn', 'Falta ubicación', esIOS
-      ? 'La ubicación está bloqueada en este iPhone. Actívala así: Ajustes → ' +
-        'Privacidad y seguridad → Localización (enciéndela) → «Sitios web de ' +
-        'Safari» → «Al usar la app». Luego regresa aquí, recarga y toca checar. ' +
-        'Conviene agregar la app a la pantalla de inicio (botón Compartir → ' +
-        '«Agregar a inicio»): así es más estable y te pregunta el permiso al abrir.'
-      : 'La ubicación está bloqueada para este sitio. Tócalo en el candado ' +
-        'junto a la dirección → Ubicación → Permitir, recarga e intenta de nuevo.');
+    AVISO_UBICACION = ' ⚠ Tu checada va SIN ubicación porque el permiso está ' +
+      'bloqueado, así que la tiene que revisar RH. Para que deje de pasar: ' + (esIOS
+        ? 'Ajustes → Privacidad y seguridad → Localización → «Sitios web de Safari» → «Al usar la app».'
+        : 'tócale al candado junto a la dirección → Ubicación → Permitir.');
   }
 
-  // Lectura con KILOMETROS de error. Mandarla es regalarle a la persona un
-  // "fuera de la geocerca: a 4563 m" que la culpa de algo que es un ajuste de
-  // su telefono. Le paso a N1-001 cinco veces entre el 11/09 y el 08/10, con
-  // acc = 2000 m exactos las cinco, y dejo de intentar. Aqui se detiene y se
-  // le dice que prender, que es lo unico que lo arregla.
+  // Lectura con KILOMETROS de error. Tampoco detiene: mandarla con su error
+  // declarado le dice MAS a RH que no mandar nada, porque el servidor recibe
+  // gps_accuracy_meters y ve de un vistazo que esa coordenada no significa
+  // nada. Se avisa, no se bloquea.
   if (loc.status === 'AUTORIZADA' && loc.acc != null && loc.acc > ACC_INUTIL_M) {
-    busy(false);
-    const esIOS2 = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    return showResult('warn', 'Prende la ubicación precisa', esIOS2
-      ? 'Tu iPhone está dando una ubicación aproximada, con ' +
-        Math.round(loc.acc) + ' metros de error. Así el sistema no puede saber ' +
-        'si estás en la planta y te rechazaría la checada. Préndela así: ' +
-        'Ajustes → Privacidad y seguridad → Localización → «Sitios web de ' +
-        'Safari» → enciende «Ubicación exacta». Luego vuelve aquí y chécale ' +
-        'otra vez. Tu checada NO se mandó todavía.'
-      : 'Tu teléfono está dando una ubicación aproximada, con ' +
-        Math.round(loc.acc) + ' metros de error. Así el sistema no puede saber ' +
-        'si estás en la planta. Préndela así: Ajustes → Ubicación → activa la ' +
-        '«precisión de ubicación» (o «Usar GPS»). Luego vuelve aquí y chécale ' +
-        'otra vez. Tu checada NO se mandó todavía.');
+    AVISO_UBICACION = ' ⚠ Tu teléfono dio la ubicación con ' + Math.round(loc.acc) +
+      ' metros de error, así que tu checada la revisa RH. Para que deje de ' +
+      'pasar: ' + (esIOS
+        ? 'Ajustes → Privacidad y seguridad → Localización → «Sitios web de Safari» → enciende «Ubicación exacta».'
+        : 'Ajustes → Ubicación → activa la «precisión de ubicación» (o «Usar GPS»).');
   }
 
   // GPS que NO FIJA —nave con techo metalico, sin señal, cielo tapado— no es
@@ -1540,11 +1542,15 @@ async function punch(type) {
   // vale infinitamente mas que ninguna checada: viaja firmada con la llave de
   // SU telefono y RH la ve como offline_sync. Bloquear aqui era dejar a la
   // persona sin registro por algo que no podia resolver.
+  // Tampoco detiene ya. La camara ocupada, el permiso negado o una vista previa
+  // en negro no son algo que la persona pueda resolver parada en la puerta, y
+  // con offsite_requires_photo apagado el servidor acepta la checada sin foto y
+  // la manda a revision. Entre una checada a revision sin foto y ninguna
+  // checada, la primera gana siempre: lleva hora, GPS y la firma de SU
+  // telefono, y RH tiene con que decidir.
   if (rostroFallado && !auditPhotoPath && servidorAlcanzable) {
-    busy(false);
-    return showResult('warn', 'Falta la foto',
-      'Para checar sin reconocer tu rostro hace falta la foto. Vuelve a ' +
-      'intentarlo: acércate, con buena luz, y si te pide la foto, tómala.');
+    AVISO_UBICACION += ' ⚠ No se pudo tomar la foto ni reconocer tu rostro, ' +
+      'así que esta checada la revisa RH.';
   }
 
   // Se dice en la pantalla: si la checada va sin coordenadas, la persona tiene
@@ -1620,10 +1626,11 @@ async function punch(type) {
     }
     await marcarUltimaChecada(type, deviceMs);
     renderQueue();
+    const extraCola = AVISO_UBICACION; AVISO_UBICACION = '';
     return showResult('warn', 'Guardada en el teléfono',
       PUNCH_LABEL[type] + ' registrada a las ' + hhmm(deviceMs) +
       '. No se pudo enviar en este momento; se manda sola en cuanto se pueda y ' +
-      'la hora se conserva. Deja la app abierta unos segundos.');
+      'la hora se conserva. Deja la app abierta unos segundos.' + extraCola);
   } finally { busy(false); }
 }
 
@@ -1692,12 +1699,15 @@ function handlePunchResponse(type, r) {
   // El servidor decide si el passkey fue valido (no el cliente).
   const fid = d.passkey_verified === true ? ' Verificado con Face ID.' : '';
   if (st === 'valid' || st === 'review') { marcarUltimaChecada(type); renderRecordatorioSalida(); }
+  // El aviso de ubicacion se pega al final: la checada ya quedo, y lo que sigue
+  // es que la persona sepa que arreglar para que la proxima no vaya a revision.
+  const extra = AVISO_UBICACION; AVISO_UBICACION = '';
   if (st === 'valid') return showResult('ok', PUNCH_LABEL[type] + ' registrada',
-    (d.worksite ? 'En ' + d.worksite + '. ' : '') + 'Folio ' + (d.folio ?? '—') + '.' + fid);
+    (d.worksite ? 'En ' + d.worksite + '. ' : '') + 'Folio ' + (d.folio ?? '—') + '.' + fid + extra);
   if (st === 'rejected') return showResult('err', PUNCH_LABEL[type] + ' rechazada',
-    d.review_reason || 'No cumplió una validación (ubicación o firma).');
+    (d.review_reason || 'No cumplió una validación (ubicación o firma).') + extra);
   return showResult('warn', PUNCH_LABEL[type] + ' a revisión',
-    (d.review_reason || 'Queda pendiente de revisión de RH.') + ' Folio ' + (d.folio ?? '—') + '.');
+    (d.review_reason || 'Queda pendiente de revisión de RH.') + ' Folio ' + (d.folio ?? '—') + '.' + extra);
 }
 
 // ---------- cola offline ----------
