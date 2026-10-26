@@ -2071,6 +2071,22 @@ function codigoDelEnlace() {
   if (btn) btn.disabled = false;
 }
 
+/**
+ * Al volver la señal: quitar el aviso de "sin internet" y recuperar la sesion.
+ *
+ * Quien entro sin red esta en Home sin sesion —puede checar, y la cola lo
+ * respalda— pero le falta su nombre y las revisiones de acuerdos. En cuanto hay
+ * red se reanuda sola. No se le arrebata la pantalla si esta a media checada o
+ * mirando un resultado: solo se repinta si ya esta en Home.
+ */
+async function recuperarAlVolverLaRed() {
+  const n = $('next');
+  if (n && n.textContent) n.textContent = '';
+  if (store.get('session') || CHECANDO) return;
+  const listo = await reanudarSesion();
+  if (listo && !$('home').hidden) { renderHome(); gateAgreements(); }
+}
+
 function bindUI() {
   codigoDelEnlace();
   $('code').addEventListener('input', (e) => {
@@ -2179,7 +2195,7 @@ function bindUI() {
   $('perm-link-enroll').addEventListener('click', () => { renderCaps(); show('permisos'); });
   $('perm-back').addEventListener('click', () => (store.get('session') ? renderHome() : show('enroll')));
   $('banner-ok').addEventListener('click', () => { store.set('bannerAck', APP_VERSION); $('banner').hidden = true; });
-  window.addEventListener('online', () => { updateChips(); flushQueue(); });
+  window.addEventListener('online', () => { updateChips(); flushQueue(); recuperarAlVolverLaRed(); });
   window.addEventListener('offline', updateChips);
   // El evento 'online' no siempre dispara en iOS. Reforzamos la sincronia al
   // volver la app a primer plano y con un latido periodico: flushQueue() sale
@@ -2289,7 +2305,35 @@ async function arrancarIdentidad() {
     return;
   }
 
-  if (store.get('session') || !habia || !navigator.onLine) return;
+  if (store.get('session')) return;
+
+  // SIN RED y sin sesion, pero este telefono YA se dio de alta.
+  //
+  // Aqui se le pedia el codigo. Y el codigo tampoco se puede canjear sin red:
+  // enroll_device es una llamada al servidor. O sea que la pantalla no tenia
+  // salida — el trabajador se quedaba mirando un cuadro de texto que no iba a
+  // servirle hasta que volviera la señal.
+  //
+  // Vitico, 26/10 9:51: "No he podido registrarme desde la mañana me pide
+  // codigo". 9:52: "Deja ver ahora que me llego el Internet". Tres horas
+  // parado por una pantalla sin salida, con la llave de su telefono intacta
+  // en el bolsillo.
+  //
+  // No hace falta sesion para checar sin red: la checada se firma con la llave
+  // de ESTE telefono, se guarda en la cola, y flushQueue() consigue el token
+  // (reanudando la sesion sola) cuando vuelve la señal. Lo unico que faltaba
+  // era dejarlo llegar a la pantalla donde esta el boton.
+  if (habia && (habia.altaEn || habia.migradaEn) && !navigator.onLine) {
+    renderHome();
+    const n = $('next');
+    if (n) {
+      n.textContent = 'Sin internet. Puedes checar de todos modos: tu checada se ' +
+        'guarda con la hora exacta y se manda sola en cuanto haya señal.';
+    }
+    return;
+  }
+
+  if (!habia || !navigator.onLine) return;
 
   // Hay llave y no hay sesion: se intenta entrar solo, PERO EN SEGUNDO PLANO.
   //
