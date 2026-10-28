@@ -6,6 +6,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.text.Normalizer
 import java.time.LocalDate
 
 /**
@@ -117,8 +118,19 @@ class VersiculoDelDiaTest {
         }
     }
 
+    /**
+     * Deja el hebreo comparable: fuera los acentos de cantilación y el meteg,
+     * y en minúscula para el griego.
+     *
+     * La normalización no es un adorno. El texto corrido escribe el daguesh
+     * antes de la vocal y la lista de palabras analizadas al revés —יֶהְגֶּה
+     * sale con los mismos signos en otro orden—, así que sin pasar por NFC dos
+     * formas idénticas no se parecen en nada.
+     */
     private fun sinCantilacion(texto: String): String =
-        texto.filterNot { it.code in 0x0591..0x05AF }.lowercase()
+        Normalizer.normalize(texto, Normalizer.Form.NFC)
+            .filterNot { it.code in 0x0591..0x05AF || it.code == 0x05BD }
+            .lowercase()
 
     @Test
     fun `la reflexion no es un eslogan de una linea`() {
