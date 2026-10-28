@@ -1,6 +1,7 @@
 package com.dc388.bibliagriega
 
 import androidx.compose.ui.test.ComposeTimeoutException
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -11,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToString
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -100,6 +102,18 @@ class CapturasTest {
         check(tamano > 1_000) {
             "La captura $ruta no se escribió o salió vacía: stat devolvió «$bytes»"
         }
+    }
+
+    /**
+     * Baja hasta un libro y lo abre. La lista es perezosa y encima lleva la
+     * tarjeta del versículo del día, así que los primeros libros no se ven al
+     * entrar: hay que bajar, como haría una persona.
+     */
+    private fun abrirLibro(nombre: String) {
+        regla.onAllNodes(hasScrollAction()).onFirst()
+            .performScrollToNode(hasText(nombre, substring = true))
+        esperar(nombre)
+        regla.onAllNodesWithText(nombre).onFirst().performClick()
     }
 
     private fun esperar(texto: String, ms: Long = 180_000) {
@@ -195,8 +209,7 @@ class CapturasTest {
 
         // 2. El Nuevo Testamento griego con la traducción debajo.
         regla.onNodeWithText("NT griego").performClick()
-        esperar("Juan")
-        regla.onAllNodesWithText("Juan").onFirst().performClick()
+        abrirLibro("Juan")
         esperarCapitulos()
         regla.onAllNodesWithText("1").onFirst().performClick()
         esperar("Ἐν ἀρχῇ")
@@ -222,8 +235,7 @@ class CapturasTest {
         // 4. El hebreo con su vocalización, de derecha a izquierda.
         volverAlInicio()
         regla.onNodeWithText("AT hebreo").performClick()
-        esperar("Génesis")
-        regla.onAllNodesWithText("Génesis").onFirst().performClick()
+        abrirLibro("Génesis")
         esperarCapitulos()
         regla.onAllNodesWithText("1").onFirst().performClick()
         esperar("בְּרֵאשִׁית")

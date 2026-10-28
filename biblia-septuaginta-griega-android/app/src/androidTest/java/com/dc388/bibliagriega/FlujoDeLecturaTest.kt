@@ -1,6 +1,7 @@
 package com.dc388.bibliagriega
 
 import androidx.compose.ui.test.ComposeTimeoutException
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToString
@@ -10,6 +11,7 @@ import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -58,6 +60,22 @@ class FlujoDeLecturaTest {
      */
     private fun esperarBiblioteca() = esperar("AT hebreo")
 
+    /**
+     * Baja hasta un libro y lo abre.
+     *
+     * La lista de libros es perezosa: lo que no se ha llegado a ver no existe
+     * en el árbol de la pantalla, así que buscar «Juan» sin bajar antes falla
+     * aunque el libro esté. Y encima de la lista hay una tarjeta —el versículo
+     * del día— que empuja los primeros libros fuera de la vista. Se hace lo que
+     * haría una persona: bajar hasta encontrarlo.
+     */
+    private fun abrirLibro(nombre: String) {
+        regla.onAllNodes(hasScrollAction()).onFirst()
+            .performScrollToNode(hasText(nombre, substring = true))
+        esperar(nombre)
+        regla.onAllNodesWithText(nombre).onFirst().performClick()
+    }
+
     @Test
     fun la_biblioteca_trae_las_tres_colecciones() {
         esperarBiblioteca()
@@ -72,8 +90,7 @@ class FlujoDeLecturaTest {
         esperarBiblioteca()
 
         regla.onNodeWithText("NT griego").performClick()
-        esperar("Juan")
-        regla.onAllNodesWithText("Juan").onFirst().performClick()
+        abrirLibro("Juan")
 
         // Rejilla de capítulos: Juan tiene 21.
         esperar("21")
@@ -94,8 +111,7 @@ class FlujoDeLecturaTest {
         esperarBiblioteca()
 
         regla.onNodeWithText("AT hebreo").performClick()
-        esperar("Génesis")
-        regla.onAllNodesWithText("Génesis").onFirst().performClick()
+        abrirLibro("Génesis")
 
         esperar("50")
         regla.onAllNodesWithText("1").onFirst().performClick()

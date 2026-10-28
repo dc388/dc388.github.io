@@ -36,6 +36,7 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -229,6 +230,11 @@ private fun ContinueCard(ref: VerseRef, title: String?, onClick: () -> Unit) {
  * porque el botón de compartir es lo que hace que el mensaje salga de aquí.
  * Cada reenvío lleva el enlace de la tienda dentro.
  *
+ * **Va plegada.** Desplegada ocupa media pantalla, y esto es la portada: lo
+ * primero que tiene que verse al abrir la aplicación es la lista de libros, no
+ * un devocional. Plegada enseña la referencia y el español, que es lo que se
+ * lee de un vistazo; el original, la palabra y la reflexión salen al tocar.
+ *
  * El orden —español, original, palabra— no es casual. Lo primero que se lee es
  * lo que se entiende; el griego o el hebreo va debajo, que es lo que esta
  * aplicación tiene y las demás no.
@@ -239,8 +245,10 @@ private fun VersiculoDelDiaCard(v: VersiculoDiario, onAbrir: () -> Unit) {
     val context = LocalContext.current
     val lector = recordarLector()
     val leyendo by lector.leyendo.collectAsState()
+    var abierta by rememberSaveable(v.referencia) { mutableStateOf(false) }
+
     Card(
-        onClick = onAbrir,
+        onClick = { abierta = !abierta },
         modifier = Modifier.fillMaxWidth().padding(16.dp, 12.dp, 16.dp, 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -261,27 +269,37 @@ private fun VersiculoDelDiaCard(v: VersiculoDiario, onAbrir: () -> Unit) {
                 fontWeight = FontWeight.SemiBold,
             )
             Text(text = v.espanol, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                text = v.original,
-                fontFamily = ScriptureFontFamily,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+            if (abierta) {
                 Text(
-                    text = v.palabra,
+                    text = v.original,
                     fontFamily = ScriptureFontFamily,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Text(
-                    text = v.translit,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = v.palabra,
+                        fontFamily = ScriptureFontFamily,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = v.translit,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Text(text = v.reflexion, style = MaterialTheme.typography.bodyMedium)
+            } else {
+                Text(
+                    text = "▸ ${v.palabra} · ${v.translit}",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
             }
-            Text(text = v.reflexion, style = MaterialTheme.typography.bodyMedium)
+
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilledTonalButton(
                     onClick = {
@@ -322,6 +340,10 @@ private fun VersiculoDelDiaCard(v: VersiculoDiario, onAbrir: () -> Unit) {
                         Text("  Escuchar")
                     }
                 }
+            }
+
+            if (abierta) {
+                TextButton(onClick = onAbrir) { Text("Abrir el capítulo") }
             }
         }
     }
