@@ -1,7 +1,8 @@
 # Traspaso — Biblia Griega y Hebrea
 
 Todo lo que hace falta saber para seguir este proyecto sin haber estado en la
-conversación donde se construyó. Escrito el 17 de octubre de 2026.
+conversación donde se construyó. Escrito el 17 de octubre de 2026, puesto al
+día el 28.
 
 Dos avisos de método, porque el proyecto se ha llevado así y conviene seguir:
 
@@ -41,10 +42,10 @@ hispanohablante. Es el motivo de la mitad del trabajo hecho.
 
 | | |
 |---|---|
-| Versión | **1.2.4** (`versionCode` 10) |
+| Versión | **1.3.0** (`versionCode` 11) |
 | Firma | clave real, en los secretos de GitHub Actions |
 | Anuncios | AdMob con identificadores reales |
-| Pruebas | 15 unitarias y 6 en emulador, en verde |
+| Pruebas | 30 unitarias y 5 en emulador, en verde |
 | Compilación de publicación | pasa, con R8 |
 | Páginas web | 15 526, sin enlaces rotos |
 | Léxico traducido al español | **11 898 de 14 610 artículos (81,4 %)** |
@@ -114,6 +115,24 @@ Ciclo completo: editar tablas → `rellenar_web.py ../../biblia/datos` →
 `generar_paginas.py ../../biblia` → subir el sello de `biblia/datos/version.json`
 → auditar → confirmar y empujar. **El orden importa:** `rellenar_web` recalcula
 las glosas, así que va antes de `corregir_glosas`.
+
+### Versículo del día
+
+Hay **30 de los 366** escritos. La regla que los gobierna está escrita en
+`app/src/main/java/com/dc388/bibliagriega/data/VersiculoDelDia.kt` y no es
+negociable: **cada entrada tiene que decir algo de UNA palabra del original que
+la traducción no alcanza a decir**, y esa afirmación tiene que sostenerse con
+el texto o con el léxico que la propia aplicación trae dentro. Si de un
+versículo no sale eso, no entra, por conocido que sea.
+
+`tools/versiculo_del_dia.py` imprime el material de un versículo —texto,
+traducción, análisis morfológico y artículo del léxico de cada palabra— que es
+con lo que se escribe una entrada sin inventar nada. Ya ha hecho falta: una
+primera versión de Isaías 41:10 colgaba de un matiz forense que no existe, y
+queda anotada en el propio archivo para que no vuelva a colarse.
+
+Al añadir una tanda, el texto no se teclea: se saca de `biblia/datos`, que es
+de donde sale también lo que muestra el lector.
 
 ### Auditoría de diseño
 

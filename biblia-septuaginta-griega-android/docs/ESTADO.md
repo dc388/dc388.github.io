@@ -1,11 +1,18 @@
-# Dónde se quedó esto — 21 de octubre de 2026
+# Dónde se quedó esto — 28 de octubre de 2026
 
 Nota para retomar sin reconstruir nada de memoria.
 
 ## Hecho y comprobado
 
 - **Aplicación completa**: 122 libros, 60 651 versículos, 439 705 palabras
-  analizadas. 15 pruebas unitarias y 5 funcionales en verde.
+  analizadas. 30 pruebas unitarias y 5 funcionales en verde.
+- **Versículo del día**: 30 versículos escritos a mano, cada uno con una
+  palabra del original y lo que esa palabra dice. Se reparte por el día del
+  año, con aviso opcional cada mañana y botón de compartir. Ver
+  `data/VersiculoDelDia.kt`, que lleva escrita la regla que los gobierna.
+- **Lectura en alto** con el sintetizador del teléfono: el español donde hay
+  traducción, el original donde no la hay si el teléfono trae voz para esa
+  lengua. Ver `data/Lector.kt`.
 - **Anuncios y suscripción**: AdMob con consentimiento europeo, banner al pie
   del lector y suscripción `sin_anuncios_mensual` que lo quita. Compila y pasa
   R8. Ver [ANUNCIOS_Y_SUSCRIPCION.md](ANUNCIOS_Y_SUSCRIPCION.md).
@@ -23,8 +30,14 @@ Nota para retomar sin reconstruir nada de memoria.
 2026.** La prueba cerrada de 12 probadores y 14 días, la verificación de
 desarrollador y el acceso a producción están los tres concedidos.
 
-La versión viva es la **1.2.4** (`versionCode` 10). La anterior, la 1.2.3,
-llegó a producción y **se cerraba al tocar el icono**: está contado en
+La versión publicada en Play es la **1.2.4** (`versionCode` 10). En esta rama
+va la **1.3.0** (`versionCode` 11), con el versículo del día, el aviso de cada
+mañana y la lectura en alto. El flujo «Publicación — Biblia» compila y firma
+el AAB y el APK en cada empujón y comprueba en un emulador que la versión de
+publicación arranca, pero **subirla a Play es cosa del dueño**: una sesión de
+Claude Code no entra en Play Console.
+
+La 1.2.3 llegó a producción y **se cerraba al tocar el icono**: está contado en
 [TRASPASO.md](TRASPASO.md), y lo que lo permitió —que nada arrancara nunca la
 compilación de publicación— quedó cerrado con `tools/comprobar_arranque.sh`.
 
@@ -102,6 +115,24 @@ notado**, y ese fue el verdadero resultado del ejercicio:
 - La barra inferior salía lavanda sobre pergamino: el tema no definía los tonos
   `surfaceContainer` y Material caía a su paleta de fábrica.
 - La captura de la búsqueda salía con el teclado tapando media pantalla.
+
+## Lo que se arregló el 28 de octubre, y que nadie había notado
+
+**En 62 de los 150 salmos, el hebreo mostraba debajo la traducción del
+versículo siguiente.** El Salmo 46:11 decía «Jehová de los ejércitos es con
+nosotros» donde el hebreo dice «Estad quietos, y conoced que yo soy Dios». El
+Códice de Leningrado numera el encabezamiento del salmo como versículo 1 y la
+Reina-Valera no, así que a partir del título todo iba corrido un sitio.
+
+No era un hueco —un hueco se ve—: era un texto equivocado que se lee tan
+campante, en la aplicación y en la web, desde el primer día. Se arregló en
+`tools/build_db.py` y la base ya **no se construye** si tres salmos de testigo
+dejan de cuadrar.
+
+La lección vale más que el arreglo: el código ya sabía que los títulos
+descuadraban la cuenta —lo decía en un comentario— y lo trataba como una
+explicación de por qué la cobertura no llegaba al 100 %. Nadie se preguntó qué
+pasaba con los versículos que sí tenían traducción.
 
 ## Datos que conviene tener a mano
 

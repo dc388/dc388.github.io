@@ -1,6 +1,8 @@
 package com.dc388.bibliagriega.data
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,14 +46,22 @@ class Lector(contexto: Context) {
      * décimas, y quien toca el botón nada más abrir la pantalla llegaría antes
      * que el motor: sin esto, ese primer toque no haría nada.
      */
-    private var enEspera: Pair<Locale, List<Trozo>>? = null
+    private var enEspera: Peticion? = null
 
     private val motor = TextToSpeech(contexto.applicationContext) { estado ->
         listo = estado == TextToSpeech.SUCCESS
         val pendiente = enEspera
         enEspera = null
-        if (listo && pendiente != null) leer(pendiente.first, pendiente.second)
+        if (listo && pendiente != null) {
+            leer(pendiente.lengua, pendiente.trozos, pendiente.sinVoz)
+        }
     }
+
+    private data class Peticion(
+        val lengua: Locale,
+        val trozos: List<Trozo>,
+        val sinVoz: (() -> Unit)?,
+    )
 
     init {
         motor.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
@@ -81,18 +91,25 @@ class Lector(contexto: Context) {
     /** Un fragmento con su identificador, para saber cuál suena en cada momento. */
     data class Trozo(val id: String, val texto: String)
 
-    /** Si el teléfono tiene voz para esta lengua. */
-    fun hayVoz(lengua: Locale): Boolean =
-        listo && motor.isLanguageAvailable(lengua) >= TextToSpeech.LANG_AVAILABLE
-
     /**
      * Lee los trozos seguidos, en una sola lengua. Lo que estuviera sonando se
      * corta.
+     *
+     * [sinVoz] se llama, en el hilo principal, si el teléfono no tiene voz para
+     * esa lengua. La comprobación va aquí dentro y no fuera a propósito: antes
+     * de que el motor termine de arrancar, preguntar por una lengua contesta
+     * siempre que no, y quien toca el botón nada más abrir la pantalla llega
+     * antes que el motor. Lo que se pide sin motor se guarda y se resuelve —se
+     * lee o se avisa— cuando el motor ya puede contestar.
      */
-    fun leer(lengua: Locale, trozos: List<Trozo>) {
+    fun leer(lengua: Locale, trozos: List<Trozo>, sinVoz: (() -> Unit)? = null) {
         if (trozos.isEmpty()) return
         if (!listo) {
-            enEspera = lengua to trozos
+            enEspera = Peticion(lengua, trozos, sinVoz)
+            return
+        }
+        if (sinVoz != null && motor.isLanguageAvailable(lengua) < TextToSpeech.LANG_AVAILABLE) {
+            Handler(Looper.getMainLooper()).post(sinVoz)
             return
         }
         motor.stop()

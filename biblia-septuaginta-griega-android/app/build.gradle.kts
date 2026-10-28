@@ -86,8 +86,8 @@ android {
         applicationId = "com.dc388.bibliagriega"
         minSdk = 26
         targetSdk = 36
-        versionCode = 10
-        versionName = "1.2.4"
+        versionCode = 11
+        versionName = "1.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // El manifiesto necesita el identificador como recurso; el código, como
@@ -188,6 +188,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    // Para enterarse de que la pantalla vuelve a primer plano: el permiso de
+    // avisos puede haber cambiado mientras el usuario estaba en los ajustes
+    // de Android, y nada recompone por sí solo al volver.
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.activity.compose)
 
     implementation(platform(libs.androidx.compose.bom))

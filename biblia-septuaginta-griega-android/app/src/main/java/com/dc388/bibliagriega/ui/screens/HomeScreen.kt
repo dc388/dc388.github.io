@@ -80,6 +80,10 @@ fun HomeScreen(
     // se mira la lista de libros, y recalcularlo en cada recomposición sería
     // pedirle la hora al sistema por nada.
     val hoy = remember { vm.versiculoDeHoy() }
+    // El lector se abre aquí y no dentro de la tarjeta: la tarjeta vive en un
+    // «item» de una lista perezosa, así que al bajar en la lista saldría de la
+    // composición y se cerraría el motor a media frase.
+    val lector = recordarLector()
 
     Scaffold(
         topBar = {
@@ -133,6 +137,7 @@ fun HomeScreen(
                     item {
                         VersiculoDelDiaCard(
                             v = hoy,
+                            lector = lector,
                             onAbrir = {
                                 vm.bookOf(hoy.coleccion, hoy.codigo)
                                     ?.let { libro -> onOpenChapterOf(libro.id, hoy.capitulo) }
@@ -241,9 +246,12 @@ private fun ContinueCard(ref: VerseRef, title: String?, onClick: () -> Unit) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun VersiculoDelDiaCard(v: VersiculoDiario, onAbrir: () -> Unit) {
+private fun VersiculoDelDiaCard(
+    v: VersiculoDiario,
+    lector: Lector,
+    onAbrir: () -> Unit,
+) {
     val context = LocalContext.current
-    val lector = recordarLector()
     val leyendo by lector.leyendo.collectAsState()
     var abierta by rememberSaveable(v.referencia) { mutableStateOf(false) }
 

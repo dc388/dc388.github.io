@@ -579,30 +579,35 @@ private fun escuchar(
 ) {
     if (state.verses.isEmpty()) return
 
+    // Basta con que el capítulo tenga traducción, no con que la tengan todos
+    // sus versículos: la Reina-Valera parte los versículos de otra manera en 51
+    // capítulos, y ahí uno se queda sin texto propio porque el suyo va dentro
+    // del anterior. Exigir que estuvieran todos hacía que esos capítulos se
+    // leyeran enteros en hebreo. Se lee lo que hay, que es exactamente lo que
+    // el lector enseña debajo de cada versículo.
     val enEspanol = state.verses.mapNotNull { verso ->
         state.translation[verso.verse]
             ?.takeIf { it.isNotBlank() }
             ?.let { Lector.Trozo(verso.verse.toString(), it) }
     }
-    if (enEspanol.size == state.verses.size) {
+    if (enEspanol.isNotEmpty()) {
         lector.leer(Lector.ESPANOL, enEspanol)
         return
     }
 
-    val lengua = if (book?.rtl == true) Lector.HEBREO else Lector.GRIEGO
-    if (!lector.hayVoz(lengua)) {
-        val nombre = if (book?.rtl == true) "hebreo" else "griego"
-        Toast.makeText(
-            context,
-            "Este texto no tiene traducción, y tu teléfono no trae voz en $nombre. " +
-                "Se puede añadir desde los ajustes de voz de Android.",
-            Toast.LENGTH_LONG,
-        ).show()
-        return
-    }
+    val hebreo = book?.rtl == true
     lector.leer(
-        lengua,
-        state.verses.map { Lector.Trozo(it.verse.toString(), it.text) },
+        lengua = if (hebreo) Lector.HEBREO else Lector.GRIEGO,
+        trozos = state.verses.map { Lector.Trozo(it.verse.toString(), it.text) },
+        sinVoz = {
+            Toast.makeText(
+                context,
+                "Este texto no tiene traducción, y tu teléfono no trae voz en " +
+                    (if (hebreo) "hebreo" else "griego") +
+                    ". Se puede añadir desde los ajustes de voz de Android.",
+                Toast.LENGTH_LONG,
+            ).show()
+        },
     )
 }
 

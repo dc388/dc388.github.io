@@ -40,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.dc388.bibliagriega.data.Anuncios
 import com.dc388.bibliagriega.data.AvisoDiario
 import com.dc388.bibliagriega.data.Compras
@@ -333,21 +336,43 @@ private fun Suscripcion(
 /**
  * El interruptor del aviso de la mañana y la hora a la que sale.
  *
- * Desde Android 13 encenderlo no basta: hay que pedirle el permiso al usuario,
- * y si lo ha negado para siempre el sistema ya no vuelve a preguntar. Por eso
- * el interruptor no se queda encendido hasta que el permiso está de verdad
- * concedido, y cuando está bloqueado se dice y se ofrece el atajo a los ajustes
- * de Android, que es el único sitio donde se puede deshacer.
+ * Esto tiene más esquinas de las que parece. Desde Android 13 encenderlo no
+ * basta: hay que pedirle el permiso al usuario, y el sistema solo deja
+ * preguntar una vez —si lo niega, la siguiente petición vuelve negada sin
+ * enseñar nada—. Y en cualquier versión de Android el usuario puede apagar los
+ * avisos de la aplicación desde los ajustes del sistema, donde tampoco hay
+ * permiso que pedir.
+ *
+ * De ahí las dos reglas: el interruptor no se queda encendido hasta que el
+ * aviso puede salir de verdad, y **tocarlo nunca se queda sin hacer nada**. Si
+ * no queda nada que preguntar, se abren los ajustes de Android, que es el único
+ * sitio donde eso se deshace. Al volver de ahí se vuelve a mirar el permiso:
+ * nada recompone por sí solo, y sin eso el interruptor se quedaba apagado
+ * después de que el usuario lo acabara de desbloquear.
  */
 @Composable
 private fun AvisoDeCadaManana(vm: BibliaViewModel, settings: Settings) {
     val context = LocalContext.current
     var permiso by remember { mutableStateOf(AvisoDiario.hayPermiso(context)) }
+    var yaPreguntado by rememberSaveable { mutableStateOf(false) }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        permiso = AvisoDiario.hayPermiso(context)
+    }
+
     val pedirPermiso = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
-    ) { concedido ->
-        permiso = concedido
-        if (concedido) vm.setAvisoDiario(true)
+    ) {
+        yaPreguntado = true
+        permiso = AvisoDiario.hayPermiso(context)
+        if (permiso) vm.setAvisoDiario(true)
+    }
+
+    fun abrirLosAjustesDeAndroid() {
+        context.startActivity(
+            Intent(AjustesDeAndroid.ACTION_APP_NOTIFICATION_SETTINGS)
+                .putExtra(AjustesDeAndroid.EXTRA_APP_PACKAGE, context.packageName),
+        )
     }
 
     SwitchRow(
@@ -359,8 +384,9 @@ private fun AvisoDeCadaManana(vm: BibliaViewModel, settings: Settings) {
             when {
                 !encender -> vm.setAvisoDiario(false)
                 permiso -> vm.setAvisoDiario(true)
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !yaPreguntado ->
                     pedirPermiso.launch(Manifest.permission.POST_NOTIFICATIONS)
+                else -> abrirLosAjustesDeAndroid()
             }
         },
     )
@@ -371,8 +397,6 @@ private fun AvisoDeCadaManana(vm: BibliaViewModel, settings: Settings) {
             value = settings.horaAviso.toFloat(),
             range = 5f..22f,
             steps = 16,
-            // Se redondea aquí y no al guardar para que el número que se ve
-            // mientras se arrastra sea el que acaba guardado.
             formato = { "${it.toInt()}:00" },
             onChange = { vm.setHoraAviso(it.toInt()) },
         )
@@ -386,7 +410,7 @@ private fun AvisoDeCadaManana(vm: BibliaViewModel, settings: Settings) {
         )
     }
 
-    if (settings.avisoDiario && !permiso) {
+    if ((settings.avisoDiario || yaPreguntado) && !permiso) {
         Text(
             text = "Android tiene bloqueados los avisos de esta aplicación, así que no " +
                 "puede salir ninguno. Se desbloquea en los ajustes del sistema.",
@@ -395,12 +419,7 @@ private fun AvisoDeCadaManana(vm: BibliaViewModel, settings: Settings) {
             modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 0.dp),
         )
         TextButton(
-            onClick = {
-                context.startActivity(
-                    Intent(AjustesDeAndroid.ACTION_APP_NOTIFICATION_SETTINGS)
-                        .putExtra(AjustesDeAndroid.EXTRA_APP_PACKAGE, context.packageName),
-                )
-            },
+            onClick = { abrirLosAjustesDeAndroid() },
             modifier = Modifier.padding(horizontal = 8.dp),
         ) { Text("Abrir los ajustes de Android") }
     }

@@ -214,14 +214,20 @@ class ReceptorDelAviso : BroadcastReceiver() {
         val app = contexto.applicationContext
         CoroutineScope(Dispatchers.Default).launch {
             try {
-                val ajustes = Prefs.get(app).settings.first()
-                if (ajustes.avisoDiario) {
-                    if (intento.action == AvisoDiario.ACCION) {
-                        AvisoDiario.mostrar(app, VersiculoDelDia.de(LocalDate.now()))
+                // Todo va dentro de un runCatching: esto se ejecuta en el
+                // arranque del teléfono y a la hora del aviso, sin nadie
+                // delante, y una excepción aquí no es un aviso que no sale,
+                // es la aplicación cerrándose sola en la cara del usuario.
+                runCatching {
+                    val ajustes = Prefs.get(app).settings.first()
+                    if (ajustes.avisoDiario) {
+                        if (intento.action == AvisoDiario.ACCION) {
+                            AvisoDiario.mostrar(app, VersiculoDelDia.de(LocalDate.now()))
+                        }
+                        // Siempre: el disparo de hoy deja puesto el de mañana,
+                        // y el reinicio del teléfono borra las alarmas.
+                        AvisoDiario.programar(app, ajustes.horaAviso)
                     }
-                    // Siempre: el disparo de hoy deja puesto el de mañana, y el
-                    // reinicio del teléfono borra las alarmas.
-                    AvisoDiario.programar(app, ajustes.horaAviso)
                 }
             } finally {
                 pendiente.finish()
