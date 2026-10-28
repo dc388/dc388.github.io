@@ -633,6 +633,103 @@ def coverage(con: sqlite3.Connection, collection: str) -> float:
     return 100.0 * with_article / total if total else 0.0
 
 
+# El cuerpo empieza donde la digitalización pone la primera palabra en
+# versalitas: «DIOS es nuestro amparo», «TEN piedad de mí», «A TI es plácida».
+# Admite el signo de apertura —«¡OH Jehová»— y la palabra de una letra seguida
+# de otra en versalitas, que es como abre el salmo 65.
+TITULO_Y_CUERPO = re.compile(
+    r"^(.*?[.:?!]) "
+    r"([¡¿«(]*(?:[A-ZÁÉÍÓÚÑ]{2,}|[A-ZÁÉÍÓÚÑ] [A-ZÁÉÍÓÚÑ]{2,})\b.*)$",
+    re.DOTALL,
+)
+
+
+def partir_el_titulo(texto: str) -> tuple[str, str]:
+    """Separa el encabezamiento del salmo del primer versículo de verdad.
+
+    La Reina-Valera mete las dos cosas en su versículo 1 —«Al Músico
+    principal: de los hijos de Coré: Salmo sobre Alamoth. DIOS es nuestro
+    amparo y fortaleza»— y el hebreo las numera aparte. Se corta por donde la
+    digitalización abre el cuerpo con la primera palabra en versalitas, que es
+    la única marca fiable que hay. Si no la trae, se devuelve ("", texto) y
+    quien llama se limita a correr los versículos.
+    """
+    m = TITULO_Y_CUERPO.match(texto)
+    return (m.group(1), m.group(2)) if m else ("", texto)
+
+
+def titulos_de_los_salmos(
+    con: sqlite3.Connection, book_id: int, rv: dict, usfx: str
+) -> dict[int, int]:
+    """Cuántos versículos de título lleva cada salmo en el hebreo.
+
+    **Esto arreglaba un defecto de los gordos.** El hebreo del Códice de
+    Leningrado numera el encabezamiento del salmo como versículo 1; la
+    Reina-Valera, como todas las biblias que vienen del inglés, lo deja sin
+    numerar. Hasta aquí la traducción se pegaba por número, así que en 62 de
+    los 150 salmos **cada versículo mostraba debajo la traducción del
+    siguiente**. No era un hueco, que se ve: era un texto equivocado que se
+    lee tan campante. Salmo 46:11 decía «Jehová de los ejércitos es con
+    nosotros» donde el hebreo dice «Estad quietos, y conoced que yo soy Dios».
+
+    El desfase se mide, no se adivina: es cuántos versículos de más tiene el
+    salmo en hebreo. Salen 1 en 58 salmos y 2 en cuatro —los de título de dos
+    renglones, como el 51— y nada en los demás. Se acepta solo 1 o 2: un
+    desfase mayor no es un título, es otra cosa, y entonces mejor un hueco que
+    un texto movido de sitio.
+    """
+    hebreo = dict(con.execute(
+        "SELECT chapter, COUNT(*) FROM verses WHERE book_id = ? GROUP BY chapter",
+        (book_id,),
+    ).fetchall())
+    espanol: dict[int, int] = {}
+    for libro, capitulo, versiculo in rv:
+        if libro == usfx:
+            espanol[capitulo] = max(espanol.get(capitulo, 0), versiculo)
+    desfases = {}
+    for capitulo, cuantos in hebreo.items():
+        desfase = cuantos - espanol.get(capitulo, cuantos)
+        if 1 <= desfase <= 2:
+            desfases[capitulo] = desfase
+    return desfases
+
+
+def comprobar_los_salmos(con: sqlite3.Connection) -> list[str]:
+    """Que la traducción de los Salmos siga donde debe.
+
+    Tres salmos de testigo: uno sin título numerado, uno con título de un
+    versículo y uno con título de dos. Si alguno deja de cuadrar, el
+    alineamiento se ha vuelto a torcer y hay que enterarse aquí, no por un
+    lector que lea una cosa donde pone otra.
+    """
+    testigos = [
+        # Sin título numerado: el hebreo mete el encabezamiento en el versículo 1.
+        ("SAL", 23, 1, "Salmo de David."),
+        # Título de un versículo: el 1 lleva el encabezamiento y el 2 el cuerpo.
+        ("SAL", 46, 1, "Al Músico principal: de los hijos de Coré:"),
+        ("SAL", 46, 2, "DIOS es nuestro amparo"),
+        ("SAL", 46, 11, "Estad quietos"),
+        # Título de dos versículos.
+        ("SAL", 51, 3, "TEN piedad de mí"),
+    ]
+    fallos = []
+    for code, capitulo, versiculo, empieza in testigos:
+        fila = con.execute(
+            "SELECT t.text FROM translation t"
+            " JOIN books b ON b.id = t.book_id"
+            " WHERE b.collection_id = 'at' AND b.code = ?"
+            "   AND t.chapter = ? AND t.verse = ?",
+            (code, capitulo, versiculo),
+        ).fetchone()
+        tiene = fila[0] if fila else "(sin traducción)"
+        if not tiene.startswith(empieza):
+            fallos.append(
+                f"{code} {capitulo}:{versiculo} debería empezar por «{empieza}»"
+                f" y empieza por «{tiene[:40]}»"
+            )
+    return fallos
+
+
 def insert_translation(con: sqlite3.Connection, sources: Path) -> tuple[int, float]:
     """Importa la Reina-Valera de 1909 alineada con los libros de la base.
 
@@ -656,9 +753,19 @@ def insert_translation(con: sqlite3.Connection, sources: Path) -> tuple[int, flo
             if fila is None:
                 continue
             book_id = fila[0]
+            desfases = titulos_de_los_salmos(con, book_id, rv, usfx) \
+                if collection == "at" and code == "SAL" else {}
             for (libro, capitulo, versiculo), texto in rv.items():
-                if libro == usfx:
-                    filas.append((book_id, capitulo, versiculo, texto))
+                if libro != usfx:
+                    continue
+                desfase = desfases.get(capitulo, 0)
+                if desfase and versiculo == 1:
+                    titulo, cuerpo = partir_el_titulo(texto)
+                    if titulo:
+                        filas.append((book_id, capitulo, 1, titulo))
+                        filas.append((book_id, capitulo, 1 + desfase, cuerpo))
+                        continue
+                filas.append((book_id, capitulo, versiculo + desfase, texto))
 
     filas = [(libro, capitulo, versiculo, "", texto)
              for libro, capitulo, versiculo, texto in filas]
@@ -1151,6 +1258,9 @@ def build(sources: Path, out: Path) -> None:
         f"  Reina-Valera 1909    {versiculos_es:6d} versículos en español"
         f"  ({cobertura_es} % del hebreo y del NT)"
     )
+    # Un texto movido de sitio se lee tan campante y nadie lo nota. Esto no es
+    # un aviso: si los Salmos se descuadran, la base no sale.
+    problems.extend(comprobar_los_salmos(con))
 
     formas, cobertura = insert_nt_forms(con)
     print(f"  formas del NT          {formas:6d} para el griego sin analizar")

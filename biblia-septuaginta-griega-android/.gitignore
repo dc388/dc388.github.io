@@ -15,6 +15,10 @@ app/keystore.properties
 # Fuentes clonadas por tools/build_db.py
 build/sources/
 
+# La base la reconstruye tools/build_db.py y pesa 80 MB. Nunca va al
+# repositorio: un «git add -A» después de compilar en local la metería.
+app/src/main/assets/biblia.db
+
 # Python
 __pycache__/
 *.pyc
