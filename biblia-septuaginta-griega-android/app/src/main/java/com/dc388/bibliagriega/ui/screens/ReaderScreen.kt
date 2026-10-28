@@ -62,6 +62,7 @@ import com.dc388.bibliagriega.data.InterlinearWord
 import com.dc388.bibliagriega.data.Verse
 import com.dc388.bibliagriega.data.VerseRef
 import com.dc388.bibliagriega.ui.Banner
+import com.dc388.bibliagriega.ui.Compartir
 import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
@@ -133,7 +134,11 @@ fun ReaderScreen(
                     }
                     IconButton(
                         onClick = {
-                            share(context, "$bookName $chapter", chapterText(state.verses))
+                            share(
+                                context,
+                                "$bookName $chapter",
+                                chapterText("$bookName $chapter", state.verses),
+                            )
                         },
                     ) {
                         Icon(Icons.Default.Share, contentDescription = "Compartir capítulo")
@@ -371,7 +376,19 @@ fun ReaderScreen(
                     }
                     TextButton(
                         onClick = {
-                            share(context, reference, "$reference\n\n${verse.text}")
+                            share(
+                                context,
+                                reference,
+                                Compartir.versiculo(
+                                    referencia = reference,
+                                    original = verse.text,
+                                    // La traducción se manda aunque el lector
+                                    // la tenga oculta: una cosa es cómo quiere
+                                    // leer él y otra qué entenderá quien lo
+                                    // reciba.
+                                    espanol = state.translation[verse.verse],
+                                ),
+                            )
                             sheetVerse = null
                         },
                     ) {
@@ -513,8 +530,11 @@ private fun VerseRow(
     }
 }
 
-private fun chapterText(verses: List<Verse>): String =
-    verses.joinToString(" ") { "${it.label} ${it.text}" }
+private fun chapterText(titulo: String, verses: List<Verse>): String = buildString {
+    append("✝ *").append(titulo).append("*\n\n")
+    append(verses.joinToString(" ") { "${it.label} ${it.text}" })
+    append("\n\n📖 *Biblia Griega y Hebrea*\n").append(Compartir.ENLACE)
+}
 
 private fun share(context: Context, subject: String, body: String) {
     val intent = Intent(Intent.ACTION_SEND).apply {
