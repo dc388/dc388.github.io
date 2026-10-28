@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -26,6 +27,14 @@ data class Settings(
     val interlinear: Boolean = false,
     /** Pone la Reina-Valera de 1909 debajo de cada versículo. */
     val translation: Boolean = true,
+    /**
+     * El aviso del versículo del día. Apagado de fábrica: nadie instala una
+     * Biblia para que le escriba sin pedirlo, y desde Android 13 encenderlo
+     * exige además que el usuario conceda el permiso.
+     */
+    val avisoDiario: Boolean = false,
+    /** La hora a la que sale ese aviso, en punto. */
+    val horaAviso: Int = 7,
 )
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "ajustes")
@@ -42,6 +51,8 @@ class Prefs private constructor(private val context: Context) {
             paragraphMode = (p[KEY_PARAGRAPH] ?: "0") == "1",
             interlinear = (p[KEY_INTERLINEAR] ?: "0") == "1",
             translation = (p[KEY_TRANSLATION] ?: "1") == "1",
+            avisoDiario = (p[KEY_AVISO] ?: "0") == "1",
+            horaAviso = (p[KEY_HORA_AVISO] ?: 7).coerceIn(0, 23),
         )
     }
 
@@ -104,6 +115,12 @@ class Prefs private constructor(private val context: Context) {
     suspend fun setTranslation(on: Boolean) =
         put { it[KEY_TRANSLATION] = if (on) "1" else "0" }
 
+    suspend fun setAvisoDiario(on: Boolean) =
+        put { it[KEY_AVISO] = if (on) "1" else "0" }
+
+    suspend fun setHoraAviso(hora: Int) =
+        put { it[KEY_HORA_AVISO] = hora.coerceIn(0, 23) }
+
     suspend fun setLastRead(ref: VerseRef) = put { it[KEY_LAST_READ] = ref.encode() }
 
     suspend fun toggleBookmark(ref: VerseRef) = put { prefs ->
@@ -129,6 +146,8 @@ class Prefs private constructor(private val context: Context) {
         private val KEY_PARAGRAPH = stringPreferencesKey("paragraph_mode")
         private val KEY_INTERLINEAR = stringPreferencesKey("interlinear")
         private val KEY_TRANSLATION = stringPreferencesKey("translation")
+        private val KEY_AVISO = stringPreferencesKey("aviso_diario")
+        private val KEY_HORA_AVISO = intPreferencesKey("hora_aviso")
         private val KEY_LAST_READ = stringPreferencesKey("last_read")
         private val KEY_BOOKMARKS = stringSetPreferencesKey("bookmarks")
         private const val NOTE_PREFIX = "nota:"

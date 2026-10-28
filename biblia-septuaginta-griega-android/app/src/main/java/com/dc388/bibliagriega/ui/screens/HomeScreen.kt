@@ -1,5 +1,6 @@
 package com.dc388.bibliagriega.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,11 +17,13 @@ import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,17 +38,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.dc388.bibliagriega.data.AvisoDiario
 import com.dc388.bibliagriega.data.Book
 import com.dc388.bibliagriega.data.VerseRef
+import com.dc388.bibliagriega.data.VersiculoDiario
 import com.dc388.bibliagriega.ui.AnchoDeLista
 import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
+import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,10 +65,15 @@ fun HomeScreen(
     onBookmarks: () -> Unit,
     onNotes: () -> Unit,
     onSettings: () -> Unit,
+    onOpenChapterOf: (Long, Int) -> Unit = { _, _ -> },
 ) {
     val library by vm.library.collectAsState()
     val lastRead by vm.lastRead.collectAsState()
     var selected by rememberSaveable { mutableStateOf(0) }
+    // Se calcula una vez por entrada en la portada: la fecha no cambia mientras
+    // se mira la lista de libros, y recalcularlo en cada recomposición sería
+    // pedirle la hora al sistema por nada.
+    val hoy = remember { vm.versiculoDeHoy() }
 
     Scaffold(
         topBar = {
@@ -111,6 +124,16 @@ fun HomeScreen(
                         bottom = padding.calculateBottomPadding() + 16.dp,
                     ),
                 ) {
+                    item {
+                        VersiculoDelDiaCard(
+                            v = hoy,
+                            onAbrir = {
+                                vm.bookOf(hoy.coleccion, hoy.codigo)
+                                    ?.let { libro -> onOpenChapterOf(libro.id, hoy.capitulo) }
+                            },
+                        )
+                    }
+
                     if (lastRead != null) {
                         item {
                             ContinueCard(
@@ -188,6 +211,80 @@ private fun ContinueCard(ref: VerseRef, title: String?, onClick: () -> Unit) {
                     text = "${title ?: "Capítulo"} ${ref.chapter}",
                     style = MaterialTheme.typography.titleMedium,
                 )
+            }
+        }
+    }
+}
+
+/**
+ * El versículo del día en la portada.
+ *
+ * Es lo mismo que sale en el aviso de la mañana, y está aquí por dos razones:
+ * para que lo vea también quien no quiere que la aplicación le escriba, y
+ * porque el botón de compartir es lo que hace que el mensaje salga de aquí.
+ * Cada reenvío lleva el enlace de la tienda dentro.
+ *
+ * El orden —español, original, palabra— no es casual. Lo primero que se lee es
+ * lo que se entiende; el griego o el hebreo va debajo, que es lo que esta
+ * aplicación tiene y las demás no.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun VersiculoDelDiaCard(v: VersiculoDiario, onAbrir: () -> Unit) {
+    val context = LocalContext.current
+    Card(
+        onClick = onAbrir,
+        modifier = Modifier.fillMaxWidth().padding(16.dp, 12.dp, 16.dp, 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = "VERSÍCULO DEL DÍA",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+            Text(
+                text = v.referencia,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(text = v.espanol, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = v.original,
+                fontFamily = ScriptureFontFamily,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = v.palabra,
+                    fontFamily = ScriptureFontFamily,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = v.translit,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text(text = v.reflexion, style = MaterialTheme.typography.bodyMedium)
+            FilledTonalButton(
+                onClick = {
+                    val envio = Intent(Intent.ACTION_SEND)
+                        .setType("text/plain")
+                        .putExtra(Intent.EXTRA_TEXT, AvisoDiario.paraCompartir(v))
+                    context.startActivity(Intent.createChooser(envio, "Compartir el versículo"))
+                },
+            ) {
+                Icon(Icons.Default.Share, contentDescription = null)
+                Text("  Compartir")
             }
         }
     }

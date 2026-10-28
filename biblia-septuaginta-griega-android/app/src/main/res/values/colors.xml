@@ -2,4 +2,6 @@
 <resources>
     <color name="app_background">#FFFBF7F0</color>
     <color name="ic_launcher_background">#FF3E4A66</color>
+    <!-- El tinte del aviso diario: el mismo azul pizarra del icono. -->
+    <color name="aviso">#FF3E4A66</color>
 </resources>

@@ -3,6 +3,7 @@ package com.dc388.bibliagriega.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.dc388.bibliagriega.data.AvisoDiario
 import com.dc388.bibliagriega.data.LexiconArticle
 import com.dc388.bibliagriega.data.BibleRepository
 import com.dc388.bibliagriega.data.Book
@@ -16,6 +17,8 @@ import com.dc388.bibliagriega.data.ThemeMode
 import com.dc388.bibliagriega.data.Verse
 import com.dc388.bibliagriega.data.VerseHit
 import com.dc388.bibliagriega.data.VerseRef
+import com.dc388.bibliagriega.data.VersiculoDelDia
+import com.dc388.bibliagriega.data.VersiculoDiario
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 data class LibraryState(
     val collections: List<BibleCollection> = emptyList(),
@@ -171,6 +175,14 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
     fun bookOf(bookId: Long): Book? =
         _library.value.booksByCollection.values.flatten().firstOrNull { it.id == bookId }
 
+    /**
+     * El libro por su colección y su código («at», «SAL»). Es como llega una
+     * referencia desde fuera de la base —el versículo del día, el aviso de la
+     * mañana—, donde no hay forma de conocer el identificador numérico.
+     */
+    fun bookOf(coleccion: String, codigo: String): Book? =
+        _library.value.booksByCollection[coleccion]?.firstOrNull { it.code == codigo }
+
     fun loadChapter(bookId: Long, chapter: Int) {
         viewModelScope.launch {
             _chapter.value = ChapterState(book = bookOf(bookId), chapter = chapter, loading = true)
@@ -288,4 +300,31 @@ class BibliaViewModel(app: Application) : AndroidViewModel(app) {
     fun setInterlinear(on: Boolean) {
         viewModelScope.launch { prefs.setInterlinear(on) }
     }
+
+    /**
+     * Enciende o apaga el aviso de la mañana, y deja puesta la alarma en el
+     * acto. Si se guardara el ajuste y la alarma se programara en otro sitio,
+     * cualquier camino que olvidara ese otro sitio dejaría al usuario con el
+     * interruptor encendido y sin aviso.
+     */
+    fun setAvisoDiario(on: Boolean) {
+        viewModelScope.launch {
+            prefs.setAvisoDiario(on)
+            val contexto = getApplication<Application>()
+            if (on) AvisoDiario.programar(contexto, settings.value.horaAviso)
+            else AvisoDiario.cancelar(contexto)
+        }
+    }
+
+    fun setHoraAviso(hora: Int) {
+        viewModelScope.launch {
+            prefs.setHoraAviso(hora)
+            if (settings.value.avisoDiario) {
+                AvisoDiario.programar(getApplication<Application>(), hora)
+            }
+        }
+    }
+
+    /** El versículo de hoy, para la tarjeta de la portada. */
+    fun versiculoDeHoy(): VersiculoDiario = VersiculoDelDia.de(LocalDate.now())
 }

@@ -1,7 +1,12 @@
 package com.dc388.bibliagriega.ui.screens
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.provider.Settings as AjustesDeAndroid
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +38,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,7 +49,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dc388.bibliagriega.data.Anuncios
+import com.dc388.bibliagriega.data.AvisoDiario
 import com.dc388.bibliagriega.data.Compras
+import com.dc388.bibliagriega.data.Settings
 import com.dc388.bibliagriega.data.ThemeMode
 import com.dc388.bibliagriega.ui.actividad
 import com.dc388.bibliagriega.ui.columna
@@ -162,6 +171,13 @@ fun SettingsScreen(vm: BibliaViewModel, onBack: () -> Unit) {
                 checked = settings.paragraphMode,
                 onChange = vm::setParagraphMode,
             )
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = MaterialTheme.colorScheme.outlineVariant,
+            )
+            SectionTitle("Versículo del día")
+            AvisoDeCadaManana(vm = vm, settings = settings)
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
@@ -314,6 +330,82 @@ private fun Suscripcion(
     }
 }
 
+/**
+ * El interruptor del aviso de la mañana y la hora a la que sale.
+ *
+ * Desde Android 13 encenderlo no basta: hay que pedirle el permiso al usuario,
+ * y si lo ha negado para siempre el sistema ya no vuelve a preguntar. Por eso
+ * el interruptor no se queda encendido hasta que el permiso está de verdad
+ * concedido, y cuando está bloqueado se dice y se ofrece el atajo a los ajustes
+ * de Android, que es el único sitio donde se puede deshacer.
+ */
+@Composable
+private fun AvisoDeCadaManana(vm: BibliaViewModel, settings: Settings) {
+    val context = LocalContext.current
+    var permiso by remember { mutableStateOf(AvisoDiario.hayPermiso(context)) }
+    val pedirPermiso = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { concedido ->
+        permiso = concedido
+        if (concedido) vm.setAvisoDiario(true)
+    }
+
+    SwitchRow(
+        label = "Avisarme cada mañana",
+        description = "Un versículo al día con la palabra del griego o del hebreo que lo " +
+            "sostiene, y qué dice esa palabra. Se puede compartir desde el propio aviso.",
+        checked = settings.avisoDiario && permiso,
+        onChange = { encender ->
+            when {
+                !encender -> vm.setAvisoDiario(false)
+                permiso -> vm.setAvisoDiario(true)
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
+                    pedirPermiso.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        },
+    )
+
+    if (settings.avisoDiario && permiso) {
+        LabeledSlider(
+            label = "Hora del aviso",
+            value = settings.horaAviso.toFloat(),
+            range = 5f..22f,
+            steps = 16,
+            // Se redondea aquí y no al guardar para que el número que se ve
+            // mientras se arrastra sea el que acaba guardado.
+            formato = { "${it.toInt()}:00" },
+            onChange = { vm.setHoraAviso(it.toInt()) },
+        )
+        Text(
+            text = "Puede salir hasta media hora más tarde. Una alarma exacta hay que " +
+                "pedírsela al sistema, y Google Play solo se la concede a los " +
+                "despertadores y a los calendarios.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 8.dp),
+        )
+    }
+
+    if (settings.avisoDiario && !permiso) {
+        Text(
+            text = "Android tiene bloqueados los avisos de esta aplicación, así que no " +
+                "puede salir ninguno. Se desbloquea en los ajustes del sistema.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 0.dp),
+        )
+        TextButton(
+            onClick = {
+                context.startActivity(
+                    Intent(AjustesDeAndroid.ACTION_APP_NOTIFICATION_SETTINGS)
+                        .putExtra(AjustesDeAndroid.EXTRA_APP_PACKAGE, context.packageName),
+                )
+            },
+            modifier = Modifier.padding(horizontal = 8.dp),
+        ) { Text("Abrir los ajustes de Android") }
+    }
+}
+
 @Composable
 private fun SectionTitle(text: String) {
     Text(
@@ -332,6 +424,7 @@ private fun LabeledSlider(
     range: ClosedFloatingPointRange<Float>,
     steps: Int,
     onChange: (Float) -> Unit,
+    formato: (Float) -> String = { "${(it * 100).toInt()}%" },
 ) {
     Column(Modifier.fillMaxWidth().padding(16.dp, 8.dp)) {
         Row(
@@ -340,7 +433,7 @@ private fun LabeledSlider(
         ) {
             Text(label, style = MaterialTheme.typography.bodyLarge)
             Text(
-                text = "${(value * 100).toInt()}%",
+                text = formato(value),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
