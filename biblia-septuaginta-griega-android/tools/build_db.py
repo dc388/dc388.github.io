@@ -51,7 +51,12 @@ from traducciones_propias import PROPIAS  # noqa: E402
 from traducir_strong import traducir as traducir_definicion  # noqa: E402
 from traducir_articulo import traducir_articulo  # noqa: E402
 from etimologia import traducir as traducir_etimologia  # noqa: E402
-from traduccion import LIBROS_AT, LIBROS_NT, leer as leer_rv1909  # noqa: E402
+from traduccion import (  # noqa: E402
+    LIBROS_AT,
+    LIBROS_NT,
+    leer as leer_rv1909,
+    versalitas_a_caja_normal,
+)
 from bdb import build as build_bdb, resolve as resolve_bdb  # noqa: E402
 from hebrew import (  # noqa: E402
     HEBREW_BOOKS,
@@ -694,23 +699,28 @@ def titulos_de_los_salmos(
     return desfases
 
 
-def comprobar_los_salmos(con: sqlite3.Connection) -> list[str]:
-    """Que la traducción de los Salmos siga donde debe.
+def comprobar_la_traduccion(con: sqlite3.Connection) -> list[str]:
+    """Que la Reina-Valera siga donde debe y como debe.
 
-    Tres salmos de testigo: uno sin título numerado, uno con título de un
-    versículo y uno con título de dos. Si alguno deja de cuadrar, el
-    alineamiento se ha vuelto a torcer y hay que enterarse aquí, no por un
-    lector que lea una cosa donde pone otra.
+    Versículos de testigo: la versalita de apertura de un capítulo cualquiera,
+    y tres salmos —uno sin título numerado, uno con título de un versículo y
+    uno con título de dos—. Si alguno deja de cuadrar, el alineamiento se ha
+    vuelto a torcer y hay que enterarse aquí, no por un lector que lea una cosa
+    donde pone otra. Un texto movido de sitio no lo nota nadie: por eso tiene
+    que avisar la máquina.
     """
     testigos = [
+        # La versalita con que la Reina-Valera abre cada capítulo, en caja
+        # normal: «EN el principio» parecía una errata suelta en un mensaje.
+        ("GEN", 1, 1, "En el principio creó Dios"),
         # Sin título numerado: el hebreo mete el encabezamiento en el versículo 1.
-        ("SAL", 23, 1, "Salmo de David."),
+        ("SAL", 23, 1, "Salmo de David. Jehová es mi pastor"),
         # Título de un versículo: el 1 lleva el encabezamiento y el 2 el cuerpo.
         ("SAL", 46, 1, "Al Músico principal: de los hijos de Coré:"),
-        ("SAL", 46, 2, "DIOS es nuestro amparo"),
+        ("SAL", 46, 2, "Dios es nuestro amparo"),
         ("SAL", 46, 11, "Estad quietos"),
         # Título de dos versículos.
-        ("SAL", 51, 3, "TEN piedad de mí"),
+        ("SAL", 51, 3, "Ten piedad de mí"),
     ]
     fallos = []
     for code, capitulo, versiculo, empieza in testigos:
@@ -759,11 +769,20 @@ def insert_translation(con: sqlite3.Connection, sources: Path) -> tuple[int, flo
                 if libro != usfx:
                     continue
                 desfase = desfases.get(capitulo, 0)
-                if desfase and versiculo == 1:
+                if code == "SAL" and versiculo == 1:
                     titulo, cuerpo = partir_el_titulo(texto)
                     if titulo:
-                        filas.append((book_id, capitulo, 1, titulo))
-                        filas.append((book_id, capitulo, 1 + desfase, cuerpo))
+                        # El cuerpo abre con la versalita del salmo —«DIOS es
+                        # nuestro amparo»—, enterrada detrás del encabezamiento
+                        # y por eso fuera del alcance del arreglo general.
+                        cuerpo = versalitas_a_caja_normal(cuerpo)
+                        if desfase:
+                            # El hebreo numera el encabezamiento aparte: cada
+                            # cosa a su versículo.
+                            filas.append((book_id, capitulo, 1, titulo))
+                            filas.append((book_id, capitulo, 1 + desfase, cuerpo))
+                        else:
+                            filas.append((book_id, capitulo, 1, f"{titulo} {cuerpo}"))
                         continue
                 filas.append((book_id, capitulo, versiculo + desfase, texto))
 
@@ -1260,7 +1279,7 @@ def build(sources: Path, out: Path) -> None:
     )
     # Un texto movido de sitio se lee tan campante y nadie lo nota. Esto no es
     # un aviso: si los Salmos se descuadran, la base no sale.
-    problems.extend(comprobar_los_salmos(con))
+    problems.extend(comprobar_la_traduccion(con))
 
     formas, cobertura = insert_nt_forms(con)
     print(f"  formas del NT          {formas:6d} para el griego sin analizar")

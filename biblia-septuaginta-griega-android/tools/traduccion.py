@@ -25,7 +25,9 @@ correspondencia es fiable.
 
 from __future__ import annotations
 
+import collections
 import re
+import unicodedata
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -59,6 +61,107 @@ def _limpiar(texto: str) -> str:
     texto = re.sub(r"\s+", " ", texto)
     texto = re.sub(r"\s+([,.;:!?»])", r"\1", texto)
     return texto.strip()
+
+
+# Las versalitas con que la Reina-Valera abre cada capítulo. La digitalización
+# las guarda en mayúsculas de caja alta: «EN el principio era el Verbo», «Y
+# ACONTECIÓ que», «MEJOR es un bocado seco». En un libro impreso eso es una
+# letra capital y se lee como lo que es; en la pantalla de un teléfono, y sobre
+# todo suelto en un mensaje de WhatsApp, parece una errata.
+MAYUSCULAS = "A-ZÁÉÍÓÚÜÑ"
+VERSALITAS = re.compile(
+    r"^([¡¿«(\"']*)"                                  # signos de apertura
+    rf"((?:[{MAYUSCULAS}]+[.,;:!?]?\s+)*[{MAYUSCULAS}]+[.,;:!?]?)"  # el bloque
+    r"(\s)"
+    rf"(?![{MAYUSCULAS}][{MAYUSCULAS}])"               # lo de después ya no lo es
+    r"(?=\S)"
+)
+
+
+def _sin_tildes(palabra: str) -> str:
+    """Quita las tildes para comparar.
+
+    Hace falta porque `modernizar` ya le ha quitado la tilde al texto corrido
+    —«fué» pasa a «fue»— pero no a la versalita, que viene en mayúsculas. Sin
+    esto, «Y FUÉ a» se quedaba en «Y Fué a»: la palabra en minúscula que se
+    buscaba no existía en ninguna parte.
+    """
+    return unicodedata.normalize("NFKD", palabra).encode("ascii", "ignore").decode()
+
+
+_COMUNES: collections.Counter[str] = collections.Counter()
+
+
+def _arreglar(texto: str, comunes: collections.Counter[str]) -> str | None:
+    """Pone en caja normal la versalita con que abre un texto, si la trae."""
+    m = VERSALITAS.match(texto)
+    if m is None:
+        return None
+    bloque = m.group(2)
+    if sum(c.isalpha() for c in bloque) < 2:
+        return None  # una «Y» suelta no es una versalita
+    arregladas = []
+    empieza_frase = True
+    for palabra in bloque.split():
+        nucleo = palabra.rstrip(".,;:")
+        cola = palabra[len(nucleo):]
+        if empieza_frase or comunes[_sin_tildes(nucleo.lower())] < 3:
+            arregladas.append(nucleo.capitalize() + cola)
+        else:
+            arregladas.append(nucleo.lower() + cola)
+        # El «Aleph.» con que se abre cada estrofa del salmo 119 cierra frase:
+        # lo que venga detrás empieza otra y lleva mayúscula.
+        empieza_frase = cola.startswith((".", ":", ";"))
+    return m.group(1) + " ".join(arregladas) + texto[m.end(2):]
+
+
+def versalitas_a_caja_normal(texto: str) -> str:
+    """El mismo arreglo, para un texto suelto.
+
+    Lo usa `build_db` con los salmos. La Reina-Valera mete el encabezamiento y
+    el cuerpo en su versículo 1 —«Salmo de David. JEHOVÁ es mi pastor»—, así
+    que ahí la versalita no abre el versículo y solo queda al descubierto
+    cuando `build_db` separa el título del cuerpo. Usa el recuento de la última
+    lectura; sin lectura previa no hay con qué decidir y devuelve el texto tal
+    cual.
+    """
+    return _arreglar(texto, _COMUNES) or texto
+
+
+def _deshacer_versalitas(
+    versiculos: dict[tuple[str, int, int], str],
+) -> tuple[dict[tuple[str, int, int], str], int]:
+    """Devuelve el texto con las versalitas de apertura puestas en caja normal.
+
+    **Qué palabra lleva mayúscula y cuál no lo decide el propio texto**, no una
+    lista escrita a mano. Si una palabra aparece en minúscula en el resto de la
+    Biblia —«aconteció», «los», «como»— es común y va en minúscula; si no
+    aparece nunca —«Jehová», «Abraham»— es nombre propio y se queda con su
+    mayúscula. Así «Y ACONTECIÓ que» sale «Y aconteció que» y «Y ABRAHAM era
+    viejo» sale «Y Abraham era viejo», sin decidirlo a ojo palabra por palabra.
+
+    Solo se toca el versículo 1 de cada capítulo, que es donde la edición pone
+    la capital, y solo el bloque inicial de palabras enteramente en mayúsculas
+    seguido de una palabra en minúscula: lo demás se queda como está. Son 815
+    versículos, uno por capítulo.
+    """
+    global _COMUNES
+    comunes: collections.Counter[str] = collections.Counter()
+    for texto in versiculos.values():
+        for palabra in re.findall(rf"[a-záéíóúüñ][a-záéíóúüñ{MAYUSCULAS}]*", texto):
+            comunes[_sin_tildes(palabra.lower())] += 1
+    _COMUNES = comunes
+
+    salida = dict(versiculos)
+    tocados = 0
+    for clave, texto in versiculos.items():
+        if clave[2] != 1:
+            continue
+        arreglado = _arreglar(texto, comunes)
+        if arreglado is not None:
+            salida[clave] = arreglado
+            tocados += 1
+    return salida, tocados
 
 
 def leer(path: Path) -> dict[tuple[str, int, int], str]:
@@ -109,4 +212,5 @@ def leer(path: Path) -> dict[tuple[str, int, int], str]:
         recorrer(libro)
         cerrar()
 
+    salida, _ = _deshacer_versalitas(salida)
     return salida

@@ -2,6 +2,8 @@ package com.dc388.bibliagriega.ui.screens
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,15 +28,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -156,20 +156,26 @@ fun HomeScreen(
                     }
 
                     item {
-                        SingleChoiceSegmentedButtonRow(
+                        Row(
+                            // Las cinco colecciones no caben en un teléfono de
+                            // 411 dp, que son casi todos: «Septuaginta» se
+                            // partía en «Septuag / inta» y «Pseudoepígrafos» se
+                            // salía por el borde derecho. Es la primera
+                            // pantalla de la aplicación y la primera captura de
+                            // la ficha de Play. Se desplaza a lo ancho, igual
+                            // que los filtros de la búsqueda.
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState())
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             collections.forEachIndexed { index, collection ->
-                                SegmentedButton(
+                                FilterChip(
                                     selected = index == selected,
                                     onClick = { selected = index },
-                                    shape = SegmentedButtonDefaults.itemShape(
-                                        index = index,
-                                        count = collections.size,
-                                    ),
-                                ) { Text(collection.shortName) }
+                                    label = { Text(collection.shortName) },
+                                )
                             }
                         }
                     }

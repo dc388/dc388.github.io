@@ -65,7 +65,8 @@ object VersiculoDelDia {
         VersiculoDiario(
             referencia = "Salmos 27:14",
             coleccion = "at", codigo = "SAL", capitulo = 27, versiculo = 14,
-            original = "קַוֵּ֗ה אֶל־יְה֫וָ֥ה חֲ֭זַק וְיַאֲמֵ֣ץ לִבֶּ֑ךָ וְ֝קַוֵּ֗ה אֶל־יְהוָֽה׃",
+            original = "קַוֵּ֗ה אֶל־יְה֫וָ֥ה חֲ֭זַק וְיַאֲמֵ֣ץ לִבֶּ֑ךָ " +
+                "וְ֝קַוֵּ֗ה אֶל־יְהוָֽה׃",
             espanol = "Aguarda a Jehová; esfuérzate, y aliéntese tu corazón: " +
                 "sí, espera a Jehová.",
             palabra = "קַוֵּה",
@@ -134,7 +135,7 @@ object VersiculoDelDia {
             referencia = "Salmos 23:1",
             coleccion = "at", codigo = "SAL", capitulo = 23, versiculo = 1,
             original = "מִזְמ֥וֹר לְדָוִ֑ד יְהוָ֥ה רֹ֝עִ֗י לֹ֣א אֶחְסָֽר׃",
-            espanol = "Salmo de David. JEHOVÁ es mi pastor; nada me faltará.",
+            espanol = "Salmo de David. Jehová es mi pastor; nada me faltará.",
             palabra = "רֹעִי",
             translit = "ro'í",
             reflexion = "«Mi pastor» no es un título: es un participio, «el que me " +
@@ -145,9 +146,9 @@ object VersiculoDelDia {
         VersiculoDiario(
             referencia = "Isaías 41:10",
             coleccion = "at", codigo = "ISA", capitulo = 41, versiculo = 10,
-            original = "אַל־תִּירָא֙ כִּ֣י עִמְּךָ־אָ֔נִי אַל־תִּשְׁתָּ֖ע כִּֽי־אֲנִ֣י " +
-                "אֱלֹהֶ֑יךָ אִמַּצְתִּ֨יךָ֙ אַף־עֲזַרְתִּ֔יךָ אַף־תְּמַכְתִּ֖יךָ " +
-                "בִּימִ֥ין צִדְקִֽי׃",
+            original = "אַל־תִּירָא֙ כִּ֣י עִמְּךָ־אָ֔נִי אַל־תִּשְׁתָּ֖ע " +
+                "כִּֽי־אֲנִ֣י אֱלֹהֶ֑יךָ אִמַּצְתִּ֨יךָ֙ " +
+                "אַף־עֲזַרְתִּ֔יךָ אַף־תְּמַכְתִּ֖יךָ בִּימִ֥ין צִדְקִֽי׃",
             espanol = "No temas, que yo soy contigo; no desmayes, que yo soy tu Dios que " +
                 "te esfuerzo: siempre te ayudaré, siempre te sustentaré con la diestra " +
                 "de mi justicia.",
@@ -317,7 +318,7 @@ object VersiculoDelDia {
             coleccion = "nt", codigo = "HEB", capitulo = 11, versiculo = 1,
             original = "Ἔστιν δὲ πίστις ἐλπιζομένων ὑπόστασις, πραγμάτων ἔλεγχος " +
                 "οὐ βλεπομένων.",
-            espanol = "ES pues la fe la sustancia de las cosas que se esperan, " +
+            espanol = "Es pues la fe la sustancia de las cosas que se esperan, " +
                 "la demostración de las cosas que no se ven.",
             palabra = "ὑπόστασις",
             translit = "hypóstasis",
