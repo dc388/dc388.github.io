@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.StopCircle
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,12 +59,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dc388.bibliagriega.data.Book
 import com.dc388.bibliagriega.data.Compras
 import com.dc388.bibliagriega.data.InterlinearWord
 import com.dc388.bibliagriega.data.Verse
 import com.dc388.bibliagriega.data.VerseRef
+import com.dc388.bibliagriega.data.Lector
 import com.dc388.bibliagriega.ui.Banner
+import com.dc388.bibliagriega.ui.ChapterState
 import com.dc388.bibliagriega.ui.Compartir
+import com.dc388.bibliagriega.ui.recordarLector
 import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
@@ -99,11 +105,19 @@ fun ReaderScreen(
     val context = LocalContext.current
     val sinAnuncios by Compras.get(context).sinAnuncios.collectAsState()
 
+    val lector = recordarLector()
+    val leyendo by lector.leyendo.collectAsState()
+
     var sheetVerse by remember { mutableStateOf<Verse?>(null) }
     var editingNote by remember { mutableStateOf<Verse?>(null) }
     val sheetState = rememberModalBottomSheetState()
 
-    LaunchedEffect(bookId, chapter) { vm.loadChapter(bookId, chapter) }
+    LaunchedEffect(bookId, chapter) {
+        // Cambiar de capítulo calla la voz: seguir oyendo el capítulo anterior
+        // mientras se lee otro no lo quiere nadie.
+        lector.detener()
+        vm.loadChapter(bookId, chapter)
+    }
 
     val book = state.book
     val bookName = book?.displayName ?: ""
@@ -129,6 +143,18 @@ fun ReaderScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = {
+                            if (leyendo != null) lector.detener()
+                            else escuchar(context, lector, book, state)
+                        },
+                    ) {
+                        if (leyendo != null) {
+                            Icon(Icons.Default.StopCircle, contentDescription = "Callar")
+                        } else {
+                            Icon(Icons.Default.VolumeUp, contentDescription = "Escuchar")
+                        }
+                    }
                     IconButton(onClick = onSettings) {
                         Icon(Icons.Default.TextFields, contentDescription = "Tipografía")
                     }
@@ -279,6 +305,7 @@ fun ReaderScreen(
                                 lineHeightSp = lineHeight.value,
                                 translation = state.translation[verse.verse]
                                     ?.takeIf { settings.translation },
+                                leyendo = leyendo == verse.verse.toString(),
                                 onClick = { sheetVerse = verse },
                             )
                         }
@@ -485,11 +512,16 @@ private fun VerseRow(
     fontSizeSp: Float,
     lineHeightSp: Float,
     translation: String?,
+    leyendo: Boolean,
     onClick: () -> Unit,
 ) {
-    val background =
-        if (marked) MaterialTheme.colorScheme.secondaryContainer
-        else MaterialTheme.colorScheme.background
+    // El versículo que suena manda sobre el marcado: mientras dura la lectura,
+    // lo que importa es saber por dónde va la voz.
+    val background = when {
+        leyendo -> MaterialTheme.colorScheme.tertiaryContainer
+        marked -> MaterialTheme.colorScheme.secondaryContainer
+        else -> MaterialTheme.colorScheme.background
+    }
 
     Row(
         modifier = Modifier
@@ -528,6 +560,50 @@ private fun VerseRow(
             }
         }
     }
+}
+
+/**
+ * Pone a sonar el capítulo y decide en qué lengua.
+ *
+ * Donde hay traducción se lee la traducción: es la que entiende quien escucha,
+ * y es además la única lengua para la que todo teléfono trae voz. Donde no la
+ * hay —la Septuaginta, los Padres, los pseudoepígrafos— se lee el original, y
+ * solo si el teléfono tiene voz para esa lengua. Leer el griego con voz
+ * española no es media solución: es ruido.
+ */
+private fun escuchar(
+    context: Context,
+    lector: Lector,
+    book: Book?,
+    state: ChapterState,
+) {
+    if (state.verses.isEmpty()) return
+
+    val enEspanol = state.verses.mapNotNull { verso ->
+        state.translation[verso.verse]
+            ?.takeIf { it.isNotBlank() }
+            ?.let { Lector.Trozo(verso.verse.toString(), it) }
+    }
+    if (enEspanol.size == state.verses.size) {
+        lector.leer(Lector.ESPANOL, enEspanol)
+        return
+    }
+
+    val lengua = if (book?.rtl == true) Lector.HEBREO else Lector.GRIEGO
+    if (!lector.hayVoz(lengua)) {
+        val nombre = if (book?.rtl == true) "hebreo" else "griego"
+        Toast.makeText(
+            context,
+            "Este texto no tiene traducción, y tu teléfono no trae voz en $nombre. " +
+                "Se puede añadir desde los ajustes de voz de Android.",
+            Toast.LENGTH_LONG,
+        ).show()
+        return
+    }
+    lector.leer(
+        lengua,
+        state.verses.map { Lector.Trozo(it.verse.toString(), it.text) },
+    )
 }
 
 private fun chapterText(titulo: String, verses: List<Verse>): String = buildString {

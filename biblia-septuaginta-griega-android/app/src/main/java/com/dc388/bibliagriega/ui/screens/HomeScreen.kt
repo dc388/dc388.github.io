@@ -18,12 +18,15 @@ import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.StopCircle
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,10 +51,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dc388.bibliagriega.data.AvisoDiario
 import com.dc388.bibliagriega.data.Book
+import com.dc388.bibliagriega.data.Lector
 import com.dc388.bibliagriega.data.VerseRef
 import com.dc388.bibliagriega.data.VersiculoDiario
 import com.dc388.bibliagriega.ui.AnchoDeLista
 import com.dc388.bibliagriega.ui.columna
+import com.dc388.bibliagriega.ui.recordarLector
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
 
@@ -232,6 +237,8 @@ private fun ContinueCard(ref: VerseRef, title: String?, onClick: () -> Unit) {
 @Composable
 private fun VersiculoDelDiaCard(v: VersiculoDiario, onAbrir: () -> Unit) {
     val context = LocalContext.current
+    val lector = recordarLector()
+    val leyendo by lector.leyendo.collectAsState()
     Card(
         onClick = onAbrir,
         modifier = Modifier.fillMaxWidth().padding(16.dp, 12.dp, 16.dp, 4.dp),
@@ -275,16 +282,46 @@ private fun VersiculoDelDiaCard(v: VersiculoDiario, onAbrir: () -> Unit) {
                 )
             }
             Text(text = v.reflexion, style = MaterialTheme.typography.bodyMedium)
-            FilledTonalButton(
-                onClick = {
-                    val envio = Intent(Intent.ACTION_SEND)
-                        .setType("text/plain")
-                        .putExtra(Intent.EXTRA_TEXT, AvisoDiario.paraCompartir(v))
-                    context.startActivity(Intent.createChooser(envio, "Compartir el versículo"))
-                },
-            ) {
-                Icon(Icons.Default.Share, contentDescription = null)
-                Text("  Compartir")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilledTonalButton(
+                    onClick = {
+                        val envio = Intent(Intent.ACTION_SEND)
+                            .setType("text/plain")
+                            .putExtra(Intent.EXTRA_TEXT, AvisoDiario.paraCompartir(v))
+                        context.startActivity(
+                            Intent.createChooser(envio, "Compartir el versículo"),
+                        )
+                    },
+                ) {
+                    Icon(Icons.Default.Share, contentDescription = null)
+                    Text("  Compartir")
+                }
+                OutlinedButton(
+                    onClick = {
+                        // Se lee el español y la reflexión, no el original: la
+                        // voz griega o hebrea no está en todos los teléfonos, y
+                        // lo que aquí se escucha es lo que se entiende.
+                        if (leyendo != null) {
+                            lector.detener()
+                        } else {
+                            lector.leer(
+                                Lector.ESPANOL,
+                                listOf(
+                                    Lector.Trozo("texto", v.espanol),
+                                    Lector.Trozo("reflexion", v.reflexion),
+                                ),
+                            )
+                        }
+                    },
+                ) {
+                    if (leyendo != null) {
+                        Icon(Icons.Default.StopCircle, contentDescription = null)
+                        Text("  Callar")
+                    } else {
+                        Icon(Icons.Default.VolumeUp, contentDescription = null)
+                        Text("  Escuchar")
+                    }
+                }
             }
         }
     }
