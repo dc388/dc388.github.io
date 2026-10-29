@@ -45,7 +45,7 @@ hispanohablante. Es el motivo de la mitad del trabajo hecho.
 | Versión | **1.3.0** (`versionCode` 11) |
 | Firma | clave real, en los secretos de GitHub Actions |
 | Anuncios | AdMob con identificadores reales |
-| Pruebas | 30 unitarias y 5 en emulador, en verde |
+| Pruebas | 30 unitarias y 9 en emulador, en verde |
 | Compilación de publicación | pasa, con R8 |
 | Páginas web | 15 526, sin enlaces rotos |
 | Léxico traducido al español | **11 898 de 14 610 artículos (81,4 %)** |
@@ -194,9 +194,12 @@ usuarios estadounidenses.
   el enlace directo. Eso es disponibilidad por país, no un problema de
   búsqueda. O EE. UU. no está marcado, o el país de su cuenta de Google no es
   EE. UU. (Play mira el país de la cuenta, no dónde está el teléfono).
-- **Dayanis, Cuba**: **no tiene arreglo por Play.** Google Play no opera en
-  Cuba; el país ni siquiera aparece en la lista. La única vía es mandarle el
-  APK como archivo, por Telegram.
+- **Dayanis, Cuba**: resuelto. El dueño confirma el 29 de octubre que allí la
+  aplicación **sí les sale en Play**. Aquí se había dado por sentado lo
+  contrario —Google dice que Play no opera en Cuba y el país no aparece en la
+  lista— y se estuvo semanas recomendando mandar el APK a mano. Lección:
+  cuando alguien que está allí dice lo que ve, eso gana a lo que diga la
+  documentación.
 
 **Un APK instalado a mano no cuenta como instalación en Play**, no suma a las
 estadísticas ni al posicionamiento. Sirve para que esas dos personas lean hoy,

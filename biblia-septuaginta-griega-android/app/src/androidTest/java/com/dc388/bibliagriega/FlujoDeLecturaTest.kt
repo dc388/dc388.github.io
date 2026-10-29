@@ -14,9 +14,11 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.dc388.bibliagriega.data.VersiculoDelDia
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.LocalDate
 
 /**
  * Recorre la aplicación como la recorrería una persona, sobre la base de datos
@@ -131,6 +133,31 @@ class FlujoDeLecturaTest {
             .performTextInput("λογ")
 
         esperar("λόγος")
+    }
+
+    @Test
+    fun la_portada_trae_el_versiculo_del_dia_y_su_palabra() {
+        esperarBiblioteca()
+        val hoy = VersiculoDelDia.de(LocalDate.now())
+
+        // Plegada: referencia, versículo en español y la palabra del original.
+        esperar("VERSÍCULO DEL DÍA")
+        esperar(hoy.referencia)
+        esperar(hoy.palabra)
+
+        // Al tocarla sale la reflexión, que es lo que de verdad la distingue
+        // de cualquier otra aplicación que manda un versículo al día.
+        regla.onAllNodesWithText(hoy.referencia).onFirst().performClick()
+        esperar(hoy.reflexion.take(20))
+    }
+
+    @Test
+    fun los_ajustes_ofrecen_el_aviso_de_cada_manana() {
+        esperarBiblioteca()
+
+        regla.onNodeWithContentDescription("Ajustes").performClick()
+        esperar("Versículo del día")
+        esperar("Avisarme cada mañana")
     }
 
     @Test

@@ -5,7 +5,7 @@ Nota para retomar sin reconstruir nada de memoria.
 ## Hecho y comprobado
 
 - **Aplicación completa**: 122 libros, 60 651 versículos, 439 705 palabras
-  analizadas. 30 pruebas unitarias y 5 funcionales en verde.
+  analizadas. 30 pruebas unitarias y 9 funcionales en verde.
 - **Versículo del día**: 30 versículos escritos a mano, cada uno con una
   palabra del original y lo que esa palabra dice. Se reparte por el día del
   año, con aviso opcional cada mañana y botón de compartir. Ver
@@ -56,10 +56,14 @@ el formulario fiscal se retiene lo que generen los usuarios estadounidenses.
 
 ### La APK para quien no tiene Play
 
-Ya no es la vía principal —la aplicación está en la tienda— pero sigue
-haciendo falta donde Play no llega: **en Cuba no opera**, y el país ni siquiera
-aparece en la lista que Play deja seleccionar. Allí la única forma es mandar el
-archivo.
+Ya no es la vía principal, y **a fecha de 29 de octubre de 2026 tampoco hace
+falta**: el dueño confirma que a la gente de Cuba la aplicación les sale en
+Play. Eso contradice lo que se dio por sentado aquí durante semanas —que Play
+no opera en Cuba, que es lo que dice Google— así que lo que vale es lo que se
+observa, no lo que se supone. Probablemente llegan con la cuenta de Google
+puesta en otro país.
+
+Queda por si acaso, para quien algún día no pueda instalar desde la tienda.
 
 Ojo: una instalación a mano **no cuenta** como instalación en Play, no suma a
 las estadísticas ni al posicionamiento. La etiqueta lleva el `versionCode` dentro, así que la de ahora es
