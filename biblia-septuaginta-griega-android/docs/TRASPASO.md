@@ -235,6 +235,17 @@ lo abre por el icono y comprueba que sigue en pie
 **No toques eso.** Es lo único que separa un fallo de compilación de una
 reseña de una estrella.
 
+Una vez ha dado un falso fallo, el 29 de octubre: la aplicación se cerró a los
+cuatro segundos con un SIGTRAP dentro de `libmonochrome` —el WebView del
+sistema, que carga el SDK de anuncios— mientras Google Play Services acababa
+de instalar sus módulos en un emulador recién arrancado. Se confirmó que era
+del emulador y no de la aplicación porque el mismo APK pasó antes y después, y
+lo único que había cambiado entre una compilación y otra eran dos archivos de
+pruebas y dos de documentación, que no entran en el binario. Desde entonces el
+guion espera a que el emulador se asiente antes de instalar. **Si vuelve a
+caer con la pila entera dentro de WebView, mirar primero el registro de Play
+Services; cualquier otra pila es de la aplicación y se trata como tal.**
+
 ## 5. Reglas que no se rompen
 
 - Desarrollar, confirmar y empujar **solo** en

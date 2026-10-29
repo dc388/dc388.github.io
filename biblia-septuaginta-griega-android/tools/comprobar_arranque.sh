@@ -16,6 +16,7 @@ set -euo pipefail
 
 PAQUETE="com.dc388.bibliagriega"
 ESPERA="${1:-30}"
+ASENTAR="${2:-45}"
 
 apk=$(find app/build/outputs/apk/release -name '*.apk' | head -1)
 if [ -z "$apk" ]; then
@@ -23,6 +24,20 @@ if [ -z "$apk" ]; then
     exit 1
 fi
 echo "APK: $apk"
+
+# El emulador recién arrancado sigue instalándose por dentro durante el primer
+# minuto: Google Play Services baja e instala sus módulos, entre ellos los de
+# anuncios. Y el SDK de anuncios carga el WebView del sistema nada más abrirse
+# la aplicación. Abrirla justo en medio de eso la mató una vez con un SIGTRAP
+# dentro de libmonochrome —el WebView—, sin que el código de la aplicación
+# tuviera nada que ver; el mismo APK paso la comprobación antes y después.
+#
+# Esto no excusa ningún fallo ni relaja nada de lo de abajo: solo espera a que
+# el teléfono esté como lo tiene un usuario, quieto, antes de mirar. Si vuelve
+# a caer con la pila entera dentro de WebView, mirar primero si Play Services
+# seguía instalando módulos en el registro.
+echo "Esperando $ASENTAR s a que el emulador acabe de instalarse por dentro…"
+sleep "$ASENTAR"
 
 adb install -r "$apk"
 adb logcat -c
