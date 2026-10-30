@@ -48,7 +48,7 @@ hispanohablante. Es el motivo de la mitad del trabajo hecho.
 | Pruebas | 30 unitarias y 9 en emulador, en verde |
 | Compilación de publicación | pasa, con R8 |
 | Páginas web | 15 526, sin enlaces rotos |
-| Léxico traducido al español | **11 898 de 14 610 artículos (81,4 %)** |
+| Léxico traducido al español | **12 264 de 14 610 artículos (83,9 %)** |
 
 ### Flujos de GitHub Actions
 
@@ -100,7 +100,7 @@ el texto quedaría salpicado.
 
 ### Léxico
 
-Faltan 2 712 artículos. Se añaden palabras a `tools/traducir_strong.py` y
+Faltan 2 346 artículos. Se añaden palabras a `tools/traducir_strong.py` y
 siglas a `tools/traducir_articulo.py`.
 
 **La disciplina no es negociable:** una palabra solo entra si tiene UNA
@@ -109,6 +109,24 @@ escrito en un comentario. Hay una docena así documentadas (`hit`, `coat`,
 `doth`, `wilt`...). Al cerrar cada tanda se comprueba que todas las claves
 planeadas están de verdad en la tabla: una vez se dieron seis por puestas sin
 estarlo.
+
+Cuando una palabra no da una traducción única, muchas veces se puede fijar la
+frase en vez de descartarla: `heave` vale «alzar» en el hebreo y «echar» en
+«to heave the lead», que es sondar con plomada, así que el verbo suelto se
+queda fuera y entra la frase. Eso recupera artículos sin aflojar la regla.
+
+**El rendimiento ya es de uno por palabra.** Quedan 2 346 artículos y unas
+3 100 palabras distintas bloqueándolos, casi todas con una sola aparición. No
+hay atajos: cada palabra que entra desbloquea un artículo. El guion que saca
+las palabras con su contexto está en el raspador de la sesión; se reconstruye
+en veinte líneas con `desconocidas_articulo`.
+
+**Ojo con las siglas sin punto.** `_SIN_PUNTO` deja usar las abreviaturas sin
+el punto final, y eso convierte palabras inglesas corrientes en siglas: `act`
+salía 114 veces y siempre era «acto», no la voz activa; `fig` 11 y siempre era
+el higo, no «figuradamente». Están en `_NUNCA_SIN_PUNTO`, que es la lista de
+las que solo valen con su punto. Si se añade una sigla corta nueva, mirar
+antes si la palabra existe en inglés.
 
 Ciclo completo: editar tablas → `rellenar_web.py ../../biblia/datos` →
 `corregir_glosas.py ../../biblia` → `generar_palabras.py ../../biblia` →

@@ -54,6 +54,23 @@ SIGLAS: dict[str, str] = {
     "rare": "raro", "usu.": "por lo común", "prob.": "probablemente",
     "perh.": "quizá", "opp.": "opuesto a", "seq.": "seguido de",
     "id.": "ídem", "ib.": "ibídem", "sim.": "semejante",
+    # Abreviaturas que se quedan abreviadas también en español: expandirlas
+    # dentro de una frase inglesa dejaría el adjetivo detrás del sustantivo y
+    # se leería peor que la sigla.
+    "gramm.": "gram.", "hort.": "exhort.", "kn.": "conoc.",
+    "obliq.": "oblic.", "rect.": "rect.", "lang.": "lengua",
+    "disjunct.": "disyunt.", "trag.": "trág.", "philos.": "filos.",
+    "simp.": "simple", "rer.": "rer.", "attr.": "atributivo",
+    "post-Hom.": "posthomérico", "yds.": "yardas", "Mor.": "Mor.",
+    # «Pint.» es «Plut.», Plutarco: la ele leída como i.
+    "Pint.": "Plut.",
+    "tel.": "final",
+    # «carrel.» es «correl.» y «pens.» es «pers.»: dos erratas de la
+    # digitalización que, por llevar punto, se leían como siglas inexistentes.
+    "carrel.": "correl.", "pens.": "persona",
+    # «EV» son las versiones inglesas —Authorised y Revised juntas—, que BDB y
+    # Abbott-Smith citan a cada paso para decir cómo tradujeron ellas.
+    "EV": "vers. inglesas",
     "cf.": "compárese", "v.": "véase", "v.s.": "véase arriba",
     "q.v.": "véase", "s.v.": "s. v.", "al.": "y otros", "al.;": "y otros;",
     "al.)": "y otros)", "al.):": "y otros):", "al.,": "y otros,",
@@ -489,7 +506,29 @@ def _desnudar(pieza: str) -> tuple[str, str, str]:
 # estuvo en la lista sin punto, 477 artículos publicados decían «II Peal
 # 2:12» donde la fuente citaba 2 Pedro. Sin punto se deja pasar como pasan
 # «Mt» o «Lk», que tampoco son siglas sino el libro.
-_NUNCA_SIN_PUNTO = {"As", "C", "V", "art", "Pe"}
+# Siglas que SOLO valen con su punto, porque sin él son palabras inglesas
+# corrientes y mucho más frecuentes que la abreviatura.
+#
+# Se midieron una por una sobre los artículos publicados: «act» sale 114 veces
+# y siempre es el sustantivo o el verbo ingleses —«the result of the act»—, no
+# la voz activa; «part» 82 y siempre es «parte»; «pass» 88, «corrupt» 21,
+# «sing» 17, «fig» 11 —la fruta, «an unripe fig»— y «card» 2, las dos en «to
+# card wool». Hasta ahora todas esas se leían como la abreviatura y salían
+# cosas como «el resultado de el en activa» o «un inmaduro figuradamente».
+#
+# «poet», «gen», «rare» y «etc» se quedan: ahí sin punto sí son la sigla, o
+# dicen lo mismo de las dos maneras.
+#
+# No sale gratis del todo. La digitalización cambia a veces el punto de la
+# abreviatura por la coma de detrás —«aor. pass, in same sense» es «pass.»— y
+# esas cuatro o cinco salen ahora «pasar». Se midió: «pass» sin punto sale 88
+# veces y solo 4 son la abreviatura; «sing» 17 y solo 1. Se prefiere acertar
+# las ochenta y cuatro. Intentar distinguirlas por la coma no vale: «to come to
+# pass,» y «to sing,» la llevan igual.
+_NUNCA_SIN_PUNTO = {
+    "As", "C", "V", "art", "Pe",
+    "act", "part", "pass", "corrupt", "sing", "fig", "card",
+}
 
 # Las mismas siglas sin el punto final: las dos obras lo ponen o no según les
 # viene («pl.» y «pl»). La búsqueda respeta las mayúsculas a propósito: sin eso,
