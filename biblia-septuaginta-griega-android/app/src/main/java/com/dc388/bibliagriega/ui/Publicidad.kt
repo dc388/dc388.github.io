@@ -9,7 +9,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.platform.LocalContext
 import com.dc388.bibliagriega.data.Anuncios
+import com.dc388.bibliagriega.data.Compras
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -143,4 +145,25 @@ fun Banner(modifier: Modifier = Modifier) {
         },
         onRelease = { it.destroy() },
     )
+}
+
+
+/**
+ * El pie con anuncio de las pantallas de lista.
+ *
+ * Es lo mismo que hace el lector, pero en un solo sitio: mira la suscripción y
+ * dibuja el banner si no la hay. Repetir esas tres líneas en cada pantalla es
+ * la forma de que un día una se olvide de mirarla y le enseñe un anuncio a
+ * quien está pagando por no verlos.
+ *
+ * Va en la búsqueda, la concordancia, los marcadores y las notas: pantallas de
+ * lista, donde el anuncio queda al pie y no encima de nada que se lea seguido.
+ * **No va en la portada ni en el lector de texto corrido**, por lo de siempre:
+ * leer no compite con un anuncio, y la portada es la primera impresión.
+ */
+@Composable
+fun PieConAnuncio() {
+    val contexto = LocalContext.current
+    val sinAnuncios by Compras.get(contexto).sinAnuncios.collectAsState()
+    if (!sinAnuncios) Banner()
 }

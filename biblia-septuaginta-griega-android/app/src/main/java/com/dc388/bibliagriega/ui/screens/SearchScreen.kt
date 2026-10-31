@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dc388.bibliagriega.data.VerseHit
 import com.dc388.bibliagriega.ui.AnchoDeLista
+import com.dc388.bibliagriega.ui.PieConAnuncio
 import com.dc388.bibliagriega.ui.columna
 import com.dc388.bibliagriega.ui.BibliaViewModel
 import com.dc388.bibliagriega.ui.theme.ScriptureFontFamily
@@ -68,6 +69,7 @@ fun SearchScreen(
                 },
             )
         },
+        bottomBar = { PieConAnuncio() },
     ) { padding ->
         Column(Modifier.columna(AnchoDeLista).padding(padding)) {
             OutlinedTextField(
