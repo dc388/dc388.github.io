@@ -34,8 +34,20 @@ La versión publicada en Play es la **1.2.4** (`versionCode` 10). En esta rama
 va la **1.3.0** (`versionCode` 11), con el versículo del día, el aviso de cada
 mañana y la lectura en alto. El flujo «Publicación — Biblia» compila y firma
 el AAB y el APK en cada empujón y comprueba en un emulador que la versión de
-publicación arranca, pero **subirla a Play es cosa del dueño**: una sesión de
-Claude Code no entra en Play Console.
+publicación arranca.
+
+**Desde el 4 de noviembre el flujo también sabe subirla.** En *Run workflow* se
+elige la pista —prueba interna, cerrada, abierta o producción— y el AAB sube
+solo por la API de Google Play. Falta una cosa, y es tuya: crear la cuenta de
+servicio y guardar su `.json` en el secreto `PLAY_SERVICE_ACCOUNT_JSON`. Son
+cinco pasos, están contados en
+[PUBLICAR_EN_PLAY.md](PUBLICAR_EN_PLAY.md#4-subir-a-play-sin-entrar-en-play-console),
+y se hacen una sola vez. Hasta que ese secreto exista, la subida se niega a
+empezar y lo dice.
+
+Lo que sigue sin poder hacer una sesión de Claude Code es entrar en Play
+Console: ni la cuenta de servicio, ni los formularios, ni abrir la pista de
+prueba abierta con sus países.
 
 La 1.2.3 llegó a producción y **se cerraba al tocar el icono**: está contado en
 [TRASPASO.md](TRASPASO.md), y lo que lo permitió —que nada arrancara nunca la

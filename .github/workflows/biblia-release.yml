@@ -18,6 +18,17 @@ name: Publicación — Biblia
 
 on:
   workflow_dispatch:
+    inputs:
+      subir_a:
+        description: "Subir el AAB a Google Play al terminar"
+        type: choice
+        default: "no"
+        options:
+          - "no"
+          - internal     # Prueba interna
+          - alpha        # Prueba cerrada
+          - beta         # Prueba abierta
+          - production   # Producción
   push:
     tags: ["biblia-v*"]
     # GitHub solo ofrece el botón «Run workflow» para los workflows que están en
@@ -179,6 +190,76 @@ jobs:
           # llega vacía abajo. El primer intento se cayó justo por eso.
           script: bash tools/comprobar_arranque.sh 30
 
+      # ---------------------------------------------------------------------
+      # Subir a Play sin entrar en Play Console.
+      #
+      # Deliberado a propósito: solo sube cuando alguien lo pide a mano en
+      # «Run workflow» y elige la pista. Un empujón nunca sube nada. Publicar
+      # es irreversible —una versión que sale a prueba abierta la ve gente de
+      # verdad— y encima Play rechaza repetir `versionCode`, así que subir en
+      # cada empujón dejaría el flujo en rojo a la segunda.
+      #
+      # Va después de la comprobación de arranque a propósito: lo que se sube
+      # es el AAB gemelo de un APK que ya se abrió en un emulador y siguió en
+      # pie. Es justo lo que faltaba cuando la 1.2.3 llegó a producción
+      # cerrándose al tocar el icono.
+      - name: Comprobar que se puede subir a Play
+        id: play
+        if: github.event_name == 'workflow_dispatch' && inputs.subir_a != 'no'
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          fallos=""
+          anotar() { fallos="${fallos:+$fallos; }$1"; }
+          [ "${{ steps.firma.outputs.firmado }}" = "si" ] || anotar "el AAB salió sin firmar y Play no lo acepta"
+          [ "${{ steps.anuncios.outputs.reales }}" = "si" ] || anotar "lleva los anuncios de prueba de Google, que no ingresan nada"
+          [ -n "$PLAY_SERVICE_ACCOUNT_JSON" ] || anotar "falta el secreto PLAY_SERVICE_ACCOUNT_JSON"
+          if [ -n "$fallos" ]; then
+            echo "::error::No se sube nada a Play: $fallos. Ver docs/PUBLICAR_EN_PLAY.md"
+            exit 1
+          fi
+          # Se mira el JSON antes de dárselo a la acción: si llegó cortado o es
+          # la clave equivocada, lo que devuelve la API es un 400 sin explicar
+          # nada. El secreto entra por la entrada estándar, no por la línea de
+          # órdenes, que acaba en el registro de procesos de la máquina.
+          if ! printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" | python3 tools/comprobar_credencial_play.py; then
+            echo "::error::PLAY_SERVICE_ACCOUNT_JSON no sirve; el motivo va en la línea de arriba. Pega entero el archivo .json que descargaste de Google Cloud. Ver docs/PUBLICAR_EN_PLAY.md"
+            exit 1
+          fi
+          # El AAB, buscado y no adivinado: si un día Gradle lo renombra, se
+          # ve aquí y no en un error de la API a medio subir.
+          aab=$(find app/build/outputs/bundle/release -name '*.aab' | head -1)
+          if [ -z "$aab" ]; then
+            echo "::error::No hay ningún .aab en app/build/outputs/bundle/release."
+            exit 1
+          fi
+          echo "aab=biblia-septuaginta-griega-android/$aab" >> "$GITHUB_OUTPUT"
+
+          # El «mapping» de R8 es lo que hace legibles los informes de caídas
+          # de Play Console. Si un día cambia de sitio, se sube sin él y se
+          # avisa: perder los nombres de las pilas es malo, pero no tanto como
+          # no publicar.
+          mapping=app/build/outputs/mapping/release/mapping.txt
+          if [ -f "$mapping" ]; then
+            echo "mapping=biblia-septuaginta-griega-android/$mapping" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::No está $mapping: la versión sube sin él y las caídas de Play Console llegarán ofuscadas."
+            echo "mapping=" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "Credencial de Play correcta. Pista: ${{ inputs.subir_a }}. Archivo: $aab."
+
+      - name: Subir a Google Play
+        if: github.event_name == 'workflow_dispatch' && inputs.subir_a != 'no'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.dc388.bibliagriega
+          releaseFiles: ${{ steps.play.outputs.aab }}
+          track: ${{ inputs.subir_a }}
+          status: completed
+          mappingFile: ${{ steps.play.outputs.mapping }}
+
       - name: Borrar el almacén de claves
         if: always()
         run: rm -f "$RUNNER_TEMP/release.jks"
@@ -199,6 +280,10 @@ jobs:
               echo "Anuncios: identificadores reales de AdMob."
             else
               echo "**Anuncios de prueba.** No ingresan nada; ver \`docs/ANUNCIOS_Y_SUSCRIPCION.md\`."
+            fi
+            echo
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.subir_a }}" != "no" ]; then
+              echo "Subida a Google Play, pista **${{ inputs.subir_a }}**."
             fi
             echo
             echo "| Archivo | Tamaño |"

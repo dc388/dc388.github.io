@@ -119,6 +119,76 @@ salió firmado y cuánto pesa.
 Para cada versión nueva hay que subir `versionCode` en `app/build.gradle.kts`:
 Play rechaza dos veces el mismo número.
 
+## 4. Subir a Play sin entrar en Play Console
+
+El flujo puede subir el AAB él solo, por la API de Google Play. Hace falta una
+**cuenta de servicio**: una credencial que da permiso de publicar sin dar la
+contraseña de nadie. Es lo único que una sesión de Claude Code no puede hacer
+por su cuenta, porque crearla pasa por Play Console y por Google Cloud.
+
+Se hace una vez. Después, publicar una versión es elegir la pista en un menú.
+
+### Lo que hay que hacer una vez
+
+1. **Play Console → Configuración → Acceso a la API.** Si pide vincular un
+   proyecto de Google Cloud, se acepta el que ofrece.
+2. En esa misma página, **Crear cuenta de servicio**. Lleva a Google Cloud:
+   **IAM y administración → Cuentas de servicio → Crear cuenta de servicio**.
+   Nombre: `publicar-biblia`. No hace falta darle ningún rol en Cloud; los
+   permisos de verdad se dan en Play, en el paso 4.
+3. Abierta la cuenta recién creada: **Claves → Agregar clave → Crear clave
+   nueva → JSON**. Se descarga un archivo `.json`. **Ese archivo es la llave de
+   la ficha de Play: no se mete en el repositorio ni se manda por correo.**
+4. De vuelta en **Play Console → Acceso a la API**, la cuenta ya aparece en la
+   lista. **Administrar permisos de acceso →** se limita a la aplicación
+   «Biblia Griega y Hebrea» y se le marcan dos cosas: *publicar aplicaciones* y
+   *administrar versiones de prueba*. No necesita nada más, y cuanto menos
+   tenga, menos daño hace si se filtra.
+5. **GitHub → Settings → Secrets and variables → Actions → New repository
+   secret.** Nombre exacto `PLAY_SERVICE_ACCOUNT_JSON`, y de valor el contenido
+   entero del `.json`, de la primera llave a la última.
+
+Google avisa de que el permiso recién dado puede tardar en hacer efecto. Si la
+primera subida falla con un error de permisos, se espera y se repite: no hay
+nada que arreglar.
+
+### Publicar una versión
+
+**Actions → Publicación — Biblia → Run workflow**, y en «Subir el AAB a Google
+Play al terminar» se elige la pista:
+
+| Opción | Qué es | Quién la ve |
+|---|---|---|
+| `no` | solo compila (lo de siempre) | nadie |
+| `internal` | prueba interna | la lista de hasta 100 correos |
+| `alpha` | prueba cerrada | los probadores apuntados |
+| `beta` | **prueba abierta** | cualquiera con el enlace, y sale en Play |
+| `production` | producción | todo el mundo |
+
+La subida va **después** de la comprobación de arranque en el emulador, a
+propósito: lo que sube es el AAB gemelo de un APK que ya se abrió y siguió en
+pie. Es justo lo que faltaba el día que la 1.2.3 llegó a producción cerrándose
+al tocar el icono.
+
+Y no sube nada si el AAB salió sin firmar o con los anuncios de prueba. Las dos
+cosas se comprueban antes de tocar la API.
+
+### Lo que esto no hace
+
+- **Un empujón no sube nada.** Solo sube cuando alguien lo pide a mano y elige
+  la pista. Publicar no se deshace, y además Play rechaza repetir
+  `versionCode`: subir en cada empujón dejaría el flujo en rojo a la segunda.
+- **Hay que subir `versionCode`** en `app/build.gradle.kts` para cada versión.
+  Play rechaza dos veces el mismo número.
+- **Las notas de la versión no se mandan.** Play las quiere con el código de
+  idioma exacto de la ficha (`es-419`, `es-ES`, `es-US`…), y mandar uno que la
+  ficha no tenga tumba la subida entera. La primera versión sube sin notas; en
+  cuanto se sepa el idioma de la ficha, se añaden al flujo y ya van solas.
+- **La pista de prueba abierta hay que abrirla una vez en Play Console**, con
+  sus países. La API deja la versión puesta, pero si la pista nunca se
+  configuró, no la ve nadie. Se mira en **Pruebas → Prueba abierta** después de
+  la primera subida.
+
 ## 7. La política de privacidad — ya está publicada
 
 **Play exige una dirección web pública** con la política de privacidad; no vale
