@@ -3042,7 +3042,7 @@ def traducir(texto: str | None) -> str | None:
         if palabra in NOMBRES:
             puesto[i] = NOMBRES[palabra]
         elif clave in PALABRAS:
-            puesto[i] = PALABRAS[clave]
+            puesto[i] = _marcar_la_cabeza(PALABRAS[clave])
         elif palabra.capitalize() in NOMBRES:
             puesto[i] = NOMBRES[palabra.capitalize()]
         elif _es_nombre_propio(palabra):
@@ -3111,11 +3111,14 @@ MASCULINOS_EN_A = {
     # De género común: en una glosa de léxico se dice «un prestamista», no
     # «una», y la terminación sola decidía mal.
     "prestamista", "aprendiz", "artista", "escriba", "guía", "centinela",
-    "atleta", "testigo",
+    "atleta", "testigo", "jurista", "matricida", "politarca",
 }
 FEMENINOS_CON_EL = {
     "agua", "alma", "arma", "área", "aula", "hacha", "ave", "águila", "alba",
     "ala", "ancla", "asta", "habla", "hambre", "aula", "acta", "ansia",
+    # «un ama de casa», no «una»: la á es tónica. Antes daba igual porque la
+    # marca iba en «casa» y nadie miraba «ama».
+    "ama",
 }
 # Femeninos que no lo parecen por su terminación. Salen de repasar uno por uno
 # los sustantivos que este módulo llega a escribir: son finitos, así que la
@@ -3202,6 +3205,32 @@ def _pluralizar(pieza: str) -> str:
 def _marca_de(pieza: str) -> str | None:
     hallada = _MARCA.search(pieza)
     return hallada.group()[1:] if hallada else None
+
+
+_CABEZA_SEGUIDA_DE = ("de ", "del ", "en ", "por ", "para ", "a ", "al ", "con ")
+
+
+def _marcar_la_cabeza(valor: str) -> str:
+    """Pasa la marca «|sus» de la última palabra a la primera.
+
+    «sunrise» vale «salida del sol», y la marca iba pegada a «sol». Todo lo que
+    mira la marca —el artículo que va delante, el plural, la concordancia—
+    miraba entonces «sol» y no «salida», que es el sustantivo de verdad: salía
+    «un salida del sol», «el ofrenda de grano», «un piedra de molino». Medido
+    sobre la tabla, el género se decidía por la palabra equivocada en 72
+    valores.
+
+    Sólo se mueve cuando lo que sigue a la primera palabra es un complemento
+    («de», «en», «por»…). Si el valor son dos palabras sueltas, como «ama de
+    casa» —que empieza igual— da lo mismo, pero «verde esmeralda» o «dura
+    cerviz» no se tocan: ahí la primera palabra no es la cabeza.
+    """
+    if not valor.endswith("|sus") or " " not in valor:
+        return valor
+    cabeza, resto = valor[:-4].split(" ", 1)
+    if not resto.startswith(_CABEZA_SEGUIDA_DE):
+        return valor
+    return f"{cabeza}|sus {resto}"
 
 
 def _ordenar(texto: str) -> str:
@@ -5812,4 +5841,161 @@ PALABRAS.update({
     "simplex": "simplex", "colonia": "colonia", "ilex": "ilex", "duco": "duco",
     "qualis": "qualis", "hicce": "hicce", "ubi": "ubi", "libanus": "libanus",
     "ephphatha": "efatá",
+})
+
+
+# ---------------------------------------------------------------------------
+# Tanda 25. Las que quedan bloquean un artículo cada una, así que lo que decide
+# no es la frecuencia sino si la palabra da UNA traducción buena en TODOS sus
+# contextos. Las que no la dan entran como frase, o no entran.
+# ---------------------------------------------------------------------------
+FRASES.update({
+    # «fell» no entra: vale «cayó» en «fell down from Jupiter», «se demudó» en
+    # «his countenance fell» y «talar» en «to fell a tree». Van las frases.
+    "to fell a tree": "talar un árbol",
+    "his countenance fell": "se le demudó el semblante",
+    # «savour» es olor en el sacrificio y sabor en la sal que lo pierde.
+    "sweet savour": "olor grato",
+    "lose savour": "perder el sabor",
+    # «receipt» es el acto de recibir, el rescate que se paga y el banco de los
+    # impuestos. Solo entra la acepción que bloquea el artículo.
+    "to release on receipt of ransom": "soltar mediante rescate",
+    "drift away": "irse a la deriva",
+    "a partition wall": "un muro de separación",
+    "a partition": "una separación",
+    # «peck» es la medida en un sitio y picotear en el otro.
+    "a peck and a half": "un celemín y medio",
+    "fine wheaten flour": "flor de harina de trigo",
+    "banded themselves together": "se coligaron",
+    "of manning ships": "de tripular naves",
+    "from henceforth": "de aquí en adelante",
+    "thing hit, mark": "cosa golpeada, blanco",
+    "marching in file to battle": "marchar en fila a la batalla",
+    # «crow» es la corneja y es cantar el gallo; se fija el gallo.
+    "of a cock, to crow": "de un gallo, cantar",
+})
+
+PALABRAS.update({
+    # --- sustantivos ----------------------------------------------------------
+    "smelling": "olfato|sus", "indifference": "indiferencia|sus",
+    "sorceries": "hechicerías|sus", "housekeeper": "ama de casa|sus",
+    "blemishes": "tachas|sus", "divinities": "divinidades|sus",
+    "congratulations": "felicitaciones|sus", "rearing": "crianza|sus",
+    "destroyer": "destructor|sus", "eyebrow": "ceja|sus",
+    "seaman": "marinero|sus", "innkeeper": "posadero|sus",
+    "rewards": "recompensas|sus", "amendment": "enmienda|sus",
+    "stimulation": "estímulo|sus", "matricide": "matricida|sus",
+    "dirk": "daga|sus", "householder": "dueño de casa|sus",
+    "sheepskin": "piel de oveja|sus", "kinsmen": "parientes|sus",
+    "effeminacy": "molicie|sus", "migration": "migración|sus",
+    "daybreak": "amanecer|sus", "shaping": "modelado|sus",
+    "pest": "peste|sus", "adulterer": "adúltero|sus",
+    "shipwreck": "naufragio|sus", "asseveration": "aseveración|sus",
+    "infidelity": "infidelidad|sus", "debauchery": "libertinaje|sus",
+    "minstrel": "juglar|sus", "instep": "empeine|sus",
+    "rewarder": "galardonador|sus", "lads": "muchachos|sus",
+    "pugilist": "púgil|sus", "harmony": "armonía|sus",
+    "fornicator": "fornicario|sus", "fixedness": "fijeza|sus",
+    "vocalization": "vocalización|sus", "fluttering": "aleteo|sus",
+    "foal": "potro|sus", "sponge": "esponja|sus", "adviser": "asesor|sus",
+    "factions": "facciones|sus", "idleness": "ociosidad|sus",
+    "turret": "torrecilla|sus", "pastors": "pastores|sus",
+    "thronging": "agolpamiento|sus", "hardening": "endurecimiento|sus",
+    "prototype": "prototipo|sus", "portico": "pórtico|sus",
+    "seniority": "antigüedad|sus", "victor": "vencedor|sus",
+    "ceremonies": "ceremonias|sus", "anchorage": "fondeadero|sus",
+    "precedence": "precedencia|sus", "orator": "orador|sus",
+    "discord": "discordia|sus", "worms": "gusanos|sus",
+    "providence": "providencia|sus", "wrinkle": "arruga|sus",
+    "symphony": "sinfonía|sus", "hyperbaton": "hipérbaton|sus",
+    "conceptions": "conceptos|sus", "flavour": "sabor|sus",
+    "politarch": "politarca|sus", "authentication": "autenticación|sus",
+    "forearm": "antebrazo|sus", "alms-bag": "bolsa de limosnas|sus",
+    "mustard": "mostaza|sus", "sardonyx": "sardónice|sus",
+    "mat-basket": "cesta de esparto|sus", "meekness": "mansedumbre|sus",
+    "stater": "estátero|sus", "fellow-traveller": "compañero de viaje|sus",
+    "prow": "proa|sus", "fellow-servant": "consiervo|sus",
+    "rubbish": "basura|sus", "forerunner": "precursor|sus",
+    "voyage": "travesía|sus", "forefathers": "antepasados|sus",
+    "filthiness": "inmundicia|sus", "stedfastness": "constancia|sus",
+    "dwellings": "moradas|sus", "fellow-soldier": "compañero de armas|sus",
+    "after-thought": "reconsideración|sus", "ties": "lazos|sus",
+    "eye-service": "servicio para ser visto|sus",
+    "frankincense-tree": "árbol del incienso|sus",
+    "house-steward": "mayordomo|sus", "fellow-imitator": "coimitador|sus",
+    "purple-fish": "múrice|sus", "fellow-elder": "coanciano|sus",
+    "sheep-gate": "puerta de las Ovejas|sus",
+    "grape-cluster": "racimo de uvas|sus", "death-stroke": "golpe de muerte|sus",
+    "fig-mulberry": "higuera morera|sus", "fellow-worker": "colaborador|sus",
+    "fellow-disciple": "condiscípulo|sus",
+    "tent-maker": "fabricante de tiendas|sus",
+    "bait-stick": "palillo del cebo|sus", "life-blood": "sangre vital|sus",
+    "ligaments": "ligamentos|sus", "disdain": "desdén|sus",
+    "philosopher": "filósofo|sus", "birthpangs": "dolores de parto|sus",
+    "abasement": "abatimiento|sus", "chlamys": "clámide|sus",
+    "lawyer": "jurista|sus", "imitator": "imitador|sus",
+    "virtues": "virtudes|sus", "perceiving": "percepción|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "momentary": "momentáneo|adj", "shrunken": "encogido|adj",
+    "congenital": "congénito|adj", "almighty": "todopoderoso|adj",
+    "reasonable": "razonable|adj", "practicable": "realizable|adj",
+    "longlived": "longevo|adj", "detached": "desprendido|adj",
+    "sevenfold": "séptuplo|adj", "serious": "serio|adj",
+    "ecclesiastical": "eclesiástico|adj", "covetous": "codicioso|adj",
+    "defensive": "defensivo|adj", "rotten": "podrido|adj",
+    "itinerant": "itinerante|adj", "lascivious": "lascivo|adj",
+    "shabby": "raído|adj", "respectful": "respetuoso|adj",
+    "pitiful": "compasivo|adj", "insecure": "inseguro|adj",
+    "unoccupied": "desocupado|adj", "fifteenth": "decimoquinto|adj",
+    "fourteenth": "decimocuarto|adj", "besieged": "sitiado|adj",
+    "paved": "enlosado|adj", "interesting": "interesante|adj",
+    "long-tempered": "longánimo|adj", "wildest": "más salvaje|adj",
+    "moth-eaten": "apolillado|adj", "stiff-necked": "de dura cerviz|adj",
+    "emerald-green": "verde esmeralda|adj", "ragged": "andrajoso|adj",
+    "deceiving": "engañador|adj", "all-complete": "del todo completo|adj",
+    "sagacious": "sagaz|adj", "disdainful": "desdeñoso|adj",
+    "earthy": "terreno|adj",
+
+    # --- verbos ---------------------------------------------------------------
+    "miscalculate": "calcular mal|inf", "derive": "obtener|inf",
+    "bid": "mandar|inf", "initiate": "iniciar|inf", "hazard": "arriesgar|inf",
+    "regret": "lamentar|inf", "intoxicate": "embriagar|inf",
+    "dissemble": "fingir|inf", "foreknow": "preconocer|inf",
+    "sneer": "mofarse|inf", "consist": "subsistir|inf",
+    "betray": "traicionar|inf", "petrify": "petrificar|inf",
+    "escort": "escoltar|inf", "importune": "importunar|inf",
+    "premeditate": "premeditar|inf", "accelerate": "acelerar|inf",
+    "mangle": "destrozar|inf", "afford": "proporcionar|inf",
+    "shift": "mudarse|inf", "convey": "transportar|inf",
+    "distract": "distraer|inf", "enwreath": "coronar|inf",
+    "signify": "significar|inf", "swathing": "amortajar|inf",
+
+    # --- participios, gerundios y adverbios -----------------------------------
+    "conversely": "a la inversa", "consistently": "sistemáticamente",
+    "moderately": "moderadamente", "henceforth": "en adelante",
+    "genuinely": "genuinamente", "hyperbolically": "hiperbólicamente",
+    "richly": "con largueza", "cleverly": "con ingenio",
+    "zealously": "con celo", "soberly": "sobriamente",
+    "anywhere": "en cualquier parte", "overmuch": "en exceso",
+    "provoked": "provocado", "tormented": "atormentado",
+    "enfeebled": "debilitado", "hardened": "endurecido",
+    "handed": "transmitido", "signified": "significado",
+    "frightened": "espantado", "hanged": "colgado",
+    "preferring": "prefiriendo", "portending": "que presagia",
+    "advocated": "defendido", "absorbing": "que absorbe",
+    "preys": "se ceba", "dispenses": "reparte", "hinders": "estorba",
+    "exists": "existe",
+
+    # --- erratas de la edición, copiadas tal cual -----------------------------
+    # «parts of the body-hands, feet, face»: la raya de «cuerpo —manos, pies,
+    # rostro—» quedó pegada como guion al digitalizar.
+    "body-hands": "cuerpo: manos|sus",
+
+    # --- latín y transliteraciones que se citan, no se explican ---------------
+    "membrana": "membrana", "quisquis": "quisquis", "quantus": "quantus",
+    "facere": "facere", "salus": "salus", "locum": "locum",
+    "crebro": "crebro", "libertinus": "libertinus", "consilium": "consilium",
+    "genitale": "genitale", "tego": "tego", "strenuus": "strenuus",
+    "taberna": "taberna", "amare": "amare", "flagellum": "flagellum",
 })

@@ -48,7 +48,7 @@ hispanohablante. Es el motivo de la mitad del trabajo hecho.
 | Pruebas | 30 unitarias y 9 en emulador, en verde |
 | Compilación de publicación | pasa, con R8 |
 | Páginas web | 15 526, sin enlaces rotos |
-| Léxico traducido al español | **12 264 de 14 610 artículos (83,9 %)** |
+| Léxico traducido al español | **12 493 de 14 610 artículos (85,5 %)** |
 
 ### Flujos de GitHub Actions
 
@@ -100,7 +100,7 @@ el texto quedaría salpicado.
 
 ### Léxico
 
-Faltan 2 346 artículos. Se añaden palabras a `tools/traducir_strong.py` y
+Faltan 2 117 artículos. Se añaden palabras a `tools/traducir_strong.py` y
 siglas a `tools/traducir_articulo.py`.
 
 **La disciplina no es negociable:** una palabra solo entra si tiene UNA
@@ -115,11 +115,22 @@ frase en vez de descartarla: `heave` vale «alzar» en el hebreo y «echar» en
 «to heave the lead», que es sondar con plomada, así que el verbo suelto se
 queda fuera y entra la frase. Eso recupera artículos sin aflojar la regla.
 
-**El rendimiento ya es de uno por palabra.** Quedan 2 346 artículos y unas
-3 100 palabras distintas bloqueándolos, casi todas con una sola aparición. No
+**El rendimiento ya es de uno por palabra.** Quedan 2 117 artículos y 3 082
+palabras distintas bloqueándolos, casi todas con una sola aparición. No
 hay atajos: cada palabra que entra desbloquea un artículo. El guion que saca
 las palabras con su contexto está en el raspador de la sesión; se reconstruye
 en veinte líneas con `desconocidas_articulo`.
+
+**Ojo con el género de los valores de varias palabras.** El artículo, el
+plural y la concordancia se deciden por la palabra que lleva la marca `|sus`, y
+esa marca iba pegada a la última: en «salida del sol» miraba «sol», no
+«salida». Salía «un salida del sol», «el ofrenda de grano», «un piedra de
+molino». Medido sobre la tabla, el género se decidía por la palabra equivocada
+en **72 valores**. Lo arregla `_marcar_la_cabeza()`, que pasa la marca a la
+primera palabra cuando lo que sigue es un complemento («de», «en», «por»…).
+Por eso no se toca «verde esmeralda» ni «dura cerviz»: ahí la primera palabra
+no es la cabeza. Al añadir un valor de varias palabras, comprobarlo con
+`traducir("a <palabra>")` y con `traducir("the <palabra>")`.
 
 **Ojo con las siglas sin punto.** `_SIN_PUNTO` deja usar las abreviaturas sin
 el punto final, y eso convierte palabras inglesas corrientes en siglas: `act`
