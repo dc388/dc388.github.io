@@ -34,6 +34,16 @@ private val LightColors = lightColorScheme(
     onSurface = Ink,
     surfaceVariant = ParchmentDim,
     onSurfaceVariant = Color(0xFF4C4A44),
+    // El borde de los controles: el selector de colecciones, los botones con
+    // contorno y el campo de búsqueda. Sin definirlo, Material usaba el suyo
+    // de fábrica —un gris morado, #79747E— que sobre pergamino se ve negro y
+    // de otra familia: los chips parecían cajas enmarcadas. Es el mismo
+    // despiste que dejaba la barra inferior en lavanda.
+    //
+    // Este es pardo, de la misma familia que el pergamino, y da 3,50:1 sobre
+    // el fondo. El mínimo que pide la norma para el borde de un control es
+    // 3:1 (WCAG 1.4.11), así que el marco se ve, pero ya no pesa.
+    outline = Color(0xFF8C8375),
     outlineVariant = Color(0xFFDED5C4),
     // Los tonos «container» que Material usa para barras y tarjetas. Sin
     // definirlos aquí, componentes como la barra inferior caen a la paleta de
@@ -61,6 +71,9 @@ private val DarkColors = darkColorScheme(
     onSurface = Color(0xFFE7E3DA),
     surfaceVariant = NightSurface,
     onSurfaceVariant = Color(0xFFB9B4A9),
+    // 3,48:1 sobre el fondo de noche, por lo mismo de arriba. Es el tono que
+    // ya usa la web para los bordes en modo oscuro.
+    outline = Color(0xFF686B74),
     outlineVariant = Color(0xFF33343C),
     surfaceContainerLowest = Color(0xFF0D0E14),
     surfaceContainerLow = Color(0xFF16171E),
