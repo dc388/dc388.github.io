@@ -3111,7 +3111,7 @@ MASCULINOS_EN_A = {
     # De género común: en una glosa de léxico se dice «un prestamista», no
     # «una», y la terminación sola decidía mal.
     "prestamista", "aprendiz", "artista", "escriba", "guía", "centinela",
-    "atleta", "testigo", "jurista", "matricida", "politarca",
+    "atleta", "testigo", "jurista", "matricida", "politarca", "diafragma",
 }
 FEMENINOS_CON_EL = {
     "agua", "alma", "arma", "área", "aula", "hacha", "ave", "águila", "alba",
@@ -3211,7 +3211,7 @@ _CABEZA_SEGUIDA_DE = ("de ", "del ", "en ", "por ", "para ", "a ", "al ", "con "
 
 
 def _marcar_la_cabeza(valor: str) -> str:
-    """Pasa la marca «|sus» de la última palabra a la primera.
+    """Pasa la marca «|sus» o «|inf» de la última palabra a la primera.
 
     «sunrise» vale «salida del sol», y la marca iba pegada a «sol». Todo lo que
     mira la marca —el artículo que va delante, el plural, la concordancia—
@@ -3224,13 +3224,20 @@ def _marcar_la_cabeza(valor: str) -> str:
     («de», «en», «por»…). Si el valor son dos palabras sueltas, como «ama de
     casa» —que empieza igual— da lo mismo, pero «verde esmeralda» o «dura
     cerviz» no se tocan: ahí la primera palabra no es la cabeza.
+
+    Con los verbos pasaba algo peor que un género mal puesto. «to seize» vale
+    «apoderarse de», y la regla que quita la «a» del infinitivo inglés mira la
+    pieza marcada: como la marca iba en «de», la «a» de delante se quedaba y
+    salía «a apoderarse de». Y al revés en «llevar a cabo»: la «a» de en medio
+    tocaba la pieza marcada —«cabo»— y se la llevaba por delante, de modo que
+    «to accomplish» salía «a llevar cabo». Son 22 valores.
     """
-    if not valor.endswith("|sus") or " " not in valor:
-        return valor
-    cabeza, resto = valor[:-4].split(" ", 1)
-    if not resto.startswith(_CABEZA_SEGUIDA_DE):
-        return valor
-    return f"{cabeza}|sus {resto}"
+    for marca in ("|sus", "|inf"):
+        if valor.endswith(marca) and " " in valor:
+            cabeza, resto = valor[: -len(marca)].split(" ", 1)
+            if marca == "|inf" or resto.startswith(_CABEZA_SEGUIDA_DE):
+                return f"{cabeza}{marca} {resto}"
+    return valor
 
 
 def _ordenar(texto: str) -> str:
@@ -5998,4 +6005,79 @@ PALABRAS.update({
     "crebro": "crebro", "libertinus": "libertinus", "consilium": "consilium",
     "genitale": "genitale", "tego": "tego", "strenuus": "strenuus",
     "taberna": "taberna", "amare": "amare", "flagellum": "flagellum",
+})
+
+
+# ---------------------------------------------------------------------------
+# Tanda 26. Sigue la cuenta de uno por palabra. Entran además cuatro erratas de
+# la digitalización traducidas por lo que quisieron poner, y las siglas de
+# gramática que faltaban van en traducir_articulo.py, no aquí.
+# ---------------------------------------------------------------------------
+FRASES.update({
+    "conducting oneself": "conducirse",
+    # «cor» a secas no entra: en «Clem., I ad Cor.» es la epístola a los
+    # corintios, y la tabla no distingue mayúsculas. Va la frase entera, que
+    # de paso pone «medida hebrea» y no «hebreo medida».
+    "a cor, a hebrew measure": "un coro, una medida hebrea",
+    "self-judging consciousness": "conciencia que se juzga a sí misma",
+    "lowliness of mind": "humildad de ánimo",
+    # «vto listen, attend»: la «v» se le pegó al «to» al digitalizar.
+    "vto listen": "escuchar",
+})
+
+PALABRAS.update({
+    # --- sustantivos ----------------------------------------------------------
+    "dome": "cúpula|sus", "conflict": "conflicto|sus",
+    "planets": "planetas|sus", "colloquialism": "coloquialismo|sus",
+    "flames": "llamas|sus", "assemblies": "asambleas|sus",
+    "admonishing": "amonestación|sus", "sand-banks": "bancos de arena|sus",
+    "armament": "armamento|sus", "ancients": "antiguos|sus",
+    "interception": "intercepción|sus", "assembling": "reunión|sus",
+    "emendations": "enmiendas|sus", "corn-fields": "sembrados|sus",
+    "headquarters": "cuartel general|sus", "finishing": "acabamiento|sus",
+    "sprinklings": "aspersiones|sus", "morsels": "bocados|sus",
+    "luxuriousness": "vida regalada|sus", "midriff": "diafragma|sus",
+    "tollhouse": "casa de portazgo|sus", "annoyance": "molestia|sus",
+    "apparition": "aparición|sus", "symbolism": "simbolismo|sus",
+    "store-chamber": "despensa|sus", "shortcoming": "carencia|sus",
+    "thistle": "cardo|sus", "adoption": "adopción|sus",
+    "chrysoprase": "crisoprasa|sus", "pint": "pinta|sus",
+
+    # --- adjetivos ------------------------------------------------------------
+    "many-coloured": "multicolor|adj", "co-elect": "coelegido|adj",
+    "all-pervading": "que todo lo penetra|adj", "latinized": "latinizado|adj",
+    "expedient": "conveniente|adj", "opprobrious": "injurioso|adj",
+    "sardian": "sárdico|adj", "civic": "civil|adj",
+    "low-lying": "bajo|adj", "light-bringing": "portador de luz|adj",
+    "immoderate": "desmedido|adj", "transparent": "transparente|adj",
+    "glassy": "vítreo|adj", "petty": "menor|adj",
+    "traveller's": "de viajero|adj", "ruler's": "de gobernante|adj",
+
+    # --- verbos ---------------------------------------------------------------
+    "attesting": "atestiguar|inf", "enshrouding": "amortajar|inf",
+    "defray": "sufragar|inf", "forbear": "abstenerse|inf",
+    "belong": "pertenecer|inf", "shiver": "estremecerse|inf",
+    "assert": "aseverar|inf",
+    # «to undergird or frap»: ceñir el casco de un barco con cabos.
+    "frap": "ceñir|inf",
+
+    # --- participios, gerundios y adverbios -----------------------------------
+    "dashes": "rompe", "interchangeably": "indistintamente",
+    "unexpressed": "sin expresar", "to-day": "hoy",
+    "overwhelmed": "abrumado", "corporeally": "corporalmente",
+    "concisely": "concisamente", "inexactly": "con imprecisión",
+    "manifestly": "manifiestamente", "humanely": "humanamente",
+    "contrariwise": "por el contrario", "luxuriously": "con lujo",
+    "tenderly": "tiernamente",
+
+    # --- erratas de la edición, copiadas tal cual -----------------------------
+    # «pasohal» por «paschal»: la c leída como o.
+    "pasohal": "pascual|adj",
+    # «thouphts» por «thoughts»: la g leída como p.
+    "thouphts": "pensamientos|sus",
+    # «tattoed» por «tattooed», con una o de menos.
+    "tattoed": "tatuado|adj",
+
+    # --- transliteraciones que se citan, no se explican -----------------------
+    "sabachthani": "sabactani", "hosanna": "hosanna", "pretii": "pretii",
 })

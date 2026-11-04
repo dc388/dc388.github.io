@@ -48,7 +48,7 @@ hispanohablante. Es el motivo de la mitad del trabajo hecho.
 | Pruebas | 30 unitarias y 9 en emulador, en verde |
 | Compilación de publicación | pasa, con R8 |
 | Páginas web | 15 526, sin enlaces rotos |
-| Léxico traducido al español | **12 493 de 14 610 artículos (85,5 %)** |
+| Léxico traducido al español | **12 585 de 14 610 artículos (86,1 %)** |
 
 ### Flujos de GitHub Actions
 
@@ -100,7 +100,7 @@ el texto quedaría salpicado.
 
 ### Léxico
 
-Faltan 2 117 artículos. Se añaden palabras a `tools/traducir_strong.py` y
+Faltan 2 025 artículos. Se añaden palabras a `tools/traducir_strong.py` y
 siglas a `tools/traducir_articulo.py`.
 
 **La disciplina no es negociable:** una palabra solo entra si tiene UNA
@@ -115,7 +115,7 @@ frase en vez de descartarla: `heave` vale «alzar» en el hebreo y «echar» en
 «to heave the lead», que es sondar con plomada, así que el verbo suelto se
 queda fuera y entra la frase. Eso recupera artículos sin aflojar la regla.
 
-**El rendimiento ya es de uno por palabra.** Quedan 2 117 artículos y 3 082
+**El rendimiento ya es de uno por palabra.** Quedan 2 025 artículos y 2 990
 palabras distintas bloqueándolos, casi todas con una sola aparición. No
 hay atajos: cada palabra que entra desbloquea un artículo. El guion que saca
 las palabras con su contexto está en el raspador de la sesión; se reconstruye
@@ -131,6 +131,19 @@ primera palabra cuando lo que sigue es un complemento («de», «en», «por»�
 Por eso no se toca «verde esmeralda» ni «dura cerviz»: ahí la primera palabra
 no es la cabeza. Al añadir un valor de varias palabras, comprobarlo con
 `traducir("a <palabra>")` y con `traducir("the <palabra>")`.
+
+**Y ojo también con los verbos de varias palabras.** La misma marca gobierna
+la regla que quita la «a» del infinitivo inglés. Con la marca al final salía
+«a apoderarse de» por «to seize», y peor: en «llevar a cabo» la «a» de en medio
+tocaba la pieza marcada y se la llevaba por delante, así que «to accomplish»
+salía «llevar cabo». Eran 22 valores. `_marcar_la_cabeza()` cubre ya las dos
+marcas, `|sus` y `|inf`.
+
+**Una sigla nueva no entra si deja mal el orden.** «alt. rend.» es «lectura
+alternativa», pero las siglas se traducen pieza a pieza, así que salía «un
+sugerido alternativa lectura». Se prefirió dejar esos dos artículos en inglés
+antes que publicarlos así: `alt.` y `dissyl.` están probadas y descartadas, con
+el motivo escrito.
 
 **Ojo con las siglas sin punto.** `_SIN_PUNTO` deja usar las abreviaturas sin
 el punto final, y eso convierte palabras inglesas corrientes en siglas: `act`

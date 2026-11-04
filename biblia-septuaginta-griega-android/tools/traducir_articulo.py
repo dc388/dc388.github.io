@@ -836,3 +836,44 @@ def _protegido_suelto(trozo: str, abre: str, cierra: str) -> bool:
         return trozo != "I" and (trozo.isupper() or trozo.islower() and len(trozo) > 1)
     return trozo.lower() in ROMANOS and trozo != "I" and (
         trozo.isupper() or trozo.islower() and len(trozo) > 1)
+
+
+# ---------------------------------------------------------------------------
+# Tanda 26. Abreviaturas que tumbaban un artículo entero cada una. Las que no
+# tienen equivalente en español se quedan como están: una sigla latina de
+# gramática se cita, no se traduce.
+# ---------------------------------------------------------------------------
+SIGLAS.update({
+    # «rend.» es «rendering», la lectura de una versión, no el verbo «to rend».
+    # Sin esto salía «rasgar», que es lo que vale «rend» a secas y que sigue
+    # valiendo: el punto es lo que las separa.
+    "rend.": "lectura", "rendering": "lectura",
+    # «(= obsol. ναῦς)».
+    "obsol.": "obsoleto",
+    # «by anthropom., of God».
+    "anthropom.": "antropomorfismo",
+    # «interrog. pronom. adj.».
+    "pronom.": "pronominal",
+    # «formed from perf., ἕστηκα».
+    "perf.": "perfecto",
+    # «in-trans., to stay behind»: el guion lo metió la digitalización.
+    "in-trans.": "intransitivo",
+    # «in indir. quest.»: pregunta indirecta.
+    "quest.": "pregunta",
+    # «prov., ἐν ὧ μέτρῳ»: proverbialmente.
+    "prov.": "proverbialmente",
+    # «in FlJ, Mk, Jo ev. and Mt»: el evangelio.
+    "ev.": "ev.",
+    # «Plut., mor. 837 c.»: los «Moralia» de Plutarco.
+    "mor.": "mor.",
+    # Latín de gramática, que se cita y no se traduce: «seq. quaes. indir.»,
+    # «c. gen. explic.», «c. gen. pun.», «c. gen. pretii».
+    # «c. gen. pretii» va sin punto y se queda en traducir_strong.py, con el
+    # resto del latín: aquí no casaría nunca.
+    "quaes.": "quaes.", "explic.": "explic.", "pun.": "pun.",
+    # «חֲרַךְ ithp.»: el itpeal, un tronco del arameo.
+    "ithp.": "itpeal",
+    # Errata de la digitalización: «whence corp. -ότερον» es «compar.», el
+    # comparativo. Una «m» leída como «rp» y la «a» perdida.
+    "corp.": "comparativo",
+})
