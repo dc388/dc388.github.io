@@ -138,12 +138,27 @@ Se hace una vez. Después, publicar una versión es elegir la pista en un menú.
    permisos de verdad se dan en Play, en el paso 4.
 3. Abierta la cuenta recién creada: **Claves → Agregar clave → Crear clave
    nueva → JSON**. Se descarga un archivo `.json`. **Ese archivo es la llave de
-   la ficha de Play: no se mete en el repositorio ni se manda por correo.**
-4. De vuelta en **Play Console → Acceso a la API**, la cuenta ya aparece en la
-   lista. **Administrar permisos de acceso →** se limita a la aplicación
-   «Biblia Griega y Hebrea» y se le marcan dos cosas: *publicar aplicaciones* y
-   *administrar versiones de prueba*. No necesita nada más, y cuanto menos
-   tenga, menos daño hace si se filtra.
+   la ficha de Play: no se mete en el repositorio, no se manda por correo y no
+   se pega en un chat, ni siquiera en uno con Claude.** El único sitio donde va
+   es la caja de secretos de GitHub, que lo cifra y no lo vuelve a enseñar.
+
+   Para saber que has cogido el archivo correcto y no el identificador de
+   cliente de OAuth, ábrelo y mira la primera línea: tiene que poner
+   `"type": "service_account"`. El flujo lo comprueba igualmente y lo dice con
+   esas palabras si te equivocas.
+4. De vuelta en Play Console, **el permiso se da en «Usuarios y permisos», no
+   en «Acceso a la API»**. Ahí: **Invitar a un usuario nuevo**, y de correo el
+   de la cuenta de servicio, que acaba en `.iam.gserviceaccount.com` y está
+   dentro del `.json` en el campo `client_email`. Se le da acceso **solo a la
+   aplicación «Biblia Griega y Hebrea»** y, de los permisos de esa aplicación,
+   los de publicar versiones en las pistas de prueba. En algunas cuentas eso
+   viene junto bajo el rol **«Administrador de versiones»**; vale, aunque dé de
+   más. Cuanto menos tenga, menos daño hace si se filtra.
+
+   Si la cuenta de servicio ya aparece listada en «Acceso a la API», desde ahí
+   hay un atajo al mismo sitio. El resultado tiene que ser el mismo: la cuenta
+   sale en «Usuarios y permisos» con permiso de publicar en esta aplicación.
+   Sin eso, la API contesta 403 por muy buena que sea la credencial.
 5. **GitHub → Settings → Secrets and variables → Actions → New repository
    secret.** Nombre exacto `PLAY_SERVICE_ACCOUNT_JSON`, y de valor el contenido
    entero del `.json`, de la primera llave a la última.
