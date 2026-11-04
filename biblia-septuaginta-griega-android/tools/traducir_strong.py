@@ -6081,3 +6081,45 @@ PALABRAS.update({
     # --- transliteraciones que se citan, no se explican -----------------------
     "sabachthani": "sabactani", "hosanna": "hosanna", "pretii": "pretii",
 })
+
+
+# ---------------------------------------------------------------------------
+# El gentilicio delante del sustantivo, que es orden inglés
+# ---------------------------------------------------------------------------
+# «a Hebrew measure» salía «un hebreo medida», «the Greek language» «el griego
+# lengua» y «a Jewish liquid measure» «un judío líquido medida». El inglés pone
+# el gentilicio delante y el español detrás, y para darle la vuelta hace falta
+# que lleve marca de adjetivo. Siete la llevaban —árabe, asirio, babilonio,
+# cristiano, egipcio, persa, sirio— y el resto no.
+#
+# Marcarlos no estropea su uso como sustantivo: «a Levite» sigue siendo «un
+# levita», porque la marca sólo mueve la palabra cuando detrás hay un
+# sustantivo marcado, y al final se quita siempre.
+#
+# «Jew» no entra: es sustantivo y nada más. «Jewish» sí, que es sólo adjetivo.
+# «Latin» tampoco: en estos artículos es la lengua, «(Lat. taberna)».
+for _gentilicio_suelto in (
+    "Antediluvian", "Aramaic", "Canaanite", "Chaldee", "Greek", "Hebrew",
+    "Hittite", "Israelite", "Jewish", "Levite", "Mede", "Pharisee",
+    "Philistine", "Roman", "Sadducee",
+):
+    if not NOMBRES[_gentilicio_suelto].endswith("|adj"):
+        NOMBRES[_gentilicio_suelto] += "|adj"
+
+# Lo mismo en las frases «a/an <gentilicio>», que ganan a la palabra suelta y
+# devolvían el adjetivo sin marcar: por eso «an Egyptian papyrus» salía «un
+# egipcio papiro» aunque «Egyptian» sí estuviera marcado.
+_GENTILICIO_CON_ARTICULO = re.compile(r"^an? [A-Z][a-z]+$")
+# «a Jew» es la única de esta forma que no es también adjetivo: se dice «a
+# Jewish teacher», no «a Jew teacher».
+_SOLO_SUSTANTIVO = {"a Jew"}
+for _frase, _espanol in list(FRASES.items()):
+    if (_GENTILICIO_CON_ARTICULO.match(_frase)
+            and _frase not in _SOLO_SUSTANTIVO
+            and re.fullmatch(r"un[ao]? \w+", _espanol)):
+        FRASES[_frase] = _espanol + "|adj"
+
+# «liquid» está en la tabla como sustantivo —«un líquido»—, así que en «a
+# Jewish liquid measure» se comía el sustantivo de verdad y salía «un líquido
+# judío medida». Se fija la frase entera.
+FRASES["a jewish liquid measure"] = "una medida judía para líquidos"

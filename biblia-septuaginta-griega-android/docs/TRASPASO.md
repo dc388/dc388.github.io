@@ -145,6 +145,21 @@ sugerido alternativa lectura». Se prefirió dejar esos dos artículos en inglé
 antes que publicarlos así: `alt.` y `dissyl.` están probadas y descartadas, con
 el motivo escrito.
 
+**El gentilicio va detrás, y para eso necesita marca de adjetivo.** El inglés
+escribe «a Hebrew measure» y el español «una medida hebrea». Sólo siete
+gentilicios llevaban la marca, así que salía «un hebreo medida», «el griego
+alfabeto», «el romano emperador». Y las frases «a/an <gentilicio>» ganan a la
+palabra suelta y devolvían el adjetivo sin marcar, de modo que «an Egyptian
+papyrus» salía «un egipcio papiro» aunque «Egyptian» sí estuviera marcado.
+Las dos cosas se marcan ahora al final de `traducir_strong.py`. «Jew» se queda
+fuera a propósito: es sustantivo y nada más.
+
+**Lo que sigue mal, medido:** «the Jews» sale «el judíos». El determinante
+concuerda en género pero no en número, porque la concordancia sólo mira las
+piezas marcadas `|sus` y un nombre propio nunca lo está. Son **5 apariciones**
+en los artículos publicados (G2474, G4658, H896, H1651, H5394). Arreglarlo
+pide que `_ordenar` sepa poner «los» y «las», que hoy no sabe.
+
 **Ojo con las siglas sin punto.** `_SIN_PUNTO` deja usar las abreviaturas sin
 el punto final, y eso convierte palabras inglesas corrientes en siglas: `act`
 salía 114 veces y siempre era «acto», no la voz activa; `fig` 11 y siempre era
