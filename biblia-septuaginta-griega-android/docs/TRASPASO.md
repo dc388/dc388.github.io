@@ -264,6 +264,27 @@ guion espera a que el emulador se asiente antes de instalar. **Si vuelve a
 caer con la pila entera dentro de WebView, mirar primero el registro de Play
 Services; cualquier otra pila es de la aplicación y se trata como tal.**
 
+Esa espera no bastó. Volvió a fallar en la compilación siguiente, y esta vez
+por otra causa que conviene saber distinguir: **el registro de caídas estaba
+vacío**. La aplicación no se cayó; Android la mató, que no es lo mismo:
+
+```
+Killing com.dc388.bibliagriega (adj 0): depends on provider
+com.google.android.gms/.fonts.provider.FontsProvider
+in dying proc com.google.android.gms.persistent
+```
+
+Play Services se estaba reiniciando a sí mismo mientras instalaba sus módulos
+y se llevó por delante a quien usaba su proveedor de fuentes. El guion lo
+reconoce ahora por esa línea, avisa y vuelve a abrir la aplicación una vez; si
+a la segunda tampoco aguanta, falla.
+
+**La regla no se toca: con el registro de caídas lleno se falla siempre y sin
+reintento.** Lo que se reintenta es solo el caso en que la aplicación ni
+siquiera llegó a caerse. Un comprobador que da falsos fallos se acaba
+ignorando, y este es lo único que separa una compilación rota de una reseña de
+una estrella.
+
 ## 5. Reglas que no se rompen
 
 - Desarrollar, confirmar y empujar **solo** en
