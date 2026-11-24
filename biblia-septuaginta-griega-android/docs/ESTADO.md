@@ -1,4 +1,4 @@
-# Dónde se quedó esto — 28 de octubre de 2026
+# Dónde se quedó esto — 24 de noviembre de 2026
 
 Nota para retomar sin reconstruir nada de memoria.
 
@@ -38,12 +38,21 @@ publicación arranca.
 
 **Desde el 4 de noviembre el flujo también sabe subirla.** En *Run workflow* se
 elige la pista —prueba interna, cerrada, abierta o producción— y el AAB sube
-solo por la API de Google Play. Falta una cosa, y es tuya: crear la cuenta de
-servicio y guardar su `.json` en el secreto `PLAY_SERVICE_ACCOUNT_JSON`. Son
-cinco pasos, están contados en
+solo por la API de Google Play. Sube con él el `mapping` de R8, para que los
+informes de caídas de Play Console lleguen legibles, y las notas de versión en
+`distribucion/notas/whatsnew-es-419`.
+
+**Falta una cosa, y es tuya:** crear la cuenta de servicio y guardar su `.json`
+en el secreto `PLAY_SERVICE_ACCOUNT_JSON`. Son cinco pasos, están contados en
 [PUBLICAR_EN_PLAY.md](PUBLICAR_EN_PLAY.md#4-subir-a-play-sin-entrar-en-play-console),
 y se hacen una sola vez. Hasta que ese secreto exista, la subida se niega a
-empezar y lo dice.
+empezar y dice por qué. **A 24 de noviembre sigue sin estar**: la última subida
+que se intentó es del 4 de noviembre, en seco, con la pista en «no».
+
+El sitio donde se da el permiso es **Usuarios y permisos**, no «Acceso a la
+API». Está corregido en PUBLICAR_EN_PLAY.md, pero conviene repetirlo porque es
+donde se atasca todo el mundo: sin ese permiso la API contesta 403, y el 403 no
+dice que falte un permiso.
 
 Lo que sigue sin poder hacer una sesión de Claude Code es entrar en Play
 Console: ni la cuenta de servicio, ni los formularios, ni abrir la pista de
@@ -53,18 +62,31 @@ La 1.2.3 llegó a producción y **se cerraba al tocar el icono**: está contado 
 [TRASPASO.md](TRASPASO.md), y lo que lo permitió —que nada arrancara nunca la
 compilación de publicación— quedó cerrado con `tools/comprobar_arranque.sh`.
 
-### Lo que falta, y ya no bloquea publicar
+### Lo que falta
 
 | | Qué falta | De quién depende |
 |---|---|---|
+| 0 | **Declarar el estado de operador, antes de febrero de 2027** | tuyo, y es lo único con fecha de caducidad |
 | 1 | **Perfil de pagos de AdMob y formulario fiscal de EE. UU.** | tuyo, y sin ellos no se cobra nada |
-| 2 | Comprobar que Estados Unidos está en la lista de países | tuyo |
-| 3 | Formulario de **Seguridad de los datos**, si sigue pendiente | respuestas en PUBLICAR_EN_PLAY.md |
-| 4 | Borrar los idiomas sobrantes de la ficha | tuyo |
+| 2 | Secreto `PLAY_SERVICE_ACCOUNT_JSON`, para que el flujo pueda subir | tuyo, cinco pasos, una vez |
+| 3 | Abrir la pista de **prueba abierta** con sus países | tuyo, en Play Console |
+| 4 | Comprobar que Estados Unidos está en la lista de países | tuyo |
+| 5 | Formulario de **Seguridad de los datos**, si sigue pendiente | respuestas en PUBLICAR_EN_PLAY.md |
+| 6 | Borrar los idiomas sobrantes de la ficha | tuyo |
 
-**El 1 es el único que importa de verdad ahora.** La aplicación está publicada
-y sirviendo anuncios; sin perfil de pagos esos anuncios no ingresan nada, y sin
-el formulario fiscal se retiene lo que generen los usuarios estadounidenses.
+**El 0 es nuevo y es el más grave, aunque no corra prisa hoy.** Play Console lo
+avisa en su portada: si el estado de operador no se declara antes de febrero de
+2027, *el perfil de desarrollador y todas las aplicaciones se retiran de Google
+Play en todo el mundo*. Es un formulario corto, está en la portada de Play
+Console bajo «Declara tu estado de operador → Empezar», y una vez hecho no se
+vuelve a tocar. Quince meses parecen muchos hasta que se olvidan.
+
+**El 1 es el que cuesta dinero cada día.** La aplicación está publicada y
+sirviendo anuncios desde el 17 de octubre; sin perfil de pagos esos anuncios no
+ingresan nada, y sin el formulario fiscal se retiene lo que generen los
+usuarios estadounidenses. El 4 de noviembre la ficha marcaba 127 adquisiciones
+y 66 dispositivos activos al mes, subiendo fuerte. Son impresiones servidas que
+valen cero.
 
 ### La APK para quien no tiene Play
 
@@ -103,6 +125,28 @@ misma. Eso se comprobó mirando el registro de las dos compilaciones: el almacé
 restaurado pesa 2710 bytes en las dos, o sea el mismo secreto. Si alguna vez se
 cambiara la clave, Android rechazaría la actualización con «aplicación no
 instalada» y habría que desinstalar antes, perdiendo las notas.
+
+## Lo que se hizo el 4 de noviembre
+
+**El léxico pasó del 81,4 % al 86,1 %** en español: 12 585 de 14 610 artículos
+de Brown-Driver-Briggs y Abbott-Smith. Son cuatro tandas de palabras, y de paso
+salieron **tres fugas que corrompían texto ya publicado**, las tres con la
+misma raíz —la marca de la tabla puesta en la palabra equivocada—:
+
+- El género se decidía por la última palabra del valor y no por la cabeza:
+  «un salida del sol», «el ofrenda de grano», «un piedra de molino». 72 valores.
+- La regla que quita la «a» del infinitivo inglés miraba esa misma pieza, así
+  que «to accomplish» salía **«llevar cabo»** y «to seize» «a apoderarse de».
+  22 valores.
+- Al gentilicio le faltaba marca de adjetivo, así que salía en orden inglés:
+  «el griego alfabeto», «un hebreo medida», «el romano emperador».
+
+Y el **borde negro** que enmarcaba el selector de colecciones, el botón
+«Escuchar» y el campo de búsqueda: el tema no definía `outline` y Material caía
+a su paleta de fábrica, el mismo despiste que dejaba la barra inferior en
+lavanda.
+
+Todo ello está en la 1.3.0, que **sigue sin subir a Play**.
 
 ## Las capturas — hechas
 
@@ -152,7 +196,10 @@ pasaba con los versículos que sí tenían traducción.
 
 ## Datos que conviene tener a mano
 
-- Idioma predeterminado de la ficha: **es-419**, no se puede cambiar.
+- Idioma predeterminado de la ficha: **es-419**, no se puede cambiar. Es el
+  único idioma al que el flujo manda notas de versión: Play las quiere con el
+  código exacto de la ficha, y mandar uno que la ficha no tenga tumba la subida
+  entera.
 - `applicationId`: `com.dc388.bibliagriega` (el de depuración lleva `.debug`).
 - Alias de la clave de firma: `biblia-griega`.
 - Producto de suscripción: `sin_anuncios_mensual`, y tampoco se puede cambiar.

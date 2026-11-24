@@ -247,6 +247,24 @@ jobs:
             echo "mapping=" >> "$GITHUB_OUTPUT"
           fi
 
+          # Las notas de version. Play las quiere con el codigo de idioma exacto
+          # de la ficha, y mandar uno que la ficha no tenga tumba la subida
+          # entera, asi que va solo el idioma predeterminado: es-419, que
+          # ademas no se puede cambiar (ver docs/ESTADO.md).
+          notas=distribucion/notas
+          if [ -f "$notas/whatsnew-es-419" ]; then
+            largo=$(wc -m < "$notas/whatsnew-es-419")
+            if [ "$largo" -gt 500 ]; then
+              echo "::error::Las notas de version tienen $largo caracteres y Play corta en 500. Acorta $notas/whatsnew-es-419."
+              exit 1
+            fi
+            echo "notas=biblia-septuaginta-griega-android/$notas" >> "$GITHUB_OUTPUT"
+            echo "Notas de version: $largo caracteres."
+          else
+            echo "::warning::No hay $notas/whatsnew-es-419: la version sube sin notas."
+            echo "notas=" >> "$GITHUB_OUTPUT"
+          fi
+
           echo "Credencial de Play correcta. Pista: ${{ inputs.subir_a }}. Archivo: $aab."
 
       - name: Subir a Google Play
@@ -259,6 +277,7 @@ jobs:
           track: ${{ inputs.subir_a }}
           status: completed
           mappingFile: ${{ steps.play.outputs.mapping }}
+          whatsNewDirectory: ${{ steps.play.outputs.notas }}
 
       - name: Borrar el almacén de claves
         if: always()

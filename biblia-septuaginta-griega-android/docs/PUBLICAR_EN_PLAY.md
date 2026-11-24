@@ -195,10 +195,14 @@ cosas se comprueban antes de tocar la API.
   `versionCode`: subir en cada empujón dejaría el flujo en rojo a la segunda.
 - **Hay que subir `versionCode`** en `app/build.gradle.kts` para cada versión.
   Play rechaza dos veces el mismo número.
-- **Las notas de la versión no se mandan.** Play las quiere con el código de
-  idioma exacto de la ficha (`es-419`, `es-ES`, `es-US`…), y mandar uno que la
-  ficha no tenga tumba la subida entera. La primera versión sube sin notas; en
-  cuanto se sepa el idioma de la ficha, se añaden al flujo y ya van solas.
+- **Las notas de la versión se escriben a mano**, en
+  `distribucion/notas/whatsnew-es-419`. Van solas con cada subida. Si se cambia
+  ese archivo, hay que respetar dos cosas: el nombre lleva el código de idioma
+  exacto de la ficha —`es-419`, que es el predeterminado y no se puede
+  cambiar—, y el texto no puede pasar de **500 caracteres**, que es donde corta
+  Play. Las dos se comprueban antes de tocar la API. Un código de idioma que la
+  ficha no tenga tumba la subida entera, así que no se añaden más idiomas sin
+  comprobar antes que están en la ficha.
 - **La pista de prueba abierta hay que abrirla una vez en Play Console**, con
   sus países. La API deja la versión puesta, pero si la pista nunca se
   configuró, no la ve nadie. Se mira en **Pruebas → Prueba abierta** después de
