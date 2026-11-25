@@ -130,42 +130,60 @@ Se hace una vez. Después, publicar una versión es elegir la pista en un menú.
 
 ### Lo que hay que hacer una vez
 
-1. **Play Console → Configuración → Acceso a la API.** Si pide vincular un
-   proyecto de Google Cloud, se acepta el que ofrece.
-2. En esa misma página, **Crear cuenta de servicio**. Lleva a Google Cloud:
-   **IAM y administración → Cuentas de servicio → Crear cuenta de servicio**.
-   Nombre: `publicar-biblia`. No hace falta darle ningún rol en Cloud; los
-   permisos de verdad se dan en Play, en el paso 4.
-3. Abierta la cuenta recién creada: **Claves → Agregar clave → Crear clave
-   nueva → JSON**. Se descarga un archivo `.json`. **Ese archivo es la llave de
-   la ficha de Play: no se mete en el repositorio, no se manda por correo y no
-   se pega en un chat, ni siquiera en uno con Claude.** El único sitio donde va
-   es la caja de secretos de GitHub, que lo cifra y no lo vuelve a enseñar.
+**No hace falta pasar por «Acceso a la API» de Play Console.** Esa página servía
+para vincular la cuenta de desarrollador con un proyecto de Google Cloud, y
+Google ya no lo pide: *«You no longer need to link your developer account to a
+Google Cloud Project in order to access the Google Play Developer API»*
+([getting_started](https://developers.google.com/android-publisher/getting_started)).
+Queda escrito porque la mitad de las guías de internet siguen empezando por
+ahí, y es donde se pierde la tarde.
+
+Son cuatro pasos: dos en Google Cloud, uno en Play Console y uno en GitHub.
+
+1. **Activar la API.** En Google Cloud, con cualquier proyecto —vale uno nuevo
+   o el que ya haya—, se activa la **Google Play Developer API**:
+   <https://console.cloud.google.com/apis/library/androidpublisher.googleapis.com>
+   Botón **Habilitar**. Si no hay ningún proyecto, Cloud pide crear uno antes;
+   el nombre da igual.
+2. **Crear la cuenta de servicio y bajar su clave.**
+   <https://console.cloud.google.com/iam-admin/serviceaccounts> → **Crear
+   cuenta de servicio**. Nombre: `publicar-biblia`. **No se le da ningún rol en
+   Cloud**: los permisos de verdad se dan en Play, en el paso 3.
+
+   Hecha la cuenta, se entra en ella → **Claves → Agregar clave → Crear clave
+   nueva → JSON**. Se descarga un archivo `.json`.
+
+   **Ese archivo es la llave de la ficha de Play: no se mete en el repositorio,
+   no se manda por correo y no se pega en un chat, ni siquiera en uno con
+   Claude.** El único sitio donde va es la caja de secretos de GitHub, que lo
+   cifra y no lo vuelve a enseñar.
 
    Para saber que has cogido el archivo correcto y no el identificador de
    cliente de OAuth, ábrelo y mira la primera línea: tiene que poner
    `"type": "service_account"`. El flujo lo comprueba igualmente y lo dice con
    esas palabras si te equivocas.
-4. De vuelta en Play Console, **el permiso se da en «Usuarios y permisos», no
-   en «Acceso a la API»**. Ahí: **Invitar a un usuario nuevo**, y de correo el
+3. **Darle permiso en Play Console → Usuarios y permisos.** No en «Acceso a la
+   API»: ahí no vive el permiso. **Invitar a un usuario nuevo**, y de correo el
    de la cuenta de servicio, que acaba en `.iam.gserviceaccount.com` y está
-   dentro del `.json` en el campo `client_email`. Se le da acceso **solo a la
-   aplicación «Biblia Griega y Hebrea»** y, de los permisos de esa aplicación,
-   los de publicar versiones en las pistas de prueba. En algunas cuentas eso
-   viene junto bajo el rol **«Administrador de versiones»**; vale, aunque dé de
-   más. Cuanto menos tenga, menos daño hace si se filtra.
+   dentro del `.json` en el campo `client_email`.
 
-   Si la cuenta de servicio ya aparece listada en «Acceso a la API», desde ahí
-   hay un atajo al mismo sitio. El resultado tiene que ser el mismo: la cuenta
-   sale en «Usuarios y permisos» con permiso de publicar en esta aplicación.
-   Sin eso, la API contesta 403 por muy buena que sea la credencial.
-5. **GitHub → Settings → Secrets and variables → Actions → New repository
-   secret.** Nombre exacto `PLAY_SERVICE_ACCOUNT_JSON`, y de valor el contenido
-   entero del `.json`, de la primera llave a la última.
+   Se le da acceso **solo a la aplicación «Biblia Griega y Hebrea»** y, de los
+   permisos de esa aplicación, **«Publicar aplicaciones en los canales de
+   prueba»** (*Release apps to testing tracks*), que es el que cubre justo lo
+   que hace el flujo: subir el paquete y crear la versión en una pista de
+   prueba. Google dice de ese permiso que *no* permite publicar en producción,
+   que es exactamente la garantía que interesa: aunque la credencial se
+   filtrara, no podría tocar lo que ven los usuarios de verdad.
 
-Google avisa de que el permiso recién dado puede tardar en hacer efecto. Si la
-primera subida falla con un error de permisos, se espera y se repite: no hay
-nada que arreglar.
+   Sin ese permiso la API contesta **403**, y el 403 no dice que falte un
+   permiso.
+4. **Guardar el secreto en GitHub.** Settings → Secrets and variables →
+   Actions → New repository secret. Nombre exacto `PLAY_SERVICE_ACCOUNT_JSON`,
+   y de valor el contenido entero del `.json`, de la primera llave a la última.
+
+Si la primera subida falla por permisos, se espera un rato y se repite: los
+cambios de permisos de Play tardan en propagarse. Google no dice cuánto, así
+que aquí tampoco se inventa una cifra.
 
 ### Publicar una versión
 
