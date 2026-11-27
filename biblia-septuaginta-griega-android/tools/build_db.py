@@ -699,6 +699,46 @@ def titulos_de_los_salmos(
     return desfases
 
 
+def comprobar_que_esta_el_nt(byz_dir: Path, tagged_dir: Path) -> None:
+    """Que el Nuevo Testamento griego esté entero antes de construir nada.
+
+    El 24 de noviembre de 2026 el repositorio de Robinson–Pierpont cambió de
+    estructura y las rutas que usábamos dejaron de existir. La compilación no
+    se paró por eso: imprimió veintisiete avisos de «falta este libro» y siguió
+    adelante tan tranquila. Lo que acabó deteniéndola fue una división por cero
+    tres pasos más allá, al contar un glosario que había quedado vacío.
+
+    Es decir: se salvó por casualidad. Sin esa casualidad se habría construido
+    una base **sin el Nuevo Testamento griego**, habría pasado las pruebas
+    —que miran el hebreo y los salmos— y habría llegado al teléfono de la
+    gente. Una base sin el Nuevo Testamento no es una base incompleta: es otra
+    aplicación.
+
+    Así que falta un libro y se para aquí, con el nombre del libro y la ruta
+    donde se le esperaba. Un aviso que no detiene nada es un aviso que nadie
+    lee.
+    """
+    problemas: list[str] = []
+    for carpeta, que in ((byz_dir, "del texto"), (tagged_dir, "de las etiquetas")):
+        if not carpeta.is_dir():
+            problemas.append(f"no existe la carpeta {que}: {carpeta}")
+            continue
+        faltan = [src for src, *_ in NT_BOOKS if not (carpeta / f"{src}.csv").exists()]
+        if faltan:
+            problemas.append(
+                f"faltan {len(faltan)} de los {len(NT_BOOKS)} libros {que} "
+                f"({carpeta}): {', '.join(faltan)}"
+            )
+    if problemas:
+        raise SystemExit(
+            "El Nuevo Testamento griego no está completo, así que no se "
+            "construye nada:\n  - " + "\n  - ".join(problemas) +
+            "\n\nSuele significar que el repositorio de origen cambió de "
+            "estructura. Mira qué rutas trae ahora y elige la edición "
+            "comparándola con el texto ya publicado, no a ojo."
+        )
+
+
 def comprobar_la_traduccion(con: sqlite3.Connection) -> list[str]:
     """Que la Reina-Valera siga donde debe y como debe.
 
@@ -1157,8 +1197,17 @@ def build(sources: Path, out: Path) -> None:
         print(f"  {name_es:32s} {len(verses):5d} versículos" + ("  [Rahlfs]" if note else ""))
 
     print("Nuevo Testamento (Robinson–Pierpont):")
-    byz_dir = sources / "byz" / "csv-unicode" / "ccat" / "no-variants"
-    tagged_dir = sources / "byz" / "csv-unicode" / "strongs" / "with-parsing"
+    # El repositorio de Robinson–Pierpont se reestructuró en noviembre de 2026:
+    # lo que estaba en «csv-unicode/ccat/no-variants» vive ahora bajo
+    # «editions/<edición>/csv/...». La edición no se eligió a ojo: se comparó
+    # el Nuevo Testamento entero ya publicado contra las dos candidatas que
+    # traen texto y etiquetas. «rp2018-2023» da 7953 versículos idénticos y
+    # ninguno distinto; «rp2005-2019» cambia la puntuación en 100 versículos.
+    # O sea que esta es la que veníamos usando, y cambiarla movería el texto
+    # griego bajo los pies de quien ya lo tiene instalado.
+    byz_dir = sources / "byz" / "editions" / "rp2018-2023" / "csv" / "accented" / "no-variants"
+    tagged_dir = sources / "byz" / "editions" / "rp2018-2023" / "csv" / "strongs" / "with-parsing"
+    comprobar_que_esta_el_nt(byz_dir, tagged_dir)
     for order, (src, code, name_es, name_orig) in enumerate(NT_BOOKS, 1):
         path = byz_dir / f"{src}.csv"
         if not path.exists():
