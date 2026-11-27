@@ -17,7 +17,13 @@ build/sources/
 
 # La base la reconstruye tools/build_db.py y pesa 80 MB. Nunca va al
 # repositorio: un «git add -A» después de compilar en local la metería.
-app/src/main/assets/biblia.db
+#
+# El asterisco no sobra. El patrón exacto dejaba fuera los archivos que SQLite
+# crea al lado mientras escribe —«biblia.db-journal», y «-wal» y «-shm» si
+# alguna vez se usa ese modo—, y un «git add -A» lanzado con la compilación a
+# medias metió uno de 50 KB en el repositorio. Encima vive en «assets/», así
+# que se habría empaquetado dentro del APK de todo el mundo.
+app/src/main/assets/biblia.db*
 
 # Python
 __pycache__/
