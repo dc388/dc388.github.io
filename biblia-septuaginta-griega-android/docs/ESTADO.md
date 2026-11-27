@@ -62,6 +62,18 @@ La 1.2.3 llegó a producción y **se cerraba al tocar el icono**: está contado 
 [TRASPASO.md](TRASPASO.md), y lo que lo permitió —que nada arrancara nunca la
 compilación de publicación— quedó cerrado con `tools/comprobar_arranque.sh`.
 
+### Mudanza a otra cuenta — abierto, y con prisa
+
+El dueño avisa el 27 de noviembre de que va a perder el acceso a la cuenta
+actual. Eso pasa por delante de todo lo demás, porque **la transferencia de la
+aplicación solo se puede pedir mientras la cuenta vieja siga siendo
+accesible**, y porque la clave de firma no se puede recuperar de GitHub.
+
+El plan entero, con lo que se transfiere y lo que no, está en
+[MUDANZA.md](MUDANZA.md). Lo urgente de ahí son dos cosas que no dependen de
+ninguna decisión: sacar `release.jks` y sus contraseñas fuera de las dos
+cuentas, y mirar si la firma de apps de Play está activada.
+
 ### Lo que falta
 
 | | Qué falta | De quién depende |
